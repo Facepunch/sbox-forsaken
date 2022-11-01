@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Sockets;
 using Sandbox;
 
 namespace Facepunch.Forsaken;
@@ -11,6 +10,24 @@ public partial class Player : Sandbox.Player
 
 	[ClientInput] public Vector3 CursorDirection { get; private set; }
 	[ClientInput] public Vector3 CameraPosition { get; private set; }
+
+	[Net] public int StructureType { get; private set; }
+
+	[ConCmd.Server( "fsk.structure.selected" )]
+	private static void SetSelectedStructureCmd( int identity )
+	{
+		if ( ConsoleSystem.Caller.Pawn is Player player )
+		{
+			player.StructureType = identity;
+		}
+	}
+
+	public void SetStructureType( TypeDescription type )
+	{
+		Host.AssertClient();
+		Assert.NotNull( type );
+		SetSelectedStructureCmd( type.Identity );
+	}
 
 	public void ReduceStamina( float amount )
 	{
@@ -42,7 +59,9 @@ public partial class Player : Sandbox.Player
 	{
 		base.BuildInput();
 
-		CursorDirection = Mouse.Visible ? Screen.GetDirection( Mouse.Position ) : CurrentView.Rotation.Forward;
+		if ( Mouse.Visible )
+			CursorDirection = Screen.GetDirection( Mouse.Position );
+
 		CameraPosition = CurrentView.Position;
 
 		var tablePlane = new Plane( Position, Vector3.Up );
@@ -62,102 +81,95 @@ public partial class Player : Sandbox.Player
 		base.Respawn();
 	}
 
-	[ConVar.ClientData] public string StructurePiece { get; set; }
+	private TypeDescription LastStructureType { get; set; }
 	public Structure GhostStructure { get; set; }
-	private string CurrentPiece { get; set; }
 
-	public override void Simulate( Client cl )
+	public override void Simulate( Client client )
 	{
-		base.Simulate( cl );
+		base.Simulate( client );
 
 		if ( Stamina <= 10f )
 			IsOutOfBreath = true;
 		else if ( IsOutOfBreath && Stamina >= 25f )
 			IsOutOfBreath = false;
 
-		var pieceName = cl.GetClientData( "StructurePiece" );
+		DoStructurePlacement( client );
+	}
 
-		if ( !string.IsNullOrEmpty( pieceName ) )
+	private void DoStructurePlacement( Client client )
+	{
+		var selectedStructureType = TypeLibrary.GetDescriptionByIdent( StructureType );
+		if ( selectedStructureType == null ) return;
+
+		var trace = Trace.Ray( CameraPosition, CameraPosition + CursorDirection * 1000f )
+			.WorldOnly()
+			.Run();
+
+		if ( trace.Hit && trace.Normal.Dot( Vector3.Up ) == 1f )
 		{
-			var trace = Trace.Ray( CameraPosition, CameraPosition + CursorDirection * 1000f )
-				.WorldOnly()
-				.Run();
-
-			if ( trace.Hit && trace.Normal.Dot( Vector3.Up ) == 1f )
+			if ( IsClient )
 			{
-				if ( IsClient )
+				if ( !GhostStructure.IsValid() || LastStructureType != selectedStructureType )
 				{
-					if ( !GhostStructure.IsValid() || CurrentPiece != pieceName )
-					{
-						GhostStructure?.Delete();
-
-						if ( pieceName == "wall" )
-							GhostStructure = new Wall();
-						else if ( pieceName == "foundation" )
-							GhostStructure = new Foundation();
-						else if ( pieceName == "doorway" )
-							GhostStructure = new Doorway();
-
-						CurrentPiece = pieceName;
-					}
+					GhostStructure?.Delete();
+					GhostStructure = selectedStructureType.Create<Structure>();
+					LastStructureType = selectedStructureType;
 				}
+			}
 
-				if ( IsClient && GhostStructure.IsValid() )
+			if ( IsClient && GhostStructure.IsValid() )
+			{
+				GhostStructure.EnableShadowCasting = false;
+				GhostStructure.EnableShadowReceive = false;
+				GhostStructure.RenderColor = Color.Green.WithAlpha( 0.8f );
+
+				if ( GhostStructure.LocateSocket( trace.EndPosition, out var socket ) )
 				{
-					if ( GhostStructure.LocateSocket( trace.EndPosition, out var socket ) )
-					{
-						var transform = socket.Transform;
-						GhostStructure.Position = transform.Position;
-						GhostStructure.Rotation = transform.Rotation;
-						GhostStructure.ResetInterpolation();
+					var transform = socket.Transform;
+					GhostStructure.Position = transform.Position;
+					GhostStructure.Rotation = transform.Rotation;
+					GhostStructure.ResetInterpolation();
 
-						DebugOverlay.Sphere( transform.Position, 64f, Color.Green, Time.Delta );
-					}
-					else if ( !GhostStructure.RequiresSocket )
-					{
-						GhostStructure.Position = trace.EndPosition;
-						GhostStructure.ResetInterpolation();
-					}
+					DebugOverlay.Sphere( transform.Position, 16f, Color.Cyan, Time.Delta * 4f );
 				}
-
-				if ( Prediction.FirstTime && Input.Released( InputButton.PrimaryAttack ) )
+				else
 				{
-					if ( IsServer )
+					GhostStructure.Position = trace.EndPosition;
+					GhostStructure.ResetInterpolation();
+
+					if ( GhostStructure.RequiresSocket )
+						GhostStructure.RenderColor = Color.Red.WithAlpha( 0.3f );
+				}
+			}
+
+			if ( Prediction.FirstTime && Input.Released( InputButton.PrimaryAttack ) )
+			{
+				if ( IsServer )
+				{
+					var structure = selectedStructureType.Create<Structure>();
+
+					if ( structure.IsValid() )
 					{
-						Structure structure = null;
-
-						if ( pieceName == "wall" )
-							structure = new Wall();
-						else if ( pieceName == "foundation" )
-							structure = new Foundation();
-						else if ( pieceName == "doorway" )
-							structure = new Doorway();
-
-						if ( structure.IsValid() )
+						if ( structure.LocateSocket( trace.EndPosition, out var socket ) )
 						{
-							if ( structure.LocateSocket( trace.EndPosition, out var socket ) )
-							{
-								var transform = socket.Transform;
-								structure.Position = transform.Position;
-								structure.Rotation = transform.Rotation;
-								structure.ResetInterpolation();
-								socket.Add( structure );
-							}
-							else if ( !structure.RequiresSocket )
-							{
-								structure.Position = trace.EndPosition;
-							}
-							else
-							{
-								structure.Delete();
-							}
+							var transform = socket.Transform;
+							structure.Position = transform.Position;
+							structure.Rotation = transform.Rotation;
+							structure.ResetInterpolation();
+							socket.Add( structure );
+						}
+						else if ( !structure.RequiresSocket )
+						{
+							structure.Position = trace.EndPosition;
+						}
+						else
+						{
+							structure.Delete();
 						}
 					}
-					else
-					{
-						GhostStructure.Delete();
-					}
 				}
+
+				GhostStructure?.Delete();
 			}
 		}
 	}

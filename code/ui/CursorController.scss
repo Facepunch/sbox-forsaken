@@ -6,4 +6,9 @@
     height: 0px;
     display: none;
     pointer-events: all;
+
+    &.hidden {
+        pointer-events: none;
+        display: none;
+    }
 }

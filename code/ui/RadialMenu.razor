@@ -1,0 +1,203 @@
+﻿@using Sandbox;
+@using Sandbox.UI;
+@using System;
+@using System.Collections.Generic;
+
+@namespace Facepunch.Forsaken
+@inherits Panel
+
+<root class="radial-menu @GetRootClass()">
+    <div class="center @(string.IsNullOrEmpty( Name ) ? "hidden" : string.Empty)">
+        <div class="info">
+            <label class="name">@Name</label>
+            <label class="description">@Description</label>
+        </div>
+    </div>
+
+    <div @ref="ItemContainer" class="items">
+        @foreach ( var item in Items )
+        {
+            <RadialMenuItem Item=@item></RadialMenuItem>
+        }
+    </div>
+
+    <div @ref="Dot" class="dot"></div>
+</root>
+
+@code
+{
+    public class Item
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Icon { get; set; }
+        public Action OnSelected { get; set; }
+    }
+
+    public virtual InputButton Button => InputButton.Score;
+
+    public List<Item> Items { get; private set; } = new();
+    public Item HoveredItem { get; private set; }
+    public Panel ItemContainer { get; set; }
+    public string Name => HoveredItem?.Name;
+    public string Description => HoveredItem?.Description;
+    public Panel Dot { get; set; }
+    public bool IsOpen { get; private set; }
+
+    private TimeSince LastCloseTime { get; set; }
+    private Vector2 VirtualMouse { get; set; }
+
+    public void AddItem( string name, string description, string icon, Action callback )
+    {
+        var item = new Item
+        {
+            Name = name,
+            Description = description,
+            Icon = icon,
+            OnSelected = callback
+        };
+
+        Items.Add( item );
+    }
+
+    [Event.BuildInput]
+    public void BuildInput()
+    {
+        var shouldOpen = ShouldOpen();
+
+        if ( Input.Pressed( Button ) && shouldOpen )
+        {
+            VirtualMouse = Screen.Size * 0.5f;
+            IsOpen = true;
+        }
+
+        if ( Input.Released( Button ) || !shouldOpen )
+        {
+            IsOpen = false;
+        }
+
+        if ( IsOpen )
+        {
+            VirtualMouse += new Vector2( Input.AnalogLook.Direction.y, Input.AnalogLook.Direction.z ) * -500f;
+
+            var lx = VirtualMouse.x - Box.Left;
+            var ly = VirtualMouse.y - Box.Top;
+
+            Item closestItem = null;
+            var closestDistance = 0f;
+
+            if ( VirtualMouse.Distance( Screen.Size * 0.5f ) >= Box.Rect.Size.x * 0.1f )
+            {
+                var children = ItemContainer.ChildrenOfType<RadialMenuItem>();
+
+                foreach ( var child in children )
+                {
+                    var distance = child.Box.Rect.Center.Distance( VirtualMouse );
+
+                    if ( closestItem == null || distance < closestDistance )
+                    {
+                        closestDistance = distance;
+                        closestItem = child.Item;
+                    }
+                }
+            }
+
+            HoveredItem = closestItem;
+
+            Dot.Style.Left = Length.Pixels( lx * ScaleFromScreen );
+            Dot.Style.Top = Length.Pixels( ly * ScaleFromScreen );
+
+            if ( HoveredItem != null && Input.Down( InputButton.PrimaryAttack ) )
+            {
+                HoveredItem.OnSelected?.Invoke();
+                LastCloseTime = 0f;
+                IsOpen = false;
+            }
+
+            Input.AnalogLook = Angles.Zero;
+        }
+
+        if ( IsOpen || LastCloseTime < 0.1f )
+        {
+            Input.ClearButton( InputButton.PrimaryAttack );
+            Input.ClearButton( InputButton.SecondaryAttack );
+        }
+    }
+
+    public virtual void Populate()
+    {
+
+    }
+
+    public override void Tick()
+    {
+        foreach ( var child in ItemContainer.ChildrenOfType<RadialMenuItem>() )
+        {
+            child.IsSelected = (HoveredItem == child.Item);
+
+            var fItemCount = (float)ItemContainer.ChildrenCount;
+            var maxItemScale = 1.1f;
+            var minItemScale = 0.8f - fItemCount.Remap( 4f, 10f, 0f, 0.4f );
+            var distanceToMouse = child.Box.Rect.Center.Distance( VirtualMouse );
+            var distanceToScale = distanceToMouse.Remap( 0f, child.Box.Rect.Size.Length * 1.5f, maxItemScale, minItemScale ).Clamp( minItemScale, maxItemScale );
+
+            var tx = new PanelTransform();
+            tx.AddScale( distanceToScale );
+
+            child.Style.Transform = tx;
+            child.Style.ZIndex = child.IsSelected ? 2 : 0;
+        }
+
+        if ( IsOpen )
+            CursorController.Current?.Disable();
+        else
+            CursorController.Current?.Enable();
+
+        base.Tick();
+    }
+
+    protected override void OnParametersSet()
+    {
+        Items.Clear();
+
+        Populate();
+
+        base.OnParametersSet();
+    }
+
+    protected virtual bool ShouldOpen()
+    {
+        return true;
+    }
+
+    protected override int BuildHash()
+    {
+        return HashCode.Combine( Name, Description, Items.Count, IsOpen );
+    }
+
+    protected override void FinalLayoutChildren()
+    {
+        var radius = Box.Rect.Size.x * 0.5f;
+        var center = Box.Rect.WithoutPosition.Center;
+
+        for ( var i = 0; i < ItemContainer.ChildrenCount; i++ )
+        {
+            if ( ItemContainer.GetChild( i ) is RadialMenuItem child )
+            {
+                var theta = (i * 2f * Math.PI / ItemContainer.ChildrenCount) - Math.PI;
+                var x = (float)Math.Sin( theta ) * radius;
+                var y = (float)Math.Cos( theta ) * radius;
+
+                child.Style.Left = Length.Pixels( (center.x + x) * ScaleFromScreen );
+                child.Style.Top = Length.Pixels( (center.y + y) * ScaleFromScreen );
+            }
+        }
+
+        base.FinalLayoutChildren();
+    }
+
+    private string GetRootClass()
+    {
+        return !IsOpen ? "hidden" : string.Empty;
+    }
+}

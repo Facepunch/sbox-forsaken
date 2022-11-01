@@ -1,0 +1,44 @@
+﻿@using Sandbox;
+@using Sandbox.UI;
+@using System;
+@using System.Collections.Generic;
+
+@namespace Facepunch.Forsaken
+@attribute [StyleSheet( "/ui/RadialMenuItem.scss" )]
+@inherits Panel
+
+<root>
+    <img src=@Item.Icon class="icon" />
+</root>
+
+@code
+{
+    public bool IsSelected { get; set; }
+    public RadialMenu.Item Item { get; set; }
+
+    public RadialMenuItem() { }
+
+    public override void OnLayout( ref Rect layoutRect )
+    {
+        base.OnLayout( ref layoutRect );
+
+        var halfWidth = layoutRect.Width / 2f;
+        var halfHeight = layoutRect.Height / 2f;
+
+        layoutRect.left -= halfWidth;
+        layoutRect.top -= halfHeight;
+        layoutRect.right -= halfWidth;
+        layoutRect.bottom -= halfHeight;
+    }
+
+    protected override void OnParametersSet()
+    {
+        BindClass( "selected", () => IsSelected );
+        base.OnParametersSet();
+    }
+
+    protected override int BuildHash()
+    {
+        return Item.GetHashCode();
+    }
+}
