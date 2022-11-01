@@ -87,7 +87,11 @@ public partial class MoveController : BasePlayerController
 		UpdateBBox();
 
 		EyeLocalPosition += TraceOffset;
-		EyeRotation = player.ViewAngles.ToRotation();
+
+		if ( Input.Down( InputButton.Run ) )
+			EyeRotation = Rotation;
+		else
+			EyeRotation = player.ViewAngles.ToRotation();
 
 		if ( Unstuck.TestAndFix() )
 		{
@@ -111,11 +115,6 @@ public partial class MoveController : BasePlayerController
 
 		WishVelocity = new Vector3( player.InputDirection.x, player.InputDirection.y, 0 );
 		var inSpeed = WishVelocity.Length.Clamp( 0, 1 );
-
-		if ( !Input.Down( InputButton.Run ) )
-			WishVelocity *= EyeRotation;
-		else
-			EyeRotation = Rotation;
 
 		WishVelocity = WishVelocity.WithZ( 0 );
 		WishVelocity = WishVelocity.Normal * inSpeed;
