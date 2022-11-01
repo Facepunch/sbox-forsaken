@@ -3,8 +3,13 @@
 namespace Facepunch.Forsaken;
 
 [Title( "Foundation" )]
-[Description( "The most fundamental building block. Walls, doors and windows can be attached to it.")]
+[Description( "The most fundamental building block. Walls, doors and windows can be attached to it." )]
 public partial class Foundation : Structure
 {
-	
+	public override void Spawn()
+	{
+		SetModel( "models/structures/foundation.vmdl" );
+
+		base.Spawn();
+	}
 }
