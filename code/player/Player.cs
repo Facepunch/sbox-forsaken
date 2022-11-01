@@ -103,7 +103,11 @@ public partial class Player : Sandbox.Player
 
 				if ( IsClient && GhostStructure.IsValid() )
 				{
-					GhostStructure.Position = trace.EndPosition;
+					if ( GhostStructure.LocateSlot( trace.EndPosition, out var position, out var rotation ) )
+					{
+						GhostStructure.Position = position;
+						GhostStructure.Rotation = rotation;
+					}
 				}
 
 				if ( Prediction.FirstTime && Input.Released( InputButton.PrimaryAttack ) )
@@ -121,7 +125,11 @@ public partial class Player : Sandbox.Player
 
 						if ( structure.IsValid() )
 						{
-							structure.Position = trace.EndPosition;
+							if ( structure.LocateSlot( trace.EndPosition, out var position, out var rotation ) )
+							{
+								structure.Position = position;
+								structure.Rotation = rotation;
+							}
 						}
 					}
 					else
