@@ -104,17 +104,16 @@ public partial class Player : Sandbox.Player
 
 				if ( IsClient && GhostStructure.IsValid() )
 				{
-					if ( GhostStructure.RequiresSocket )
+					if ( GhostStructure.LocateSocket( trace.EndPosition, out var socket ) )
 					{
-						if ( GhostStructure.LocateSocket( trace.EndPosition, out var socket ) )
-						{
-							var transform = socket.GetWorldTransform();
-							GhostStructure.Position = transform.Position;
-							GhostStructure.Rotation = transform.Rotation;
-							GhostStructure.ResetInterpolation();
-						}
+						var transform = socket.Transform;
+						GhostStructure.Position = transform.Position;
+						GhostStructure.Rotation = transform.Rotation;
+						GhostStructure.ResetInterpolation();
+
+						DebugOverlay.Sphere( transform.Position, 64f, Color.Green, Time.Delta );
 					}
-					else
+					else if ( !GhostStructure.RequiresSocket )
 					{
 						GhostStructure.Position = trace.EndPosition;
 						GhostStructure.ResetInterpolation();
@@ -136,20 +135,21 @@ public partial class Player : Sandbox.Player
 
 						if ( structure.IsValid() )
 						{
-							if ( structure.RequiresSocket )
+							if ( structure.LocateSocket( trace.EndPosition, out var socket ) )
 							{
-								if ( structure.LocateSocket( trace.EndPosition, out var socket ) )
-								{
-									var transform = socket.GetWorldTransform();
-									structure.Position = transform.Position;
-									structure.Rotation = transform.Rotation;
-									structure.ResetInterpolation();
-									socket.Add( structure );
-								}
+								var transform = socket.Transform;
+								structure.Position = transform.Position;
+								structure.Rotation = transform.Rotation;
+								structure.ResetInterpolation();
+								socket.Add( structure );
+							}
+							else if ( !structure.RequiresSocket )
+							{
+								structure.Position = trace.EndPosition;
 							}
 							else
 							{
-								structure.Position = trace.EndPosition;
+								structure.Delete();
 							}
 						}
 					}

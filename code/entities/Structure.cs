@@ -7,42 +7,13 @@ namespace Facepunch.Forsaken;
 public abstract partial class Structure : ModelEntity
 {
 	[Net] public Socket Socket { get; internal set; }
-	[Net] public List<Socket> Sockets { get; set; }
+	[Net] public IList<Socket> Sockets { get; set; } = new List<Socket>();
 
 	public virtual bool RequiresSocket => true;
 
-	public override void Spawn()
-	{
-		Sockets = new List<Socket>();
-
-		base.Spawn();
-	}
-
 	public virtual bool LocateSocket( Vector3 target, out Socket socket )
 	{
-		var nearest = FindInSphere( target, 64f ).OfType<Structure>();
-
-		if ( nearest.Any() )
-		{
-			var structures = nearest.OrderBy( s => OrderStructureByDistance( target, s ) );
-
-			foreach ( var structure in structures )
-			{
-				var orderedSockets = structure.Sockets
-					.Where( s => s.Structures.Count == 0 )
-					.OrderBy( a => OrderSocketByDistance( target, a ) );
-
-				socket = orderedSockets.FirstOrDefault();
-
-				if ( socket.IsValid() )
-				{
-					return true;
-				}
-			}
-		}
-
 		socket = null;
-
 		return false;
 	}
 
@@ -50,14 +21,16 @@ public abstract partial class Structure : ModelEntity
 	{
 		Host.AssertServer();
 
-		var attachment = GetAttachment( attachmentName, false );
+		var attachment = GetAttachment( attachmentName );
 
 		if ( attachment.HasValue )
 		{
-			var socket = new Socket( this )
+			var socket = new Socket
 			{
-				LocalTransform = attachment.Value
+				Transform = attachment.Value
 			};
+
+			socket.SetParent( this );
 
 			AddSocket( socket );
 		}
@@ -66,6 +39,8 @@ public abstract partial class Structure : ModelEntity
 	protected void AddSocket( Socket socket )
 	{
 		Host.AssertServer();
+
+		socket.SetParent( this );
 
 		Sockets.Add( socket );
 	}
@@ -77,7 +52,6 @@ public abstract partial class Structure : ModelEntity
 
 	protected float OrderSocketByDistance( Vector3 target, Socket socket )
 	{
-		var transform = socket.Owner.Transform.ToWorld( socket.LocalTransform );
-		return transform.Position.Distance( target );
+		return socket.Position.Distance( target );
 	}
 }

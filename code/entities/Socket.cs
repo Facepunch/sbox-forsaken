@@ -3,28 +3,14 @@ using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
-public partial class Socket : BaseNetworkable, IValid
+public partial class Socket : Entity
 {
-	[Net] public Structure Owner { get; set; }
-	[Net] public Transform LocalTransform { get; set; }
-	[Net] public List<Structure> Structures { get; set; }
+	[Net] public IList<Structure> Structures { get; set; } = new List<Structure>();
 
-	public bool IsValid => Owner.IsValid();
-
-	public Socket()
+	public override void Spawn()
 	{
-
-	}
-
-	public Socket( Structure owner )
-	{
-		Structures = new List<Structure>();
-		Owner = owner;
-	}
-
-	public Transform GetWorldTransform()
-	{
-		return Owner.Transform.ToWorld( LocalTransform );
+		Transmit = TransmitType.Always;
+		base.Spawn();
 	}
 
 	public void Remove( Structure structure )
