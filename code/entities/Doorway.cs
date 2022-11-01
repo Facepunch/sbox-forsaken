@@ -8,15 +8,18 @@ public partial class Doorway : Structure
 {
 	public override void Spawn()
 	{
+		base.Spawn();
+
 		SetModel( "models/structures/doorway.vmdl" );
 		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
-
-		base.Spawn();
 	}
 
 	public override void OnNewModel( Model model )
 	{
-		AddSocket( "center" );
+		if ( IsServer )
+		{
+			AddSocket( "center" );
+		}
 
 		base.OnNewModel( model );
 	}

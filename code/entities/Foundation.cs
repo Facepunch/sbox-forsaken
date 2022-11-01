@@ -7,49 +7,53 @@ namespace Facepunch.Forsaken;
 [Description( "The most fundamental building block. Walls, doors and windows can be attached to it." )]
 public partial class Foundation : Structure
 {
+	public override bool RequiresSocket => false;
+
 	public override void Spawn()
 	{
+		base.Spawn();
+
 		SetModel( "models/structures/foundation.vmdl" );
 		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
-
-		base.Spawn();
 	}
 
 	public override void OnNewModel( Model model )
 	{
-		AddSocket( "forward" );
-		AddSocket( "backward" );
-		AddSocket( "left" );
-		AddSocket( "right" );
+		if ( IsServer )
+		{
+			AddSocket( "forward" );
+			AddSocket( "backward" );
+			AddSocket( "left" );
+			AddSocket( "right" );
+		}
 
 		base.OnNewModel( model );
 	}
 
-	public override bool LocateSlot( Vector3 target, out Vector3 position, out Rotation rotation )
+	public override bool LocateSocket( Vector3 target, out Socket socket )
 	{
-		position = target;
-		rotation = Rotation.Identity;
+		var nearest = FindInSphere( target, 64f ).OfType<Foundation>();
 
-		var foundations = FindInSphere( target, 64f ).OfType<Foundation>();
-
-		if ( foundations.Any() )
+		if ( nearest.Any() )
 		{
-			var targetFoundation = foundations.FirstOrDefault();
-			var orderedSockets = targetFoundation.Sockets.OrderBy( a =>
+			var structures = nearest.OrderBy( s => OrderStructureByDistance( target, s ) );
+
+			foreach ( var structure in structures )
 			{
-				var transform = targetFoundation.Transform.ToWorld( a.LocalTransform );
-				return transform.Position.Distance( target );
-			} );
-			var targetSocket = orderedSockets.FirstOrDefault();
+				var orderedSockets = structure.Sockets
+					.Where( s => s.Structures.Count == 0 )
+					.OrderBy( a => OrderSocketByDistance( target, a ) );
 
-			var transform = targetFoundation.Transform.ToWorld( targetSocket.LocalTransform );
+				socket = orderedSockets.FirstOrDefault();
 
-			position = transform.Position;
-			rotation = transform.Rotation;
-
-			return true;
+				if ( socket.IsValid() )
+				{
+					return true;
+				}
+			}
 		}
 
-		return true;
+		socket = null;
+		return false;;
 	}
 }

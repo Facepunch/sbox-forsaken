@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Sockets;
 using Sandbox;
 
 namespace Facepunch.Forsaken;
@@ -103,10 +104,20 @@ public partial class Player : Sandbox.Player
 
 				if ( IsClient && GhostStructure.IsValid() )
 				{
-					if ( GhostStructure.LocateSlot( trace.EndPosition, out var position, out var rotation ) )
+					if ( GhostStructure.RequiresSocket )
 					{
-						GhostStructure.Position = position;
-						GhostStructure.Rotation = rotation;
+						if ( GhostStructure.LocateSocket( trace.EndPosition, out var socket ) )
+						{
+							var transform = socket.GetWorldTransform();
+							GhostStructure.Position = transform.Position;
+							GhostStructure.Rotation = transform.Rotation;
+							GhostStructure.ResetInterpolation();
+						}
+					}
+					else
+					{
+						GhostStructure.Position = trace.EndPosition;
+						GhostStructure.ResetInterpolation();
 					}
 				}
 
@@ -125,10 +136,20 @@ public partial class Player : Sandbox.Player
 
 						if ( structure.IsValid() )
 						{
-							if ( structure.LocateSlot( trace.EndPosition, out var position, out var rotation ) )
+							if ( structure.RequiresSocket )
 							{
-								structure.Position = position;
-								structure.Rotation = rotation;
+								if ( structure.LocateSocket( trace.EndPosition, out var socket ) )
+								{
+									var transform = socket.GetWorldTransform();
+									structure.Position = transform.Position;
+									structure.Rotation = transform.Rotation;
+									structure.ResetInterpolation();
+									socket.Add( structure );
+								}
+							}
+							else
+							{
+								structure.Position = trace.EndPosition;
 							}
 						}
 					}

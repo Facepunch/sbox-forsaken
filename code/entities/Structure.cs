@@ -6,49 +6,55 @@ namespace Facepunch.Forsaken;
 
 public abstract partial class Structure : ModelEntity
 {
-	public IReadOnlyList<Socket> Sockets => InternalSockets;
-	private List<Socket> InternalSockets { get; set; } = new();
+	[Net] public Socket Socket { get; internal set; }
+	[Net] public List<Socket> Sockets { get; set; }
+
+	public virtual bool RequiresSocket => true;
 
 	public override void Spawn()
 	{
+		Sockets = new List<Socket>();
+
 		base.Spawn();
 	}
 
-	public virtual bool LocateSlot( Vector3 target, out Vector3 position, out Rotation rotation )
+	public virtual bool LocateSocket( Vector3 target, out Socket socket )
 	{
-		position = target;
-		rotation = Rotation.Identity;
-
 		var nearest = FindInSphere( target, 64f ).OfType<Structure>();
 
 		if ( nearest.Any() )
 		{
-			var targetStructure = nearest.FirstOrDefault();
-			var orderedSockets = targetStructure.Sockets.OrderBy( a =>
+			var structures = nearest.OrderBy( s => OrderStructureByDistance( target, s ) );
+
+			foreach ( var structure in structures )
 			{
-				var transform = targetStructure.Transform.ToWorld( a.LocalTransform );
-				return transform.Position.Distance( target );
-			} );
-			var targetSocket = orderedSockets.FirstOrDefault();
+				var orderedSockets = structure.Sockets
+					.Where( s => s.Structures.Count == 0 )
+					.OrderBy( a => OrderSocketByDistance( target, a ) );
 
-			var transform = targetStructure.Transform.ToWorld( targetSocket.LocalTransform );
+				socket = orderedSockets.FirstOrDefault();
 
-			position = transform.Position;
-			rotation = transform.Rotation;
-
-			return true;
+				if ( socket.IsValid() )
+				{
+					return true;
+				}
+			}
 		}
+
+		socket = null;
 
 		return false;
 	}
 
 	protected void AddSocket( string attachmentName )
 	{
+		Host.AssertServer();
+
 		var attachment = GetAttachment( attachmentName, false );
 
 		if ( attachment.HasValue )
 		{
-			var socket = new Socket
+			var socket = new Socket( this )
 			{
 				LocalTransform = attachment.Value
 			};
@@ -59,6 +65,19 @@ public abstract partial class Structure : ModelEntity
 
 	protected void AddSocket( Socket socket )
 	{
-		InternalSockets.Add( socket );
+		Host.AssertServer();
+
+		Sockets.Add( socket );
+	}
+
+	protected float OrderStructureByDistance( Vector3 target, Structure structure )
+	{
+		return structure.Position.Distance( target );
+	}
+
+	protected float OrderSocketByDistance( Vector3 target, Socket socket )
+	{
+		var transform = socket.Owner.Transform.ToWorld( socket.LocalTransform );
+		return transform.Position.Distance( target );
 	}
 }
