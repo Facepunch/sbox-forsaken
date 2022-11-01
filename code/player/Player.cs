@@ -12,6 +12,8 @@ public partial class Player : Sandbox.Player
 	[ClientInput] public Vector3 CameraPosition { get; private set; }
 
 	[Net] public int StructureType { get; private set; }
+	private TypeDescription LastStructureType { get; set; }
+	public Structure GhostStructure { get; set; }
 
 	[ConCmd.Server( "fsk.structure.selected" )]
 	private static void SetSelectedStructureCmd( int identity )
@@ -80,9 +82,6 @@ public partial class Player : Sandbox.Player
 
 		base.Respawn();
 	}
-
-	private TypeDescription LastStructureType { get; set; }
-	public Structure GhostStructure { get; set; }
 
 	public override void Simulate( Client client )
 	{
