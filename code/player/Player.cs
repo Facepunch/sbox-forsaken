@@ -9,6 +9,7 @@ public partial class Player : Sandbox.Player
 	[Net, Predicted] public bool IsOutOfBreath { get; private set; }
 
 	[ClientInput] public Vector3 CursorDirection { get; private set; }
+	[ClientInput] public Vector3 CameraPosition { get; private set; }
 
 	public void ReduceStamina( float amount )
 	{
@@ -41,6 +42,7 @@ public partial class Player : Sandbox.Player
 		base.BuildInput();
 
 		CursorDirection = Mouse.Visible ? Screen.GetDirection( Mouse.Position ) : CurrentView.Rotation.Forward;
+		CameraPosition = CurrentView.Position;
 
 		var tablePlane = new Plane( Position, Vector3.Up );
 		var hitPosition = tablePlane.Trace( new Ray( EyePosition, CursorDirection ), true );
@@ -59,13 +61,75 @@ public partial class Player : Sandbox.Player
 		base.Respawn();
 	}
 
+	[ConVar.ClientData] public string StructurePiece { get; set; }
+	public Structure GhostStructure { get; set; }
+	private string CurrentPiece { get; set; }
+
 	public override void Simulate( Client cl )
 	{
+		base.Simulate( cl );
+
 		if ( Stamina <= 10f )
 			IsOutOfBreath = true;
 		else if ( IsOutOfBreath && Stamina >= 25f )
 			IsOutOfBreath = false;
 
-		base.Simulate( cl );
+		var pieceName = cl.GetClientData( "StructurePiece" );
+
+		if ( !string.IsNullOrEmpty( pieceName ) )
+		{
+			var trace = Trace.Ray( CameraPosition, CameraPosition + CursorDirection * 1000f )
+				.WorldOnly()
+				.Run();
+
+			if ( trace.Hit && trace.Normal.Dot( Vector3.Up ) == 1f )
+			{
+				if ( IsClient )
+				{
+					if ( !GhostStructure.IsValid() || CurrentPiece != pieceName )
+					{
+						GhostStructure?.Delete();
+
+						if ( pieceName == "wall" )
+							GhostStructure = new Wall();
+						else if ( pieceName == "foundation" )
+							GhostStructure = new Foundation();
+						else if ( pieceName == "doorway" )
+							GhostStructure = new Doorway();
+
+						CurrentPiece = pieceName;
+					}
+				}
+
+				if ( IsClient && GhostStructure.IsValid() )
+				{
+					GhostStructure.Position = trace.EndPosition;
+				}
+
+				if ( Prediction.FirstTime && Input.Released( InputButton.PrimaryAttack ) )
+				{
+					if ( IsServer )
+					{
+						Structure structure = null;
+
+						if ( pieceName == "wall" )
+							structure = new Wall();
+						else if ( pieceName == "foundation" )
+							structure = new Foundation();
+						else if ( pieceName == "doorway" )
+							structure = new Doorway();
+
+						if ( structure.IsValid() )
+						{
+							structure.Position = trace.EndPosition;
+						}
+					}
+					else
+					{
+						GhostStructure.Delete();
+					}
+				}
+			}
+		}
 	}
 }
