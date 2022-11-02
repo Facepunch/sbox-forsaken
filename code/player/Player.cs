@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Sandbox;
 
 namespace Facepunch.Forsaken;
@@ -122,14 +123,11 @@ public partial class Player : Sandbox.Player
 				GhostStructure.EnableShadowReceive = false;
 				GhostStructure.RenderColor = Color.Green.WithAlpha( 0.8f );
 
-				if ( GhostStructure.LocateSocket( trace.EndPosition, out var socket ) )
-				{
-					var transform = socket.Transform;
-					GhostStructure.Position = transform.Position;
-					GhostStructure.Rotation = transform.Rotation;
-					GhostStructure.ResetInterpolation();
+				var match = GhostStructure.LocateSocket( trace.EndPosition );
 
-					DebugOverlay.Sphere( transform.Position, 16f, Color.Cyan, Time.Delta * 4f );
+				if ( match.IsValid )
+				{
+					GhostStructure.SnapToSocket( match );
 				}
 				else
 				{
@@ -149,13 +147,12 @@ public partial class Player : Sandbox.Player
 
 					if ( structure.IsValid() )
 					{
-						if ( structure.LocateSocket( trace.EndPosition, out var socket ) )
+						var match = structure.LocateSocket( trace.EndPosition );
+
+						if ( match.IsValid )
 						{
-							var transform = socket.Transform;
-							structure.Position = transform.Position;
-							structure.Rotation = transform.Rotation;
-							structure.ResetInterpolation();
-							socket.Add( structure );
+							structure.SnapToSocket( match );
+							match.Ours.Connect( match.Theirs );
 						}
 						else if ( !structure.RequiresSocket )
 						{

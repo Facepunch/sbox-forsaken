@@ -1,5 +1,7 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 namespace Facepunch.Forsaken;
 
@@ -9,17 +11,57 @@ public abstract partial class Structure : ModelEntity
 	[Net] public IList<Socket> Sockets { get; set; } = new List<Socket>();
 
 	public virtual bool RequiresSocket => true;
+	public virtual bool ShouldRotate => true;
 
-	public virtual bool LocateSocket( Vector3 target, out Socket socket )
+	public void SnapToSocket( Socket.Match match )
 	{
-		socket = null;
-		return false;
+		var transform = match.Theirs.Transform;
+
+		// TODO: This is pretty shitty. I'm sure there's a better way.
+		Rotation = Rotation.Identity;
+		var relative = Position - match.Ours.Position;
+
+		Position = transform.Position + relative;
+
+		if ( ShouldRotate )
+			Rotation = transform.Rotation;
+
+		ResetInterpolation();
 	}
 
-	protected void AddSocket( string attachmentName )
+	public virtual Socket.Match LocateSocket( Vector3 target )
 	{
-		Host.AssertServer();
+		var ourSockets = Sockets
+			.OrderBy( s => s.Position.Distance( target ) );
 
+		var nearbyStructures = FindInSphere( target, 48f )
+			.OfType<Structure>()
+			.Where( s => s != this )
+			.OrderBy( s => s.Position.Distance( target ) );
+
+		foreach ( var theirStructure in nearbyStructures )
+		{
+			var theirSockets = theirStructure.Sockets
+				.Where( s => !s.Connection.IsValid() )
+				.OrderBy( a => a.Position.Distance( target ) );
+
+			foreach ( var theirSocket in theirSockets )
+			{
+				foreach ( var ourSocket in ourSockets )
+				{
+					if ( ourSocket.CanConnectTo( theirSocket ) )
+					{
+						return new Socket.Match( ourSocket, theirSocket );
+					}
+				}
+			}
+		}
+
+		return default;
+	}
+
+	protected Socket AddSocket( string attachmentName )
+	{
 		var attachment = GetAttachment( attachmentName );
 
 		if ( attachment.HasValue )
@@ -32,16 +74,18 @@ public abstract partial class Structure : ModelEntity
 			socket.SetParent( this );
 
 			AddSocket( socket );
+
+			return socket;
 		}
+
+		return null;
 	}
 
-	protected void AddSocket( Socket socket )
+	protected Socket AddSocket( Socket socket )
 	{
-		Host.AssertServer();
-
 		socket.SetParent( this );
-
 		Sockets.Add( socket );
+		return socket;
 	}
 
 	protected float OrderStructureByDistance( Vector3 target, Structure structure )

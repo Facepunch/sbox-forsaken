@@ -5,7 +5,30 @@ namespace Facepunch.Forsaken;
 
 public partial class Socket : Entity
 {
-	[Net] public IList<Structure> Structures { get; set; } = new List<Structure>();
+	public struct Match
+	{
+		public Socket Ours { get; private set; }
+		public Socket Theirs { get; private set; }
+		public bool IsValid { get; private set; }
+
+		public Match( Socket ours, Socket theirs )
+		{
+			Ours = ours;
+			Theirs = theirs;
+			IsValid = true;
+		}
+
+		public Match()
+		{
+			Ours = null;
+			Theirs = null;
+			IsValid = false;
+		}
+	}
+
+	[Net] public Socket Connection { get; private set; }
+	[Net] public IList<string> ConnectAny { get; set; } = new List<string>();
+	[Net] public IList<string> ConnectAll { get; set; } = new List<string>();
 
 	public override void Spawn()
 	{
@@ -13,22 +36,37 @@ public partial class Socket : Entity
 		base.Spawn();
 	}
 
-	public void Remove( Structure structure )
+	public bool CanConnectTo( Socket socket )
 	{
-		if ( structure.Socket == this )
+		foreach ( var tag in ConnectAll )
 		{
-			Structures.Remove( structure );
-			structure.Socket = null;
+			if ( !socket.Tags.Has( tag ) )
+				return false;
+		}
+
+		foreach ( var tag in ConnectAny )
+		{
+			if ( socket.Tags.Has( tag ) )
+				return true;
+		}
+
+		return false;
+	}
+
+	public void Disconnect( Socket socket )
+	{
+		if ( Connection == socket )
+		{
+			socket.Connection = null;
+			Connection = null;
 		}
 	}
 
-	public void Add( Structure structure )
+	public void Connect( Socket socket )
 	{
-		if ( structure.Socket == this ) return;
+		if ( Connection == socket ) return;
 
-		Structures.Add( structure );
-
-		structure.Socket?.Remove( structure );
-		structure.Socket = this;
+		socket.Connection = this;
+		Connection = socket;
 	}
 }
