@@ -140,7 +140,7 @@ public partial class Draggable : Panel
 
 		foreach ( var child in root.Children )
 		{
-			if ( !child.HasHovered )
+			if ( !child.Box.Rect.IsInside( Mouse.Position ) )
 				continue;
 
 			var panel = FindDroppable( child );

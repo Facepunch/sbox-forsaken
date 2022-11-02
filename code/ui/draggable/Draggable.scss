@@ -1,5 +1,5 @@
 ﻿Draggable {
-  background-color: rgba( blue, 0.5 );
+  background-color: rgba( black, 0.5 );
   border-radius: 8px;
   position: absolute;
   pointer-events: none;
@@ -15,6 +15,6 @@
   }
 
   &.invalid-drag {
-    background-color: rgba( red, 0.5);
+    background-color: rgba( red, 0.5 );
   }
 }

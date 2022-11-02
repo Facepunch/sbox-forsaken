@@ -50,16 +50,22 @@
 
     &.valid-drag {
         transition: all 0.1s ease-out;
-        background-color: rgba(blue, 0.8);
-        border-color: blue;
         transform: scale(1.1 1.1);
+
+        &.is-empty {
+            background-color: rgba(lawngreen, 0.6);
+            border-color: lawngreen;
+        }
     }
 
     &.invalid-drag {
         transition: all 0.1s ease-out;
-        background-color: red;
-        border-color: red;
         opacity: 0.1;
         transform: scale(1);
+
+        &.is-empty {
+            background-color: red;
+            border-color: red;
+        }
     }
 }

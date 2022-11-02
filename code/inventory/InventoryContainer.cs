@@ -69,6 +69,13 @@ public class InventoryContainer : IValid
 		}
 	}
 
+	public InventoryContainer( Entity owner )
+	{
+		ItemList = new List<InventoryItem>();
+		Connections = new List<Client>();
+		Entity = owner;
+	}
+
 	public byte[] Serialize()
 	{
 		using ( var stream = new MemoryStream() )
@@ -708,10 +715,18 @@ public class InventoryContainer : IValid
 		}
 	}
 
-	public InventoryContainer( Entity owner )
+	public override int GetHashCode()
 	{
-		ItemList = new List<InventoryItem>();
-		Connections = new List<Client>();
-		Entity = owner;
+		var hash = 19;
+
+		foreach ( var item in ItemList )
+		{
+			if ( item.IsValid() )
+				hash = hash * 31 + item.GetHashCode();
+			else
+				hash = hash * 31 + 0;
+		}
+
+		return HashCode.Combine( hash, SlotLimit );
 	}
 }
