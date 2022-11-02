@@ -12,14 +12,12 @@ public abstract partial class Weapon : BaseWeapon
 	public virtual string MuzzleFlashEffect => "particles/pistol_muzzleflash.vpcf";
 	public virtual string ImpactEffect => null;
 	public virtual int ClipSize => 16;
-	public virtual float AutoReloadDelay => 1.5f;
 	public virtual float ReloadTime => 3.0f;
 	public virtual bool IsMelee => false;
 	public virtual float MeleeRange => 100f;
 	public virtual float DamageFalloffStart => 0f;
 	public virtual float DamageFalloffEnd => 0f;
 	public virtual float BulletRange => 20000f;
-	public virtual bool AutoReload => true;
 	public virtual string TracerEffect => null;
 	public virtual bool ReloadAnimation => true;
 	public virtual bool UnlimitedAmmo => false;
@@ -127,16 +125,6 @@ public abstract partial class Weapon : BaseWeapon
 	public virtual void PlayReloadAnimation()
 	{
 		AnimationOwner?.SetAnimParameter( "b_reload", true );
-	}
-
-	public override bool CanReload()
-	{
-		if ( AutoReload && TimeSincePrimaryAttack > AutoReloadDelay && AmmoClip == 0 )
-		{
-			return true;
-		}
-
-		return base.CanReload();
 	}
 
 	public override void ActiveStart( Entity owner )

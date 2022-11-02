@@ -246,6 +246,9 @@ public partial class Player
 	{
 		TryGiveWeapon<CrossbowItem>();
 		TryGiveAmmo( AmmoType.Bolt, 10 );
+
+		var armor = InventorySystem.CreateItem<BaseballCapItem>();
+		TryGiveItem( armor );
 	}
 
 	private void CreateInventories()
