@@ -63,9 +63,9 @@ public abstract partial class Structure : ModelEntity
 		return true;
 	}
 
-	public virtual bool IsValidPlacement( Vector3 target )
+	public virtual bool IsValidPlacement( Vector3 target, Vector3 normal )
 	{
-		return true;
+		return normal.Dot( Vector3.Up ).AlmostEqual( 1f );
 	}
 
 	public virtual Socket.Match LocateSocket( Vector3 target )

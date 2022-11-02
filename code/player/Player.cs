@@ -103,7 +103,7 @@ public partial class Player : Sandbox.Player
 			.WorldOnly()
 			.Run();
 
-		if ( trace.Hit && trace.Normal.Dot( Vector3.Up ) == 1f )
+		if ( trace.Hit )
 		{
 			if ( IsClient )
 			{
@@ -122,7 +122,7 @@ public partial class Player : Sandbox.Player
 					ghost.Position = trace.EndPosition;
 					ghost.ResetInterpolation();
 
-					if ( ghost.RequiresSocket || !ghost.IsValidPlacement( ghost.Position ) )
+					if ( ghost.RequiresSocket || !ghost.IsValidPlacement( ghost.Position, trace.Normal ) )
 						ghost.RenderColor = Color.Red.WithAlpha( 0.5f );
 				}
 			}
@@ -148,7 +148,7 @@ public partial class Player : Sandbox.Player
 						else if ( !structure.RequiresSocket )
 						{
 							structure.Position = trace.EndPosition;
-							isValid = structure.IsValidPlacement( structure.Position );
+							isValid = structure.IsValidPlacement( structure.Position, trace.Normal );
 						}
 
 						if ( !isValid )
