@@ -12,6 +12,8 @@ public partial class Foundation : Structure
 	public override bool RequiresSocket => false;
 	public override bool ShouldRotate => false;
 
+	[Net] public ModelEntity Ceiling { get; private set; }
+
 	public override void Spawn()
 	{
 		base.Spawn();

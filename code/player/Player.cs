@@ -13,8 +13,6 @@ public partial class Player : Sandbox.Player
 	[ClientInput] public Vector3 CameraPosition { get; private set; }
 
 	[Net] public int StructureType { get; private set; }
-	private TypeDescription LastStructureType { get; set; }
-	public Structure GhostStructure { get; set; }
 
 	[ConCmd.Server( "fsk.structure.selected" )]
 	private static void SetSelectedStructureCmd( int identity )
@@ -98,8 +96,8 @@ public partial class Player : Sandbox.Player
 
 	private void DoStructurePlacement( Client client )
 	{
-		var selectedStructureType = TypeLibrary.GetDescriptionByIdent( StructureType );
-		if ( selectedStructureType == null ) return;
+		var structureType = TypeLibrary.GetDescriptionByIdent( StructureType );
+		if ( structureType == null ) return;
 
 		var trace = Trace.Ray( CameraPosition, CameraPosition + CursorDirection * 1000f )
 			.WorldOnly()
@@ -109,34 +107,23 @@ public partial class Player : Sandbox.Player
 		{
 			if ( IsClient )
 			{
-				if ( !GhostStructure.IsValid() || LastStructureType != selectedStructureType )
-				{
-					GhostStructure?.Delete();
-					GhostStructure = selectedStructureType.Create<Structure>();
-					LastStructureType = selectedStructureType;
-				}
-			}
+				var ghost = Structure.GetOrCreateGhost( structureType );
 
-			if ( IsClient && GhostStructure.IsValid() )
-			{
-				GhostStructure.EnableShadowCasting = false;
-				GhostStructure.EnableShadowReceive = false;
-				GhostStructure.RenderColor = Color.Green.WithAlpha( 0.8f );
+				ghost.RenderColor = Color.Cyan.WithAlpha( 0.5f );
 
-				var match = GhostStructure.LocateSocket( trace.EndPosition );
+				var match = ghost.LocateSocket( trace.EndPosition );
 
 				if ( match.IsValid )
 				{
-					GhostStructure.SnapToSocket( match );
+					ghost.SnapToSocket( match );
 				}
 				else
 				{
-					GhostStructure.Position = trace.EndPosition;
-					GhostStructure.ResetInterpolation();
+					ghost.Position = trace.EndPosition;
+					ghost.ResetInterpolation();
 
-					if ( GhostStructure.RequiresSocket
-						|| !GhostStructure.IsValidPlacement( GhostStructure.Position ) )
-						GhostStructure.RenderColor = Color.Red.WithAlpha( 0.3f );
+					if ( ghost.RequiresSocket || !ghost.IsValidPlacement( ghost.Position ) )
+						ghost.RenderColor = Color.Red.WithAlpha( 0.5f );
 				}
 			}
 
@@ -144,7 +131,7 @@ public partial class Player : Sandbox.Player
 			{
 				if ( IsServer )
 				{
-					var structure = selectedStructureType.Create<Structure>();
+					var structure = structureType.Create<Structure>();
 
 					if ( structure.IsValid() )
 					{
@@ -171,7 +158,7 @@ public partial class Player : Sandbox.Player
 					}
 				}
 
-				GhostStructure?.Delete();
+				Structure.ClearGhost();
 			}
 		}
 	}

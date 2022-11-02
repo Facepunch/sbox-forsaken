@@ -7,6 +7,30 @@ namespace Facepunch.Forsaken;
 
 public abstract partial class Structure : ModelEntity
 {
+	public static Structure Ghost { get; private set; }
+
+	public static Structure GetOrCreateGhost( TypeDescription type )
+	{
+		if ( !Ghost.IsValid() || type.GetType() != Ghost.GetType() )
+		{
+			ClearGhost();
+
+			Ghost = type.Create<Structure>();
+			Ghost.EnableShadowCasting = false;
+			Ghost.EnableShadowReceive = false;
+			Ghost.EnableAllCollisions = false;
+			Ghost.SetMaterialOverride( Material.Load( "materials/blueprint.vmat" ) );
+		}
+
+		return Ghost;
+	}
+
+	public static void ClearGhost()
+	{
+		Ghost?.Delete();
+		Ghost = null;
+	}
+
 	[Net] public Socket Socket { get; internal set; }
 	[Net] public IList<Socket> Sockets { get; set; } = new List<Socket>();
 
