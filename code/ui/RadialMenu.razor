@@ -12,6 +12,8 @@
             <label class="name">@Name</label>
             <label class="description">@Description</label>
         </div>
+
+        <img @ref="Arrow" src="textures/ui/radial_arrow.png" class="arrow"></img>
     </div>
 
     <div @ref="ItemContainer" class="items">
@@ -42,6 +44,7 @@
     public string Name => HoveredItem?.Name;
     public string Description => HoveredItem?.Description;
     public Panel Dot { get; set; }
+    public Image Arrow { get; set; }
     public bool IsOpen { get; private set; }
 
     private TimeSince LastCloseTime { get; set; }
@@ -108,6 +111,18 @@
 
             Dot.Style.Left = Length.Pixels( lx * ScaleFromScreen );
             Dot.Style.Top = Length.Pixels( ly * ScaleFromScreen );
+
+            if ( HoveredItem != null )
+            {
+                var index = Items.IndexOf( HoveredItem );
+                var theta = (index * 2f * MathF.PI / Items.Count) - MathF.PI;
+                var degrees = (180f / MathF.PI) * theta;
+
+                var tx = new PanelTransform();
+                tx.AddRotation( 0f, 0f, 180f - degrees );
+                tx.AddTranslateY( Length.Percent( -30f ) );
+                Arrow.Style.Transform = tx;
+            }
 
             if ( HoveredItem != null && Input.Down( InputButton.PrimaryAttack ) )
             {

@@ -21,6 +21,7 @@
     }
 
     .items {
+
     }
 
     .center {
@@ -48,6 +49,10 @@
                 color: white;
                 opacity: 0.7;
             }
+        }
+
+        .arrow {
+            position: absolute;
         }
 
         &.hidden {
