@@ -84,7 +84,7 @@ public partial class Crossbow : ProjectileWeapon<CrossbowBoltProjectile>
 
 	protected override Vector3? GetMuzzlePosition()
 	{
-		return Transform.PointToWorld( LocalPosition + LocalRotation.Right * 8f );
+		return Transform.PointToWorld( LocalPosition );
 	}
 
 	private string GetTrailEffect()
