@@ -1,0 +1,120 @@
+﻿@using System;
+@using Sandbox;
+@using Sandbox.UI;
+
+@namespace Facepunch.Forsaken
+@attribute [StyleSheet( "/ui/inventory/Storage.scss" )]
+@inherits Panel
+@implements IDialog
+
+@if ( !BackpackContainer.IsValid() ) return;
+@if ( !StorageContainer.IsValid() ) return;
+@if ( !HotbarContainer.IsValid() ) return;
+
+<root>
+    <div>
+        <div class="backpack">
+            <label class="title">Backpack</label>
+
+            <div class="slots">
+                @for ( ushort i = 0; i < BackpackContainer.SlotLimit; i++ )
+                {
+                    var item = BackpackContainer.GetFromSlot( i );
+                    <InventorySlot Container=@BackpackContainer Slot=@i Item=@item></InventorySlot>
+                }
+            </div>
+        </div>
+        <div class="storage">
+            <label class="title">@Name</label>
+
+            <div class="slots">
+                @for ( ushort i = 0; i < StorageContainer.SlotLimit; i++ )
+                {
+                    var item = StorageContainer.GetFromSlot( i );
+                    <InventorySlot Container=@StorageContainer Slot=@i Item=@item></InventorySlot>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="hotbar">
+            <label class="title">Hotbar</label>
+
+            <div class="slots">
+                @for ( ushort i = 0; i < HotbarContainer.SlotLimit; i++ )
+                {
+                    var item = HotbarContainer.GetFromSlot(i);
+                    <InventorySlot Container=@HotbarContainer Slot=@i Item=@item></InventorySlot>
+                }
+            </div>
+        </div>
+    </div>
+</root>
+
+@code
+{
+    public static Storage Current { get; private set; }
+
+    public InventoryContainer StorageContainer { get; private set; }
+    public InventoryContainer BackpackContainer { get; private set; }
+    public InventoryContainer HotbarContainer { get; private set; }
+    public bool IsOpen { get; set; }
+    public Entity Entity { get; private set; }
+    public string Name { get; private set; }
+
+    public Storage()
+    {
+        Current = this;
+        BindClass( "hidden", () => !IsOpen );
+    }
+
+    public void Open()
+    {
+        if ( IsOpen ) return;
+        IDialog.Activate( this );
+        IsOpen = true;
+    }
+
+    public void Close()
+    {
+        if ( !IsOpen ) return;
+        IDialog.Deactivate( this );
+        IsOpen = false;
+    }
+
+    public void SetName( string name )
+    {
+        Name = name;
+    }
+
+    public void SetEntity( Entity entity )
+    {
+        Entity = entity;
+    }
+
+    public void SetContainer( InventoryContainer container )
+    {
+        if ( Local.Pawn is not Player player )
+            return;
+
+        StorageContainer = container;
+        StorageContainer.SetTransferTargetHandler( GetStorageTransferTarget );
+
+        BackpackContainer = player.BackpackInventory.Instance;
+        HotbarContainer = player.HotbarInventory.Instance;
+    }
+
+    protected override void OnAfterTreeRender( bool firstTime )
+    {
+        if ( Local.Pawn is Player player && StorageContainer.IsValid() )
+        {
+            SetContainer( StorageContainer );
+        }
+    }
+
+    private InventoryContainer GetStorageTransferTarget( InventoryItem item )
+    {
+        return BackpackContainer;
+    }
+}

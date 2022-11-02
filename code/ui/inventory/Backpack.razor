@@ -1,0 +1,157 @@
+﻿@using System;
+@using Sandbox;
+@using Sandbox.UI;
+
+@namespace Facepunch.Forsaken
+@attribute [StyleSheet( "/ui/inventory/Backpack.scss" )]
+@inherits Panel
+@implements IDialog
+
+@if ( !BackpackContainer.IsValid() ) return;
+@if ( !EquipmentContainer.IsValid() ) return;
+@if ( !HotbarContainer.IsValid() ) return;
+
+<root>
+    <div class="body-container">
+        <div class="equipment">
+            <label class="title">Equipment</label>
+
+            <div class="slots">
+                <InventorySlot
+                    OnSelected=@OnEquipmentSlotSelected
+                    ArmorSlot=@ArmorSlot.Head
+                    DefaultIcon="textures/ui/armor_slot_head.png"
+                    Container=@EquipmentContainer
+                    Slot=@((ushort)0)
+                    Item=@EquipmentContainer.GetFromSlot( 0 )>
+                </InventorySlot>
+
+                <InventorySlot
+                    OnSelected=@OnEquipmentSlotSelected
+                    ArmorSlot=@ArmorSlot.Chest
+                    DefaultIcon="textures/ui/armor_slot_chest.png"
+                    Container=@EquipmentContainer
+                    Slot=@((ushort)1)
+                    Item=@EquipmentContainer.GetFromSlot( 1 )>
+                </InventorySlot>
+
+                <InventorySlot
+                    OnSelected=@OnEquipmentSlotSelected
+                    ArmorSlot=@ArmorSlot.Legs
+                    DefaultIcon="textures/ui/armor_slot_legs.png"
+                    Container=@EquipmentContainer
+                    Slot=@((ushort)2)
+                    Item=@EquipmentContainer.GetFromSlot( 2 )>
+                </InventorySlot>
+            </div>
+        </div>
+
+        <div class="backpack">
+            <label class="title">Backpack</label>
+
+            <div class="slots">
+                @for ( ushort i = 0; i < BackpackContainer.SlotLimit; i++ )
+                {
+                    var item = BackpackContainer.GetFromSlot( i );
+                    <InventorySlot OnSelected=@OnBackpackSlotSelected Container=@BackpackContainer Slot=@i Item=@item></InventorySlot>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="hotbar">
+        <label class="title">Hotbar</label>
+
+        <div class="slots">
+            @for ( ushort i = 0; i < HotbarContainer.SlotLimit; i++ )
+            {
+                var item = HotbarContainer.GetFromSlot(i);
+                <InventorySlot OnSelected=@OnHotbarSlotSelected Container=@HotbarContainer Slot=@i Item=@item></InventorySlot>
+            }
+        </div>
+    </div>
+</root>
+
+@code
+{
+    public static Backpack Current { get; private set; }
+
+    public InventoryContainer BackpackContainer { get; private set; }
+    public InventoryContainer EquipmentContainer { get; private set; }
+    public InventoryContainer HotbarContainer { get; private set; }
+    public bool IsOpen { get; set; }
+
+    public Backpack()
+    {
+        BindClass( "hidden", () => !IsOpen );
+
+        Current = this;
+    }
+
+    public void Open()
+    {
+        if ( IsOpen ) return;
+        IDialog.Activate( this );
+        IsOpen = true;
+    }
+
+    public void Close()
+    {
+        if ( !IsOpen ) return;
+        IDialog.Deactivate( this );
+        IsOpen = false;
+    }
+
+    public void SetHotbar( InventoryContainer hotbar )
+    {
+        HotbarContainer = hotbar;
+    }
+
+    public void SetBackpack( InventoryContainer backpack )
+    {
+        BackpackContainer = backpack;
+    }
+
+    public void SetEquipment( InventoryContainer equipment )
+    {
+        EquipmentContainer = equipment;
+    }
+
+    protected virtual void OnBackpackSlotSelected( InventorySlot slot )
+    {
+        slot.IsSelected = true;
+        Sound.FromScreen( "inventory.select" );
+    }
+
+    protected virtual void OnEquipmentSlotSelected( InventorySlot slot )
+    {
+        slot.IsSelected = true;
+        Sound.FromScreen( "inventory.select" );
+    }
+
+    protected virtual void OnHotbarSlotSelected( InventorySlot slot )
+    {
+        slot.IsSelected = true;
+        Sound.FromScreen( "inventory.select" );
+    }
+
+    protected override int BuildHash()
+    {
+        return HashCode.Combine( HotbarContainer, BackpackContainer, EquipmentContainer );
+    }
+
+    protected override void OnAfterTreeRender( bool firstTime )
+    {
+        if ( Local.Pawn is Player player )
+        {
+            if ( player.BackpackInventory.IsValid() )
+                SetBackpack( player.BackpackInventory.Instance );
+
+            if ( player.EquipmentInventory.IsValid() )
+                SetEquipment( player.EquipmentInventory.Instance );
+
+            if ( player.HotbarInventory.IsValid() )
+                SetHotbar( player.HotbarInventory.Instance );
+        }
+    }
+}

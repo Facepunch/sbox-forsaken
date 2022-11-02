@@ -22,10 +22,9 @@
     public bool IsSelected { get; set; }
     public string StackSize => GetStackSize();
     public float IconSize => Box.Rect.Size.Length;
-    public string DefaultIcon { get; private set; }
-    public ArmorSlot ArmorSlot { get; private set; }
+    public string DefaultIcon { get; set; }
+    public ArmorSlot ArmorSlot { get; set; }
     public Action<InventorySlot> OnSelected { get; set; }
-    public int DisplaySlot { get; private set; }
     public Panel Icon { get; set; }
     public string Description => Item.Description;
     public ItemTag[] Tags => Item.Tags;
@@ -35,26 +34,6 @@
     public InventorySlot()
     {
         BindClass( "selected", () => IsSelected );
-    }
-
-    public void SetItem( InventoryItem item )
-    {
-        Item = item;
-    }
-
-    public void SetDisplaySlot( int slot )
-    {
-        DisplaySlot = slot;
-    }
-
-    public void SetArmorSlot( ArmorSlot slot )
-    {
-        ArmorSlot = slot;
-    }
-
-    public void SetDefaultIcon( string icon )
-    {
-        DefaultIcon = icon;
     }
 
     public string GetIconTexture()
@@ -189,7 +168,7 @@
 
     protected override int BuildHash()
     {
-        return HashCode.Combine( Item, DisplaySlot, ArmorSlot, DefaultIcon, StackSize );
+        return HashCode.Combine( Item, ArmorSlot, DefaultIcon, StackSize );
     }
 
     protected override void OnMouseDown( MousePanelEvent e )
