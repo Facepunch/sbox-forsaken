@@ -19,7 +19,7 @@ public partial class Forsaken : Game
 	{
 		base.ClientJoined( client );
 
-		var pawn = new Player();
+		var pawn = new Player( client );
 		client.Pawn = pawn;
 		pawn.Respawn();
 	}

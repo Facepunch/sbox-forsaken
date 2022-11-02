@@ -1,0 +1,19 @@
+﻿Hotbar {
+  position: absolute;
+  bottom: 32px;
+  display: flex;
+  flex-direction: row;
+  pointer-events: auto;
+
+  InventorySlot {
+    margin-right: 16px;
+
+    &:last-child {
+      margin-right: 0px;
+    }
+  }
+
+  &.hidden {
+    display: none;
+  }
+}
