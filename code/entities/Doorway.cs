@@ -5,6 +5,7 @@ namespace Facepunch.Forsaken;
 
 [Title( "Doorway" )]
 [Description( "Can have a door placed inside. Must be placed on a foundation." )]
+[Icon( "textures/ui/doorway.png" )]
 public partial class Doorway : Structure
 {
 	public override void Spawn()

@@ -1,6 +1,11 @@
 ﻿StructureSelector {
-    width: 500px;
-    height: 500px;
+    width: 600px;
+    height: 600px;
+    background-color: rgba( 0 0 0 0.8 );
+    backdrop-filter: blur( 8px );
+    border-radius: 50%;
+    box-shadow: 0 0 32px 16px rgba( 50 50 50 0.5 );
+    border: 2px white solid;
 
     RadialMenuItem {
         margin-right: 16px;
@@ -8,7 +13,7 @@
 
     .dot {
         position: absolute;
-        background-color: lighten( black, 0.4 );
+        background-color: white;
         box-shadow: 0px 0px 4px 4px rgba( black, 0.2 );
         width: 16px;
         height: 16px;
@@ -16,7 +21,6 @@
     }
 
     .items {
-        margin-top: 64px;
     }
 
     .center {
@@ -25,24 +29,24 @@
         height: 100%;
 
         .info {
-            background-color: rgba( 0 0 0 0.3 );
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            border-radius: 4px;
-            padding: 16px;
+            margin-top: -56px;
+            width: 80%;
 
             .name {
                 font-family: Roboto;
-                font-size: 24px;
-                text-shadow: 0px 0px 4px rgba( black, 0.2 );
-                color: lighten( black, 0.4 );
+                font-size: 32px;
+                text-shadow: 0px 0px 4px rgba( 0 0 0 0.4 );
+                color: white;
             }
 
             .description {
                 font-family: Roboto;
-                font-size: 16px;
+                font-size: 20px;
                 color: white;
+                opacity: 0.7;
             }
         }
 

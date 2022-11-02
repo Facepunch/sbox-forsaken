@@ -1,8 +1,8 @@
 ﻿RadialMenuItem {
     position: absolute;
     background-color: rgba( 0 0 0 0.4 );
-    width: 150px;
-    height: 150px;
+    width: 100px;
+    height: 100px;
     opacity: 1;
     border-radius: 10%;
     display: flex;
@@ -10,8 +10,8 @@
     justify-content: center;
 
     .icon {
-        width: 100px;
-        height: 100px;
+        width: 80%;
+        height: 80%;
         opacity: 0.9;
     }
 

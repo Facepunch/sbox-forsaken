@@ -63,6 +63,8 @@
     [Event.BuildInput]
     public void BuildInput()
     {
+        if ( ItemContainer == null ) return;
+
         var shouldOpen = ShouldOpen();
 
         if ( Input.Pressed( Button ) && shouldOpen )
@@ -136,10 +138,10 @@
             child.IsSelected = (HoveredItem == child.Item);
 
             var fItemCount = (float)ItemContainer.ChildrenCount;
-            var maxItemScale = 1.1f;
-            var minItemScale = 0.8f - fItemCount.Remap( 4f, 10f, 0f, 0.4f );
+            var maxItemScale = 1.3f;
+            var minItemScale = 0.9f - fItemCount.Remap( 4f, 10f, 0f, 0.2f );
             var distanceToMouse = child.Box.Rect.Center.Distance( VirtualMouse );
-            var distanceToScale = distanceToMouse.Remap( 0f, child.Box.Rect.Size.Length * 1.5f, maxItemScale, minItemScale ).Clamp( minItemScale, maxItemScale );
+            var distanceToScale = distanceToMouse.Remap( 0f, child.Box.Rect.Size.Length * 2f, maxItemScale, minItemScale ).Clamp( minItemScale, maxItemScale );
 
             var tx = new PanelTransform();
             tx.AddScale( distanceToScale );
@@ -177,7 +179,7 @@
 
     protected override void FinalLayoutChildren()
     {
-        var radius = Box.Rect.Size.x * 0.5f;
+        var radius = Box.Rect.Size.x * 0.32f;
         var center = Box.Rect.WithoutPosition.Center;
 
         for ( var i = 0; i < ItemContainer.ChildrenCount; i++ )
