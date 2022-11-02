@@ -154,6 +154,7 @@ public partial class Player : Sandbox.Player
 						if ( match.IsValid )
 						{
 							structure.SnapToSocket( match );
+							structure.OnConnected( match.Ours, match.Theirs );
 							match.Ours.Connect( match.Theirs );
 							isValid = true;
 						}

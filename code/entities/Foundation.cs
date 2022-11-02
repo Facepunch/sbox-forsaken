@@ -22,6 +22,14 @@ public partial class Foundation : Structure
 		Tags.Add( "solid", "foundation" );
 	}
 
+	public override bool IsValidPlacement( Vector3 target )
+	{
+		return !FindInSphere( target, 512f )
+			.OfType<Foundation>()
+			.Where( s => !s.Equals( this ) )
+			.Any();
+	}
+
 	public override void OnNewModel( Model model )
 	{
 		if ( IsServer || IsClientOnly )

@@ -29,6 +29,11 @@ public abstract partial class Structure : ModelEntity
 		ResetInterpolation();
 	}
 
+	public virtual void OnConnected( Socket ours, Socket theirs )
+	{
+
+	}
+
 	public virtual bool CanConnectTo( Socket socket )
 	{
 		return true;
@@ -96,15 +101,5 @@ public abstract partial class Structure : ModelEntity
 		socket.SetParent( this );
 		Sockets.Add( socket );
 		return socket;
-	}
-
-	protected float OrderStructureByDistance( Vector3 target, Structure structure )
-	{
-		return structure.Position.Distance( target );
-	}
-
-	protected float OrderSocketByDistance( Vector3 target, Socket socket )
-	{
-		return socket.Position.Distance( target );
 	}
 }
