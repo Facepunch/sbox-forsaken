@@ -14,6 +14,17 @@ public partial class Wall : Structure
 
 		SetModel( "models/structures/wall.vmdl" );
 		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
+
+		Tags.Add( "solid", "wall" );
+	}
+
+	public override bool CanConnectTo( Socket socket )
+	{
+		return !FindInSphere( socket.Position, 32f )
+			.OfType<Structure>()
+			.Where( s => !s.Equals( this ) )
+			.Where( s => s.Tags.Has( "wall" ) )
+			.Any();
 	}
 
 	public override void OnNewModel( Model model )
@@ -21,7 +32,7 @@ public partial class Wall : Structure
 		if ( IsServer || IsClientOnly )
 		{
 			var socket = AddSocket( "center" );
-			socket.ConnectAny.Add( "foundation" );
+			socket.ConnectAny.Add( "wall" );
 			socket.Tags.Add( "wall" );
 		}
 

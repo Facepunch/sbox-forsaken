@@ -29,6 +29,16 @@ public abstract partial class Structure : ModelEntity
 		ResetInterpolation();
 	}
 
+	public virtual bool CanConnectTo( Socket socket )
+	{
+		return true;
+	}
+
+	public virtual bool IsValidPlacement( Vector3 target )
+	{
+		return true;
+	}
+
 	public virtual Socket.Match LocateSocket( Vector3 target )
 	{
 		var ourSockets = Sockets
@@ -36,13 +46,13 @@ public abstract partial class Structure : ModelEntity
 
 		var nearbyStructures = FindInSphere( target, 48f )
 			.OfType<Structure>()
-			.Where( s => s != this )
+			.Where( s => !s.Equals( this ) )
 			.OrderBy( s => s.Position.Distance( target ) );
 
 		foreach ( var theirStructure in nearbyStructures )
 		{
 			var theirSockets = theirStructure.Sockets
-				.Where( s => !s.Connection.IsValid() )
+				.Where( s => !s.Connection.IsValid() && CanConnectTo( s ) )
 				.OrderBy( a => a.Position.Distance( target ) );
 
 			foreach ( var theirSocket in theirSockets )

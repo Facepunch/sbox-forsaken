@@ -1,5 +1,6 @@
 ﻿using Sandbox;
 using System.Linq;
+using System.Net.Sockets;
 
 namespace Facepunch.Forsaken;
 
@@ -17,33 +18,39 @@ public partial class Foundation : Structure
 
 		SetModel( "models/structures/foundation.vmdl" );
 		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
+
+		Tags.Add( "solid", "foundation" );
 	}
 
 	public override void OnNewModel( Model model )
 	{
 		if ( IsServer || IsClientOnly )
 		{
-			var socket = AddSocket( "forward" );
-			socket.ConnectAny.Add( "foundation" );
-			socket.ConnectAll.Add( "backward" );
-			socket.Tags.Add( "foundation", "forward" );
+			AddFoundationSocket( "forward", "backward" );
+			AddFoundationSocket( "backward", "forward" );
+			AddFoundationSocket( "left", "right" );
+			AddFoundationSocket( "right", "left" );
 
-			socket = AddSocket( "backward" );
-			socket.ConnectAny.Add( "foundation" );
-			socket.ConnectAll.Add( "forward" );
-			socket.Tags.Add( "foundation", "backward" );
-
-			socket = AddSocket( "left" );
-			socket.ConnectAny.Add( "foundation" );
-			socket.ConnectAll.Add( "right" );
-			socket.Tags.Add( "foundation", "left" );
-
-			socket = AddSocket( "right" );
-			socket.ConnectAny.Add( "foundation" );
-			socket.ConnectAll.Add( "left" );
-			socket.Tags.Add( "foundation", "right" );
+			AddWallSocket( "forward" );
+			AddWallSocket( "backward" );
+			AddWallSocket( "left" );
+			AddWallSocket( "right" );
 		}
 
 		base.OnNewModel( model );
+	}
+
+	private void AddFoundationSocket( string direction, string connectorDirection )
+	{
+		var socket = AddSocket( direction );
+		socket.ConnectAny.Add( "foundation" );
+		socket.ConnectAll.Add( connectorDirection );
+		socket.Tags.Add( "foundation", direction );
+	}
+
+	private void AddWallSocket( string attachmentName )
+	{
+		var socket = AddSocket( attachmentName );
+		socket.Tags.Add( "foundation", "wall" );
 	}
 }

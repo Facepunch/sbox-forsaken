@@ -134,7 +134,8 @@ public partial class Player : Sandbox.Player
 					GhostStructure.Position = trace.EndPosition;
 					GhostStructure.ResetInterpolation();
 
-					if ( GhostStructure.RequiresSocket )
+					if ( GhostStructure.RequiresSocket
+						|| !GhostStructure.IsValidPlacement( GhostStructure.Position ) )
 						GhostStructure.RenderColor = Color.Red.WithAlpha( 0.3f );
 				}
 			}
@@ -147,18 +148,22 @@ public partial class Player : Sandbox.Player
 
 					if ( structure.IsValid() )
 					{
+						var isValid = false;
 						var match = structure.LocateSocket( trace.EndPosition );
 
 						if ( match.IsValid )
 						{
 							structure.SnapToSocket( match );
 							match.Ours.Connect( match.Theirs );
+							isValid = true;
 						}
 						else if ( !structure.RequiresSocket )
 						{
 							structure.Position = trace.EndPosition;
+							isValid = structure.IsValidPlacement( structure.Position );
 						}
-						else
+
+						if ( !isValid )
 						{
 							structure.Delete();
 						}
