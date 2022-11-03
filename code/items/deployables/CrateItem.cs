@@ -11,6 +11,7 @@ public class CrateItem : DeployableItem
 	public override string Model => "models/citizen_props/crate01.vmdl";
 	public override string Description => "A simple crate for storing stuff inside.";
 	public override string Icon => "textures/items/crate.png";
+	public override string Name => "Storage Crate";
 
 	public override bool CanPlaceOn( Entity entity )
 	{
