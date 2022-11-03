@@ -1,0 +1,132 @@
+﻿@using Sandbox;
+@using Sandbox.UI;
+@using Sandbox.UI.Construct;
+@using System;
+@using System.Collections.Generic;
+
+@namespace Facepunch.Forsaken
+@attribute [StyleSheet( "/ui/CustomTooltip.scss" )]
+@inherits Panel
+
+<root>
+    <div @ref="Container" class="container">
+        <div class="header">
+            <label @ref="NameLabel" class="name">@Provider.Name</label>
+            <div @ref="TagContainer" class="tags"></div>
+        </div>
+
+        <label @ref="DescriptionLabel" class="description">@Provider.Description</label>
+    </div>
+</root>
+
+@code
+{
+    private static CustomTooltip Current { get; set; }
+
+    public static CustomTooltip Show( ITooltipProvider provider )
+    {
+        if ( Current == null || Current.Provider != provider )
+        {
+            var tooltip = new CustomTooltip();
+            tooltip.SetProvider( provider );
+            Local.Hud.AddChild( tooltip );
+            return tooltip;
+        }
+
+        Current.TimeSinceShown = 0f;
+        return Current;
+    }
+
+    public static void Hide( ITooltipProvider provider )
+    {
+        if ( Current != null && Current.Provider == provider )
+        {
+            Current?.Delete();
+            Current = null;
+        }
+    }
+
+    public ITooltipProvider Provider { get; private set; }
+    public TimeSince TimeSinceShown { get; private set; }
+    public Panel TagContainer { get; private set; }
+    public Panel Container { get; private set; }
+    public Label DescriptionLabel { get; private set; }
+    public Label NameLabel { get; private set; }
+
+    public void SetProvider( ITooltipProvider provider )
+    {
+        Provider = provider;
+    }
+
+    public CustomTooltip()
+    {
+        TimeSinceShown = 0f;
+
+        Current?.Delete( true );
+        Current = this;
+    }
+
+    public void UpdatePosition()
+    {
+        Container.Style.Left = Length.Pixels( (Mouse.Position.x + 40f) * ScaleFromScreen );
+        Container.Style.Top = Length.Pixels( (Mouse.Position.y - 100f) * ScaleFromScreen );
+    }
+
+    protected override void OnAfterTreeRender( bool firstTime )
+    {
+        NameLabel.Style.TextShadow = new ShadowList();
+        NameLabel.Style.TextShadow.Add( new Shadow()
+        {
+            Color = Color.Lerp( Provider.Color, Color.Black, 0.3f ).WithAlpha( 0.1f ),
+            OffsetX = 0f,
+            OffsetY = 0f,
+            Spread = 0f,
+            Blur = 3f
+        } );
+        NameLabel.Style.FontColor = Provider.Color;
+
+        DescriptionLabel.SetClass( "hidden", string.IsNullOrEmpty( Provider.Description ) );
+
+        if ( Provider.Tags != null && Provider.Tags.Length > 0 )
+        {
+            foreach ( var tag in Provider.Tags )
+            {
+                var panel = TagContainer.Add.Panel( "tag" );
+                var label = panel.Add.Label( tag.Name, "name" );
+                panel.Style.BackgroundColor = Color.Lerp( tag.Color, Color.Black, 0.7f );
+                label.Style.FontColor = Color.Lerp( tag.Color, Color.Black, 0.3f );
+            }
+        }
+        else
+        {
+            TagContainer.Delete();
+        }
+
+        UpdatePosition();
+
+        base.OnAfterTreeRender( firstTime );
+    }
+
+    protected override void FinalLayoutChildren()
+    {
+		Container.SetClass( "active", true );
+
+		base.FinalLayoutChildren();
+	}
+
+	public override void Tick()
+	{
+		if ( Provider == null || !Provider.IsVisible || !Provider.HasHovered )
+		{
+			if ( !IsDeleting )
+			{
+				Current = null;
+				Delete();
+			}
+			return;
+		}
+
+		UpdatePosition();
+		base.Tick();
+	}
+}
