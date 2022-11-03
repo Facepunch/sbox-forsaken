@@ -63,6 +63,11 @@ public partial class Player : Sandbox.Player
 		Stamina = Math.Max( Stamina - amount, 0f );
 	}
 
+	public InventoryItem GetActiveHotbarItem()
+	{
+		return HotbarInventory.Instance.GetFromSlot( CurrentHotbarIndex );
+	}
+
 	public void GainStamina( float amount )
 	{
 		Stamina = Math.Min( Stamina + amount, 100f );
@@ -204,12 +209,12 @@ public partial class Player : Sandbox.Player
 		else if ( IsOutOfBreath && Stamina >= 25f )
 			IsOutOfBreath = false;
 
-		DoStructurePlacement( client );
-
 		Projectiles.Simulate();
 
-		SimulateHotbar( client );
-		SimulateInventory( client );
+		SimulateHotbar();
+		SimulateInventory();
+		SimulateConstruction();
+		SimulateDeployable();
 		SimulateActiveChild( client, ActiveChild );
 	}
 
@@ -225,72 +230,119 @@ public partial class Player : Sandbox.Player
 		base.OnDestroy();
 	}
 
-	private void DoStructurePlacement( Client client )
+	private void SimulateDeployable()
 	{
+		if ( GetActiveHotbarItem() is not DeployableItem deployable )
+		{
+			Deployable.ClearGhost();
+			return;
+		}
+
+		var trace = Trace.Ray( CameraPosition, CameraPosition + CursorDirection * 1000f )
+			.Run();
+
+		var model = Model.Load( deployable.Model );
+		var collision = Trace.Box( model.PhysicsBounds, trace.EndPosition, trace.EndPosition ).Run();
+		var isPositionValid = !collision.Hit && deployable.CanPlaceOn( trace.Entity );
+
+		if ( IsClient )
+		{
+			var ghost = Deployable.GetOrCreateGhost( model );
+			ghost.RenderColor = isPositionValid ? Color.Cyan.WithAlpha( 0.5f ) : Color.Red.WithAlpha( 0.5f );
+			ghost.Position = trace.EndPosition;
+		}
+
+		if ( Input.Released( InputButton.PrimaryAttack ) && isPositionValid )
+		{
+			if ( IsServer )
+			{
+				var entity = TypeLibrary.Create<Deployable>( deployable.Deployable );
+				entity.Position = trace.EndPosition;
+				deployable.Remove();
+			}
+		}
+	}
+
+	private void SimulateConstruction()
+	{
+		if ( GetActiveHotbarItem() is not ToolboxItem )
+		{
+			Structure.ClearGhost();
+			return;
+		}
+
 		var structureType = TypeLibrary.GetDescriptionByIdent( StructureType );
-		if ( structureType == null ) return;
+
+		if ( structureType == null )
+		{
+			Structure.ClearGhost();
+			return;
+		}
 
 		var trace = Trace.Ray( CameraPosition, CameraPosition + CursorDirection * 1000f )
 			.WorldOnly()
 			.Run();
 
-		if ( trace.Hit )
+		if ( !trace.Hit )
 		{
-			if ( IsClient )
+			Structure.ClearGhost();
+			return;
+		}
+
+		if ( IsClient )
+		{
+			var ghost = Structure.GetOrCreateGhost( structureType );
+
+			ghost.RenderColor = Color.Cyan.WithAlpha( 0.5f );
+
+			var match = ghost.LocateSocket( trace.EndPosition );
+
+			if ( match.IsValid )
 			{
-				var ghost = Structure.GetOrCreateGhost( structureType );
-
-				ghost.RenderColor = Color.Cyan.WithAlpha( 0.5f );
-
-				var match = ghost.LocateSocket( trace.EndPosition );
-
-				if ( match.IsValid )
-				{
-					ghost.SnapToSocket( match );
-				}
-				else
-				{
-					ghost.Position = trace.EndPosition;
-					ghost.ResetInterpolation();
-
-					if ( ghost.RequiresSocket || !ghost.IsValidPlacement( ghost.Position, trace.Normal ) )
-						ghost.RenderColor = Color.Red.WithAlpha( 0.5f );
-				}
+				ghost.SnapToSocket( match );
 			}
-
-			if ( Prediction.FirstTime && Input.Released( InputButton.PrimaryAttack ) )
+			else
 			{
-				if ( IsServer )
+				ghost.Position = trace.EndPosition;
+				ghost.ResetInterpolation();
+
+				if ( ghost.RequiresSocket || !ghost.IsValidPlacement( ghost.Position, trace.Normal ) )
+					ghost.RenderColor = Color.Red.WithAlpha( 0.5f );
+			}
+		}
+
+		if ( Prediction.FirstTime && Input.Released( InputButton.PrimaryAttack ) )
+		{
+			if ( IsServer )
+			{
+				var structure = structureType.Create<Structure>();
+
+				if ( structure.IsValid() )
 				{
-					var structure = structureType.Create<Structure>();
+					var isValid = false;
+					var match = structure.LocateSocket( trace.EndPosition );
 
-					if ( structure.IsValid() )
+					if ( match.IsValid )
 					{
-						var isValid = false;
-						var match = structure.LocateSocket( trace.EndPosition );
+						structure.SnapToSocket( match );
+						structure.OnConnected( match.Ours, match.Theirs );
+						match.Ours.Connect( match.Theirs );
+						isValid = true;
+					}
+					else if ( !structure.RequiresSocket )
+					{
+						structure.Position = trace.EndPosition;
+						isValid = structure.IsValidPlacement( structure.Position, trace.Normal );
+					}
 
-						if ( match.IsValid )
-						{
-							structure.SnapToSocket( match );
-							structure.OnConnected( match.Ours, match.Theirs );
-							match.Ours.Connect( match.Theirs );
-							isValid = true;
-						}
-						else if ( !structure.RequiresSocket )
-						{
-							structure.Position = trace.EndPosition;
-							isValid = structure.IsValidPlacement( structure.Position, trace.Normal );
-						}
-
-						if ( !isValid )
-						{
-							structure.Delete();
-						}
+					if ( !isValid )
+					{
+						structure.Delete();
 					}
 				}
-
-				Structure.ClearGhost();
 			}
+
+			Structure.ClearGhost();
 		}
 	}
 }

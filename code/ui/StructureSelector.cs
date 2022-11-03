@@ -8,7 +8,7 @@ public partial class StructureSelector : RadialMenu
 {
 	public static StructureSelector Current { get; private set; }
 
-	public override InputButton Button => InputButton.View;
+	public override InputButton Button => InputButton.SecondaryAttack;
 
 	public StructureSelector()
 	{
@@ -35,7 +35,10 @@ public partial class StructureSelector : RadialMenu
 
 	protected override bool ShouldOpen()
 	{
-		return Local.Pawn is Player;
+		if ( Local.Pawn is not Player player )
+			return false;
+
+		return (player.GetActiveHotbarItem() is ToolboxItem);
 	}
 
 	private void Select( string typeName )

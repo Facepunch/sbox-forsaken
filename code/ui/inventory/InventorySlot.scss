@@ -53,8 +53,8 @@
         transform: scale(1.1 1.1);
 
         &.is-empty {
-            background-color: rgba(lawngreen, 0.6);
-            border-color: lawngreen;
+            background-color: rgba( desaturate( lawngreen, 0.5 ), 0.6 );
+            border-color: desaturate( lawngreen, 0.7 );
         }
     }
 

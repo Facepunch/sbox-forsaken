@@ -249,6 +249,18 @@ public partial class Player
 
 		var armor = InventorySystem.CreateItem<BaseballCapItem>();
 		TryGiveItem( armor );
+
+		var toolbox = InventorySystem.CreateItem<ToolboxItem>();
+		TryGiveItem( toolbox );
+
+		var crate = InventorySystem.CreateItem<CrateItem>();
+		TryGiveItem( crate );
+
+		crate = InventorySystem.CreateItem<CrateItem>();
+		TryGiveItem( crate );
+
+		crate = InventorySystem.CreateItem<CrateItem>();
+		TryGiveItem( crate );
 	}
 
 	private void CreateInventories()
@@ -311,7 +323,7 @@ public partial class Player
 		}
 	}
 
-	private void SimulateHotbar( Client client )
+	private void SimulateHotbar()
 	{
 		var currentSlotIndex = (int)CurrentHotbarIndex;
 
@@ -330,17 +342,15 @@ public partial class Player
 		CurrentHotbarIndex = (ushort)currentSlotIndex;
 		UpdateHotbarSlotKeys();
 
-		var hotbarItem = HotbarInventory.Instance.GetFromSlot( CurrentHotbarIndex );
-
-		if ( hotbarItem is WeaponItem weaponItem )
-			ActiveChild = weaponItem.Weapon;
+		if ( GetActiveHotbarItem() is WeaponItem weapon )
+			ActiveChild = weapon.Weapon;
 		else
 			ActiveChild = null;
 	}
 
-	private void SimulateInventory( Client client )
+	private void SimulateInventory()
 	{
-		var cursorTrace = Trace.Ray( CameraPosition, CameraPosition + CursorDirection * 1000f )
+		var trace = Trace.Ray( CameraPosition, CameraPosition + CursorDirection * 1000f )
 			.WorldOnly()
 			.Run();
 
@@ -363,7 +373,7 @@ public partial class Player
 					}
 
 					var entity = new ItemEntity();
-					entity.Position = cursorTrace.EndPosition;
+					entity.Position = trace.EndPosition;
 					entity.SetItem( itemToDrop );
 					entity.ApplyLocalImpulse( EyeRotation.Forward * 100f + Vector3.Up * 50f );
 				}

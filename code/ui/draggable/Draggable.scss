@@ -1,20 +1,20 @@
 ﻿Draggable {
-  background-color: rgba( black, 0.5 );
-  border-radius: 8px;
-  position: absolute;
-  pointer-events: none;
-  background-size: 56px;
-  background-repeat: no-repeat;
-  background-position: center;
-  backdrop-filter-blur: 24px;
-  display: none;
-  z-index: 101;
+    background-color: rgba( black, 0.5 );
+    border-radius: 8px;
+    position: absolute;
+    pointer-events: none;
+    background-size: 56px;
+    background-repeat: no-repeat;
+    background-position: center;
+    backdrop-filter-blur: 24px;
+    display: none;
+    z-index: 101;
 
-  &.active {
-    display: flex;
-  }
+    &.active {
+        display: flex;
+    }
 
-  &.invalid-drag {
-    background-color: rgba( red, 0.5 );
-  }
+    &.invalid-drag {
+        background-color: rgba( red, 0.5 );
+    }
 }
