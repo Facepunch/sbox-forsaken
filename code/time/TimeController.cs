@@ -25,7 +25,7 @@ public class DayNightGradient
 		Nodes = new GradientNode[7];
 		Nodes[0] = new GradientNode( nightColor, 0f );
 		Nodes[1] = new GradientNode( nightColor, 0.2f );
-		Nodes[2] = new GradientNode( dawnColor, 0.3f );
+		Nodes[2] = new GradientNode( dawnColor, 0.35f );
 		Nodes[3] = new GradientNode( dayColor, 0.5f );
 		Nodes[4] = new GradientNode( dayColor, 0.7f );
 		Nodes[5] = new GradientNode( duskColor, 0.85f );
@@ -64,28 +64,36 @@ public class DayNightGradient
 public partial class TimeController : ModelEntity
 {
 	[Property( Title = "Dawn Color" )]
-	public Color DawnColor { get; set; } = Color.Orange.Darken( 0.5f );
+	[DefaultValue( "162 118 72" )]
+	public Color DawnColor { get; set; }
 
 	[Property( Title = "Dawn Sky Color" )]
-	public Color DawnSkyColor { get; set; } = Color.Orange.Darken( 0.5f );
+	[DefaultValue( "162 118 72" )]
+	public Color DawnSkyColor { get; set; }
 
 	[Property( Title = "Day Color" )]
-	public Color DayColor { get; set; } = Color.Yellow.Lighten( 0.8f );
+	[DefaultValue( "252 243 222" )]
+	public Color DayColor { get; set; }
 
 	[Property( Title = "Day Sky Color" )]
-	public Color DaySkyColor { get; set; } = Color.Blue.Lighten( 0.8f );
+	[DefaultValue( "181 216 229" )]
+	public Color DaySkyColor { get; set; }
 
 	[Property( Title = "Dusk Color" )]
-	public Color DuskColor { get; set; } = Color.Orange.Darken( 0.5f );
+	[DefaultValue( "162 118 72" )]
+	public Color DuskColor { get; set; }
 
 	[Property( Title = "Dusk Sky Color" )]
-	public Color DuskSkyColor { get; set; } = Color.Orange.Darken( 0.5f );
+	[DefaultValue( "162 118 72" )]
+	public Color DuskSkyColor { get; set; }
 
 	[Property( Title = "Night Color" )]
-	public Color NightColor { get; set; } = Color.Blue.Darken( 0.9f );
+	[DefaultValue( "1 4 18" )]
+	public Color NightColor { get; set; }
 
 	[Property( Title = "Night Sky Color" )]
-	public Color NightSkyColor { get; set; } = Color.Black.Lighten( 0.2f );
+	[DefaultValue( "11 10 21" )]
+	public Color NightSkyColor { get; set; }
 
 	protected Output OnBecomeNight { get; set; }
 	protected Output OnBecomeDusk { get; set; }
