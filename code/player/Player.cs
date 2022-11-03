@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Resources;
 using Sandbox;
+using Sandbox.Component;
 
 namespace Facepunch.Forsaken;
 
@@ -18,6 +18,7 @@ public partial class Player : Sandbox.Player
 
 	[ClientInput] public Vector3 CursorDirection { get; private set; }
 	[ClientInput] public Vector3 CameraPosition { get; private set; }
+	[ClientInput] public Entity HoveredEntity { get; private set; }
 
 	public Dictionary<ArmorSlot, List<BaseClothing>> Armor { get; private set; }
 
@@ -28,6 +29,7 @@ public partial class Player : Sandbox.Player
 
 	private TimeSince TimeSinceBackpackOpen { get; set; }
 	private bool IsBackpackToggleMode { get; set; }
+	private Entity LastHoveredEntity { get; set; }
 
 	[ConCmd.Server( "fsk.structure.selected" )]
 	private static void SetSelectedStructureCmd( int identity )
@@ -98,14 +100,30 @@ public partial class Player : Sandbox.Player
 
 		CameraPosition = CurrentView.Position;
 
-		var tablePlane = new Plane( Position, Vector3.Up );
-		var hitPosition = tablePlane.Trace( new Ray( EyePosition, CursorDirection ), true );
+		var plane = new Plane( Position, Vector3.Up );
+		var trace = plane.Trace( new Ray( EyePosition, CursorDirection ), true );
 
-		if ( hitPosition.HasValue )
+		if ( trace.HasValue )
 		{
-			var direction = (hitPosition.Value - Position).Normal;
+			var direction = (trace.Value - Position).Normal;
 			ViewAngles = direction.EulerAngles;
 		}
+
+		var startPosition = CameraPosition;
+		var endPosition = CameraPosition + CursorDirection * 1000f;
+		var cursor = Trace.Ray( startPosition, endPosition )
+			.EntitiesOnly()
+			.Run();
+
+		var visible = Trace.Ray( EyePosition, cursor.EndPosition )
+			.Ignore( this )
+			.Ignore( ActiveChild )
+			.Run();
+
+		if ( cursor.Entity is IContextActions && visible.Fraction > 0.9f )
+			HoveredEntity = cursor.Entity;
+		else
+			HoveredEntity = null;
 	}
 
 	public override void Respawn()
@@ -211,6 +229,7 @@ public partial class Player : Sandbox.Player
 
 		Projectiles.Simulate();
 
+		SimulateContextActions();
 		SimulateHotbar();
 		SimulateInventory();
 		SimulateConstruction();
@@ -228,6 +247,28 @@ public partial class Player : Sandbox.Player
 		}
 
 		base.OnDestroy();
+	}
+
+	private void SimulateContextActions()
+	{
+		if ( IsClient )
+		{
+			if ( HoveredEntity.IsValid() && HoveredEntity is IContextActions actions )
+			{
+				var glow = HoveredEntity.Components.GetOrCreate<Glow>();
+				glow.Enabled = true;
+				glow.Color = actions.GlowColor;
+				glow.Width = actions.GlowWidth;
+			}
+
+			if ( LastHoveredEntity.IsValid() && LastHoveredEntity != HoveredEntity )
+			{
+				var glow = LastHoveredEntity.Components.GetOrCreate<Glow>();
+				glow.Enabled = false;
+			}
+
+			LastHoveredEntity = HoveredEntity;
+		}
 	}
 
 	private void SimulateDeployable()

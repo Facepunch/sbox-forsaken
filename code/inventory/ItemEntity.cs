@@ -2,11 +2,14 @@
 
 namespace Facepunch.Forsaken;
 
-public partial class ItemEntity : ModelEntity
+public partial class ItemEntity : ModelEntity, IContextActions
 {
 	[Net] public NetInventoryItem Item { get; private set; }
 
 	public TimeUntil TimeUntilCanPickup { get; set; }
+
+	public Color GlowColor => Item.Instance?.Color ?? Color.White;
+	public float GlowWidth => 0.4f;
 
 	public void SetItem( InventoryItem item )
 	{
