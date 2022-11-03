@@ -238,7 +238,10 @@ public partial class Player : Sandbox.Player
 			return;
 		}
 
-		var trace = Trace.Ray( CameraPosition, CameraPosition + CursorDirection * 1000f )
+		var startPosition = CameraPosition;
+		var endPosition = CameraPosition + CursorDirection * 1000f;
+		var trace = Trace.Ray( startPosition, endPosition )
+			.WithAnyTags( deployable.ValidTags )
 			.Run();
 
 		var model = Model.Load( deployable.Model );
@@ -249,7 +252,21 @@ public partial class Player : Sandbox.Player
 		{
 			var ghost = Deployable.GetOrCreateGhost( model );
 			ghost.RenderColor = isPositionValid ? Color.Cyan.WithAlpha( 0.5f ) : Color.Red.WithAlpha( 0.5f );
-			ghost.Position = trace.EndPosition;
+
+			if ( !isPositionValid )
+			{
+				var cursor = Trace.Ray( startPosition, endPosition )
+					.WorldOnly()
+					.Run();
+
+				ghost.Position = cursor.EndPosition;
+			}
+			else
+			{
+				ghost.Position = trace.EndPosition;
+			}
+
+			ghost.ResetInterpolation();
 		}
 
 		if ( Input.Released( InputButton.PrimaryAttack ) && isPositionValid )
@@ -258,6 +275,7 @@ public partial class Player : Sandbox.Player
 			{
 				var entity = TypeLibrary.Create<Deployable>( deployable.Deployable );
 				entity.Position = trace.EndPosition;
+				entity.ResetInterpolation();
 				deployable.Remove();
 			}
 		}

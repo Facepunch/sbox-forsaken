@@ -23,6 +23,13 @@ public partial class Forsaken : Game
 		pawn.Respawn();
 	}
 
+	public override void PostLevelLoaded()
+	{
+		Map.Entity.Tags.Add( "world" );
+
+		base.PostLevelLoaded();
+	}
+
 	public override void MoveToSpawnpoint( Entity pawn )
 	{
 		var spawnpoints = All.OfType<SpawnPoint>();

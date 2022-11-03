@@ -7,8 +7,7 @@ namespace Facepunch.Forsaken;
 public class CrateItem : DeployableItem
 {
 	public override Type Deployable => typeof( StorageCrate );
-	public override bool CanPlaceOnWorld => false;
-	public override bool CanPlaceOnFoundation => true;
+	public override string[] ValidTags => new string[] { "world", "foundation" };
 	public override string Model => "models/citizen_props/crate01.vmdl";
 	public override string Description => "A simple crate for storing stuff inside.";
 	public override string Icon => "textures/items/crate.png";
