@@ -2,19 +2,23 @@
 
 namespace Facepunch.Forsaken;
 
-public static partial class TimeSystem
+public partial class TimeSystem : Entity
 {
 	public delegate void SectionChanged( TimeSection section );
 	public static event SectionChanged OnSectionChanged;
 
-	public static TimeSection Section { get; private set; }
-	public static float TimeOfDay { get; set; } = 9f;
+	public static TimeSystem Instance { get; private set; }
+	public static TimeSection Section => Instance?.InternalSection ?? TimeSection.Day;
+	public static float TimeOfDay => Instance?.InternalTimeOfDay ?? 12f;
+
+	[Net, Change( nameof( OnInternalSectionChanged ) )]
+	private TimeSection InternalSection { get; set; }
+
+	[Net]
+	private float InternalTimeOfDay { get; set; } = 9f;
 
 	[ConVar.Server( "fsk.time.speed" )]
 	public static float Speed { get; set; } = 0.05f;
-
-	private static RealTimeUntil NextUpdate { get; set; }
-	private static bool Initialized { get; set; }
 
 	public static TimeSection ToSection( float time )
 	{
@@ -30,41 +34,46 @@ public static partial class TimeSystem
 		return TimeSection.Night;
 	}
 
-	[Event.Tick.Server]
-	private static void Tick()
+	[Event.Entity.PostSpawn]
+	private static void Initialize()
 	{
-		TimeOfDay += Speed * Time.Delta;
+		Host.AssertServer();
+		Instance = new TimeSystem();
+	}
 
-		if ( TimeOfDay >= 24f )
+	public override void ClientSpawn()
+	{
+		Instance = this;
+		base.ClientSpawn();
+	}
+
+	public override void Spawn()
+	{
+		Transmit = TransmitType.Always;
+		base.Spawn();
+	}
+
+	[Event.Tick.Server]
+	private void Tick()
+	{
+		InternalTimeOfDay += Speed * Time.Delta;
+
+		if ( InternalTimeOfDay >= 24f )
 		{
-			TimeOfDay = 0f;
+			InternalTimeOfDay = 0f;
 		}
 
 		var currentSection = ToSection( TimeOfDay );
 
 		if ( currentSection != Section )
 		{
-			Section = currentSection;
+			InternalSection = currentSection;
 			OnSectionChanged?.Invoke( currentSection );
-		}
-
-		if ( NextUpdate )
-		{
-			ChangeSectionForClient( To.Everyone, Section );
-			NextUpdate = 1f;
 		}
 	}
 
-	[ClientRpc]
-	public static void ChangeSectionForClient( TimeSection section )
+	private void OnInternalSectionChanged( TimeSection section )
 	{
-		Host.AssertClient();
-
-		if ( !Initialized || Section != section )
-		{
-			Section = section;
-			Initialized = true;
-			OnSectionChanged?.Invoke( section );
-		}
+		OnSectionChanged?.Invoke( section );
 	}
 }

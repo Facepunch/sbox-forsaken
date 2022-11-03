@@ -6,13 +6,12 @@ namespace Facepunch.Forsaken;
 
 public partial class Forsaken : Game
 {
-	public Forsaken()
+	public override void ClientSpawn()
 	{
-		if ( IsClient )
-		{
-			Local.Hud?.Delete( true );
-			Local.Hud = new Hud();
-		}
+		Local.Hud?.Delete( true );
+		Local.Hud = new Hud();
+
+		base.ClientSpawn();
 	}
 
 	public override void ClientJoined( Client client )
