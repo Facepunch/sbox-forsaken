@@ -11,7 +11,7 @@ public abstract partial class Structure : ModelEntity
 
 	public static Structure GetOrCreateGhost( TypeDescription type )
 	{
-		if ( !Ghost.IsValid() || type.GetType() != Ghost.GetType() )
+		if ( !Ghost.IsValid() || type.TargetType != Ghost.GetType() )
 		{
 			ClearGhost();
 
