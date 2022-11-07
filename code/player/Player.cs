@@ -218,6 +218,13 @@ public partial class Player : Sandbox.Player
 		base.ClientSpawn();
 	}
 
+	public override void FrameSimulate( Client cl )
+	{
+		SimulateConstruction();
+
+		base.FrameSimulate( cl );
+	}
+
 	public override void Simulate( Client client )
 	{
 		base.Simulate( client );
