@@ -12,4 +12,7 @@ public class ItemResource : GameResource
 
 	[Property, ResourceType( "png" )]
 	public string Icon { get; set; }
+
+	[Property, ResourceType( "vmdl" )]
+	public string WorldModel { get; set; }
 }

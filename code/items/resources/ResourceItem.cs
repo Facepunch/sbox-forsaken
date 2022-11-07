@@ -9,14 +9,14 @@ public class ResourceItem<A,T> : InventoryItem where A : ItemResource where T : 
 {
 	public static T FromResource( string assetName )
 	{
-		var asset = ResourceLibrary.GetAll<A>()
+		var resource = ResourceLibrary.GetAll<A>()
 			.Where( a => a.ResourceName.ToLower() == assetName )
 			.FirstOrDefault();
 
-		if ( asset != null )
+		if ( resource != null )
 		{
 			var item = InventorySystem.CreateItem<T>();
-			item.Resource = asset;
+			item.Resource = resource;
 			return item;
 		}
 
@@ -25,6 +25,7 @@ public class ResourceItem<A,T> : InventoryItem where A : ItemResource where T : 
 
 	public override string Name => Resource?.ItemName ?? string.Empty;
 	public override string Description => Resource?.Description ?? string.Empty;
+	public override string WorldModel => Resource?.WorldModel ?? string.Empty;
 	public override string Icon => Resource?.Icon ?? string.Empty;
 
 	public A Resource { get; set; }
