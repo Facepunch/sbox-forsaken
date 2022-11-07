@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using System;
 using System.IO;
 using System.Linq;
 
@@ -22,22 +23,29 @@ public class ResourceItem<A,T> : InventoryItem where A : ItemResource where T : 
 		return null;
 	}
 
-	public override string Name => Resource.ItemName;
-	public override string Description => Resource.Description;
-	public override string Icon => Resource.Icon;
+	public override string Name => Resource?.ItemName ?? string.Empty;
+	public override string Description => Resource?.Description ?? string.Empty;
+	public override string Icon => Resource?.Icon ?? string.Empty;
 
 	public A Resource { get; set; }
 
 	public override void Read( BinaryReader reader )
 	{
 		var id = reader.ReadInt32();
+
 		Resource = ResourceLibrary.Get<A>( id );
+
+		if ( Resource == null )
+		{
+			throw new Exception( $"Unable to locate the item game resource with id #{id}" );
+		}
+
 		base.Read( reader );
 	}
 
 	public override void Write( BinaryWriter writer )
 	{
-		writer.Write( Resource.ResourceId );
+		writer.Write( Resource?.ResourceId ?? 0 );
 		base.Write( writer );
 	}
 }
