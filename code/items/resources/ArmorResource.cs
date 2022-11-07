@@ -1,0 +1,19 @@
+﻿using Sandbox;
+
+namespace Facepunch.Forsaken;
+
+[GameResource( "Armor", "armor", "A piece of armor or clothing for use with Forsaken.", Icon = "checkroom" )]
+public class ArmorResource : ItemResource
+{
+	[Property]
+	public float DamageMultiplier { get; set; } = 1f;
+
+	[Property]
+	public ArmorSlot ArmorSlot { get; set; } = ArmorSlot.None;
+
+	[Property, ResourceType( "vmdl" )]
+	public string SecondaryModel { get; set; }
+
+	[Property, ResourceType( "vmdl" )]
+	public string PrimaryModel { get; set; }
+}
