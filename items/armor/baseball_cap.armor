@@ -1,0 +1,13 @@
+<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:generic:version{7412167c-06e9-4698-aff2-e63eb59037e7} -->
+{
+	data = 
+	{
+		DamageMultiplier = 1
+		ArmorSlot = "Head"
+		SecondaryModel = null
+		PrimaryModel = resource:"models/citizen_clothes/hat/baseball_cap/model/baseball_cap.vmdl"
+		ItemName = "Baseball Cap"
+		Description = "A simple baseball cap. It does nothing, but it looks cool."
+		Icon = resource:"clothing_icons/baseball_cap.png"
+	}
+}
