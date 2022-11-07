@@ -5,7 +5,7 @@
     justify-content: center;
     align-items: center;
     display: flex;
-    pointer-events: none;
+    pointer-events: all;
     backdrop-filter-blur: 24px;
     flex-direction: column;
     background-color: rgba(0, 0, 0, 0.9);
@@ -41,8 +41,6 @@
     .backpack,
     .equipment,
     .hotbar {
-        pointer-events: all;
-
         .slots {
             display: flex;
             flex-direction: row;
@@ -52,10 +50,6 @@
             InventorySlot {
                 margin-right: 10px;
                 margin-top: 10px;
-
-                &.is-empty {
-                    box-shadow: none;
-                }
             }
 
             &:last-child {

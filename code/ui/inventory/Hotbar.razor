@@ -12,6 +12,7 @@
     @for ( ushort i = 0; i < Container.SlotLimit; i++ )
     {
         var item = Container.GetFromSlot( i );
+        var index = i;
         <InventorySlot IsSelected=@(GetHotbarIndex() == i) Container=@Container Slot=@i Item=@item></InventorySlot>
     }
 </root>

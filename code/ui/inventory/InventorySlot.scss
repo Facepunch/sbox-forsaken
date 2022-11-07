@@ -16,6 +16,13 @@
         pointer-events: none;
     }
 
+    .overlay {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: none;
+    }
+
     .stacksize {
         position: absolute;
         pointer-events: none;
@@ -29,15 +36,20 @@
     &.selected {
         transition: all 0.1s ease-out;
         background: linear-gradient(rgba(red, 0.5), rgba(#222, 0.5));
-        box-shadow: 0 4px 0 rgba(0, 0, 0, 0.7);
-        border-color: red;
-        transform: translateY(-5px);
+        border-color: darken( desaturate( red, 0.4 ), 0.1 );
         opacity: 1;
+
+        &:not( .is-empty ) {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.7);
+        }
     }
 
     &:hover {
-        transition: all 0.1s ease-out;
-        transform: scale(1.1 1.1);
+        &:not( .is-empty ) {
+            transition: all 0.1s ease-out;
+            transform: scale(1.1 1.1);
+        }
     }
 
     &.is-empty {
@@ -60,12 +72,22 @@
 
     &.invalid-drag {
         transition: all 0.1s ease-out;
-        opacity: 0.1;
         transform: scale(1);
+        opacity: 0.8;
+
+        .overlay {
+            background: linear-gradient(darken( red, 0.3 ), rgba(red, 0.5));
+            border-radius: 4px;
+            display: flex;
+            opacity: 0.6;
+        }
 
         &.is-empty {
-            background-color: red;
-            border-color: red;
+            border-color: darken( red, 0.3 );
+        }
+
+        .icon {
+            opacity: 0.8;
         }
     }
 }

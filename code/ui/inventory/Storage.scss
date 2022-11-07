@@ -6,7 +6,7 @@
     align-items: center;
     display: flex;
     flex-direction: column;
-    pointer-events: none;
+    pointer-events: all;
     backdrop-filter-blur: 24px;
     background-color: rgba(0, 0, 0, 0.9);
 
@@ -26,7 +26,6 @@
         justify-content: center;
         align-items: center;
         flex-direction: column;
-        pointer-events: all;
 
         .title {
             margin-bottom: 24px;
