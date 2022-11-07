@@ -1,12 +1,12 @@
 ﻿namespace Facepunch.Forsaken;
 
-public class ArmorItem : InventoryItem
+public class ArmorItem : ResourceItem<ArmorResource, ArmorItem>
 {
 	public override Color Color => ItemColors.Armor;
-	public virtual float DamageMultiplier => 1f;
-	public virtual ArmorSlot ArmorSlot => ArmorSlot.None;
-	public virtual string SecondaryModel => string.Empty;
-	public virtual string PrimaryModel => string.Empty;
+	public virtual float DamageMultiplier => Resource.DamageMultiplier;
+	public virtual ArmorSlot ArmorSlot => Resource.ArmorSlot;
+	public virtual string SecondaryModel => Resource.SecondaryModel;
+	public virtual string PrimaryModel => Resource.PrimaryModel;
 
 	public override bool CanStackWith( InventoryItem other )
 	{
