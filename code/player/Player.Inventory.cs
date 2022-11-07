@@ -114,8 +114,12 @@ public partial class Player
 
 	public void TryGiveAmmo( AmmoType type, ushort amount )
 	{
+		var resource = ResourceLibrary.GetAll<AmmoResource>()
+			.Where( a => a.AmmoType == type )
+			.FirstOrDefault();
+
 		var item = InventorySystem.CreateItem<AmmoItem>();
-		item.AmmoType = type;
+		item.Resource = resource;
 		item.StackSize = amount;
 
 		var remaining = HotbarInventory.Instance.Stack( item );
