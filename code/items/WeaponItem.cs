@@ -3,17 +3,16 @@ using System.IO;
 
 namespace Facepunch.Forsaken;
 
-public class WeaponItem : InventoryItem
+public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>
 {
 	public override Color Color => ItemColors.Weapon;
 
-	public virtual int WorldModelMaterialGroup => 0;
-	public virtual int ViewModelMaterialGroup => 0;
-	public virtual string WorldModelPath => null;
-	public virtual string ViewModelPath => null;
-	public virtual string WeaponName => string.Empty;
-	public virtual string Group => string.Empty;
-	public virtual int Tier => 0;
+	public virtual int WorldModelMaterialGroup => Resource?.WorldModelMaterialGroup ?? 0;
+	public virtual string WeaponName => Resource?.ClassName ?? string.Empty;
+	public virtual int DefaultAmmo => Resource?.DefaultAmmo ?? 0;
+	public virtual int ClipSize => Resource?.ClipSize ?? 0;
+	public virtual int Damage => Resource?.Damage ?? 0;
+	public virtual AmmoType AmmoType => Resource?.AmmoType ?? AmmoType.None;
 
 	public Weapon Weapon { get; set; }
 	public int Ammo { get; set; }
