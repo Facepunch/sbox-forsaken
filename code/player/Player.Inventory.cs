@@ -102,10 +102,8 @@ public partial class Player
 		return remaining;
 	}
 
-	public bool TryGiveWeapon<T>() where T : WeaponItem
+	public bool TryGiveWeapon( WeaponItem item )
 	{
-		var item = InventorySystem.CreateItem<T>();
-
 		if ( HotbarInventory.Instance.Give( item ) )
 			return true;
 
@@ -248,7 +246,13 @@ public partial class Player
 
 	private void GiveInitialItems()
 	{
-		TryGiveWeapon<CrossbowItem>();
+		var mp5 = WeaponItem.FromResource( "mp5a4" );
+		TryGiveWeapon( mp5 );
+
+		var crossbow = WeaponItem.FromResource( "crossbow" );
+		TryGiveWeapon( crossbow );
+
+		TryGiveAmmo( AmmoType.Pistol, 200 );
 		TryGiveAmmo( AmmoType.Bolt, 10 );
 
 		var armor = ArmorItem.FromResource( "baseball_cap" );
