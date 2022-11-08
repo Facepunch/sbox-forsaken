@@ -36,7 +36,7 @@ public abstract partial class MeleeWeapon : Weapon
 
 		PlayAttackAnimation();
 		ShootEffects();
-		MeleeStrike( Config.Damage * damageScale, Force );
+		MeleeStrike( WeaponItem.Damage * damageScale, Force );
 		PlaySound( SwingSound );
 
 		TimeSincePrimaryAttack = 0;
@@ -61,17 +61,6 @@ public abstract partial class MeleeWeapon : Weapon
 			ViewModelEntity?.SetAnimParameter( "b_grounded", Owner.GroundEntity.IsValid() );
 			ViewModelEntity?.SetAnimParameter( "aim_pitch", Owner.EyeRotation.Pitch() );
 		}
-	}
-
-	protected override void OnWeaponItemChanged()
-	{
-		if ( IsServer && WeaponItem.IsValid() && !string.IsNullOrEmpty( WeaponItem.WorldModelPath ) )
-		{
-			SetModel( WeaponItem.WorldModelPath );
-			SetMaterialGroup( WeaponItem.WorldModelMaterialGroup );
-		}
-
-		base.OnWeaponItemChanged();
 	}
 
 	protected override void ShootEffects()

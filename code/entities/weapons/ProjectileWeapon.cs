@@ -118,7 +118,7 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 		if ( IsServer && trace.Entity.IsValid() )
 		{
 			var distance = trace.Entity.Position.Distance( projectile.StartPosition );
-			var damage = GetDamageFalloff( distance, Config.Damage );
+			var damage = GetDamageFalloff( distance, WeaponItem.Damage );
 			DealDamage( trace.Entity, projectile.Position, projectile.Velocity * 0.1f, damage );
 		}
 	}

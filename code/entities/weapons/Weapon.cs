@@ -6,8 +6,6 @@ namespace Facepunch.Forsaken;
 
 public abstract partial class Weapon : BaseWeapon
 {
-	public abstract WeaponConfig Config { get; }
-
 	public virtual string MuzzleAttachment => "muzzle";
 	public virtual string MuzzleFlashEffect => "particles/pistol_muzzleflash.vpcf";
 	public virtual string ImpactEffect => null;
@@ -80,7 +78,7 @@ public abstract partial class Weapon : BaseWeapon
 	public int AvailableAmmo()
 	{
 		if ( Owner is not Player owner ) return 0;
-		return owner.GetAmmoCount( Config.AmmoType );
+		return owner.GetAmmoCount( WeaponItem.AmmoType );
 	}
 
 	public void SetWeaponItem( WeaponItem item )
@@ -161,7 +159,7 @@ public abstract partial class Weapon : BaseWeapon
 		{
 			if ( !UnlimitedAmmo )
 			{
-				if ( player.GetAmmoCount( Config.AmmoType ) <= 0 )
+				if ( player.GetAmmoCount( WeaponItem.AmmoType ) <= 0 )
 					return;
 			}
 		}
@@ -238,7 +236,7 @@ public abstract partial class Weapon : BaseWeapon
 		{
 			if ( !UnlimitedAmmo )
 			{
-				var ammo = player.TakeAmmo( Config.AmmoType, (ushort)(ClipSize - AmmoClip) );
+				var ammo = player.TakeAmmo( WeaponItem.AmmoType, (ushort)(ClipSize - AmmoClip) );
 
 				if ( ammo == 0 )
 					return;
@@ -269,7 +267,7 @@ public abstract partial class Weapon : BaseWeapon
 		Rand.SetSeed( Time.Tick );
 
 		ShootEffects();
-		ShootBullet( 0.05f, 1.5f, Config.Damage, 3.0f );
+		ShootBullet( 0.05f, 1.5f, WeaponItem.Damage, 3.0f );
 	}
 
 	public virtual void MeleeStrike( float damage, float force )
@@ -425,7 +423,11 @@ public abstract partial class Weapon : BaseWeapon
 
 	protected virtual void OnWeaponItemChanged()
 	{
-
+		if ( IsServer && WeaponItem.IsValid() && !string.IsNullOrEmpty( WeaponItem.WorldModel ) )
+		{
+			SetModel( WeaponItem.WorldModel );
+			SetMaterialGroup( WeaponItem.WorldModelMaterialGroup );
+		}
 	}
 
 	protected virtual ModelEntity GetEffectEntity()
@@ -435,7 +437,7 @@ public abstract partial class Weapon : BaseWeapon
 
 	protected void DealDamage( Entity target, Vector3 position, Vector3 force )
 	{
-		DealDamage( target, position, force, Config.Damage );
+		DealDamage( target, position, force, WeaponItem.Damage );
 	}
 
 	protected void DealDamage( Entity target, Vector3 position, Vector3 force, float damage )
