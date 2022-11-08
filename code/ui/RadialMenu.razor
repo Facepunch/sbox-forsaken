@@ -166,11 +166,6 @@
             child.Style.ZIndex = child.IsSelected ? 2 : 0;
         }
 
-        if ( IsOpen )
-            CursorController.Current?.Disable();
-        else
-            CursorController.Current?.Enable();
-
         base.Tick();
     }
 

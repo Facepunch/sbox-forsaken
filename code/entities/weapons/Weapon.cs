@@ -148,6 +148,21 @@ public abstract partial class Weapon : BaseWeapon
 		SetModel( "weapons/rust_pistol/rust_pistol.vmdl" );
 	}
 
+	public override void BuildInput()
+	{
+		var player = ForsakenPlayer.Me;
+
+		if ( !player.IsValid() ) return;
+
+		if ( RecoilQueue.TryDequeue( out var recoil ) )
+		{
+			var forward = new Angles( 0f, player.ViewAngles.yaw, 0f ).Forward;
+			var recoilX = recoil / Screen.Width;
+			var recoilY = recoil / Screen.Height;
+			player.Cursor += new Vector2( forward.x * recoilX, forward.y * -recoilY );
+		}
+	}
+
 	public override void Reload()
 	{
 		if ( IsMelee || IsReloading )
@@ -205,15 +220,6 @@ public abstract partial class Weapon : BaseWeapon
 		if ( IsReloading && TimeSinceReload > ReloadTime )
 		{
 			OnReloadFinish();
-		}
-
-		if ( IsClient && Prediction.FirstTime && Owner is ForsakenPlayer player )
-		{
-			if ( RecoilQueue.TryDequeue( out var recoil ) )
-			{
-				var forward = new Angles( 0f, player.ViewAngles.yaw, 0f ).Forward;
-				Mouse.Position += new Vector2( forward.x * recoil, forward.y * -recoil );
-			}
 		}
 	}
 

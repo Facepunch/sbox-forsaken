@@ -24,6 +24,14 @@ public partial class Forsaken : Game
 		pawn.Respawn();
 	}
 
+	public override void RenderHud()
+	{
+		if ( ForsakenPlayer.Me.IsValid() )
+		{
+			ForsakenPlayer.Me.RenderHud();
+		}
+	}
+
 	public override void PostLevelLoaded()
 	{
 		Map.Entity.Tags.Add( "world" );

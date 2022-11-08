@@ -27,6 +27,8 @@ public partial class ForsakenPlayer : Player
 	[ClientInput] public Vector3 CameraPosition { get; private set; }
 	[ClientInput] public Entity HoveredEntity { get; private set; }
 
+	public Vector2 Cursor { get; set; }
+
 	public Dictionary<ArmorSlot, List<BaseClothing>> Armor { get; private set; }
 
 	[Net] public int StructureType { get; private set; }
@@ -67,6 +69,12 @@ public partial class ForsakenPlayer : Player
 		SetSelectedStructureCmd( type.Identity );
 	}
 
+	[ClientRpc]
+	public void ResetCursor()
+	{
+		Cursor = new Vector2( 0.5f, 0.5f );
+	}
+
 	public void ReduceStamina( float amount )
 	{
 		Stamina = Math.Max( Stamina - amount, 0f );
@@ -74,12 +82,26 @@ public partial class ForsakenPlayer : Player
 
 	public InventoryItem GetActiveHotbarItem()
 	{
-		return InternalHotbar.Value.GetFromSlot( HotbarIndex );
+		return Hotbar.GetFromSlot( HotbarIndex );
 	}
 
 	public void GainStamina( float amount )
 	{
 		Stamina = Math.Min( Stamina + amount, 100f );
+	}
+
+	public void RenderHud()
+	{
+		var circleRadius = 4f;
+		var position = Screen.Size * Cursor;
+		var rectangle = new Rect( position.x, position.y, circleRadius * 2f, circleRadius * 2f );
+		var color = Color.Black.WithAlpha( 1f );
+		var border = Color.White.WithAlpha( 1f );
+
+		rectangle.Left -= rectangle.Width * 0.5f;
+		rectangle.Top -= rectangle.Height * 0.5f;
+
+		Graphics.DrawRoundedRectangle( rectangle, color, new Vector4( circleRadius * 2f ), new Vector4( circleRadius * 0.3f ), border );
 	}
 
 	public override void Spawn()
@@ -102,9 +124,15 @@ public partial class ForsakenPlayer : Player
 	{
 		base.BuildInput();
 
-		if ( Mouse.Visible )
-			CursorDirection = Screen.GetDirection( Mouse.Position );
+		var mouseDelta = Input.MouseDelta / new Vector2( Screen.Width, Screen.Height );
+		var sensitivity = 0.06f;
 
+		Cursor += (mouseDelta * sensitivity);
+		Cursor = Cursor.Clamp( 0f, 1f );
+
+		ActiveChild?.BuildInput();
+
+		CursorDirection = Screen.GetDirection( Screen.Size * Cursor );
 		CameraPosition = CurrentView.Position;
 
 		var plane = new Plane( Position, Vector3.Up );
@@ -146,6 +174,7 @@ public partial class ForsakenPlayer : Player
 		CreateHull();
 		GiveInitialItems();
 		InitializeHotbarWeapons();
+		ResetCursor();
 
 		base.Respawn();
 	}
@@ -207,13 +236,9 @@ public partial class ForsakenPlayer : Player
 	{
 		if ( IsLocalPawn )
 		{
-			var backpack = InternalBackpack.Value;
-			var equipment = InternalEquipment.Value;
-			var hotbar = InternalHotbar.Value;
-
-			backpack.SetTransferHandler( GetBackpackTransferTarget );
-			equipment.SetTransferHandler( GetEquipmentTransferTarget );
-			hotbar.SetTransferHandler( GetHotbarTransferTarget );
+			Backpack.SetTransferHandler( GetBackpackTransferTarget );
+			Equipment.SetTransferHandler( GetEquipmentTransferTarget );
+			Hotbar.SetTransferHandler( GetHotbarTransferTarget );
 		}
 
 		base.ClientSpawn();
@@ -249,9 +274,9 @@ public partial class ForsakenPlayer : Player
 	{
 		if ( IsServer )
 		{
-			InventorySystem.Remove( InternalHotbar.Value, true );
-			InventorySystem.Remove( InternalBackpack.Value, true );
-			InventorySystem.Remove( InternalEquipment.Value, true );
+			InventorySystem.Remove( Hotbar, true );
+			InventorySystem.Remove( Backpack, true );
+			InventorySystem.Remove( Equipment, true );
 		}
 
 		base.OnDestroy();

@@ -184,7 +184,7 @@ public partial class ForsakenPlayer
 
 	private void OnEquipmentItemTaken( ushort slot, InventoryItem instance )
 	{
-		if ( instance is ArmorItem armor && !InternalEquipment.Is( instance.Container ) )
+		if ( instance is ArmorItem armor && !Equipment.Is( instance.Container ) )
 		{
 			if ( Armor.TryGetValue( armor.ArmorSlot, out var models ) )
 			{
