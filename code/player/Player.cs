@@ -242,16 +242,6 @@ public partial class Player : Sandbox.Player
 		SimulateConstruction();
 		SimulateDeployable();
 		SimulateActiveChild( client, ActiveChild );
-
-		if ( IsClient )
-		{
-			if ( Input.Down( InputButton.PrimaryAttack ) )
-			{
-				var forward = new Angles( 0f, ViewAngles.yaw, 0f ).Forward;
-				var recoilAmount = 4f;
-				Mouse.Position += new Vector2( forward.x * recoilAmount, forward.y * -recoilAmount );
-			}
-		}
 	}
 
 	protected override void OnDestroy()

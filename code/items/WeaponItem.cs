@@ -13,6 +13,7 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>
 	public virtual int ClipSize => Resource?.ClipSize ?? 0;
 	public virtual int Damage => Resource?.Damage ?? 0;
 	public virtual AmmoType AmmoType => Resource?.AmmoType ?? AmmoType.None;
+	public virtual Curve RecoilCurve => Resource?.RecoilCurve ?? default;
 
 	public Weapon Weapon { get; set; }
 	public int Ammo { get; set; }

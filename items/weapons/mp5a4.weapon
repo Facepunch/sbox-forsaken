@@ -5,10 +5,38 @@
 		WorldModelMaterialGroup = 0
 		ViewModelMaterialGroup = 0
 		WorldModelPath = null
-		ViewModelPath = null
 		AmmoType = "Pistol"
 		DefaultAmmo = 0
 		ClipSize = 30
+		RecoilCurve = 
+		{
+			rangey = "-20,20"
+			frames = 
+			[
+				{
+					y = 1
+				},
+				{
+					x = 0.190887
+					y = 0.665666
+					in = 1.478528
+					out = -1.478528
+				},
+				{
+					x = 0.344828
+					y = 0.386864
+					in = 1.630141
+					out = -1.630141
+				},
+				{
+					x = 0.5
+				},
+				{
+					x = 1
+					y = 1
+				},
+			]
+		}
 		Damage = 20
 		ClassName = "weapon_mp5a4"
 		ItemName = "MP5A4"

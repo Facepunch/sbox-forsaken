@@ -24,6 +24,9 @@ public class WeaponResource : ItemResource
 	public int ClipSize { get; set; } = 0;
 
 	[Property]
+	public Curve RecoilCurve { get; set; }
+
+	[Property]
 	public int Damage { get; set; } = 0;
 
 	[Property]

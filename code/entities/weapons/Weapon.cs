@@ -45,11 +45,12 @@ public abstract partial class Weapon : BaseWeapon
 	public TimeSince TimeSinceChargeAttack { get; set; }
 
 	[Net, Predicted]
-	public TimeSince TimeSinceMeleeAttack { get; set; }
+	public TimeSince TimeSincePrimaryHeld { get; set; }
 
 	public float ChargeAttackEndTime { get; private set; }
 	public AnimatedEntity AnimationOwner => Owner as AnimatedEntity;
 
+	public Queue<float> RecoilQueue { get; set; } = new();
 	private Sound ReloadSound { get; set; }
 
 	public int AmmoClip
@@ -170,7 +171,7 @@ public abstract partial class Weapon : BaseWeapon
 		if ( ReloadAnimation )
 			PlayReloadAnimation();
 
-		if ( !String.IsNullOrEmpty( ReloadSoundName ) )
+		if ( !string.IsNullOrEmpty( ReloadSoundName ) )
 			ReloadSound = PlaySound( ReloadSoundName );
 
 		DoClientReload();
@@ -178,6 +179,11 @@ public abstract partial class Weapon : BaseWeapon
 
 	public override void Simulate( Client owner )
 	{
+		if ( Input.Pressed( InputButton.PrimaryAttack ) )
+		{
+			TimeSincePrimaryHeld = 0f;
+		}
+
 		if ( owner.Pawn.LifeState == LifeState.Alive )
 		{
 			if ( ChargeAttackEndTime > 0f && Time.Now >= ChargeAttackEndTime )
@@ -199,6 +205,15 @@ public abstract partial class Weapon : BaseWeapon
 		if ( IsReloading && TimeSinceReload > ReloadTime )
 		{
 			OnReloadFinish();
+		}
+
+		if ( IsClient && Prediction.FirstTime && Owner is Player player )
+		{
+			if ( RecoilQueue.TryDequeue( out var recoil ) )
+			{
+				var forward = new Angles( 0f, player.ViewAngles.yaw, 0f ).Forward;
+				Mouse.Position += new Vector2( forward.x * recoil, forward.y * -recoil );
+			}
 		}
 	}
 
@@ -394,6 +409,16 @@ public abstract partial class Weapon : BaseWeapon
 			.Ignore( this )
 			.Size( radius )
 			.Run();
+	}
+
+	protected void ApplyRecoil()
+	{
+		if ( IsClient && Prediction.FirstTime )
+		{
+			var time = TimeSincePrimaryHeld.Relative.Remap( 0f, 3f, 0f, 1f ) % 1f;
+			var recoil = WeaponItem.RecoilCurve.Evaluate( time );
+			RecoilQueue.Enqueue( recoil );
+		}
 	}
 
 	protected virtual void OnMeleeAttackMissed( TraceResult trace ) { }

@@ -33,6 +33,7 @@ public partial class MP5A4 : ProjectileWeapon<CrossbowBoltProjectile>
 		PlayAttackAnimation();
 		ShootEffects();
 		PlaySound( $"smg1_shoot" );
+		ApplyRecoil();
 
 		base.AttackPrimary();
 	}
