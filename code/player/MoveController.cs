@@ -80,7 +80,7 @@ public partial class MoveController : BasePlayerController
 
 	public override void Simulate()
 	{
-		if ( Pawn is not Player player )
+		if ( Pawn is not ForsakenPlayer player )
 			return;
 
 		EyeLocalPosition = Vector3.Up * Scale( EyeHeight );
@@ -159,7 +159,7 @@ public partial class MoveController : BasePlayerController
 
 		var isSprinting = Input.Down( InputButton.Run );
 
-		if ( Client.Pawn is Player player )
+		if ( Client.Pawn is ForsakenPlayer player )
 		{
 			if ( player.IsOutOfBreath )
 			{

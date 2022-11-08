@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using Sandbox.UI;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Forsaken.UI;
 
 [StyleSheet( "/ui/StructureSelector.scss" )]
 public partial class StructureSelector : RadialMenu
@@ -35,18 +35,15 @@ public partial class StructureSelector : RadialMenu
 
 	protected override bool ShouldOpen()
 	{
-		if ( Local.Pawn is not Player player )
+		if ( !ForsakenPlayer.Me.IsValid() )
 			return false;
 
-		return (player.GetActiveHotbarItem() is ToolboxItem);
+		return (ForsakenPlayer.Me.GetActiveHotbarItem() is ToolboxItem);
 	}
 
 	private void Select( string typeName )
 	{
-		if ( Local.Pawn is Player player )
-		{
-			var type = TypeLibrary.GetDescription( typeName );
-			player.SetStructureType( type );
-		}
+		var type = TypeLibrary.GetDescription( typeName );
+		ForsakenPlayer.Me.SetStructureType( type );
 	}
 }

@@ -167,7 +167,7 @@ public static partial class InventorySystem
 		}
 	}
 
-	public static void SendTransferInventoryEvent( InventoryContainer from, InventoryContainer to, ushort fromSlot )
+	public static void SendTransferEvent( InventoryContainer from, InventoryContainer to, ushort fromSlot )
 	{
 		using ( var stream = new MemoryStream() )
 		{
@@ -181,7 +181,7 @@ public static partial class InventorySystem
 		}
 	}
 
-	public static void SendSplitInventoryEvent( InventoryContainer from, InventoryContainer to, ushort fromSlot, ushort toSlot )
+	public static void SendSplitEvent( InventoryContainer from, InventoryContainer to, ushort fromSlot, ushort toSlot )
 	{
 		using ( var stream = new MemoryStream() )
 		{
@@ -196,7 +196,7 @@ public static partial class InventorySystem
 		}
 	}
 
-	public static void SendMoveInventoryEvent( InventoryContainer from, InventoryContainer to, ushort fromSlot, ushort toSlot )
+	public static void SendMoveEvent( InventoryContainer from, InventoryContainer to, ushort fromSlot, ushort toSlot )
 	{
 		using ( var stream = new MemoryStream() )
 		{

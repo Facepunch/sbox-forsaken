@@ -4,12 +4,13 @@ using System.Linq;
 
 namespace Facepunch.Forsaken;
 
+
 public partial class Forsaken : Game
 {
 	public override void ClientSpawn()
 	{
 		Local.Hud?.Delete( true );
-		Local.Hud = new Hud();
+		Local.Hud = new UI.Hud();
 
 		base.ClientSpawn();
 	}
@@ -18,7 +19,7 @@ public partial class Forsaken : Game
 	{
 		base.ClientJoined( client );
 
-		var pawn = new Player( client );
+		var pawn = new ForsakenPlayer( client );
 		client.Pawn = pawn;
 		pawn.Respawn();
 	}

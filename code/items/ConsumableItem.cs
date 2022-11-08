@@ -11,7 +11,7 @@ public class ConsumableItem : InventoryItem, IConsumableItem
 	public virtual string ActivateSound => string.Empty;
 	public virtual float ActivateDelay => 0.5f;
 
-	public async void Consume( Player player )
+	public async void Consume( ForsakenPlayer player )
 	{
 		StackSize--;
 
@@ -49,7 +49,7 @@ public class ConsumableItem : InventoryItem, IConsumableItem
 		}
 	}
 
-	public virtual void OnActivated( Player player )
+	public virtual void OnActivated( ForsakenPlayer player )
 	{
 
 	}

@@ -9,7 +9,7 @@ public class PlayerAnimator : PawnAnimator
 
 	public override void Simulate()
 	{
-		var player = Pawn as Player;
+		var player = Pawn as ForsakenPlayer;
 		var rotation = Rotation;
 
 		// If we're a bot, spin us around 180 degrees.

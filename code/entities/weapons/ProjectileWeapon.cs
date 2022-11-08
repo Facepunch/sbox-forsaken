@@ -26,7 +26,7 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 
 	public virtual void FireProjectile()
 	{
-		if ( Owner is not Player player )
+		if ( Owner is not ForsakenPlayer player )
 			return;
 
 		var projectile = new T()

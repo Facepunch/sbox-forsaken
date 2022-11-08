@@ -8,7 +8,7 @@ public partial class ItemEntity : ModelEntity, IContextActions
 
 	public TimeUntil TimeUntilCanPickup { get; set; }
 
-	public Color GlowColor => Item.Instance?.Color ?? Color.White;
+	public Color GlowColor => Item.Value?.Color ?? Color.White;
 	public float GlowWidth => 0.4f;
 
 	public void SetItem( InventoryItem item )
@@ -29,7 +29,7 @@ public partial class ItemEntity : ModelEntity, IContextActions
 	{
 		if ( IsValid )
 		{
-			var item = Item.Instance;
+			var item = Item.Value;
 
 			item.ClearWorldEntity();
 			Item = null;

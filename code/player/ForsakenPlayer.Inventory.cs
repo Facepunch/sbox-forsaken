@@ -5,24 +5,24 @@ using System.Linq;
 
 namespace Facepunch.Forsaken;
 
-public partial class Player
+public partial class ForsakenPlayer
 {
 
 	public List<T> FindItems<T>() where T : InventoryItem
 	{
 		var items = new List<T>();
-		items.AddRange( HotbarInventory.Instance.FindItems<T>() );
-		items.AddRange( BackpackInventory.Instance.FindItems<T>() );
-		items.AddRange( EquipmentInventory.Instance.FindItems<T>() );
+		items.AddRange( Hotbar.FindItems<T>() );
+		items.AddRange( Backpack.FindItems<T>() );
+		items.AddRange( Equipment.FindItems<T>() );
 		return items;
 	}
 
 	public List<InventoryItem> FindItems( Type type )
 	{
 		var items = new List<InventoryItem>();
-		items.AddRange( HotbarInventory.Instance.FindItems( type ) );
-		items.AddRange( BackpackInventory.Instance.FindItems( type ) );
-		items.AddRange( EquipmentInventory.Instance.FindItems( type ) );
+		items.AddRange( Hotbar.FindItems( type ) );
+		items.AddRange( Backpack.FindItems( type ) );
+		items.AddRange( Equipment.FindItems( type ) );
 		return items;
 	}
 
@@ -30,8 +30,8 @@ public partial class Player
 	{
 		var items = new List<AmmoItem>();
 
-		items.AddRange( HotbarInventory.Instance.FindItems<AmmoItem>() );
-		items.AddRange( BackpackInventory.Instance.FindItems<AmmoItem>() );
+		items.AddRange( Hotbar.FindItems<AmmoItem>() );
+		items.AddRange( Backpack.FindItems<AmmoItem>() );
 
 		var amountLeftToTake = count;
 		ushort totalAmountTaken = 0;
@@ -68,8 +68,8 @@ public partial class Player
 	{
 		var items = new List<AmmoItem>();
 
-		items.AddRange( HotbarInventory.Instance.FindItems<AmmoItem>() );
-		items.AddRange( BackpackInventory.Instance.FindItems<AmmoItem>() );
+		items.AddRange( Hotbar.FindItems<AmmoItem>() );
+		items.AddRange( Backpack.FindItems<AmmoItem>() );
 
 		var output = 0;
 
@@ -87,16 +87,16 @@ public partial class Player
 	public bool TryGiveArmor( ArmorItem item )
 	{
 		var slotToIndex = (int)item.ArmorSlot - 1;
-		return EquipmentInventory.Instance.Give( item, (ushort)slotToIndex );
+		return Equipment.Give( item, (ushort)slotToIndex );
 	}
 
 	public ushort TryGiveItem( InventoryItem item )
 	{
-		var remaining = HotbarInventory.Instance.Stack( item );
+		var remaining = Hotbar.Stack( item );
 
 		if ( remaining > 0 )
 		{
-			remaining = BackpackInventory.Instance.Stack( item );
+			remaining = Backpack.Stack( item );
 		}
 
 		return remaining;
@@ -104,10 +104,10 @@ public partial class Player
 
 	public bool TryGiveWeapon( WeaponItem item )
 	{
-		if ( HotbarInventory.Instance.Give( item ) )
+		if ( Hotbar.Give( item ) )
 			return true;
 
-		return BackpackInventory.Instance.Give( item );
+		return Backpack.Give( item );
 	}
 
 	public void TryGiveAmmo( AmmoType type, ushort amount )
@@ -120,11 +120,11 @@ public partial class Player
 		item.Resource = resource;
 		item.StackSize = amount;
 
-		var remaining = HotbarInventory.Instance.Stack( item );
+		var remaining = Hotbar.Stack( item );
 
 		if ( remaining > 0 )
 		{
-			BackpackInventory.Instance.Stack( item );
+			Backpack.Stack( item );
 		}
 	}
 
@@ -184,7 +184,7 @@ public partial class Player
 
 	private void OnEquipmentItemTaken( ushort slot, InventoryItem instance )
 	{
-		if ( instance is ArmorItem armor && !EquipmentInventory.Is( instance.Container ) )
+		if ( instance is ArmorItem armor && !InternalEquipment.Is( instance.Container ) )
 		{
 			if ( Armor.TryGetValue( armor.ArmorSlot, out var models ) )
 			{
@@ -220,7 +220,7 @@ public partial class Player
 	{
 		if ( instance is WeaponItem weapon )
 		{
-			if ( weapon.Weapon.IsValid() && !HotbarInventory.Is( instance.Container ) )
+			if ( weapon.Weapon.IsValid() && !Hotbar.Is( instance.Container ) )
 			{
 				weapon.Weapon.Delete();
 				weapon.Weapon = null;
@@ -231,17 +231,17 @@ public partial class Player
 
 	private InventoryContainer GetBackpackTransferTarget( InventoryItem item )
 	{
-		return Storage.Current.IsOpen ? Storage.Current.StorageContainer : HotbarInventory.Instance;
+		return UI.Storage.Current.IsOpen ? UI.Storage.Current.Container : Hotbar;
 	}
 
 	private InventoryContainer GetEquipmentTransferTarget( InventoryItem item )
 	{
-		return Storage.Current.IsOpen ? Storage.Current.StorageContainer : BackpackInventory.Instance;
+		return UI.Storage.Current.IsOpen ? UI.Storage.Current.Container : Backpack;
 	}
 
 	private InventoryContainer GetHotbarTransferTarget( InventoryItem item )
 	{
-		return Storage.Current.IsOpen ? Storage.Current.StorageContainer : BackpackInventory.Instance;
+		return UI.Storage.Current.IsOpen ? UI.Storage.Current.Container : Backpack;
 	}
 
 	private void GiveInitialItems()
@@ -280,7 +280,7 @@ public partial class Player
 		hotbar.OnItemGiven += OnHotbarItemGiven;
 		InventorySystem.Register( hotbar );
 
-		HotbarInventory = new NetInventoryContainer( hotbar );
+		InternalHotbar = new NetInventoryContainer( hotbar );
 
 		var backpack = new InventoryContainer( this );
 		backpack.SetSlotLimit( 24 );
@@ -289,7 +289,7 @@ public partial class Player
 		backpack.OnItemGiven += OnBackpackItemGiven;
 		InventorySystem.Register( backpack );
 
-		BackpackInventory = new NetInventoryContainer( backpack );
+		InternalBackpack = new NetInventoryContainer( backpack );
 
 		var equipment = new InventoryContainer( this );
 		equipment.SetSlotLimit( 3 );
@@ -299,12 +299,12 @@ public partial class Player
 		equipment.SetGiveCondition( CanGiveEquipmentItem );
 		InventorySystem.Register( equipment );
 
-		EquipmentInventory = new NetInventoryContainer( equipment );
+		InternalEquipment = new NetInventoryContainer( equipment );
 	}
 
 	private void InitializeHotbarWeapons()
 	{
-		foreach ( var item in HotbarInventory.Instance.ItemList )
+		foreach ( var item in Hotbar.ItemList )
 		{
 			if ( item is WeaponItem weapon )
 			{
@@ -333,21 +333,21 @@ public partial class Player
 
 	private void SimulateHotbar()
 	{
-		var currentSlotIndex = (int)CurrentHotbarIndex;
+		var currentSlotIndex = (int)HotbarIndex;
 
 		if ( Input.MouseWheel > 0 )
 			currentSlotIndex++;
 		else if ( Input.MouseWheel < 0 )
 			currentSlotIndex--;
 
-		var maxSlotIndex = HotbarInventory.Instance.SlotLimit - 1;
+		var maxSlotIndex = Hotbar.SlotLimit - 1;
 
 		if ( currentSlotIndex < 0 )
 			currentSlotIndex = maxSlotIndex;
 		else if ( currentSlotIndex > maxSlotIndex )
 			currentSlotIndex = 0;
 
-		CurrentHotbarIndex = (ushort)currentSlotIndex;
+		HotbarIndex = (ushort)currentSlotIndex;
 		UpdateHotbarSlotKeys();
 
 		if ( GetActiveHotbarItem() is WeaponItem weapon )
@@ -366,8 +366,8 @@ public partial class Player
 		{
 			if ( Input.Released( InputButton.Drop ) )
 			{
-				var container = HotbarInventory.Instance;
-				var item = container.GetFromSlot( CurrentHotbarIndex );
+				var container = Hotbar;
+				var item = container.GetFromSlot( HotbarIndex );
 
 				if ( item.IsValid() )
 				{
@@ -393,15 +393,15 @@ public partial class Player
 		{
 			if ( Input.Pressed( InputButton.Score ) )
 			{
-				if ( !Backpack.Current.IsOpen )
+				if ( !UI.Backpack.Current.IsOpen )
 					TimeSinceBackpackOpen = 0f;
 				else
 					IsBackpackToggleMode = false;
 
-				if ( IDialog.IsActive() )
-					IDialog.CloseActive();
+				if ( UI.IDialog.IsActive() )
+					UI.IDialog.CloseActive();
 				else
-					Backpack.Current?.Open();
+					UI.Backpack.Current?.Open();
 			}
 
 			if ( Input.Released( InputButton.Score ) )
@@ -413,7 +413,7 @@ public partial class Player
 
 				if ( !IsBackpackToggleMode )
 				{
-					Backpack.Current?.Close();
+					UI.Backpack.Current?.Close();
 				}
 			}
 		}
@@ -421,35 +421,35 @@ public partial class Player
 
 	private void UpdateHotbarSlotKeys()
 	{
-		var index = CurrentHotbarIndex;
+		var index = HotbarIndex;
 
 		if ( Input.Pressed( InputButton.Slot1 ) )
-			index = (ushort)Math.Min( 0, HotbarInventory.Instance.SlotLimit - 1 );
+			index = (ushort)Math.Min( 0, Hotbar.SlotLimit - 1 );
 
 		if ( Input.Pressed( InputButton.Slot2 ) )
-			index = (ushort)Math.Min( 1, HotbarInventory.Instance.SlotLimit - 1 );
+			index = (ushort)Math.Min( 1, Hotbar.SlotLimit - 1 );
 
 		if ( Input.Pressed( InputButton.Slot3 ) )
-			index = (ushort)Math.Min( 2, HotbarInventory.Instance.SlotLimit - 1 );
+			index = (ushort)Math.Min( 2, Hotbar.SlotLimit - 1 );
 
 		if ( Input.Pressed( InputButton.Slot4 ) )
-			index = (ushort)Math.Min( 3, HotbarInventory.Instance.SlotLimit - 1 );
+			index = (ushort)Math.Min( 3, Hotbar.SlotLimit - 1 );
 
 		if ( Input.Pressed( InputButton.Slot5 ) )
-			index = (ushort)Math.Min( 4, HotbarInventory.Instance.SlotLimit - 1 );
+			index = (ushort)Math.Min( 4, Hotbar.SlotLimit - 1 );
 
 		if ( Input.Pressed( InputButton.Slot6 ) )
-			index = (ushort)Math.Min( 5, HotbarInventory.Instance.SlotLimit - 1 );
+			index = (ushort)Math.Min( 5, Hotbar.SlotLimit - 1 );
 
 		if ( Input.Pressed( InputButton.Slot7 ) )
-			index = (ushort)Math.Min( 6, HotbarInventory.Instance.SlotLimit - 1 );
+			index = (ushort)Math.Min( 6, Hotbar.SlotLimit - 1 );
 
 		if ( Input.Pressed( InputButton.Slot8 ) )
-			index = (ushort)Math.Min( 7, HotbarInventory.Instance.SlotLimit - 1 );
+			index = (ushort)Math.Min( 7, Hotbar.SlotLimit - 1 );
 
-		if ( index != CurrentHotbarIndex )
+		if ( index != HotbarIndex )
 		{
-			var container = HotbarInventory.Instance;
+			var container = Hotbar;
 			var item = container.GetFromSlot( index );
 
 			if ( item is IConsumableItem consumable )
@@ -462,7 +462,7 @@ public partial class Player
 				return;
 			}
 
-			CurrentHotbarIndex = index;
+			HotbarIndex = index;
 		}
 	}
 }

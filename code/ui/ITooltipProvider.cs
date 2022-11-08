@@ -1,4 +1,4 @@
-﻿namespace Facepunch.Forsaken;
+﻿namespace Facepunch.Forsaken.UI;
 
 public interface ITooltipProvider
 {

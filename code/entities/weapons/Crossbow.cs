@@ -44,7 +44,7 @@ public partial class Crossbow : ProjectileWeapon<CrossbowBoltProjectile>
 
 	protected override void OnProjectileHit( CrossbowBoltProjectile projectile, TraceResult trace )
 	{
-		if ( IsServer && trace.Entity is Player victim )
+		if ( IsServer && trace.Entity is ForsakenPlayer victim )
 		{
 			var info = new DamageInfo()
 				.WithAttacker( Owner )

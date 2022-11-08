@@ -4,9 +4,9 @@ namespace Facepunch.Forsaken;
 
 public class NetInventoryItem : BaseNetworkable, INetworkSerializer, IValid
 {
-	public InventoryItem Instance { get; private set; }
+	public InventoryItem Value { get; private set; }
 
-	public bool IsValid => Instance.IsValid();
+	public bool IsValid => Value.IsValid();
 	public uint Version { get; private set; }
 
 	public NetInventoryItem()
@@ -16,7 +16,7 @@ public class NetInventoryItem : BaseNetworkable, INetworkSerializer, IValid
 
 	public NetInventoryItem( InventoryItem item )
 	{
-		Instance = item;
+		Value = item;
 	}
 
 	public void Read( ref NetRead read )
@@ -28,13 +28,13 @@ public class NetInventoryItem : BaseNetworkable, INetworkSerializer, IValid
 
 		if ( Version == version ) return;
 
-		Instance = InventoryItem.Deserialize( output );
+		Value = InventoryItem.Deserialize( output );
 		Version = version;
 	}
 
 	public void Write( NetWrite write )
 	{
-		var serialized = Instance.Serialize();
+		var serialized = Value.Serialize();
 		write.Write( ++Version );
 		write.Write( serialized.Length );
 		write.Write( serialized );

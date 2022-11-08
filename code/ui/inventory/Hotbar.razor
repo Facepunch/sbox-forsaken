@@ -1,63 +1,43 @@
 ﻿@using System;
 @using Sandbox;
 @using Sandbox.UI;
+@using Facepunch.Forsaken;
 
-@namespace Facepunch.Forsaken
+@namespace Facepunch.Forsaken.UI
 @attribute [StyleSheet( "/ui/inventory/Hotbar.scss" )]
 @inherits Panel
 
-@if ( !Container.IsValid() ) return;
+@if ( !ForsakenPlayer.Me.IsValid() ) return;
+
+@{
+    var hotbar = ForsakenPlayer.Me.Hotbar;
+    if ( !hotbar.IsValid() ) return;
+}
 
 <root>
-    @for ( ushort i = 0; i < Container.SlotLimit; i++ )
+    @for ( ushort i = 0; i < hotbar.SlotLimit; i++ )
     {
-        var item = Container.GetFromSlot( i );
+        var item = hotbar.GetFromSlot( i );
         var index = i;
-        <InventorySlot IsSelected=@(GetHotbarIndex() == i) Container=@Container Slot=@i Item=@item></InventorySlot>
+        <InventorySlot IsSelected=@(GetHotbarIndex() == i) Container=@hotbar Slot=@i Item=@item></InventorySlot>
     }
 </root>
 
 @code
 {
-    public static Hotbar Current { get; private set; }
-
-    public InventoryContainer Container { get; private set; }
-
     public Hotbar()
     {
-        Current = this;
         BindClass( "hidden", IsHidden );
-    }
-
-    public void SetContainer( InventoryContainer container )
-    {
-        Container = container;
-    }
-
-    protected override void OnAfterTreeRender( bool firstTime )
-    {
-        if ( Local.Pawn is not Player player )
-            return;
-
-        if ( player.HotbarInventory.IsValid() )
-        {
-            SetContainer( player.HotbarInventory.Instance );
-        }
     }
 
     protected override int BuildHash()
     {
-        return HashCode.Combine( Container, GetHotbarIndex() );
+        return HashCode.Combine( ForsakenPlayer.Me, ForsakenPlayer.Me?.Hotbar, GetHotbarIndex() );
     }
 
     private int GetHotbarIndex()
     {
-        if ( Local.Pawn is Player player )
-        {
-            return player.CurrentHotbarIndex;
-        }
-
-        return 0;
+        return ForsakenPlayer.Me?.HotbarIndex ?? 0;
     }
 
     private bool IsHidden()

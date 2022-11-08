@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using Sandbox.UI;
 
-namespace Facepunch.Forsaken;
+namespace Facepunch.Forsaken.UI;
 
 [StyleSheet( "/ui/draggable/Draggable.scss" )]
 public partial class Draggable : Panel

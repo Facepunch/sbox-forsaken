@@ -12,7 +12,7 @@ public class InventoryContainer : IValid
 	public delegate void SlotChangedCallback( ushort slot );
 	public delegate bool GiveConditionCallback( ushort slot, InventoryItem instance );
 	public delegate bool TakeConditionCallback( ushort slot, InventoryItem instance );
-	public delegate InventoryContainer TransferTargetCallback( InventoryItem instance );
+	public delegate InventoryContainer TransferHandlerCallback( InventoryItem instance );
 
 	public event SlotChangedCallback OnSlotChanged;
 	public event SlotChangedCallback OnDataChanged;
@@ -47,7 +47,7 @@ public class InventoryContainer : IValid
 		}
 	}
 
-	public TransferTargetCallback TransferTargetHandler { get; private set; }
+	public TransferHandlerCallback TransferHandler { get; private set; }
 	public GiveConditionCallback GiveCondition { get; private set; }
 	public TakeConditionCallback TakeCondition { get; private set; }
 	public ulong InventoryId { get; private set; }
@@ -93,9 +93,9 @@ public class InventoryContainer : IValid
 		OnDataChanged?.Invoke( slot );
 	}
 
-	public void SetTransferTargetHandler( TransferTargetCallback callback )
+	public void SetTransferHandler( TransferHandlerCallback callback )
 	{
-		TransferTargetHandler = callback;
+		TransferHandler = callback;
 	}
 
 	public void SetGiveCondition( GiveConditionCallback condition )
@@ -246,7 +246,7 @@ public class InventoryContainer : IValid
 
 		if ( IsClient )
 		{
-			InventorySystem.SendSplitInventoryEvent( this, target, fromSlot, toSlot );
+			InventorySystem.SendSplitEvent( this, target, fromSlot, toSlot );
 			return true;
 		}
 
@@ -299,7 +299,7 @@ public class InventoryContainer : IValid
 
 		if ( IsClient )
 		{
-			InventorySystem.SendMoveInventoryEvent( this, target, fromSlot, toSlot );
+			InventorySystem.SendMoveEvent( this, target, fromSlot, toSlot );
 			return true;
 		}
 
@@ -376,7 +376,7 @@ public class InventoryContainer : IValid
 
 	public bool Is( NetInventoryContainer container )
 	{
-		return container.Instance == this;
+		return container.Value == this;
 	}
 
 	public InventoryItem Remove( InventoryItem item )

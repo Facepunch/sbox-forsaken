@@ -74,11 +74,11 @@ public abstract partial class Weapon : BaseWeapon
 		}
 	}
 
-	public WeaponItem WeaponItem => Item.Instance as WeaponItem;
+	public WeaponItem WeaponItem => Item.Value as WeaponItem;
 
 	public int AvailableAmmo()
 	{
-		if ( Owner is not Player owner ) return 0;
+		if ( Owner is not ForsakenPlayer owner ) return 0;
 		return owner.GetAmmoCount( WeaponItem.AmmoType );
 	}
 
@@ -156,7 +156,7 @@ public abstract partial class Weapon : BaseWeapon
 		if ( AmmoClip >= ClipSize )
 			return;
 
-		if ( Owner is Player player )
+		if ( Owner is ForsakenPlayer player )
 		{
 			if ( !UnlimitedAmmo )
 			{
@@ -207,7 +207,7 @@ public abstract partial class Weapon : BaseWeapon
 			OnReloadFinish();
 		}
 
-		if ( IsClient && Prediction.FirstTime && Owner is Player player )
+		if ( IsClient && Prediction.FirstTime && Owner is ForsakenPlayer player )
 		{
 			if ( RecoilQueue.TryDequeue( out var recoil ) )
 			{
@@ -247,7 +247,7 @@ public abstract partial class Weapon : BaseWeapon
 	{
 		IsReloading = false;
 
-		if ( Owner is Player player )
+		if ( Owner is ForsakenPlayer player )
 		{
 			if ( !UnlimitedAmmo )
 			{

@@ -2,7 +2,7 @@
 
 namespace Facepunch.Forsaken;
 
-public partial class Player
+public partial class ForsakenPlayer
 {
 	public PlayerCorpse Ragdoll { get; set; }
 

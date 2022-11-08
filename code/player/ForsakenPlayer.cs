@@ -6,15 +6,22 @@ using Sandbox.Component;
 
 namespace Facepunch.Forsaken;
 
-public partial class Player : Sandbox.Player
+public partial class ForsakenPlayer : Player
 {
+	public static ForsakenPlayer Me => Local.Pawn as ForsakenPlayer;
+
 	[Net, Predicted] public float Stamina { get; private set; }
 	[Net, Predicted] public bool IsOutOfBreath { get; private set; }
-	[Net, Predicted] public ushort CurrentHotbarIndex { get; private set; }
+	[Net, Predicted] public ushort HotbarIndex { get; private set; }
 
-	[Net] public NetInventoryContainer BackpackInventory { get; private set; }
-	[Net] public NetInventoryContainer HotbarInventory { get; private set; }
-	[Net] public NetInventoryContainer EquipmentInventory { get; private set; }
+	[Net] private NetInventoryContainer InternalBackpack { get; set; }
+	public InventoryContainer Backpack => InternalBackpack.Value;
+
+	[Net] private NetInventoryContainer InternalHotbar { get; set; }
+	public InventoryContainer Hotbar => InternalHotbar.Value;
+
+	[Net] private NetInventoryContainer InternalEquipment { get; set; }
+	public InventoryContainer Equipment => InternalEquipment.Value;
 
 	[ClientInput] public Vector3 CursorDirection { get; private set; }
 	[ClientInput] public Vector3 CameraPosition { get; private set; }
@@ -34,20 +41,20 @@ public partial class Player : Sandbox.Player
 	[ConCmd.Server( "fsk.structure.selected" )]
 	private static void SetSelectedStructureCmd( int identity )
 	{
-		if ( ConsoleSystem.Caller.Pawn is Player player )
+		if ( ConsoleSystem.Caller.Pawn is ForsakenPlayer player )
 		{
 			player.StructureType = identity;
 		}
 	}
 
-	public Player() : base()
+	public ForsakenPlayer() : base()
 	{
 		Projectiles = new( this );
 	}
 
-	public Player( Client client ) : this()
+	public ForsakenPlayer( Client client ) : this()
 	{
-		CurrentHotbarIndex = 0;
+		HotbarIndex = 0;
 		client.Pawn = this;
 		CreateInventories();
 		Armor = new();
@@ -67,7 +74,7 @@ public partial class Player : Sandbox.Player
 
 	public InventoryItem GetActiveHotbarItem()
 	{
-		return HotbarInventory.Instance.GetFromSlot( CurrentHotbarIndex );
+		return InternalHotbar.Value.GetFromSlot( HotbarIndex );
 	}
 
 	public void GainStamina( float amount )
@@ -145,7 +152,7 @@ public partial class Player : Sandbox.Player
 
 	public override void TakeDamage( DamageInfo info )
 	{
-		if ( info.Attacker is Player )
+		if ( info.Attacker is ForsakenPlayer )
 		{
 			if ( info.Hitbox.HasTag( "head" ) )
 			{
@@ -200,19 +207,13 @@ public partial class Player : Sandbox.Player
 	{
 		if ( IsLocalPawn )
 		{
-			var backpack = BackpackInventory.Instance;
-			var equipment = EquipmentInventory.Instance;
-			var hotbar = HotbarInventory.Instance;
+			var backpack = InternalBackpack.Value;
+			var equipment = InternalEquipment.Value;
+			var hotbar = InternalHotbar.Value;
 
-			backpack.SetTransferTargetHandler( GetBackpackTransferTarget );
-			equipment.SetTransferTargetHandler( GetEquipmentTransferTarget );
-			hotbar.SetTransferTargetHandler( GetHotbarTransferTarget );
-
-			Backpack.Current?.SetBackpack( backpack );
-			Backpack.Current?.SetEquipment( equipment );
-			Backpack.Current?.SetHotbar( hotbar );
-
-			Hotbar.Current?.SetContainer( hotbar );
+			backpack.SetTransferHandler( GetBackpackTransferTarget );
+			equipment.SetTransferHandler( GetEquipmentTransferTarget );
+			hotbar.SetTransferHandler( GetHotbarTransferTarget );
 		}
 
 		base.ClientSpawn();
@@ -248,9 +249,9 @@ public partial class Player : Sandbox.Player
 	{
 		if ( IsServer )
 		{
-			InventorySystem.Remove( HotbarInventory.Instance, true );
-			InventorySystem.Remove( BackpackInventory.Instance, true );
-			InventorySystem.Remove( EquipmentInventory.Instance, true );
+			InventorySystem.Remove( InternalHotbar.Value, true );
+			InventorySystem.Remove( InternalBackpack.Value, true );
+			InventorySystem.Remove( InternalEquipment.Value, true );
 		}
 
 		base.OnDestroy();

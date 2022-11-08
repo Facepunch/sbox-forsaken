@@ -24,7 +24,7 @@ public abstract partial class MeleeWeapon : Weapon
 
 	public override void AttackPrimary()
 	{
-		if ( Owner is not Player player )
+		if ( Owner is not ForsakenPlayer player )
 			return;
 
 		var damageScale = ScaleNonBlockDamage;
@@ -83,7 +83,7 @@ public abstract partial class MeleeWeapon : Weapon
 	{
 		ViewModelEntity?.SetAnimParameter( "attack_has_hit", true );
 
-		if ( victim is Player target )
+		if ( victim is ForsakenPlayer target )
 			target.PlaySound( HitPlayerSound );
 		else
 			victim.PlaySound( HitObjectSound );

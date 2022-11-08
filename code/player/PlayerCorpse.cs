@@ -4,7 +4,7 @@ namespace Facepunch.Forsaken;
 
 public class PlayerCorpse : ModelEntity
 {
-	public Player Player { get; set; }
+	public ForsakenPlayer Player { get; set; }
 
 	private TimeSince TimeSinceSpawned { get; set; }
 
@@ -15,7 +15,7 @@ public class PlayerCorpse : ModelEntity
 		PhysicsEnabled = true;
 	}
 
-	public void CopyFrom( Player player )
+	public void CopyFrom( ForsakenPlayer player )
 	{
 		RenderColor = player.RenderColor;
 

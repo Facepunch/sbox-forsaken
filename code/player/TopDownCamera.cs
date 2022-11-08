@@ -1,5 +1,4 @@
-﻿using System;
-using Sandbox;
+﻿using Sandbox;
 
 namespace Facepunch.Forsaken;
 
@@ -10,14 +9,16 @@ public partial class TopDownCamera : CameraMode
 
 	public override void Update()
 	{
-		if ( Local.Pawn is not Player pawn )
-			return;
+		var pawn = ForsakenPlayer.Me;
 
-		var targetPosition = pawn.Position.WithZ( pawn.Position.z + Height );
+		if ( pawn.IsValid() )
+		{
+			var target = pawn.Position.WithZ( pawn.Position.z + Height );
 
-		Position = Position.LerpTo( targetPosition, Time.Delta * MoveSpeed );
-		Rotation = Rotation.LookAt( Vector3.Down );
-		FieldOfView = 70f;
-		Viewer = null;
+			Position = Position.LerpTo( target, Time.Delta * MoveSpeed );
+			Rotation = Rotation.LookAt( Vector3.Down );
+			FieldOfView = 70f;
+			Viewer = null;
+		}
 	}
 }

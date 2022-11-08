@@ -1,8 +1,9 @@
 ﻿@using System;
 @using Sandbox;
 @using Sandbox.UI;
+@using Facepunch.Forsaken;
 
-@namespace Facepunch.Forsaken
+@namespace Facepunch.Forsaken.UI
 @attribute [StyleSheet( "/ui/inventory/InventorySlot.scss" )]
 @inherits Panel
 @implements IDraggable
@@ -79,9 +80,9 @@
         if ( draggable is not InventorySlot slot ) return;
 
         if ( mode == DraggableMode.Move )
-            InventorySystem.SendMoveInventoryEvent( slot.Container, Container, slot.Slot, Slot );
+            InventorySystem.SendMoveEvent( slot.Container, Container, slot.Slot, Slot );
         else
-            InventorySystem.SendSplitInventoryEvent( slot.Container, Container, slot.Slot, Slot );
+            InventorySystem.SendSplitEvent( slot.Container, Container, slot.Slot, Slot );
 
         Sound.FromScreen( "inventory.move" );
     }
@@ -113,13 +114,13 @@
         if ( !Item.IsValid() ) return;
 
         var container = Item.Container;
-        if ( container.TransferTargetHandler == null ) return;
+        if ( container.TransferHandler == null ) return;
 
-        var transferContainer = container.TransferTargetHandler.Invoke( Item );
+        var transferContainer = container.TransferHandler.Invoke( Item );
 
         if ( transferContainer.IsValid() )
         {
-            InventorySystem.SendTransferInventoryEvent( container, transferContainer, Item.SlotId );
+            InventorySystem.SendTransferEvent( container, transferContainer, Item.SlotId );
             Sound.FromScreen( "inventory.move" );
         }
 

@@ -4,7 +4,7 @@ namespace Facepunch.Forsaken;
 
 public partial class BaseClothing : ModelEntity
 {
-	public Player Wearer => Parent as Player;
+	public ForsakenPlayer Wearer => Parent as ForsakenPlayer;
 
 	public virtual void Attached() { }
 
