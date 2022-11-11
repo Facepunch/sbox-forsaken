@@ -92,30 +92,12 @@ public partial class ForsakenPlayer : Player
 
 	public void RenderHud()
 	{ 
-		var circleRadius = 4f;
-		var position = Screen.Size * Cursor;
-		var rectangle = new Rect( position.x, position.y, circleRadius * 2f, circleRadius * 2f );
-		var color = Color.Black.WithAlpha( 1f );
-		var border = Color.White.WithAlpha( 1f );
 
-		rectangle.Left -= rectangle.Width * 0.5f;
-		rectangle.Top -= rectangle.Height * 0.5f;
-
-		Graphics.DrawRoundedRectangle( rectangle, color, new Vector4( circleRadius * 2f ), new Vector4( circleRadius * 0.3f ), border );
 	}
 
 	public override void Spawn()
 	{
 		SetModel( "models/citizen/citizen.vmdl" );
-
-		Controller = new MoveController
-		{
-			SprintSpeed = 200f,
-			WalkSpeed = 100f
-		};
-
-		CameraMode = new TopDownCamera();
-		Animator = new PlayerAnimator();
 
 		base.Spawn();
 	}
@@ -172,6 +154,15 @@ public partial class ForsakenPlayer : Player
 
 	public override void Respawn()
 	{
+		Controller = new MoveController
+		{
+			SprintSpeed = 200f,
+			WalkSpeed = 100f
+		};
+
+		CameraMode = new TopDownCamera();
+		Animator = new PlayerAnimator();
+
 		EnableAllCollisions = true;
 		EnableDrawing = true;
 		LifeState = LifeState.Alive;
