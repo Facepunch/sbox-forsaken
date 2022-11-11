@@ -1,0 +1,12 @@
+﻿Cursor {
+    position: absolute;
+    background-color: black;
+    border: 2px solid white;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+
+    &.hidden {
+        display: none;
+    }
+}
