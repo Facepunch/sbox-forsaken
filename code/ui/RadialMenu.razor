@@ -69,7 +69,8 @@
     {
         if ( ItemContainer == null ) return;
 
-        var shouldOpen = ShouldOpen();
+        var shouldOpen = !IDialog.IsActive() && ShouldOpen();
+        var player = ForsakenPlayer.Me;
 
         if ( Input.Pressed( Button ) && shouldOpen )
         {
@@ -84,7 +85,11 @@
 
         if ( IsOpen )
         {
-            VirtualMouse += new Vector2( Input.AnalogLook.Direction.y, Input.AnalogLook.Direction.z ) * -500f;
+            var mouseDelta = Input.MouseDelta;
+            var sensitivity = 0.06f;
+
+            VirtualMouse += (mouseDelta * sensitivity);
+            VirtualMouse = VirtualMouse.Clamp( Vector2.Zero, Screen.Size );
 
             var lx = VirtualMouse.x - Box.Left;
             var ly = VirtualMouse.y - Box.Top;
@@ -139,6 +144,13 @@
         {
             Input.ClearButton( InputButton.PrimaryAttack );
             Input.ClearButton( InputButton.SecondaryAttack );
+        }
+
+        if ( IsOpen )
+        {
+            Input.StopProcessing = true;
+            Input.ClearButtons();
+            Input.AnalogMove = Vector3.Zero;
         }
     }
 

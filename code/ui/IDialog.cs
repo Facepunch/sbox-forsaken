@@ -1,4 +1,6 @@
-﻿namespace Facepunch.Forsaken.UI;
+﻿using Sandbox;
+
+namespace Facepunch.Forsaken.UI;
 
 public interface IDialog
 {
@@ -6,7 +8,10 @@ public interface IDialog
 
 	public static void Activate( IDialog dialog )
 	{
-		Active = dialog;
+		if ( Active != dialog )
+		{
+			Active = dialog;
+		}
 	}
 
 	public static void Deactivate( IDialog dialog )
@@ -25,6 +30,16 @@ public interface IDialog
 	public static void CloseActive()
 	{
 		Active?.Close();
+	}
+
+	[Event.BuildInput]
+	private static void BuildInput()
+	{
+		if ( Active?.IsOpen ?? false )
+		{
+			Input.StopProcessing = true;
+			Input.AnalogMove = Vector3.Zero;
+		}
 	}
 
 	bool IsOpen { get; }

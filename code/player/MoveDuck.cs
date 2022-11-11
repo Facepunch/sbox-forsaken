@@ -55,6 +55,7 @@ public class MoveDuck : BaseNetworkable
 		if ( IsActive )
 			maxs = maxs.WithZ( 36 * scale );
 	}
+
 	public virtual float GetWishSpeed()
 	{
 		if ( !IsActive ) return -1f;
