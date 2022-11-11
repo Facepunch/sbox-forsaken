@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
@@ -10,6 +11,11 @@ public partial class ItemEntity : ModelEntity, IContextActions
 
 	public Color GlowColor => Item.Value?.Color ?? Color.White;
 	public float GlowWidth => 0.4f;
+
+	public List<ContextAction> GetContextActions()
+	{
+		return null;
+	}
 
 	public void SetItem( InventoryItem item )
 	{
