@@ -146,7 +146,7 @@ public partial class ForsakenPlayer : Player
 			.Ignore( ActiveChild )
 			.Run();
 
-		if ( cursor.Entity is IContextActions && visible.Fraction > 0.9f )
+		if ( visible.Fraction > 0.9f )
 			HoveredEntity = cursor.Entity;
 		else
 			HoveredEntity = null;
@@ -286,7 +286,7 @@ public partial class ForsakenPlayer : Player
 	{
 		if ( IsClient )
 		{
-			if ( HoveredEntity.IsValid() && HoveredEntity is IContextActions actions )
+			if ( HoveredEntity.IsValid() && HoveredEntity is IContextActionProvider actions )
 			{
 				var glow = HoveredEntity.Components.GetOrCreate<Glow>();
 				glow.Enabled = true;

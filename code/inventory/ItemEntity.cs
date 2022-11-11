@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
-public partial class ItemEntity : ModelEntity, IContextActions
+public partial class ItemEntity : ModelEntity, IContextActionProvider
 {
 	[Net] public NetInventoryItem Item { get; private set; }
 
@@ -12,9 +12,19 @@ public partial class ItemEntity : ModelEntity, IContextActions
 	public Color GlowColor => Item.Value?.Color ?? Color.White;
 	public float GlowWidth => 0.4f;
 
-	public List<ContextAction> GetContextActions()
+	public string GetContextName()
+	{
+		return Item.Value?.Name ?? "Unknown Item";
+	}
+
+	public List<ContextAction> GetSecondaryActions()
 	{
 		return null;
+	}
+
+	public ContextAction GetPrimaryAction()
+	{
+		return new ContextAction( this );
 	}
 
 	public void SetItem( InventoryItem item )

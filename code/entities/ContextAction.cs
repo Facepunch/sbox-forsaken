@@ -5,23 +5,22 @@ namespace Facepunch.Forsaken;
 public class ContextAction : BaseNetworkable
 {
 	public virtual string Name => "Action";
-	public virtual string Description => "A simple contextual action.";
 
-	public IContextActions Owner { get; private set; }
+	public IContextActionProvider Provider { get; private set; }
 
 	public ContextAction()
 	{
 
 	}
 
-	public ContextAction( IContextActions owner )
+	public ContextAction( IContextActionProvider owner )
 	{
-		Owner = owner;
+		Provider = owner;
 	}
 
-	public void SetOwner( IContextActions owner )
+	public void SetOwner( IContextActionProvider owner )
 	{
-		Owner = owner;
+		Provider = owner;
 	}
 
 	public virtual void Select( ForsakenPlayer player )

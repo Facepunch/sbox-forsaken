@@ -3,17 +3,28 @@ using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
-public partial class StorageCrate : Deployable, IContextActions
+public partial class StorageCrate : Deployable, IContextActionProvider
 {
 	public Color GlowColor => Color.White;
 	public float GlowWidth => 0.4f;
 
-	public List<ContextAction> GetContextActions()
+	public string GetContextName()
+	{
+		return "Storage Crate";
+	}
+
+	public List<ContextAction> GetSecondaryActions()
 	{
 		return new List<ContextAction>()
 		{
+			new ContextAction( this ),
 			new ContextAction( this )
 		};
+	}
+
+	public ContextAction GetPrimaryAction()
+	{
+		return new ContextAction( this );
 	}
 
 	public override void Spawn()

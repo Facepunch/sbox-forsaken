@@ -6,6 +6,8 @@ namespace Facepunch.Forsaken.UI;
 [StyleSheet( "/ui/Cursor.scss" )]
 public class Cursor : Panel
 {
+	private IContextActionProvider ActionProvider { get; set; }
+
 	public override void Tick()
 	{
 		var player = ForsakenPlayer.Me;
@@ -14,9 +16,34 @@ public class Cursor : Panel
 		{
 			Style.Left = Length.Fraction( player.Cursor.x );
 			Style.Top = Length.Fraction( player.Cursor.y );
+
+			if ( player.HoveredEntity is IContextActionProvider provider )
+				SetActionProvider( provider );
+			else
+				ClearActionProvider();
 		}
 
 		base.Tick();
+	}
+
+	private void SetActionProvider( IContextActionProvider provider )
+	{
+		if ( ActionProvider == provider )
+			return;
+
+		ActionProvider = provider;
+
+		Log.Info( "Our Provider Is: " + provider );
+	}
+
+	private void ClearActionProvider()
+	{
+		if ( !ActionProvider.IsValid() )
+			return;
+
+		Log.Info( "Cleared Provider" );
+
+		ActionProvider = null;
 	}
 
 	private bool IsHidden()

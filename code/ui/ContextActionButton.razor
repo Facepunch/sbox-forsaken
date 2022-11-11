@@ -1,0 +1,31 @@
+﻿@using Sandbox;
+@using Sandbox.UI;
+@using Sandbox.UI.Construct;
+@using System;
+@using System.Collections.Generic;
+@using Facepunch.Forsaken;
+
+@namespace Facepunch.Forsaken.UI
+@attribute [StyleSheet( "/ui/ContextActionButton.scss" )]
+@inherits Panel
+
+<root>
+    
+</root>
+
+@code
+{
+    public override void Tick()
+    {
+        if (! ForsakenPlayer.Me.IsValid() ) return;
+
+        var cursor = (Screen.Size * ForsakenPlayer.Me.Cursor);
+
+        if ( Box.Rect.IsInside( cursor ) )
+            PseudoClass |= PseudoClass.Hover;
+        else
+            PseudoClass &= ~PseudoClass.Hover;
+
+        base.Tick();
+    }
+}
