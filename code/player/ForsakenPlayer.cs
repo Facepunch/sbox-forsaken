@@ -91,7 +91,7 @@ public partial class ForsakenPlayer : Player
 	}
 
 	public void RenderHud()
-	{
+	{ 
 		var circleRadius = 4f;
 		var position = Screen.Size * Cursor;
 		var rectangle = new Rect( position.x, position.y, circleRadius * 2f, circleRadius * 2f );
@@ -124,11 +124,20 @@ public partial class ForsakenPlayer : Player
 	{
 		base.BuildInput();
 
+		if ( Input.StopProcessing )
+		{
+			HoveredEntity = null;
+			return;
+		}
+
 		var mouseDelta = Input.MouseDelta / new Vector2( Screen.Width, Screen.Height );
 		var sensitivity = 0.06f;
 
-		Cursor += (mouseDelta * sensitivity);
-		Cursor = Cursor.Clamp( 0f, 1f );
+		if ( !Mouse.Visible )
+		{
+			Cursor += (mouseDelta * sensitivity);
+			Cursor = Cursor.Clamp( 0f, 1f );
+		}
 
 		ActiveChild?.BuildInput();
 
