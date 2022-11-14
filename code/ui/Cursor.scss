@@ -6,8 +6,34 @@
     width: 16px;
     height: 16px;
     z-index: 100;
+    align-items: center;
+    justify-content: center;
 
     &.hidden {
         display: none;
+    }
+}
+
+CursorPrimaryAction {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    position: absolute;
+    background-color: black;
+    border: 2px solid white;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease-in;
+    opacity: 0;
+
+    .icon {
+        width: 75%;
+        height: 75%;
+    }
+
+    &.visible {
+        width: 64px;
+        height: 64px;
+        opacity: 1;
     }
 }
