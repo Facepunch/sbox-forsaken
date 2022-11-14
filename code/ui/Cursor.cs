@@ -1,12 +1,45 @@
 ﻿using Sandbox;
 using Sandbox.UI;
+using Sandbox.UI.Construct;
+using System.Linq;
 
 namespace Facepunch.Forsaken.UI;
+
+public class CursorPrimaryAction : Panel
+{
+	private ContextAction Action { get; set; }
+	private Image Icon { get; set; }
+
+	public CursorPrimaryAction()
+	{
+		Icon = Add.Image( "", "icon" );
+
+		BindClass( "visible", () => Action.IsValid() );
+	}
+
+	public void ClearAction()
+	{
+		Action = null;
+	}
+
+	public void SetAction( ContextAction action )
+	{
+		Assert.NotNull( action );
+
+		if ( !string.IsNullOrEmpty( action.Icon ) )
+		{
+			Icon.Texture = Texture.Load( FileSystem.Mounted, action.Icon );
+		}
+
+		Action = action;
+	}
+}
 
 [StyleSheet( "/ui/Cursor.scss" )]
 public class Cursor : Panel
 {
 	private IContextActionProvider ActionProvider { get; set; }
+	private CursorPrimaryAction PrimaryAction { get; set; }
 
 	public override void Tick()
 	{
@@ -33,7 +66,14 @@ public class Cursor : Panel
 
 		ActionProvider = provider;
 
-		Log.Info( "Our Provider Is: " + provider );
+		var action = provider.GetPrimaryAction();
+
+		if ( !action.IsValid() || !action.IsAvailable( ForsakenPlayer.Me ) )
+		{
+			action = provider.GetSecondaryActions().FirstOrDefault();
+		}
+
+		PrimaryAction.SetAction( action );
 	}
 
 	private void ClearActionProvider()
@@ -41,7 +81,7 @@ public class Cursor : Panel
 		if ( !ActionProvider.IsValid() )
 			return;
 
-		Log.Info( "Cleared Provider" );
+		PrimaryAction.ClearAction();
 
 		ActionProvider = null;
 	}
@@ -65,6 +105,9 @@ public class Cursor : Panel
 	protected override void OnParametersSet()
 	{
 		BindClass( "hidden", IsHidden );
+
+		PrimaryAction?.Delete();
+		PrimaryAction = AddChild<CursorPrimaryAction>();
 
 		base.OnParametersSet();
 	}

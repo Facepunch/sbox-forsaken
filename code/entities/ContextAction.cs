@@ -2,11 +2,14 @@
 
 namespace Facepunch.Forsaken;
 
-public class ContextAction : BaseNetworkable
+public class ContextAction : BaseNetworkable, IValid
 {
 	public virtual string Name => "Action";
+	public virtual string Icon => "textures/ui/armor_slot_head.png";
 
 	public IContextActionProvider Provider { get; private set; }
+
+	public bool IsValid => Provider.IsValid();
 
 	public ContextAction()
 	{
