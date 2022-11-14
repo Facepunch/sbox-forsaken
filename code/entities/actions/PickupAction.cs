@@ -17,6 +17,12 @@ public class PickupAction : ContextAction
 
 	public override void Select( ForsakenPlayer player )
 	{
-
+		if ( IsServer && Provider is StorageCrate crate )
+		{
+			var item = InventorySystem.CreateItem<CrateItem>();
+			player.TryGiveItem( item );
+			player.PlaySound( "inventory.move" );
+			crate.Delete();
+		}
 	}
 }

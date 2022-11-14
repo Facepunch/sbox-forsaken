@@ -17,6 +17,9 @@ public class OpenAction : ContextAction
 
 	public override void Select( ForsakenPlayer player )
 	{
-		Log.Info( "You opened it!" );
+		if ( IsServer && Provider is StorageCrate crate )
+		{
+			crate.Open( player );
+		}
 	}
 }

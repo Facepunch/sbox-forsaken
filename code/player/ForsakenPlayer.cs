@@ -268,8 +268,14 @@ public partial class ForsakenPlayer : Player
 
 		Projectiles.Simulate();
 
-		if ( SimulateContextActions() )
-			return;
+		// TODO: This kind of sucks. We need to better check for this
+		// or just have the storage dialog have a close button and not
+		// take up the whole window.
+		if ( !UI.IDialog.IsActive() )
+		{
+			if ( SimulateContextActions() )
+				return;
+		}
 
 		SimulateHotbar();
 		SimulateInventory();
@@ -333,10 +339,7 @@ public partial class ForsakenPlayer : Player
 
 				if ( action.IsValid() )
 				{
-					if ( IsServer )
-					{
-						action.Select( this );
-					}
+					action.Select( this );
 				}
 			}
 
