@@ -23,9 +23,11 @@ public class CursorPrimaryAction : Panel
 
 	public bool Select()
 	{
-		if ( Action.IsValid() && Action.IsAvailable( ForsakenPlayer.Me ) )
+		var player = ForsakenPlayer.Me;
+
+		if ( Action.IsValid() && Action.IsAvailable( player ) )
 		{
-			ForsakenPlayer.SelectContextActionCmd( Action.Provider.NetworkIdent, Action.UniqueId );
+			player.SetContextAction( Action );
 			return true;
 		}
 
@@ -107,17 +109,10 @@ public class Cursor : Panel
 	[Event.BuildInput]
 	private void BuildInput()
 	{
-		if ( Input.Down( InputButton.PrimaryAttack ) )
+		if ( Input.Released( InputButton.PrimaryAttack ) )
 		{
-			if ( ActionProvider.IsValid() )
+			if ( ActionProvider.IsValid() && PrimaryAction.Select() )
 			{
-				if ( Input.Released( InputButton.PrimaryAttack ) )
-				{
-					PrimaryAction.Select();
-				}
-
-				Input.ClearButton( InputButton.PrimaryAttack );
-
 				return;
 			}
 		}

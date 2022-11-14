@@ -2,7 +2,6 @@
 
 public class OpenAction : ContextAction
 {
-	public override string UniqueId => "open";
 	public override string Name => "Open";
 	public override string Icon => "textures/ui/armor_slot_head.png";
 

@@ -2,7 +2,6 @@
 
 public class PickupAction : ContextAction
 {
-	public override string UniqueId => "pickup";
 	public override string Name => "Pickup";
 	public override string Icon => "textures/ui/armor_slot_head.png";
 
