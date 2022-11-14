@@ -1,7 +1,6 @@
 ﻿using Sandbox;
 using Sandbox.UI;
 using Sandbox.UI.Construct;
-using System;
 using System.Linq;
 
 namespace Facepunch.Forsaken.UI;
@@ -10,13 +9,11 @@ public class CursorPrimaryAction : Panel
 {
 	private ContextAction Action { get; set; }
 	private Image Icon { get; set; }
-	private Label Title { get; set; }
 	private Label Name { get; set; }
 
 	public CursorPrimaryAction()
 	{
 		Icon = Add.Image( "", "icon" );
-		Title = Add.Label( "", "title" );
 		Name = Add.Label( "", "name" );
 
 		BindClass( "visible", () => Action.IsValid() );
@@ -49,7 +46,6 @@ public class CursorPrimaryAction : Panel
 			Icon.Texture = Texture.Load( FileSystem.Mounted, action.Icon );
 		}
 
-		Title.Text = action.Provider.GetContextName();
 		Name.Text = action.Name;
 
 		Action = action;
@@ -61,6 +57,8 @@ public class Cursor : Panel
 {
 	private IContextActionProvider ActionProvider { get; set; }
 	private CursorPrimaryAction PrimaryAction { get; set; }
+
+	private Label Title { get; set; }
 
 	public override void Tick()
 	{
@@ -81,6 +79,7 @@ public class Cursor : Panel
 				ClearActionProvider();
 			}
 		}
+
 		base.Tick();
 	}
 
@@ -99,6 +98,10 @@ public class Cursor : Panel
 		}
 
 		PrimaryAction.SetAction( action );
+
+		Title.Text = provider.GetContextName();
+
+		SetClass( "has-actions", true );
 	}
 
 	private void ClearActionProvider()
@@ -109,6 +112,8 @@ public class Cursor : Panel
 		PrimaryAction.ClearAction();
 
 		ActionProvider = null;
+
+		SetClass( "has-actions", false );
 	}
 
 	[Event.BuildInput]
@@ -145,6 +150,9 @@ public class Cursor : Panel
 
 		PrimaryAction?.Delete();
 		PrimaryAction = AddChild<CursorPrimaryAction>();
+
+		Title?.Delete();
+		Title = Add.Label( "", "title" );
 
 		base.OnParametersSet();
 	}
