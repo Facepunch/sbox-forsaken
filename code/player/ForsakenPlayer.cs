@@ -40,12 +40,45 @@ public partial class ForsakenPlayer : Player
 	private bool IsBackpackToggleMode { get; set; }
 	private Entity LastHoveredEntity { get; set; }
 
-	[ConCmd.Server( "fsk.structure.selected" )]
-	private static void SetSelectedStructureCmd( int identity )
+	[ConCmd.Server( "fsk.selectstructuretype" )]
+	private static void SelectStructureTypeCmd( int identity )
 	{
 		if ( ConsoleSystem.Caller.Pawn is ForsakenPlayer player )
 		{
 			player.StructureType = identity;
+		}
+	}
+
+	[ConCmd.Server( "fsk.selectcontextaction" )]
+	public static void SelectContextActionCmd( int entityId, string actionId )
+	{
+		if ( ConsoleSystem.Caller.Pawn is ForsakenPlayer player )
+		{
+			var entity = FindByIndex( entityId ) as IContextActionProvider;
+
+			if ( entity.IsValid() )
+			{
+				var actions = new List<ContextAction>();
+
+				var primary = entity.GetPrimaryAction();
+
+				if ( primary.IsValid() )
+					actions.Add( primary );
+
+				var secondary = entity.GetSecondaryActions();
+
+				if ( secondary != null )
+				{
+					actions.AddRange( secondary );
+
+					var action = actions.Where( a => a.IsAvailable( player ) && a.UniqueId.Equals( actionId ) ).FirstOrDefault();
+
+					if ( action.IsValid() )
+					{
+						action.Select( player );
+					}
+				}
+			}
 		}
 	}
 
@@ -66,7 +99,7 @@ public partial class ForsakenPlayer : Player
 	{
 		Host.AssertClient();
 		Assert.NotNull( type );
-		SetSelectedStructureCmd( type.Identity );
+		SelectStructureTypeCmd( type.Identity );
 	}
 
 	[ClientRpc]
