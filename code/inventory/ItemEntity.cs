@@ -31,9 +31,11 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider
 
 	public void SetItem( InventoryItem item )
 	{
-		if ( !string.IsNullOrEmpty( item.WorldModel ) )
+		var worldModel = !string.IsNullOrEmpty( item.WorldModel ) ? item.WorldModel : "models/sbox_props/burger_box/burger_box.vmdl";
+
+		if ( !string.IsNullOrEmpty( worldModel ) )
 		{
-			SetModel( item.WorldModel );
+			SetModel( worldModel );
 			SetupPhysicsFromModel( PhysicsMotionType.Dynamic );
 		}
 

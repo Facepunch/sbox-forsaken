@@ -14,5 +14,5 @@ public class ItemResource : GameResource
 	public string Icon { get; set; }
 
 	[Property, ResourceType( "vmdl" )]
-	public string WorldModel { get; set; }
+	public string WorldModel { get; set; } = "models/sbox_props/burger_box/burger_box.vmdl";
 }

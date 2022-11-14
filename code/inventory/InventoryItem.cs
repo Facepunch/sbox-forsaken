@@ -13,7 +13,7 @@ public class InventoryItem : IValid
 
 	public virtual ushort DefaultStackSize => 1;
 	public virtual ushort MaxStackSize => 1;
-	public virtual string WorldModel => "models/rust_props/small_junk/tea_box.vmdl";
+	public virtual string WorldModel => "models/sbox_props/burger_box/burger_box.vmdl";
 	public virtual string Description => string.Empty;
 	public virtual bool DropOnDeath => false;
 	public virtual Color Color => Color.White;
