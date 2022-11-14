@@ -17,14 +17,15 @@ public partial class StorageCrate : Deployable, IContextActionProvider
 	{
 		return new List<ContextAction>()
 		{
-			new ContextAction( this ),
-			new ContextAction( this )
+			new OpenAction( this ),
+			new PickupAction( this )
 		};
 	}
 
 	public ContextAction GetPrimaryAction()
 	{
-		return new ContextAction( this );
+		var open = new OpenAction( this );
+		return open;
 	}
 
 	public override void Spawn()

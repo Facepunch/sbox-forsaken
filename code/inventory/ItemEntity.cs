@@ -24,7 +24,8 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider
 
 	public ContextAction GetPrimaryAction()
 	{
-		return new ContextAction( this );
+		var pickup = new PickupAction( this );
+		return pickup;
 	}
 
 	public void SetItem( InventoryItem item )
