@@ -9,6 +9,7 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider
 
 	public TimeUntil TimeUntilCanPickup { get; set; }
 
+	public float MaxInteractRange => 100f;
 	public Color GlowColor => Item.Value?.Color ?? Color.White;
 	public float GlowWidth => 0.4f;
 

@@ -4,7 +4,6 @@ namespace Facepunch.Forsaken;
 
 public abstract class ContextAction : BaseNetworkable, IValid
 {
-	public abstract string UniqueId { get; }
 	public abstract string Name { get; }
 	public virtual string Icon => "";
 
