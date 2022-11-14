@@ -31,7 +31,36 @@ CursorPrimaryAction {
         height: 75%;
     }
 
+    .title {
+        transition: all 0.2s ease-in;
+        text-shadow: 0px 0px 2px black;
+        position: absolute;
+        font-family: Roboto;
+        font-size: 18px;
+        color: white;
+        top: 0px;
+    }
+
+    .name {
+        transition: all 0.2s ease-in;
+        text-shadow: 0px 0px 2px black;
+        position: absolute;
+        font-family: Roboto;
+        font-weight: bold;
+        font-size: 16px;
+        color: lightyellow;
+        top: 0px;
+    }
+
     &.visible {
+        .name {
+            top: 72px;
+        }
+
+        .title {
+            top: -32px;
+        }
+
         width: 64px;
         height: 64px;
         opacity: 1;

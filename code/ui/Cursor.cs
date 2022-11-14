@@ -9,12 +9,27 @@ public class CursorPrimaryAction : Panel
 {
 	private ContextAction Action { get; set; }
 	private Image Icon { get; set; }
+	private Label Title { get; set; }
+	private Label Name { get; set; }
 
 	public CursorPrimaryAction()
 	{
 		Icon = Add.Image( "", "icon" );
+		Title = Add.Label( "", "title" );
+		Name = Add.Label( "", "name" );
 
 		BindClass( "visible", () => Action.IsValid() );
+	}
+
+	public bool Select()
+	{
+		if ( Action.IsValid() && Action.IsAvailable( ForsakenPlayer.Me ) )
+		{
+			ForsakenPlayer.SelectContextActionCmd( Action.Provider.NetworkIdent, Action.UniqueId );
+			return true;
+		}
+
+		return false;
 	}
 
 	public void ClearAction()
@@ -30,6 +45,9 @@ public class CursorPrimaryAction : Panel
 		{
 			Icon.Texture = Texture.Load( FileSystem.Mounted, action.Icon );
 		}
+
+		Title.Text = action.Provider.GetContextName();
+		Name.Text = action.Name;
 
 		Action = action;
 	}
@@ -84,6 +102,25 @@ public class Cursor : Panel
 		PrimaryAction.ClearAction();
 
 		ActionProvider = null;
+	}
+
+	[Event.BuildInput]
+	private void BuildInput()
+	{
+		if ( Input.Down( InputButton.PrimaryAttack ) )
+		{
+			if ( ActionProvider.IsValid() )
+			{
+				if ( Input.Released( InputButton.PrimaryAttack ) )
+				{
+					PrimaryAction.Select();
+				}
+
+				Input.ClearButton( InputButton.PrimaryAttack );
+
+				return;
+			}
+		}
 	}
 
 	private bool IsHidden()
