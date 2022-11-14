@@ -1,6 +1,7 @@
 ﻿using Sandbox;
 using Sandbox.UI;
 using Sandbox.UI.Construct;
+using System;
 using System.Linq;
 
 namespace Facepunch.Forsaken.UI;
@@ -70,12 +71,16 @@ public class Cursor : Panel
 			Style.Left = Length.Fraction( player.Cursor.x );
 			Style.Top = Length.Fraction( player.Cursor.y );
 
-			if ( player.HoveredEntity is IContextActionProvider provider )
+			if ( player.HoveredEntity is IContextActionProvider provider
+				&& player.Position.Distance( provider.Position ) <= provider.MaxInteractRange )
+			{
 				SetActionProvider( provider );
+			}
 			else
+			{
 				ClearActionProvider();
+			}
 		}
-
 		base.Tick();
 	}
 

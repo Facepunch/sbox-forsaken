@@ -5,7 +5,7 @@ namespace Facepunch.Forsaken;
 
 public partial class StorageCrate : Deployable, IContextActionProvider
 {
-	public float MaxInteractRange => 100f;
+	public float MaxInteractRange => 150f;
 	public Color GlowColor => Color.White;
 	public float GlowWidth => 0.4f;
 
