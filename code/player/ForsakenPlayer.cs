@@ -114,7 +114,7 @@ public partial class ForsakenPlayer : Player
 
 		if ( Input.StopProcessing )
 		{
-			HoveredEntity = null;
+			//HoveredEntity = null;
 			return;
 		}
 

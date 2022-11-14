@@ -17,6 +17,6 @@ public class PickupAction : ContextAction
 
 	public override void Select( ForsakenPlayer player )
 	{
-		Log.Info( "You picked it up" );
+
 	}
 }

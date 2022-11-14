@@ -1,42 +1,7 @@
-﻿Cursor {
-    position: absolute;
-    background-color: black;
-    border: 2px solid white;
-    border-radius: 50%;
-    width: 16px;
-    height: 16px;
-    z-index: 100;
-    align-items: center;
-    justify-content: center;
-
-    .title {
-        transition: all 0.2s ease-in;
-        text-shadow: 0px 0px 2px black;
-        position: absolute;
-        font-family: Roboto;
-        font-size: 18px;
-        color: white;
-        opacity: 0;
-        top: 0px;
-    }
-
-    &.has-actions {
-        .title {
-            opacity: 1;
-            top: -64px;
-        }
-    }
-
-    &.hidden {
-        display: none;
-    }
-}
-
-CursorPrimaryAction {
+﻿CursorAction {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    position: absolute;
     background-color: black;
     border: 2px solid white;
     align-items: center;
@@ -60,6 +25,16 @@ CursorPrimaryAction {
         top: 0px;
     }
 
+    &.is-hovered {
+        background-color: darken( springgreen, 0.8 );
+        border-color: springgreen;
+        transform: scale( 1.15 );
+
+        .name {
+            color: springgreen;
+        }
+    }
+
     &.visible {
         .name {
             top: 72px;
@@ -72,5 +47,87 @@ CursorPrimaryAction {
         width: 64px;
         height: 64px;
         opacity: 1;
+    }
+}
+
+Cursor {
+    position: absolute;
+    background-color: black;
+    border: 2px solid white;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+
+    .title {
+        transition: all 0.2s ease-in;
+        text-shadow: 0px 0px 2px black;
+        position: absolute;
+        font-family: Roboto;
+        font-size: 18px;
+        color: white;
+        opacity: 0;
+        top: 0px;
+    }
+
+    .actions {
+        position: absolute;
+        align-items: center;
+        justify-content: center;
+        flex-direction: row;
+        transition: all 0.2s ease-in;
+        opacity: 0;
+
+        CursorAction {
+            margin-right: 16px;
+
+            &:last-child {
+                margin-right: 0px;
+            }
+        }
+    }
+
+    .primary-action {
+        position: absolute;
+    }
+
+    .action-cursor {
+        position: absolute;
+        background-color: white;
+        box-shadow: 0px 0px 4px 4px rgba( black, 0.2 );
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        display: none;
+    }
+
+    &.secondary-open {
+        .actions {
+            opacity: 1;
+        }
+
+        .primary-action {
+            opacity: 0;
+        }
+
+        .action-cursor {
+            display: flex;
+        }
+
+        background-color: transparent;
+        border-color: transparent;
+    }
+
+    &.has-actions {
+        .title {
+            opacity: 1;
+            top: -64px;
+        }
+    }
+
+    &.hidden {
+        display: none;
     }
 }

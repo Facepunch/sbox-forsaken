@@ -5,13 +5,13 @@ using System.Linq;
 
 namespace Facepunch.Forsaken.UI;
 
-public class CursorPrimaryAction : Panel
+public class CursorAction : Panel
 {
 	private ContextAction Action { get; set; }
 	private Image Icon { get; set; }
 	private Label Name { get; set; }
 
-	public CursorPrimaryAction()
+	public CursorAction()
 	{
 		Icon = Add.Image( "", "icon" );
 		Name = Add.Label( "", "name" );
@@ -56,9 +56,21 @@ public class CursorPrimaryAction : Panel
 public class Cursor : Panel
 {
 	private IContextActionProvider ActionProvider { get; set; }
-	private CursorPrimaryAction PrimaryAction { get; set; }
-
+	private CursorAction PrimaryAction { get; set; }
+	private TimeSince TimeSincePressed { get; set; }
+	private Panel ActionContainer { get; set; }
+	private bool IsSecondaryOpen { get; set; }
+	private Vector2 ActionCursorPosition { get; set; }
+	private Panel ActionCursor { get; set; }
 	private Label Title { get; set; }
+
+	public Cursor()
+	{
+		PrimaryAction = AddChild<CursorAction>( "primary-action" );
+		ActionContainer = Add.Panel( "actions" );
+		Title = Add.Label( "", "title" );
+		ActionCursor = Add.Panel( "action-cursor" );
+	}
 
 	public override void Tick()
 	{
@@ -90,14 +102,24 @@ public class Cursor : Panel
 
 		ActionProvider = provider;
 
-		var action = provider.GetPrimaryAction();
+		var primary = provider.GetPrimaryAction();
+		var secondaries = provider.GetSecondaryActions();
 
-		if ( !action.IsValid() || !action.IsAvailable( ForsakenPlayer.Me ) )
+		if ( !primary.IsValid() || !primary.IsAvailable( ForsakenPlayer.Me ) )
 		{
-			action = provider.GetSecondaryActions().FirstOrDefault();
+			primary = secondaries.FirstOrDefault();
 		}
 
-		PrimaryAction.SetAction( action );
+		ActionContainer.DeleteChildren( true );
+
+		foreach ( var secondary in secondaries )
+		{
+			var action = new CursorAction();
+			action.SetAction( secondary );
+			ActionContainer.AddChild( action );
+		}
+
+		PrimaryAction.SetAction( primary );
 
 		Title.Text = provider.GetContextName();
 
@@ -109,6 +131,7 @@ public class Cursor : Panel
 		if ( !ActionProvider.IsValid() )
 			return;
 
+		ActionContainer.DeleteChildren( true );
 		PrimaryAction.ClearAction();
 
 		ActionProvider = null;
@@ -119,13 +142,92 @@ public class Cursor : Panel
 	[Event.BuildInput]
 	private void BuildInput()
 	{
-		if ( Input.Released( InputButton.PrimaryAttack ) )
+		var secondaryHoldDelay = 0.25f;
+
+		if ( !ActionProvider.IsValid() )
 		{
-			if ( ActionProvider.IsValid() && PrimaryAction.Select() )
+			IsSecondaryOpen = false;
+			return;
+		}
+
+		if ( Input.Pressed( InputButton.PrimaryAttack ) )
+		{
+			TimeSincePressed = 0f;
+			IsSecondaryOpen = false;
+		}
+
+		if ( Input.Down( InputButton.PrimaryAttack ) )
+		{
+			if ( TimeSincePressed > secondaryHoldDelay && !IsSecondaryOpen )
+			{
+				ActionCursorPosition = Vector2.Zero;
+				IsSecondaryOpen = true;
+			}
+		}
+
+		if ( IsSecondaryOpen )
+		{
+			UpdateActionCursor();
+			return;
+		}
+
+		if ( Input.Released( InputButton.PrimaryAttack ) && TimeSincePressed < secondaryHoldDelay )
+		{
+			if ( PrimaryAction.Select() )
 			{
 				return;
 			}
 		}
+	}
+
+	private void UpdateActionCursor()
+	{
+		var mouseDelta = Input.MouseDelta;
+		var sensitivity = 0.06f;
+
+		ActionCursorPosition += (mouseDelta * sensitivity);
+		ActionCursorPosition = ActionCursorPosition.Clamp( Vector2.One * -500f, Vector2.One * 500f );
+
+		CursorAction closestItem = null;
+		var closestDistance = 0f;
+		var globalPosition = Box.Rect.Center + ActionCursorPosition;
+
+		var children = ActionContainer.ChildrenOfType<CursorAction>();
+
+		foreach ( var child in children )
+		{
+			var distance = child.Box.Rect.Center.Distance( globalPosition );
+
+			if ( distance <= 32f && (closestItem == null || distance < closestDistance ) )
+			{
+				closestDistance = distance;
+				closestItem = child;
+			}
+
+			child.SetClass( "is-hovered", false );
+		}
+
+		ActionCursor.Style.Left = Length.Pixels( ActionCursorPosition.x * ScaleFromScreen );
+		ActionCursor.Style.Top = Length.Pixels( ActionCursorPosition.y * ScaleFromScreen );
+
+		if ( closestItem != null )
+		{
+			closestItem.SetClass( "is-hovered", true );
+
+			if ( Input.Released( InputButton.PrimaryAttack ) )
+			{
+				closestItem.Select();
+			}
+		}
+
+		if ( !Input.Down( InputButton.PrimaryAttack ) )
+		{
+			IsSecondaryOpen = false;
+		}
+
+		Input.StopProcessing = true;
+		Input.AnalogMove = Vector2.Zero;
+		Input.AnalogLook = Angles.Zero;
 	}
 
 	private bool IsHidden()
@@ -146,13 +248,8 @@ public class Cursor : Panel
 
 	protected override void OnParametersSet()
 	{
+		BindClass( "secondary-open", () => IsSecondaryOpen );
 		BindClass( "hidden", IsHidden );
-
-		PrimaryAction?.Delete();
-		PrimaryAction = AddChild<CursorPrimaryAction>();
-
-		Title?.Delete();
-		Title = Add.Label( "", "title" );
 
 		base.OnParametersSet();
 	}
