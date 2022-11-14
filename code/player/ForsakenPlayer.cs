@@ -25,6 +25,7 @@ public partial class ForsakenPlayer : Player
 
 	[ClientInput] public Vector3 CursorDirection { get; private set; }
 	[ClientInput] public Vector3 CameraPosition { get; private set; }
+	[ClientInput] public int ContextActionId { get; private set; }
 	[ClientInput] public Entity HoveredEntity { get; private set; }
 
 	public Vector2 Cursor { get; set; }
@@ -46,39 +47,6 @@ public partial class ForsakenPlayer : Player
 		if ( ConsoleSystem.Caller.Pawn is ForsakenPlayer player )
 		{
 			player.StructureType = identity;
-		}
-	}
-
-	[ConCmd.Server( "fsk.selectcontextaction" )]
-	public static void SelectContextActionCmd( int entityId, string actionId )
-	{
-		if ( ConsoleSystem.Caller.Pawn is ForsakenPlayer player )
-		{
-			var entity = FindByIndex( entityId ) as IContextActionProvider;
-
-			if ( entity.IsValid() )
-			{
-				var actions = new List<ContextAction>();
-
-				var primary = entity.GetPrimaryAction();
-
-				if ( primary.IsValid() )
-					actions.Add( primary );
-
-				var secondary = entity.GetSecondaryActions();
-
-				if ( secondary != null )
-				{
-					actions.AddRange( secondary );
-
-					var action = actions.Where( a => a.IsAvailable( player ) && a.UniqueId.Equals( actionId ) ).FirstOrDefault();
-
-					if ( action.IsValid() )
-					{
-						action.Select( player );
-					}
-				}
-			}
 		}
 	}
 
@@ -111,6 +79,11 @@ public partial class ForsakenPlayer : Player
 	public void ReduceStamina( float amount )
 	{
 		Stamina = Math.Max( Stamina - amount, 0f );
+	}
+
+	public void SetContextAction( ContextAction action )
+	{
+		ContextActionId = TypeLibrary.GetTypeIdent( action.GetType() );
 	}
 
 	public InventoryItem GetActiveHotbarItem()
@@ -295,7 +268,9 @@ public partial class ForsakenPlayer : Player
 
 		Projectiles.Simulate();
 
-		SimulateContextActions();
+		if ( SimulateContextActions() )
+			return;
+
 		SimulateHotbar();
 		SimulateInventory();
 		SimulateConstruction();
@@ -315,16 +290,22 @@ public partial class ForsakenPlayer : Player
 		base.OnDestroy();
 	}
 
-	private void SimulateContextActions()
+	private bool SimulateContextActions()
 	{
+		var actions = HoveredEntity as IContextActionProvider;
+
 		if ( IsClient )
 		{
-			if ( HoveredEntity.IsValid() && HoveredEntity is IContextActionProvider actions )
+			if ( actions.IsValid() )
 			{
 				var glow = HoveredEntity.Components.GetOrCreate<Glow>();
 				glow.Enabled = true;
-				glow.Color = actions.GlowColor;
 				glow.Width = actions.GlowWidth;
+
+				if ( Position.Distance( actions.Position ) <= actions.MaxInteractRange )
+					glow.Color = actions.GlowColor;
+				else
+					glow.Color = Color.Gray;
 			}
 
 			if ( LastHoveredEntity.IsValid() && LastHoveredEntity != HoveredEntity )
@@ -335,6 +316,34 @@ public partial class ForsakenPlayer : Player
 
 			LastHoveredEntity = HoveredEntity;
 		}
+
+		var actionId = ContextActionId;
+
+		if ( IsClient )
+		{
+			ContextActionId = 0;
+		}
+
+		if ( actions.IsValid() && Position.Distance( actions.Position ) <= actions.MaxInteractRange )
+		{
+			if ( actionId > 0 )
+			{
+				var allActions = IContextActionProvider.GetAllActions( actions );
+				var action = allActions.Where( a => a.IsAvailable( this ) && TypeLibrary.GetTypeIdent( a.GetType() ) == actionId ).FirstOrDefault();
+
+				if ( action.IsValid() )
+				{
+					if ( IsServer )
+					{
+						action.Select( this );
+					}
+				}
+			}
+
+			return true;
+		}
+
+		return false;
 	}
 
 	private void SimulateDeployable()
