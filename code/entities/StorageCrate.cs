@@ -15,6 +15,8 @@ public partial class StorageCrate : Deployable, IContextActionProvider
 	private PickupAction PickupAction { get; set; }
 	private OpenAction OpenAction { get; set; }
 
+	[Net] public bool IsEmpty { get; private set; }
+
 	public StorageCrate()
 	{
 		PickupAction = new( this );
@@ -49,10 +51,20 @@ public partial class StorageCrate : Deployable, IContextActionProvider
 
 		var inventory = new InventoryContainer( this );
 		inventory.SetSlotLimit( 16 );
+		inventory.OnSlotChanged += OnSlotChanged;
 		InventorySystem.Register( inventory );
 
 		InternalInventory = new NetInventoryContainer( inventory );
+		IsEmpty = inventory.IsEmpty;
 
 		base.Spawn();
+	}
+
+	private void OnSlotChanged( ushort slot )
+	{
+		if ( IsServer )
+		{
+			IsEmpty = Inventory.IsEmpty;
+		}
 	}
 }

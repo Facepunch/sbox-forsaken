@@ -28,6 +28,11 @@ public class PickupAction : ContextAction
 
 	public override bool IsAvailable( ForsakenPlayer player )
 	{
-		return false;
+		if ( Provider is StorageCrate crate )
+		{
+			return crate.IsEmpty;
+		}
+
+		return true;
 	}
 }
