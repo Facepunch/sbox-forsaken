@@ -1,5 +1,6 @@
 ﻿using Sandbox;
 using Sandbox.UI;
+using System.Linq;
 
 namespace Facepunch.Forsaken.UI;
 
@@ -17,7 +18,7 @@ public partial class StructureSelector : RadialMenu
 
 	public override void Populate()
 	{
-		var descriptions = TypeLibrary.GetDescriptions<Structure>();
+		var descriptions = TypeLibrary.GetDescriptions<Structure>().OrderBy( d => d.Title );
 
 		foreach ( var type in descriptions )
 		{
