@@ -78,14 +78,14 @@
     public void Open()
     {
         if ( IsOpen ) return;
-        IDialog.Activate( this );
+        Dialog.Activate( this );
         IsOpen = true;
     }
 
     public void Close()
     {
         if ( !IsOpen ) return;
-        IDialog.Deactivate( this );
+        Dialog.Deactivate( this );
         IsOpen = false;
     }
 

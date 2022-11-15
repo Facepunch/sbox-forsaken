@@ -69,7 +69,7 @@
     {
         if ( ItemContainer == null ) return;
 
-        var shouldOpen = !IDialog.IsActive() && ShouldOpen();
+        var shouldOpen = !Dialog.IsActive() && ShouldOpen();
         var player = ForsakenPlayer.Me;
 
         if ( Input.Pressed( Button ) && shouldOpen )
