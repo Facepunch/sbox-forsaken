@@ -101,6 +101,18 @@ Cursor {
         position: absolute;
     }
 
+    .plus-more {
+        background-image: url( /textures/ui/plus.png );
+        background-size: cover;
+        transition: all 0.2s ease-in;
+        position: absolute;
+        opacity: 0;
+        width: 0px;
+        height: 0px;
+        left: 16px;
+        top: 16px;
+    }
+
     .action-cursor {
         position: absolute;
         background-color: white;
@@ -129,6 +141,19 @@ Cursor {
     }
 
     &.has-actions {
+        &.has-secondary {
+            .plus-more {
+                width: 24px;
+                height: 24px;
+            }
+
+            &:not( .secondary-open ) {
+                .plus-more {
+                    opacity: 1;
+                }
+            }
+        }
+
         .title {
             opacity: 1;
             top: -64px;

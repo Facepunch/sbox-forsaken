@@ -17,7 +17,7 @@ public class CursorAction : Panel
 		Name = Add.Label( "", "name" );
 
 		BindClass( "visible", () => Action.IsValid() );
-		BindClass( "unavailable", () => !Action.IsAvailable( ForsakenPlayer.Me ) );
+		BindClass( "unavailable", () => !Action.IsValid() || !Action.IsAvailable( ForsakenPlayer.Me ) );
 	}
 
 	public bool Select()
@@ -62,12 +62,14 @@ public class Cursor : Panel
 	private Panel ActionContainer { get; set; }
 	private bool IsSecondaryOpen { get; set; }
 	private Vector2 ActionCursorPosition { get; set; }
+	private Panel PlusMoreIcon { get; set; }
 	private Panel ActionCursor { get; set; }
 	private Label Title { get; set; }
 
 	public Cursor()
 	{
 		PrimaryAction = AddChild<CursorAction>( "primary-action" );
+		PlusMoreIcon = Add.Panel( "plus-more" );
 		ActionContainer = Add.Panel( "actions" );
 		Title = Add.Label( "", "title" );
 		ActionCursor = Add.Panel( "action-cursor" );
@@ -121,6 +123,7 @@ public class Cursor : Panel
 
 		Title.Text = provider.GetContextName();
 
+		SetClass( "has-secondary", secondaries.Any() );
 		SetClass( "has-actions", true );
 	}
 
@@ -134,6 +137,7 @@ public class Cursor : Panel
 
 		ActionProvider = null;
 
+		SetClass( "has-secondary", false );
 		SetClass( "has-actions", false );
 	}
 

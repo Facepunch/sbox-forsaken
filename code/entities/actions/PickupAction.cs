@@ -3,7 +3,7 @@
 public class PickupAction : ContextAction
 {
 	public override string Name => "Pickup";
-	public override string Icon => "textures/ui/armor_slot_head.png";
+	public override string Icon => "textures/ui/actions/pickup.png";
 
 	public PickupAction()
 	{
