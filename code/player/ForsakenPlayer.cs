@@ -42,8 +42,8 @@ public partial class ForsakenPlayer : Player
 	private Entity LastHoveredEntity { get; set; }
 	private ulong LastOpenStorageId { get; set; }
 
-	[ConCmd.Server( "fsk.selectstructuretype" )]
-	private static void SelectStructureTypeCmd( int identity )
+	[ConCmd.Server( "fsk.structuretype" )]
+	private static void SetStructureTypeCmd( int identity )
 	{
 		if ( ConsoleSystem.Caller.Pawn is ForsakenPlayer player )
 		{
@@ -68,7 +68,7 @@ public partial class ForsakenPlayer : Player
 	{
 		Host.AssertClient();
 		Assert.NotNull( type );
-		SelectStructureTypeCmd( type.Identity );
+		SetStructureTypeCmd( type.Identity );
 	}
 
 	[ClientRpc]

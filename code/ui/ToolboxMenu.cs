@@ -4,14 +4,14 @@ using System.Linq;
 
 namespace Facepunch.Forsaken.UI;
 
-[StyleSheet( "/ui/StructureSelector.scss" )]
-public partial class StructureSelector : RadialMenu
+[StyleSheet( "/ui/ToolboxMenu.scss" )]
+public partial class ToolboxMenu : RadialMenu
 {
-	public static StructureSelector Current { get; private set; }
+	public static ToolboxMenu Current { get; private set; }
 
 	public override InputButton Button => InputButton.SecondaryAttack;
 
-	public StructureSelector()
+	public ToolboxMenu()
 	{
 		Current = this;
 	}
