@@ -237,7 +237,7 @@ public class Cursor : Panel
 		if ( StructureSelector.Current?.IsOpen ?? false )
 			return true;
 
-		if ( IDialog.IsActive() )
+		if ( Dialog.IsActive() )
 			return true;
 
 		return false;

@@ -212,7 +212,7 @@ public partial class ForsakenPlayer
 	{
 		if ( instance is WeaponItem weapon )
 		{
-			InitializeWeaponItem( weapon );
+			InitializeWeapon( weapon );
 		}
 	}
 
@@ -302,18 +302,18 @@ public partial class ForsakenPlayer
 		InternalEquipment = new NetInventoryContainer( equipment );
 	}
 
-	private void InitializeHotbarWeapons()
+	private void InitializeWeapons()
 	{
 		foreach ( var item in Hotbar.ItemList )
 		{
 			if ( item is WeaponItem weapon )
 			{
-				InitializeWeaponItem( weapon );
+				InitializeWeapon( weapon );
 			}
 		}
 	}
 
-	private void InitializeWeaponItem( WeaponItem item )
+	private void InitializeWeapon( WeaponItem item )
 	{
 		if ( !item.Weapon.IsValid() )
 		{
@@ -398,8 +398,8 @@ public partial class ForsakenPlayer
 				else
 					IsBackpackToggleMode = false;
 
-				if ( UI.IDialog.IsActive() )
-					UI.IDialog.CloseActive();
+				if ( UI.Dialog.IsActive() )
+					UI.Dialog.Close();
 				else
 					UI.Backpack.Current?.Open();
 			}

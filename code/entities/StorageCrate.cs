@@ -19,8 +19,7 @@ public partial class StorageCrate : Deployable, IContextActionProvider
 
 	public void Open( ForsakenPlayer player )
 	{
-		Inventory.AddConnection( player.Client );
-		OpenForClient( To.Single( player ), Inventory.Serialize() );
+		UI.Storage.Open( player, GetContextName(), this, Inventory );
 	}
 
 	public List<ContextAction> GetSecondaryActions()
@@ -50,21 +49,5 @@ public partial class StorageCrate : Deployable, IContextActionProvider
 		InternalInventory = new NetInventoryContainer( inventory );
 
 		base.Spawn();
-	}
-
-	[ClientRpc]
-	private void OpenForClient( byte[] data )
-	{
-		if ( Local.Pawn is not Player ) return;
-
-		var container = InventoryContainer.Deserialize( data );
-		var storage = UI.Storage.Current;
-
-		storage.SetName( GetContextName() );
-		storage.SetEntity( this );
-		storage.SetContainer( container );
-		storage.Open();
-
-		Sound.FromScreen( "inventory.open" );
 	}
 }

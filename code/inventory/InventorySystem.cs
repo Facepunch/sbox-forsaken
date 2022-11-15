@@ -37,7 +37,7 @@ public static partial class InventorySystem
 	{
 		if ( inventoryId == 0 )
 		{
-			inventoryId = NextContainerId++;
+			inventoryId = ++NextContainerId;
 		}
 
 		container.SetInventoryId( inventoryId );

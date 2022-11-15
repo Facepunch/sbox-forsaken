@@ -27,19 +27,20 @@ public partial class ForsakenPlayer : Player
 	[ClientInput] public Vector3 CameraPosition { get; private set; }
 	[ClientInput] public int ContextActionId { get; private set; }
 	[ClientInput] public Entity HoveredEntity { get; private set; }
-
-	public Vector2 Cursor { get; set; }
+	[ClientInput] public ulong OpenStorageId { get; private set; }
+	[ClientInput] public bool HasDialogOpen { get; private set; }
 
 	public Dictionary<ArmorSlot, List<BaseClothing>> Armor { get; private set; }
-
-	[Net] public int StructureType { get; private set; }
-
 	public ProjectileSimulator Projectiles { get; private set; }
+	public Vector2 Cursor { get; set; }
 	public DamageInfo LastDamageTaken { get; private set; }
+
+	[Net] private int StructureType { get; set; }
 
 	private TimeSince TimeSinceBackpackOpen { get; set; }
 	private bool IsBackpackToggleMode { get; set; }
 	private Entity LastHoveredEntity { get; set; }
+	private ulong LastOpenStorageId { get; set; }
 
 	[ConCmd.Server( "fsk.selectstructuretype" )]
 	private static void SelectStructureTypeCmd( int identity )
@@ -112,11 +113,16 @@ public partial class ForsakenPlayer : Player
 	{
 		base.BuildInput();
 
-		if ( Input.StopProcessing )
-		{
-			//HoveredEntity = null;
-			return;
-		}
+		var storage = UI.Storage.Current;
+
+		if ( storage.IsOpen && storage.Container.IsValid() )
+			OpenStorageId = storage.Container.InventoryId;
+		else
+			OpenStorageId = 0;
+
+		HasDialogOpen = UI.Dialog.IsActive();
+
+		if ( Input.StopProcessing ) return;
 
 		var mouseDelta = Input.MouseDelta / new Vector2( Screen.Width, Screen.Height );
 		var sensitivity = 0.06f;
@@ -179,7 +185,7 @@ public partial class ForsakenPlayer : Player
 
 		CreateHull();
 		GiveInitialItems();
-		InitializeHotbarWeapons();
+		InitializeWeapons();
 		ResetCursor();
 
 		base.Respawn();
@@ -268,10 +274,9 @@ public partial class ForsakenPlayer : Player
 
 		Projectiles.Simulate();
 
-		// TODO: This kind of sucks. We need to better check for this
-		// or just have the storage dialog have a close button and not
-		// take up the whole window.
-		if ( !UI.IDialog.IsActive() )
+		SimulateOpenStorage();
+
+		if ( !HasDialogOpen )
 		{
 			if ( SimulateContextActions() )
 				return;
@@ -294,6 +299,22 @@ public partial class ForsakenPlayer : Player
 		}
 
 		base.OnDestroy();
+	}
+
+	private void SimulateOpenStorage()
+	{
+		if ( IsClient ) return;
+
+		if ( LastOpenStorageId != OpenStorageId )
+		{
+			var oldStorage = InventorySystem.Find( LastOpenStorageId );
+			oldStorage?.RemoveConnection( Client );
+
+			var newStorage = InventorySystem.Find( OpenStorageId );
+			newStorage?.AddConnection( Client );
+		}
+
+		LastOpenStorageId = OpenStorageId;
 	}
 
 	private bool SimulateContextActions()
