@@ -329,7 +329,7 @@ public partial class ForsakenPlayer : Player
 				glow.Enabled = true;
 				glow.Width = actions.GlowWidth;
 
-				if ( Position.Distance( actions.Position ) <= actions.MaxInteractRange )
+				if ( Position.Distance( actions.Position ) <= actions.InteractionRange )
 					glow.Color = actions.GlowColor;
 				else
 					glow.Color = Color.Gray;
@@ -351,7 +351,7 @@ public partial class ForsakenPlayer : Player
 			ContextActionId = 0;
 		}
 
-		if ( actions.IsValid() && Position.Distance( actions.Position ) <= actions.MaxInteractRange )
+		if ( actions.IsValid() && Position.Distance( actions.Position ) <= actions.InteractionRange )
 		{
 			if ( actionId > 0 )
 			{

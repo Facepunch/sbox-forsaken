@@ -6,29 +6,27 @@ namespace Facepunch.Forsaken;
 
 public interface IContextActionProvider : IValid
 {
-	public static List<ContextAction> GetAllActions( IContextActionProvider provider )
+	public static IEnumerable<ContextAction> GetAllActions( IContextActionProvider provider )
 	{
-		var allActions = new List<ContextAction>();
-
 		var primary = provider.GetPrimaryAction();
 
 		if ( primary.IsValid() )
-			allActions.Add( primary );
+		{
+			yield return primary;
+		}
 
 		var secondary = provider.GetSecondaryActions();
 
-		if ( secondary != null )
+		foreach ( var action in secondary )
 		{
-			allActions.AddRange( secondary );
+			yield return action;
 		}
-
-		return allActions;
 	}
 
-	public float MaxInteractRange { get; }
+	public float InteractionRange { get; }
 	public Color GlowColor { get; }
 	public float GlowWidth { get;}
-	public List<ContextAction> GetSecondaryActions();
+	public IEnumerable<ContextAction> GetSecondaryActions();
 	public int NetworkIdent { get; }
 	public ContextAction GetPrimaryAction();
 	public Vector3 Position { get; }

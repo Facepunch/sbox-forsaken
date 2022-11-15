@@ -5,12 +5,21 @@ namespace Facepunch.Forsaken;
 
 public partial class StorageCrate : Deployable, IContextActionProvider
 {
-	public float MaxInteractRange => 150f;
+	public float InteractionRange => 150f;
 	public Color GlowColor => Color.White;
 	public float GlowWidth => 0.4f;
 
 	[Net] private NetInventoryContainer InternalInventory { get; set; }
 	public InventoryContainer Inventory => InternalInventory.Value;
+
+	private PickupAction PickupAction { get; set; }
+	private OpenAction OpenAction { get; set; }
+
+	public StorageCrate()
+	{
+		PickupAction = new( this );
+		OpenAction = new( this );
+	}
 
 	public string GetContextName()
 	{
@@ -22,19 +31,15 @@ public partial class StorageCrate : Deployable, IContextActionProvider
 		UI.Storage.Open( player, GetContextName(), this, Inventory );
 	}
 
-	public List<ContextAction> GetSecondaryActions()
+	public IEnumerable<ContextAction> GetSecondaryActions()
 	{
-		return new List<ContextAction>()
-		{
-			new OpenAction( this ),
-			new PickupAction( this )
-		};
+		yield return OpenAction;
+		yield return PickupAction;
 	}
 
 	public ContextAction GetPrimaryAction()
 	{
-		var open = new OpenAction( this );
-		return open;
+		return OpenAction;
 	}
 
 	public override void Spawn()

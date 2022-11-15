@@ -25,4 +25,9 @@ public class PickupAction : ContextAction
 			crate.Delete();
 		}
 	}
+
+	public override bool IsAvailable( ForsakenPlayer player )
+	{
+		return false;
+	}
 }

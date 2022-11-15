@@ -83,7 +83,7 @@ public class Cursor : Panel
 
 			var provider = player.HoveredEntity as IContextActionProvider;
 
-			if ( provider.IsValid() && player.Position.Distance( provider.Position ) <= provider.MaxInteractRange )
+			if ( provider.IsValid() && player.Position.Distance( provider.Position ) <= provider.InteractionRange )
 				SetActionProvider( provider );
 			else
 				ClearActionProvider();

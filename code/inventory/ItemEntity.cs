@@ -9,24 +9,30 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider
 
 	public TimeUntil TimeUntilCanPickup { get; set; }
 
-	public float MaxInteractRange => 150f;
+	public float InteractionRange => 150f;
 	public Color GlowColor => Item.Value?.Color ?? Color.White;
 	public float GlowWidth => 0.4f;
+
+	private PickupAction PickupAction { get; set; }
+
+	public ItemEntity()
+	{
+		PickupAction = new( this );
+	}
 
 	public string GetContextName()
 	{
 		return Item.Value?.Name ?? "Unknown Item";
 	}
 
-	public List<ContextAction> GetSecondaryActions()
+	public IEnumerable<ContextAction> GetSecondaryActions()
 	{
-		return null;
+		yield break;
 	}
 
 	public ContextAction GetPrimaryAction()
 	{
-		var pickup = new PickupAction( this );
-		return pickup;
+		return PickupAction;
 	}
 
 	public void SetItem( InventoryItem item )
