@@ -25,13 +25,21 @@
         top: 0px;
     }
 
-    &.is-hovered {
-        background-color: darken( springgreen, 0.8 );
-        border-color: springgreen;
-        transform: scale( 1.15 );
+    &.unavailable {
+        &.visible {
+            opacity: 0.7;
+        }
+    }
 
-        .name {
-            color: springgreen;
+    &.is-hovered {
+        &:not( .unavailable ) {
+            background-color: darken( springgreen, 0.8 );
+            border-color: springgreen;
+            transform: scale( 1.15 );
+
+            .name {
+                color: springgreen;
+            }
         }
     }
 

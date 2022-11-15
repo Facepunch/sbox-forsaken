@@ -17,6 +17,7 @@ public class CursorAction : Panel
 		Name = Add.Label( "", "name" );
 
 		BindClass( "visible", () => Action.IsValid() );
+		BindClass( "unavailable", () => !Action.IsAvailable( ForsakenPlayer.Me ) );
 	}
 
 	public bool Select()
@@ -234,7 +235,7 @@ public class Cursor : Panel
 		if ( !player.IsValid() || player.LifeState == LifeState.Dead )
 			return true;
 
-		if ( StructureSelector.Current?.IsOpen ?? false )
+		if ( ToolboxMenu.Current?.IsOpen ?? false )
 			return true;
 
 		if ( Dialog.IsActive() )
