@@ -21,6 +21,9 @@ public class InventoryItem : IValid
 	public virtual Color IconTintColor => Color.White;
 	public virtual string Icon => string.Empty;
 
+	public virtual Dictionary<string, int> RequiredItems => null;
+	public virtual bool IsCraftable => false;
+
 	private ItemTag[] InternalTags;
 
 	public ItemTag[] Tags
