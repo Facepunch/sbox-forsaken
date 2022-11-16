@@ -43,5 +43,7 @@
 		Description = "A rapid-fire submachine gun that deals light damage."
 		Icon = resource:"textures/items/weapon_crossbow.png"
 		WorldModel = resource:"models/mp5/w_mp5.vmdl"
+		IsCraftable = false
+		RequiredItems = null
 	}
 }

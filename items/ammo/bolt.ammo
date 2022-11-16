@@ -9,5 +9,11 @@
 		Description = "Ammunition typically used for crossbows."
 		Icon = resource:"textures/items/ammo_bolt.png"
 		WorldModel = null
+		IsCraftable = true
+		RequiredItems = 
+		{
+			wood = 10
+			stone = 2
+		}
 	}
 }
