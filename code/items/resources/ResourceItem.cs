@@ -1,5 +1,6 @@
 ﻿using Sandbox;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -23,10 +24,12 @@ public class ResourceItem<A,T> : InventoryItem where A : ItemResource where T : 
 		return null;
 	}
 
+	public override Dictionary<string,int> RequiredItems => Resource?.RequiredItems ?? null;
 	public override string Name => Resource?.ItemName ?? string.Empty;
 	public override string Description => Resource?.Description ?? string.Empty;
 	public override string WorldModel => Resource?.WorldModel ?? string.Empty;
 	public override string Icon => Resource?.Icon ?? string.Empty;
+	public override bool IsCraftable => Resource?.IsCraftable ?? false;
 
 	public A Resource { get; set; }
 
