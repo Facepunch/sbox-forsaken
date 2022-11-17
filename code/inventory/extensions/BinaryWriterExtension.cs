@@ -8,7 +8,7 @@ public static class BinaryWriterExtension
 	{
 		if ( item != null )
 		{
-			writer.Write( item.ClassName );
+			writer.Write( item.UniqueId );
 			writer.Write( item.StackSize );
 			writer.Write( item.ItemId );
 			writer.Write( item.SlotId );

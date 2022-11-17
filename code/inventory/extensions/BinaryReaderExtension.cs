@@ -7,15 +7,15 @@ public static class BinaryReaderExtension
 {
 	public static InventoryItem ReadInventoryItem( this BinaryReader buffer )
 	{
-		var className = buffer.ReadString();
+		var uniqueId = buffer.ReadString();
 
-		if ( !string.IsNullOrEmpty( className ) )
+		if ( !string.IsNullOrEmpty( uniqueId ) )
 		{
 			var stackSize = buffer.ReadUInt16();
 			var itemId = buffer.ReadUInt64();
 			var slotId = buffer.ReadUInt16();
 
-			var instance = InventorySystem.CreateItem( className, itemId );
+			var instance = InventorySystem.CreateItem( uniqueId, itemId );
 
 			if ( instance != null )
 			{
