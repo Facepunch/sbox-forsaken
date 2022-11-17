@@ -7,6 +7,11 @@ namespace Facepunch.Forsaken;
 
 public partial class Forsaken : Game
 {
+	public Forsaken()
+	{
+		InventorySystem.Initialize();
+	}
+
 	public override void ClientSpawn()
 	{
 		Local.Hud?.Delete( true );
