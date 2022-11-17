@@ -116,8 +116,7 @@ public partial class ForsakenPlayer
 			.Where( a => a.AmmoType == type )
 			.FirstOrDefault();
 
-		var item = InventorySystem.CreateItem<AmmoItem>();
-		item.LoadResource( resource );
+		var item = InventorySystem.CreateItem<AmmoItem>( resource.UniqueId );
 		item.StackSize = amount;
 
 		var remaining = Hotbar.Stack( item );

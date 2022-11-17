@@ -144,7 +144,7 @@ public static partial class InventorySystem
 			itemId = ++NextItemId;
 		}
 
-		instance = TypeLibrary.Create<T>();
+		instance = TypeLibrary.Create<InventoryItem>( typeof( T ) );
 		instance.ItemId = itemId;
 		instance.IsValid = true;
 		instance.StackSize = instance.DefaultStackSize;
