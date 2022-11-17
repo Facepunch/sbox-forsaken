@@ -3,6 +3,7 @@
 namespace Facepunch.Forsaken;
 
 [GameResource( "Armor", "armor", "A piece of armor or clothing for use with Forsaken.", Icon = "checkroom" )]
+[ItemClass( typeof( ArmorItem ) )]
 public class ArmorResource : ItemResource
 {
 	[Property]
