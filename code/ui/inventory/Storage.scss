@@ -10,6 +10,7 @@
     backdrop-filter-blur: 24px;
     background-color: rgba(0, 0, 0, 0.9);
 
+    .equipment,
     .backpack,
     .storage {
         .slots {
@@ -17,6 +18,7 @@
         }
     }
 
+    .equipment,
     .backpack,
     .storage,
     .hotbar {
@@ -50,6 +52,11 @@
         }
     }
 
+    .equipment {
+        margin-right: 32px;
+        width: 20%;
+    }
+
     .backpack {
         margin-right: 32px;
     }
@@ -62,6 +69,7 @@
         display: none;
 
         .storage,
+        .equipment,
         .backpack,
         .hotbar {
             pointer-events: none;

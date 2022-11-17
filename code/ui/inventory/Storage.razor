@@ -12,6 +12,9 @@
 @if ( !Container.IsValid() ) return;
 
 @{
+    var equipment = ForsakenPlayer.Me.Equipment;
+    if ( !equipment.IsValid() ) return;
+
     var backpack = ForsakenPlayer.Me.Backpack;
     if ( !backpack.IsValid() ) return;
 
@@ -21,6 +24,35 @@
 
 <root>
     <div>
+        <div class="equipment">
+            <label class="title">Equipment</label>
+
+            <div class="slots">
+                <InventorySlot
+                    ArmorSlot=@ArmorSlot.Head
+                    DefaultIcon="textures/ui/armor_slot_head.png"
+                    Container=@equipment
+                    Slot=@((ushort)0)
+                    Item=@equipment.GetFromSlot( 0 )>
+                </InventorySlot>
+
+                <InventorySlot
+                    ArmorSlot=@ArmorSlot.Chest
+                    DefaultIcon="textures/ui/armor_slot_chest.png"
+                    Container=@equipment
+                    Slot=@((ushort)1)
+                    Item=@equipment.GetFromSlot( 1 )>
+                </InventorySlot>
+
+                <InventorySlot
+                    ArmorSlot=@ArmorSlot.Legs
+                    DefaultIcon="textures/ui/armor_slot_legs.png"
+                    Container=@equipment
+                    Slot=@((ushort)2)
+                    Item=@equipment.GetFromSlot( 2 )>
+                </InventorySlot>
+            </div>
+        </div>
         <div class="backpack">
             <label class="title">Backpack</label>
 
