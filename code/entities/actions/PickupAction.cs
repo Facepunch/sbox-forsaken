@@ -19,7 +19,7 @@ public class PickupAction : ContextAction
 	{
 		if ( IsServer && Provider is StorageCrate crate )
 		{
-			var item = InventorySystem.CreateItem<CrateItem>();
+			var item = InventorySystem.CreateItem<StorageCrateItem>();
 			player.TryGiveItem( item );
 			player.PlaySound( "inventory.move" );
 			crate.Delete();
