@@ -9,6 +9,9 @@ public class ItemResource : GameResource
 	public string ItemName { get; set; }
 
 	[Property]
+	public string UniqueId { get; set; }
+
+	[Property]
 	public string Description { get; set; }
 
 	[Property, ResourceType( "png" )]
@@ -17,9 +20,15 @@ public class ItemResource : GameResource
 	[Property, ResourceType( "vmdl" )]
 	public string WorldModel { get; set; } = "models/sbox_props/burger_box/burger_box.vmdl";
 
-	[Property]
-	public bool IsCraftable { get; set; }
+	protected override void PostLoad()
+	{
+		InventorySystem.ReloadDefinitions();
+		base.PostLoad();
+	}
 
-	[Property, ShowIf( nameof( IsCraftable ), true )]
-	public Dictionary<string,int> RequiredItems { get; set; }
+	protected override void PostReload()
+	{
+		InventorySystem.ReloadDefinitions();
+		base.PostReload();
+	}
 }

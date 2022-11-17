@@ -264,7 +264,7 @@ public class InventoryContainer : IValid
 			return Move( target, fromSlot, toSlot );
 		}
 
-		var splitItem = InventorySystem.CreateDuplicateItem( item );
+		var splitItem = InventorySystem.DuplicateItem( item );
 		splitItem.StackSize = (ushort)splitStackSize;
 
 		var targetItem = target.GetFromSlot( toSlot );
