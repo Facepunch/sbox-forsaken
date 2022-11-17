@@ -117,7 +117,7 @@ public partial class ForsakenPlayer
 			.FirstOrDefault();
 
 		var item = InventorySystem.CreateItem<AmmoItem>();
-		item.Resource = resource;
+		item.LoadResource( resource );
 		item.StackSize = amount;
 
 		var remaining = Hotbar.Stack( item );
@@ -261,13 +261,13 @@ public partial class ForsakenPlayer
 		var toolbox = InventorySystem.CreateItem<ToolboxItem>();
 		TryGiveItem( toolbox );
 
-		var crate = InventorySystem.CreateItem<CrateItem>();
+		var crate = InventorySystem.CreateItem<StorageCrateItem>();
 		TryGiveItem( crate );
 
-		crate = InventorySystem.CreateItem<CrateItem>();
+		crate = InventorySystem.CreateItem<StorageCrateItem>();
 		TryGiveItem( crate );
 
-		crate = InventorySystem.CreateItem<CrateItem>();
+		crate = InventorySystem.CreateItem<StorageCrateItem>();
 		TryGiveItem( crate );
 	}
 
@@ -375,7 +375,7 @@ public partial class ForsakenPlayer
 
 					if ( item.StackSize > 1 )
 					{
-						itemToDrop = InventorySystem.CreateDuplicateItem( item );
+						itemToDrop = InventorySystem.DuplicateItem( item );
 						itemToDrop.StackSize = 1;
 						item.StackSize--;
 					}
