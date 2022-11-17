@@ -8,11 +8,19 @@
 		AmmoType = "Bolt"
 		DefaultAmmo = 0
 		ClipSize = 10
+		RecoilCurve = 
+		{
+			rangex = "0,0"
+			rangey = "0,0"
+		}
 		Damage = 40
 		ClassName = "weapon_crossbow"
 		ItemName = "Crossbow"
+		UniqueId = "crossbow"
 		Description = "A light damage crossbow for dealing ranged damage."
 		Icon = resource:"textures/items/weapon_crossbow.png"
 		WorldModel = resource:"weapons/rust_crossbow/rust_crossbow.vmdl"
+		IsCraftable = false
+		RequiredItems = null
 	}
 }

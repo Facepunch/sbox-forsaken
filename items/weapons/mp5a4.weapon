@@ -40,6 +40,7 @@
 		Damage = 20
 		ClassName = "weapon_mp5a4"
 		ItemName = "MP5A4"
+		UniqueId = "mp5a4"
 		Description = "A rapid-fire submachine gun that deals light damage."
 		Icon = resource:"textures/items/weapon_crossbow.png"
 		WorldModel = resource:"models/mp5/w_mp5.vmdl"

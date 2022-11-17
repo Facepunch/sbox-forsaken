@@ -6,6 +6,7 @@
 		MaxStackSize = 10
 		DefaultStackSize = 2
 		ItemName = "Bolt"
+		UniqueId = "ammo_bolt"
 		Description = "Ammunition typically used for crossbows."
 		Icon = resource:"textures/items/ammo_bolt.png"
 		WorldModel = null

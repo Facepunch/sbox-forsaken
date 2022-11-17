@@ -6,8 +6,11 @@
 		MaxStackSize = 32
 		DefaultStackSize = 8
 		ItemName = "9mm Ammo"
+		UniqueId = "ammo_pistol"
 		Description = "Ammunition typically used for pistols and SMGs."
 		Icon = resource:"textures/items/ammo_bolt.png"
 		WorldModel = null
+		IsCraftable = false
+		RequiredItems = null
 	}
 }
