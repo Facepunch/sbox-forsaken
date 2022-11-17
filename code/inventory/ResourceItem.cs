@@ -4,22 +4,6 @@ namespace Facepunch.Forsaken;
 
 public class ResourceItem<A,T> : InventoryItem, IResourceItem where A : ItemResource where T : ResourceItem<A,T>
 {
-	public static T FromResource( string uniqueId )
-	{
-		var resource = ResourceLibrary.GetAll<A>()
-			.Where( a => a.UniqueId.ToLower() == uniqueId )
-			.FirstOrDefault();
-
-		if ( resource != null )
-		{
-			var item = InventorySystem.CreateItem<T>();
-			item.LoadResource( resource );
-			return item;
-		}
-
-		return null;
-	}
-
 	public override string Name => Resource?.ItemName ?? string.Empty;
 	public override string Description => Resource?.Description ?? string.Empty;
 	public override string WorldModel => Resource?.WorldModel ?? string.Empty;

@@ -246,16 +246,16 @@ public partial class ForsakenPlayer
 
 	private void GiveInitialItems()
 	{
-		var mp5 = WeaponItem.FromResource( "mp5a4" );
+		var mp5 = InventorySystem.CreateItem<WeaponItem>( "mp5a4" );
 		TryGiveWeapon( mp5 );
 
-		var crossbow = WeaponItem.FromResource( "crossbow" );
+		var crossbow = InventorySystem.CreateItem<WeaponItem>( "crossbow" );
 		TryGiveWeapon( crossbow );
 
 		TryGiveAmmo( AmmoType.Pistol, 200 );
 		TryGiveAmmo( AmmoType.Bolt, 10 );
 
-		var armor = ArmorItem.FromResource( "baseball_cap" );
+		var armor = InventorySystem.CreateItem<ArmorItem>( "baseball_cap" );
 		TryGiveItem( armor );
 
 		var toolbox = InventorySystem.CreateItem<ToolboxItem>();

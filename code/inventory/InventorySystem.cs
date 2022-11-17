@@ -134,7 +134,25 @@ public static partial class InventorySystem
 
 	public static T CreateItem<T>( ulong itemId = 0 ) where T : InventoryItem
 	{
-		return (CreateItem( typeof( T ), itemId ) as T);
+		if ( itemId > 0 && Items.TryGetValue( itemId, out var instance ) )
+		{
+			return instance as T;
+		}
+
+		if ( itemId == 0 )
+		{
+			itemId = ++NextItemId;
+		}
+
+		instance = TypeLibrary.Create<T>();
+		instance.ItemId = itemId;
+		instance.IsValid = true;
+		instance.StackSize = instance.DefaultStackSize;
+		instance.OnCreated();
+
+		Items[itemId] = instance;
+
+		return instance as T;
 	}
 
 	public static InventoryItem GetDefinition( string uniqueId )
@@ -205,6 +223,11 @@ public static partial class InventorySystem
 		Items[itemId] = instance;
 
 		return instance;
+	}
+
+	public static T CreateItem<T>( string uniqueId ) where T : InventoryItem
+	{
+		return (CreateItem( uniqueId ) as T);
 	}
 
 	public static void ClientDisconnected( Client client )
