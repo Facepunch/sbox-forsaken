@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Facepunch.Forsaken;
 
@@ -19,6 +20,7 @@ public static partial class InventorySystem
 
 	private static Dictionary<ulong, InventoryContainer> Containers { get; set; } = new();
 	private static Dictionary<ulong, InventoryItem> Items { get; set; } = new();
+	private static Dictionary<string, InventoryItem> Definitions { get; set; } = new();
 	private static List<InventoryContainer> DirtyList { get; set; } = new();
 	private static Queue<ulong> OrphanedItems { get; set; } = new();
 
@@ -27,6 +29,11 @@ public static partial class InventorySystem
 
 	public static bool IsServer => Host.IsServer;
 	public static bool IsClient => Host.IsClient;
+
+	public static void Initialize()
+	{
+		ReloadDefinitions();
+	}
 
 	public static void AddToDirtyList( InventoryContainer container )
 	{
@@ -100,10 +107,9 @@ public static partial class InventorySystem
 		}
 	}
 
-	public static InventoryItem CreateDuplicateItem( InventoryItem item )
+	public static InventoryItem DuplicateItem( InventoryItem item )
 	{
-		var description = TypeLibrary.GetDescription( item.GetType() );
-		var duplicate = CreateItem( description.Name );
+		var duplicate = CreateItem( item.UniqueId );
 		
 		using ( var writeStream = new MemoryStream() )
 		{
@@ -128,11 +134,20 @@ public static partial class InventorySystem
 
 	public static T CreateItem<T>( ulong itemId = 0 ) where T : InventoryItem
 	{
-		var description = TypeLibrary.GetDescription( typeof( T ) );
-		return (CreateItem( description.Name, itemId ) as T);
+		return (CreateItem( typeof( T ), itemId ) as T);
 	}
 
-	public static InventoryItem CreateItem( string className, ulong itemId = 0 )
+	public static InventoryItem GetDefinition( string uniqueId )
+	{
+		if ( Definitions.TryGetValue( uniqueId, out var definition ) )
+		{
+			return definition;
+		}
+
+		return null;
+	}
+
+	public static InventoryItem CreateItem( Type type, ulong itemId = 0 )
 	{
 		if ( itemId > 0 && Items.TryGetValue( itemId, out var instance ) )
 		{
@@ -144,11 +159,47 @@ public static partial class InventorySystem
 			itemId = ++NextItemId;
 		}
 
-		instance = TypeLibrary.Create<InventoryItem>( className );
+		instance = TypeLibrary.Create<InventoryItem>( type );
 		instance.ItemId = itemId;
 		instance.IsValid = true;
 		instance.StackSize = instance.DefaultStackSize;
-		instance.ClassName = className;
+		instance.OnCreated();
+
+		Items[itemId] = instance;
+
+		return instance;
+	}
+
+	public static InventoryItem CreateItem( string uniqueId, ulong itemId = 0 )
+	{
+		if ( itemId > 0 && Items.TryGetValue( itemId, out var instance ) )
+		{
+			return instance;
+		}
+
+		if ( itemId == 0 )
+		{
+			itemId = ++NextItemId;
+		}
+
+		if ( !Definitions.ContainsKey( uniqueId ) )
+		{
+			Log.Error( $"Unable to create an item with unknown unique id: {uniqueId}" );
+			return null;
+		}
+
+		var definition = Definitions[uniqueId];
+
+		instance = TypeLibrary.Create<InventoryItem>( definition.GetType() );
+		instance.ItemId = itemId;
+		instance.IsValid = true;
+		instance.StackSize = instance.DefaultStackSize;
+
+		if ( instance is IResourceItem a && definition is IResourceItem b )
+		{
+			a.LoadResource( b.Resource );
+		}
+
 		instance.OnCreated();
 
 		Items[itemId] = instance;
@@ -445,6 +496,59 @@ public static partial class InventorySystem
 				}
 			}
 		}
+	}
+
+	public static void ReloadDefinitions()
+	{
+		Definitions.Clear();
+
+		var resources = ResourceLibrary.GetAll<ItemResource>();
+
+		foreach ( var resource in resources )
+		{
+			var type = TypeLibrary.GetDescription( resource.GetType() );
+			var attribute = type.GetAttribute<ItemClassAttribute>();
+			if ( attribute == null ) continue;
+
+			var itemType = TypeLibrary.GetDescription( attribute.Type );
+			var instance = itemType.Create<InventoryItem>();
+
+			if ( instance is IResourceItem a )
+			{
+				a.LoadResource( resource );
+			}
+
+			AddDefinition( resource.UniqueId, instance );
+		}
+
+		var types = TypeLibrary.GetDescriptions<InventoryItem>();
+
+		foreach ( var type in types )
+		{
+			if ( !type.IsAbstract && !type.IsGenericType )
+			{
+				var instance = type.Create<InventoryItem>();
+				if ( string.IsNullOrEmpty( instance.UniqueId ) ) continue;
+				AddDefinition( instance.UniqueId, instance );
+			}
+		}
+	}
+
+	public static void AddDefinition( string uniqueId, InventoryItem definition )
+	{
+		if ( Definitions.ContainsKey( uniqueId ) )
+		{
+			Log.Error( $"Unable to add item definition for: {uniqueId}. Another item with this unique id already exists!" );
+			return;
+		}
+
+		Definitions.Add( uniqueId, definition );
+	}
+
+	[Event.Hotload]
+	private static void Hotloaded()
+	{
+		ReloadDefinitions();
 	}
 
 	[Event.Tick.Server]
