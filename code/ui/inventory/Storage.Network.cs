@@ -6,8 +6,10 @@ public partial class Storage
 {
     public static void Open( ForsakenPlayer player, string name, Entity entity, InventoryContainer container )
     {
-        container.AddConnection( player.Client );
         OpenForClient( To.Single(player), name, entity, container.Serialize() );
+
+		var viewer = player.Client.Components.Get<InventoryViewer>();
+		viewer?.SetContainer( container );
     }
 
     [ClientRpc]
