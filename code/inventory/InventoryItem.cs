@@ -9,7 +9,6 @@ public class InventoryItem : IValid
 	public InventoryContainer Container { get; set; }
 	public ItemEntity WorldEntity { get; private set; }
 	public bool IsWorldEntity { get; private set; }
-	public string ClassName { get; set; }
 
 	public virtual ushort DefaultStackSize => 1;
 	public virtual ushort MaxStackSize => 1;
@@ -19,6 +18,7 @@ public class InventoryItem : IValid
 	public virtual Color Color => Color.White;
 	public virtual string Name => string.Empty;
 	public virtual Color IconTintColor => Color.White;
+	public virtual string UniqueId => string.Empty;
 	public virtual string Icon => string.Empty;
 
 	public virtual Dictionary<string, int> RequiredItems => null;
