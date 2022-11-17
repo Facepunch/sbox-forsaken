@@ -189,11 +189,21 @@ public class InventoryContainer : IValid
 		InventoryId = inventoryId;
 	}
 
+	public IEnumerable<Client> GetRecipients()
+	{
+		return Client.All
+			.Where( c => c.Components.TryGet<InventoryViewer>( out var viewer ) && viewer.ContainerId == InventoryId )
+			.Concat( Connections )
+			.Distinct();
+	}
+
 	public void SendDirtyItems()
 	{
-		if ( Connections.Count > 0 )
+		var recipients = GetRecipients();
+
+		if ( recipients.Any() )
 		{
-			InventorySystem.SendDirtyItemsEvent( To.Multiple( Connections ), this );
+			InventorySystem.SendDirtyItemsEvent( To.Multiple( recipients ), this );
 		}
 	}
 
@@ -650,9 +660,11 @@ public class InventoryContainer : IValid
 			return;
 		}
 
-		if ( Connections.Count > 0 )
+		var recipients = GetRecipients();
+
+		if ( recipients.Any() )
 		{
-			InventorySystem.SendGiveItemEvent( To.Multiple( Connections ), this, slot, instance );
+			InventorySystem.SendGiveItemEvent( To.Multiple( recipients ), this, slot, instance );
 		}
 
 		HandleSlotChanged( slot );
@@ -667,9 +679,11 @@ public class InventoryContainer : IValid
 			return;
 		}
 
-		if ( Connections.Count > 0 )
+		var recipients = GetRecipients();
+
+		if ( recipients.Any() )
 		{
-			InventorySystem.SendTakeItemEvent( To.Multiple( Connections ), this, slot );
+			InventorySystem.SendTakeItemEvent( To.Multiple( recipients ), this, slot );
 		}
 
 		HandleSlotChanged( slot );

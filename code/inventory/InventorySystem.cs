@@ -230,6 +230,11 @@ public static partial class InventorySystem
 		return (CreateItem( uniqueId ) as T);
 	}
 
+	public static void ClientJoined( Client client )
+	{
+		client.Components.Create<InventoryViewer>();
+	}
+
 	public static void ClientDisconnected( Client client )
 	{
 		foreach ( var container in Containers.Values )

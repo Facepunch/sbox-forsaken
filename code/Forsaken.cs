@@ -7,13 +7,17 @@ namespace Facepunch.Forsaken;
 
 public partial class Forsaken : Game
 {
-	public Forsaken()
+	public override void Spawn()
 	{
 		InventorySystem.Initialize();
+
+		base.Spawn();
 	}
 
 	public override void ClientSpawn()
 	{
+		InventorySystem.Initialize();
+
 		Local.Hud?.Delete( true );
 		Local.Hud = new UI.Hud();
 
@@ -22,11 +26,19 @@ public partial class Forsaken : Game
 
 	public override void ClientJoined( Client client )
 	{
-		base.ClientJoined( client );
+		InventorySystem.ClientJoined( client );
 
 		var pawn = new ForsakenPlayer( client );
 		client.Pawn = pawn;
 		pawn.Respawn();
+
+		base.ClientJoined( client );
+	}
+
+	public override void ClientDisconnect( Client client, NetworkDisconnectionReason reason )
+	{
+		InventorySystem.ClientDisconnected( client );
+		base.ClientDisconnect( client, reason );
 	}
 
 	public override void RenderHud()

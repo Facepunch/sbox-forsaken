@@ -40,7 +40,6 @@ public partial class ForsakenPlayer : Player
 	private TimeSince TimeSinceBackpackOpen { get; set; }
 	private bool IsBackpackToggleMode { get; set; }
 	private Entity LastHoveredEntity { get; set; }
-	private ulong LastOpenStorageId { get; set; }
 
 	[ConCmd.Server( "fsk.structuretype" )]
 	private static void SetStructureTypeCmd( int identity )
@@ -305,16 +304,13 @@ public partial class ForsakenPlayer : Player
 	{
 		if ( IsClient ) return;
 
-		if ( LastOpenStorageId != OpenStorageId )
-		{
-			var oldStorage = InventorySystem.Find( LastOpenStorageId );
-			oldStorage?.RemoveConnection( Client );
+		var container = InventorySystem.Find( OpenStorageId );
+		var viewer = Client.Components.Get<InventoryViewer>();
 
-			var newStorage = InventorySystem.Find( OpenStorageId );
-			newStorage?.AddConnection( Client );
-		}
-
-		LastOpenStorageId = OpenStorageId;
+		if ( container.IsValid() )
+			viewer.SetContainer( container );
+		else
+			viewer.ClearContainer();
 	}
 
 	private bool SimulateContextActions()
