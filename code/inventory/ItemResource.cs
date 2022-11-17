@@ -22,12 +22,14 @@ public class ItemResource : GameResource
 
 	protected override void PostLoad()
 	{
+		if ( Host.IsMenu ) return;
 		InventorySystem.ReloadDefinitions();
 		base.PostLoad();
 	}
 
 	protected override void PostReload()
 	{
+		if ( Host.IsMenu ) return;
 		InventorySystem.ReloadDefinitions();
 		base.PostReload();
 	}
