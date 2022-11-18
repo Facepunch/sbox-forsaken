@@ -22,7 +22,14 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider
 
 	public string GetContextName()
 	{
-		return Item.Value?.Name ?? "Unknown Item";
+		if ( !Item.IsValid() ) return "Unknown Item";
+
+		var item = Item.Value;
+
+		if ( item.StackSize > 1 )
+			return $"{item.Name} ({item.StackSize})";
+		else
+			return item.Name;
 	}
 
 	public IEnumerable<ContextAction> GetSecondaryActions()
@@ -75,6 +82,9 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider
 	public override void Spawn()
 	{
 		TimeUntilCanPickup = 1f;
+
+		Tags.Add( "item" );
+
 		base.Spawn();
 	}
 }
