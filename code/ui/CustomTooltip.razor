@@ -95,7 +95,7 @@
                 var panel = TagContainer.Add.Panel( "tag" );
                 var label = panel.Add.Label( tag.Name, "name" );
                 panel.Style.BackgroundColor = Color.Lerp( tag.Color, Color.Black, 0.7f );
-                label.Style.FontColor = Color.Lerp( tag.Color, Color.Black, 0.3f );
+                label.Style.FontColor = Color.Lerp( tag.Color, Color.White, 0.1f );
             }
         }
         else
@@ -108,11 +108,11 @@
         base.OnAfterTreeRender( firstTime );
     }
 
-    protected override void FinalLayoutChildren()
+    protected override void FinalLayoutChildren( Vector2 offset )
     {
-		Container.SetClass( "active", true );
+		Container?.SetClass( "active", true );
 
-		base.FinalLayoutChildren();
+		base.FinalLayoutChildren( offset );
 	}
 
 	public override void Tick()

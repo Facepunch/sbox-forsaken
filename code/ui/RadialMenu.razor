@@ -200,7 +200,7 @@
         return HashCode.Combine( Name, Description, Items.Count, IsOpen );
     }
 
-    protected override void FinalLayoutChildren()
+    protected override void FinalLayoutChildren( Vector2 offset )
     {
         var radius = Box.Rect.Size.x * 0.32f;
         var center = Box.Rect.WithoutPosition.Center;
@@ -218,7 +218,7 @@
             }
         }
 
-        base.FinalLayoutChildren();
+        base.FinalLayoutChildren( offset );
     }
 
     private string GetRootClass()
