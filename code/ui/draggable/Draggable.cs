@@ -1,5 +1,6 @@
 ﻿using Sandbox;
 using Sandbox.UI;
+using System.Linq;
 
 namespace Facepunch.Forsaken.UI;
 
@@ -133,12 +134,7 @@ public partial class Draggable : Panel
 	{
 		root ??= Local.Hud;
 
-		if ( root is IDroppable droppable )
-		{
-			return droppable;
-		}
-
-		foreach ( var child in root.Children )
+		foreach ( var child in root.Children.Reverse() )
 		{
 			if ( !child.Box.Rect.IsInside( Mouse.Position ) )
 				continue;
@@ -147,6 +143,11 @@ public partial class Draggable : Panel
 
 			if ( panel != null )
 				return panel;
+		}
+
+		if ( root is IDroppable droppable )
+		{
+			return droppable;
 		}
 
 		return null;
