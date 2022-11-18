@@ -16,6 +16,13 @@
         min-width: 200px;
         align-items: center;
         justify-content: center;
+        transition: transform 0.2s ease-in;
+        transition: opacity 0.2s ease-in;
+
+        &:intro {
+            transform: scale( 0.8 );
+            opacity: 0;
+        }
 
         .header {
             justify-content: center;
