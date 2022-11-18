@@ -9,5 +9,6 @@
 			wood = 10
 			stone = 5
 		}
+		CraftingTime = 2
 	}
 }
