@@ -56,10 +56,24 @@ public partial class ForsakenPlayer : Player
 		if ( ConsoleSystem.Caller.Pawn is not ForsakenPlayer player )
 			return;
 
-		var item = InventorySystem.CreateItem( itemId );
-		item.StackSize = (ushort)amount;
+		var definition = InventorySystem.GetDefinition( itemId );
+		var totalToGive = amount;
+		var stacksToGive = totalToGive / definition.MaxStackSize;
+		var remainder = totalToGive % definition.MaxStackSize;
 
-		player.TryGiveItem( item );
+		for ( var i = 0; i < stacksToGive; i++ )
+		{
+			var item = InventorySystem.CreateItem( itemId );
+			item.StackSize = item.MaxStackSize;
+			player.TryGiveItem( item );
+		}
+
+		if ( remainder > 0 )
+		{
+			var item = InventorySystem.CreateItem( itemId );
+			item.StackSize = (ushort)remainder;
+			player.TryGiveItem( item );
+		}
 	}
 
 	public ForsakenPlayer() : base()

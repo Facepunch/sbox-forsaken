@@ -1,7 +1,7 @@
 ﻿using Sandbox;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
 
 namespace Facepunch.Forsaken;
 
@@ -42,6 +42,11 @@ public partial class ForsakenPlayer
 	public void ClearCraftingQueue()
 	{
 		Host.AssertServer();
+
+		for ( var i = CraftingQueue.Count; i >= 0; i-- )
+		{
+			CancelCrafting( CraftingQueue[i] );
+		}
 	}
 
 	/// <summary>
@@ -67,6 +72,8 @@ public partial class ForsakenPlayer
 	/// <returns></returns>
 	public bool CancelCrafting( CraftingQueueEntry entry )
 	{
+		Host.AssertServer();
+
 		var index = CraftingQueue.IndexOf( entry );
 		if ( index < 0 ) return false;
 
@@ -76,9 +83,24 @@ public partial class ForsakenPlayer
 
 		foreach ( var kv in recipe.Inputs )
 		{
-			var item = InventorySystem.CreateItem( kv.Key );
-			item.StackSize = (ushort)(kv.Value * entry.Quantity);
-			TryGiveItem( item );
+			var definition = InventorySystem.GetDefinition( kv.Key );
+			var totalToGive = kv.Value * entry.Quantity;
+			var stacksToGive = totalToGive / definition.MaxStackSize;
+			var remainder = totalToGive % definition.MaxStackSize;
+
+			for ( var i = 0; i < stacksToGive; i++ )
+			{
+				var item = InventorySystem.CreateItem( kv.Key );
+				item.StackSize = item.MaxStackSize;
+				TryGiveItem( item );
+			}
+
+			if ( remainder > 0 )
+			{
+				var item = InventorySystem.CreateItem( kv.Key );
+				item.StackSize = (ushort)remainder;
+				TryGiveItem( item );
+			}
 		}
 
 		if ( index == 0 )
