@@ -7,6 +7,7 @@
 @attribute [StyleSheet( "/ui/inventory/Storage.scss" )]
 @inherits Panel
 @implements IDialog
+@implements IDroppable
 
 @if ( !ForsakenPlayer.Me.IsValid() ) return;
 @if ( !Container.IsValid() ) return;
@@ -137,6 +138,19 @@
 
         Container = container;
         Container.SetTransferHandler( GetTransferTarget );
+    }
+
+    public virtual bool CanDrop( IDraggable draggable, DraggableMode mode )
+    {
+        return true;
+    }
+
+    public virtual void OnDrop( IDraggable draggable, DraggableMode mode )
+    {
+        if ( draggable is InventorySlot slot )
+        {
+            ForsakenPlayer.ThrowItem( slot.Item, Screen.GetDirection( Mouse.Position ) );
+        }
     }
 
     protected override int BuildHash()
