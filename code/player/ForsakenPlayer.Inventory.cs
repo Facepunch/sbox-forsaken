@@ -7,6 +7,33 @@ namespace Facepunch.Forsaken;
 
 public partial class ForsakenPlayer
 {
+	[ConCmd.Server( "fsk.item.throw" )]
+	private static void ThrowItemCmd( ulong itemId, string directionCsv )
+	{
+		if ( ConsoleSystem.Caller.Pawn is not ForsakenPlayer player )
+			return;
+
+		var split = directionCsv.Split( ',' );
+		var direction = new Vector3( split[0].ToFloat(), split[1].ToFloat(), 0f );
+		var item = InventorySystem.FindInstance( itemId );
+
+		if ( item.IsValid() )
+		{
+			var entity = new ItemEntity();
+
+			entity.Position = player.EyePosition + direction * 10f;
+			entity.SetItem( item );
+			entity.ApplyLocalImpulse( direction * 300f + Vector3.Down * 10f );
+		}
+	}
+
+	public static void ThrowItem( InventoryItem item, Vector3 direction )
+	{
+		if ( !item.IsValid() ) return;
+		var csv = $"{direction.x},{direction.y}";
+		ThrowItemCmd( item.ItemId, csv );
+	}
+
 	public List<T> FindItems<T>() where T : InventoryItem
 	{
 		var items = new List<T>();
