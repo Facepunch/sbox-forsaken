@@ -7,7 +7,6 @@ namespace Facepunch.Forsaken;
 
 public partial class ForsakenPlayer
 {
-
 	public List<T> FindItems<T>() where T : InventoryItem
 	{
 		var items = new List<T>();

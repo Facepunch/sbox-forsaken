@@ -41,13 +41,25 @@ public partial class ForsakenPlayer : Player
 	private bool IsBackpackToggleMode { get; set; }
 	private Entity LastHoveredEntity { get; set; }
 
-	[ConCmd.Server( "fsk.structuretype" )]
+	[ConCmd.Server( "fsk.player.structuretype" )]
 	private static void SetStructureTypeCmd( int identity )
 	{
 		if ( ConsoleSystem.Caller.Pawn is ForsakenPlayer player )
 		{
 			player.StructureType = identity;
 		}
+	}
+
+	[ConCmd.Server( "fsk.item.give" )]
+	public static void GiveItemCmd( string itemId, int amount )
+	{
+		if ( ConsoleSystem.Caller.Pawn is not ForsakenPlayer player )
+			return;
+
+		var item = InventorySystem.CreateItem( itemId );
+		item.StackSize = (ushort)amount;
+
+		player.TryGiveItem( item );
 	}
 
 	public ForsakenPlayer() : base()
@@ -57,9 +69,12 @@ public partial class ForsakenPlayer : Player
 
 	public ForsakenPlayer( Client client ) : this()
 	{
-		HotbarIndex = 0;
 		client.Pawn = this;
+
 		CreateInventories();
+
+		CraftingQueue = new List<CraftingQueueEntry>();
+		HotbarIndex = 0;
 		Armor = new();
 	}
 
@@ -223,6 +238,8 @@ public partial class ForsakenPlayer : Player
 		EnableDrawing = false;
 		Controller = null;
 
+		ClearCraftingQueue();
+
 		var itemsToDrop = FindItems<InventoryItem>().Where( i => i.DropOnDeath );
 
 		foreach ( var item in itemsToDrop )
@@ -273,6 +290,7 @@ public partial class ForsakenPlayer : Player
 
 		Projectiles.Simulate();
 
+		SimulateCrafting();
 		SimulateOpenStorage();
 
 		if ( !HasDialogOpen )
