@@ -530,6 +530,12 @@ public static partial class InventorySystem
 	{
 		Definitions.Clear();
 
+		if ( ResourceLibrary == null )
+		{
+			Log.Info( "Unable to reload Forsaken item definitions because ResourceLibrary is null!" );
+			return;
+		}
+
 		var resources = ResourceLibrary.GetAll<ItemResource>();
 
 		foreach ( var resource in resources )
