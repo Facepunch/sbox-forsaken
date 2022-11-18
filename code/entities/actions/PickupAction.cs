@@ -1,4 +1,6 @@
-﻿namespace Facepunch.Forsaken;
+﻿using Sandbox;
+
+namespace Facepunch.Forsaken;
 
 public class PickupAction : ContextAction
 {
@@ -17,12 +19,25 @@ public class PickupAction : ContextAction
 
 	public override void Select( ForsakenPlayer player )
 	{
-		if ( IsServer && Provider is StorageCrate crate )
+		if ( IsServer )
 		{
-			var item = InventorySystem.CreateItem<StorageCrateItem>();
-			player.TryGiveItem( item );
-			player.PlaySound( "inventory.move" );
-			crate.Delete();
+			if ( Provider is StorageCrate crate )
+			{
+				var item = InventorySystem.CreateItem<StorageCrateItem>();
+				player.TryGiveItem( item );
+				player.PlaySound( "inventory.move" );
+				crate.Delete();
+			}
+			else if ( Provider is ItemEntity entity )
+			{
+				var item = entity.Take();
+				 
+				if ( item.IsValid() )
+				{
+					player.TryGiveItem( item );
+					player.PlaySound( "inventory.move" );
+				}
+			}
 		}
 	}
 
