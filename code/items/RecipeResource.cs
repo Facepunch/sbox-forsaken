@@ -20,4 +20,9 @@ public class RecipeResource : GameResource
 	/// The unique item ids and their quantities required to produce the output item.
 	/// </summary>
 	[Property] public Dictionary<string,int> Inputs { get; set; }
+
+	/// <summary>
+	/// The amount of time in seconds that it takes to craft this recipe.
+	/// </summary>
+	[Property] public int CraftingTime { get; set; } = 5;
 }
