@@ -26,11 +26,12 @@
     .stacksize {
         position: absolute;
         pointer-events: none;
+        font-family: Vollkorn;
+        text-shadow: 0 2px 0 rgba(0, 0, 0, 0.8);
+        font-size: 20px;
+        color: white;
         bottom: 2px;
         right: 4px;
-        font-size: 18px;
-        color: white;
-        text-shadow: 0 2px 0 rgba(0, 0, 0, 0.8);
     }
 
     &.selected {
