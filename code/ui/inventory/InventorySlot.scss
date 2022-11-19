@@ -36,8 +36,7 @@
 
     &.selected {
         transition: all 0.1s ease-out;
-        background: linear-gradient(rgba(red, 0.5), rgba(#222, 0.5));
-        border-color: darken( desaturate( red, 0.4 ), 0.1 );
+        border-color: rgba( white, 0.5 );
         opacity: 1;
 
         &:not( .is-empty ) {
@@ -54,7 +53,7 @@
     }
 
     &.is-empty {
-        opacity: 0.5;
+        opacity: 0.7;
 
         &.selected {
             opacity: 1;
@@ -81,10 +80,6 @@
             border-radius: 4px;
             display: flex;
             opacity: 0.6;
-        }
-
-        &.is-empty {
-            border-color: darken( red, 0.3 );
         }
 
         .icon {
