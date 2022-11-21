@@ -1,0 +1,32 @@
+﻿@using System;
+@using Sandbox;
+@using Sandbox.UI;
+@using Facepunch.Forsaken;
+
+@namespace Facepunch.Forsaken.UI
+@attribute [StyleSheet( "/ui/Vitals.scss" )]
+@inherits Panel
+
+@{
+    var player = ForsakenPlayer.Me;
+    if ( !player.IsValid() ) return;
+}
+
+<root>
+    <label class="health">Health: @(Health)</label>
+    <label class="stamina">Stamina: @(Stamina)</label>
+    <label class="temperature">Temperature: @(Temperature)°C</label>
+</root>
+
+@code
+{
+    private float Health => ForsakenPlayer.Me.Health.CeilToInt();
+    private float Stamina => ForsakenPlayer.Me.Stamina.CeilToInt();
+    private float Temperature => ForsakenPlayer.Me.Temperature.CeilToInt();
+
+    protected override int BuildHash()
+    {
+        var player = ForsakenPlayer.Me;
+        return HashCode.Combine( player, Health, Stamina, Temperature );
+    }
+}
