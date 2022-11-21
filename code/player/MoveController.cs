@@ -8,14 +8,11 @@ public partial class MoveController : BasePlayerController
 	[Net] public float WalkSpeed { get; set; }
 	[Net] public float SprintSpeed { get; set; }
 
-	public float FallDamageThreshold { get; set; } = 250f;
 	public float MoveSpeedScale { get; set; } = 1f;
 	public float Acceleration { get; set; } = 8f;
 	public float AirAcceleration { get; set; } = 24f;
 	public float GroundFriction { get; set; } = 6f;
 	public float StopSpeed { get; set; } = 100f;
-	public float FallDamageMin { get; set; } = 0f;
-	public float FallDamageMax { get; set; } = 100f;
 	public float StayOnGroundAngle { get; set; } = 270f;
 	public float GroundAngle { get; set; } = 46f;
 	public float StepSize { get; set; } = 28f;
