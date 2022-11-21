@@ -10,6 +10,7 @@ public partial class ForsakenPlayer : Player
 {
 	public static ForsakenPlayer Me => Local.Pawn as ForsakenPlayer;
 
+	[Net] public float Temperature { get; private set; }
 	[Net, Predicted] public float Stamina { get; private set; }
 	[Net, Predicted] public bool IsOutOfBreath { get; private set; }
 	[Net, Predicted] public ushort HotbarIndex { get; private set; }
@@ -318,6 +319,12 @@ public partial class ForsakenPlayer : Player
 		SimulateConstruction();
 		SimulateDeployable();
 		SimulateActiveChild( client, ActiveChild );
+	}
+
+	[Event.Tick.Server]
+	protected virtual void ServerTick()
+	{
+		Temperature = TimeSystem.Temperature;
 	}
 
 	protected override void OnDestroy()
