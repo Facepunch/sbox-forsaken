@@ -4,35 +4,37 @@ using System.Linq;
 
 namespace Facepunch.Forsaken;
 
-public class DayNightGradient
+public abstract class TimeGradient<T>
 {
 	private struct GradientNode
 	{
-		public Color Color;
+		public T Value;
 		public float Time;
 
-		public GradientNode( Color color, float time )
+		public GradientNode( T value, float time )
 		{
-			Color = color;
+			Value = value;
 			Time = time;
 		}
 	}
 
 	private GradientNode[] Nodes;
 
-	public DayNightGradient( Color dawnColor, Color dayColor, Color duskColor, Color nightColor )
+	public void SetValues( T dawn, T day, T dusk, T night )
 	{
 		Nodes = new GradientNode[7];
-		Nodes[0] = new GradientNode( nightColor, 0f );
-		Nodes[1] = new GradientNode( nightColor, 0.2f );
-		Nodes[2] = new GradientNode( dawnColor, 0.35f );
-		Nodes[3] = new GradientNode( dayColor, 0.5f );
-		Nodes[4] = new GradientNode( dayColor, 0.7f );
-		Nodes[5] = new GradientNode( duskColor, 0.85f );
-		Nodes[6] = new GradientNode( nightColor, 1f );
+		Nodes[0] = new GradientNode( night, 0f );
+		Nodes[1] = new GradientNode( night, 0.2f );
+		Nodes[2] = new GradientNode( dawn, 0.35f );
+		Nodes[3] = new GradientNode( day, 0.5f );
+		Nodes[4] = new GradientNode( day, 0.7f );
+		Nodes[5] = new GradientNode( dusk, 0.85f );
+		Nodes[6] = new GradientNode( night, 1f );
 	}
 
-	public Color Evaluate( float fraction )
+	public abstract T Interpolate( T a, T b, float fraction );
+
+	public T Evaluate( float fraction )
 	{
 		for ( var i = 0; i < Nodes.Length; i++ )
 		{
@@ -48,12 +50,27 @@ public class DayNightGradient
 			{
 				var duration = (nextNode.Time - node.Time);
 				var interpolate = (1f / duration) * (fraction - node.Time);
-
-				return Color.Lerp( node.Color, nextNode.Color, interpolate );
+				return Interpolate( node.Value, nextNode.Value, interpolate );
 			}
 		}
 
-		return Nodes[0].Color;
+		return Nodes[0].Value;
+	}
+}
+
+public class ColorGradient : TimeGradient<Color>
+{
+	public override Color Interpolate( Color a, Color b, float fraction )
+	{
+		return Color.Lerp( a, b, fraction );
+	}
+}
+
+public class FloatGradient : TimeGradient<float>
+{
+	public override float Interpolate( float a, float b, float fraction )
+	{
+		return a.LerpTo( b, fraction );
 	}
 }
 
@@ -95,6 +112,18 @@ public partial class TimeController : ModelEntity
 	[DefaultValue( "11 10 21" )]
 	public Color NightSkyColor { get; set; }
 
+	[Property( Title = "Dawn Temperature" )]
+	public float DawnTemperature { get; set; } = 0f;
+
+	[Property( Title = "Day Temperature" )]
+	public float DayTemperature { get; set; } = 10f;
+
+	[Property( Title = "Dusk Temperature" )]
+	public float DuskTemperature { get; set; } = 0f;
+
+	[Property( Title = "Night Temperature" )]
+	public float NightTemperature { get; set; } = -10f;
+
 	protected Output OnBecomeNight { get; set; }
 	protected Output OnBecomeDusk { get; set; }
 	protected Output OnBecomeDawn { get; set; }
@@ -111,13 +140,20 @@ public partial class TimeController : ModelEntity
 	}
 
 	private EnvironmentLightEntity InternalEnvironment;
-	private DayNightGradient SkyColorGradient;
-	private DayNightGradient ColorGradient;
+	private FloatGradient TemperatureGradient;
+	private ColorGradient SkyColorGradient;
+	private ColorGradient ColorGradient;
 
 	public override void Spawn()
 	{
-		ColorGradient = new DayNightGradient( DawnColor, DayColor, DuskColor, NightColor );
-		SkyColorGradient = new DayNightGradient( DawnSkyColor, DaySkyColor, DuskSkyColor, NightSkyColor );
+		ColorGradient = new ColorGradient();
+		ColorGradient.SetValues( DawnColor, DayColor, DuskColor, NightColor );
+
+		SkyColorGradient = new ColorGradient();
+		SkyColorGradient.SetValues( DawnSkyColor, DaySkyColor, DuskSkyColor, NightSkyColor );
+
+		TemperatureGradient = new FloatGradient();
+		TemperatureGradient.SetValues( DawnTemperature, DayTemperature, DuskTemperature, NightTemperature );
 
 		TimeSystem.OnSectionChanged += HandleTimeSectionChanged;
 
@@ -145,13 +181,17 @@ public partial class TimeController : ModelEntity
 		var sunAngle = ((TimeSystem.TimeOfDay / 24f) * 360f);
 		var radius = 10000f;
 
-		environment.Color = ColorGradient.Evaluate( (1f / 24f) * TimeSystem.TimeOfDay );
-		environment.SkyColor = SkyColorGradient.Evaluate( (1f / 24f) * TimeSystem.TimeOfDay );
+		var fraction = (1f / 24f) * TimeSystem.TimeOfDay;
+
+		environment.Color = ColorGradient.Evaluate( fraction );
+		environment.SkyColor = SkyColorGradient.Evaluate( fraction );
 
 		environment.Position = Vector3.Zero + Rotation.From( 0, 0, sunAngle + 60f ) * ( radius * Vector3.Right );
 		environment.Position += Rotation.From( 0, sunAngle, 0 ) * ( radius * Vector3.Forward );
 
 		var direction = (Vector3.Zero - environment.Position).Normal;
 		environment.Rotation = Rotation.LookAt( direction, Vector3.Up );
+
+		TimeSystem.Temperature = TemperatureGradient.Evaluate( fraction );
 	}
 }

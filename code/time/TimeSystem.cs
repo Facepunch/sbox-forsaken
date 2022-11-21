@@ -11,11 +11,21 @@ public partial class TimeSystem : Entity
 	public static TimeSection Section => Instance?.InternalSection ?? TimeSection.Day;
 	public static float TimeOfDay => Instance?.InternalTimeOfDay ?? 12f;
 
+	public static float Temperature
+	{
+		get => Instance?.InternalTemperature ?? 10f;
+		set
+		{
+			if ( Instance != null )
+				Instance.InternalTemperature = value;
+		}
+	}
+
 	[Net, Change( nameof( OnInternalSectionChanged ) )]
 	private TimeSection InternalSection { get; set; }
 
-	[Net]
-	private float InternalTimeOfDay { get; set; } = 9f;
+	[Net] private float InternalTimeOfDay { get; set; } = 12f;
+	[Net] private float InternalTemperature { get; set; } = 10f;
 
 	[ConVar.Server( "fsk.time.speed" )]
 	public static float Speed { get; set; } = 0.05f;
