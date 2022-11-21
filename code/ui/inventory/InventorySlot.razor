@@ -136,7 +136,7 @@
             else
                 Icon.Style.BackgroundImage = null;
 
-            Style.SetLinearGradientBackground( Color.Black, 0.7f, new Color( 0.2f ), 0.7f );
+            Style.SetLinearGradientBackground( Color.Black, 0.7f, new Color( 0.1f ), 0.7f );
             Style.BorderColor = null;
 
             SetClass( "is-empty", true );
@@ -158,12 +158,8 @@
             Icon.Style.BackgroundImage = null;
         }
 
-        if ( Item.Color == Color.White )
-            Style.SetLinearGradientBackground( Color.Black, 0.7f, new Color( 0.2f ), 0.7f );
-        else
-            Style.SetLinearGradientBackground( Item.Color, 0.7f, new Color( 0.2f ), 0.7f );
-
-        Style.BorderColor = Item.Color.WithAlpha( 0.8f );
+        Style.SetLinearGradientBackground( Item.Color, 0.2f, new Color( 0.1f ), 0.7f );
+        Style.BorderColor = Item.Color.WithAlpha( 0.4f );
 
         SetClass( "is-empty", false );
     }
