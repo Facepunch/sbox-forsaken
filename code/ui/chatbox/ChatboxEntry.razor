@@ -1,0 +1,29 @@
+﻿@using System;
+@using Sandbox;
+@using Sandbox.UI;
+@using Facepunch.Forsaken;
+
+@namespace Facepunch.Forsaken.UI
+@inherits Panel
+
+<root class=@(HasFaded ? "faded" : string.Empty)>
+    <label class="name">@Name</label>
+    <label class="message">@Message</label>
+</root>
+
+@code {
+    public bool HasFaded { get; private set; }
+    public string Name { get; set; }
+    public string Message { get; set; }
+
+    protected override async void OnParametersSet()
+    {
+        await Task.DelaySeconds( 10f );
+        HasFaded = true;
+    }
+
+    protected override int BuildHash()
+    {
+        return HashCode.Combine( Name, Message, HasFaded );
+    }
+}
