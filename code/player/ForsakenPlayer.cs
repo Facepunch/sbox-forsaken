@@ -106,6 +106,18 @@ public partial class ForsakenPlayer : Player
 		Cursor = new Vector2( 0.5f, 0.5f );
 	}
 
+	public IEnumerable<Client> GetChatRecipients()
+	{
+		var clientsNearby = FindInSphere( Position, 4000f )
+			.OfType<ForsakenPlayer>()
+			.Select( p => p.Client );
+
+		foreach ( var client in clientsNearby )
+		{
+			yield return client;
+		}
+	}
+
 	public void ReduceStamina( float amount )
 	{
 		Stamina = Math.Max( Stamina - amount, 0f );
