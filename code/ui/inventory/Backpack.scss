@@ -9,8 +9,11 @@
     backdrop-filter-blur: 24px;
     flex-direction: column;
     background-color: rgba(0, 0, 0, 0.9);
+    transition: backdrop-filter-blur 0.15s ease-in;
+    transition: opacity 0.15s ease-in;
     padding-bottom: 100px;
     z-index: 100;
+    opacity: 1;
 
     .body-container {
         flex-direction: row;
@@ -88,7 +91,7 @@
     }
 
     &.hidden {
-        display: none;
+        opacity: 0;
 
         .equipment,
         .backpack,

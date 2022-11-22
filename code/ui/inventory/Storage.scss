@@ -9,6 +9,9 @@
     pointer-events: all;
     backdrop-filter-blur: 24px;
     background-color: rgba(0, 0, 0, 0.9);
+    transition: backdrop-filter-blur 0.15s ease-in;
+    transition: opacity 0.15s ease-in;
+    opacity: 1;
 
     .equipment,
     .backpack,
@@ -66,7 +69,7 @@
     }
 
     &.hidden {
-        display: none;
+        opacity: 0;
 
         .storage,
         .equipment,

@@ -3,6 +3,8 @@
     bottom: 32px;
     display: flex;
     flex-direction: row;
+    transition: opacity 0.15s ease-in;
+    opacity: 1;
 
     InventorySlot {
         margin-right: 16px;
@@ -13,6 +15,6 @@
     }
 
     &.hidden {
-        display: none;
+        opacity: 0;
     }
 }

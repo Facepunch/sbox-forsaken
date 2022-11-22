@@ -2,10 +2,13 @@
     width: 600px;
     height: 600px;
     background-color: rgba( 0 0 0 0.8 );
-    backdrop-filter: blur( 8px );
+    backdrop-filter-blur: 24px;
     border-radius: 50%;
     box-shadow: 0 0 32px 16px rgba( 50 50 50 0.5 );
     border: 2px white solid;
+    transition: backdrop-filter-blur 0.15s ease-in;
+    transition: opacity 0.15s ease-in;
+    opacity: 1;
 
     RadialMenuItem {
         margin-right: 16px;
@@ -60,6 +63,6 @@
     }
 
     &.hidden {
-        display: none;
+        opacity: 0;
     }
 }
