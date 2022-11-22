@@ -7,7 +7,7 @@ namespace Facepunch.Forsaken;
 public abstract partial class Weapon : BaseWeapon
 {
 	public virtual string MuzzleAttachment => "muzzle";
-	public virtual string MuzzleFlashEffect => "particles/pistol_muzzleflash.vpcf";
+	public virtual string MuzzleFlashEffect => null;
 	public virtual string ImpactEffect => null;
 	public virtual int ClipSize => 16;
 	public virtual float ReloadTime => 3.0f;
@@ -442,8 +442,6 @@ public abstract partial class Weapon : BaseWeapon
 	[ClientRpc]
 	protected virtual void ShootEffects()
 	{
-		Host.AssertClient();
-
 		if ( !IsMelee )
 		{
 			CreateMuzzleFlash();

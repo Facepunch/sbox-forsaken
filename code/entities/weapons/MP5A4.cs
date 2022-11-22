@@ -8,7 +8,7 @@ public partial class MP5A4 : ProjectileWeapon<CrossbowBoltProjectile>
 	public override string ImpactEffect => GetImpactEffect();
 	public override string TrailEffect => GetTrailEffect();
 	public override int ViewModelMaterialGroup => 1;
-	public override string MuzzleFlashEffect => null;
+	public override string MuzzleFlashEffect => "particles/pistol_muzzleflash.vpcf";
 	public override string HitSound => null;
 	public override DamageFlags DamageType => DamageFlags.Bullet;
 	public override float PrimaryRate => 10f;
