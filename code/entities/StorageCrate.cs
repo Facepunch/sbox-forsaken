@@ -12,15 +12,17 @@ public partial class StorageCrate : Deployable, IContextActionProvider
 	[Net] private NetInventoryContainer InternalInventory { get; set; }
 	public InventoryContainer Inventory => InternalInventory.Value;
 
-	private PickupAction PickupAction { get; set; }
-	private OpenAction OpenAction { get; set; }
+	private ContextAction PickupAction { get; set; }
+	private ContextAction OpenAction { get; set; }
 
 	[Net] public bool IsEmpty { get; private set; }
 
 	public StorageCrate()
 	{
-		PickupAction = new( this );
-		OpenAction = new( this );
+		PickupAction = new( "pickup", "Pickup", "textures/ui/actions/pickup.png" );
+		PickupAction.SetCondition( p => IsEmpty );
+
+		OpenAction = new( "open", "Open", "textures/ui/actions/open.png" );
 	}
 
 	public string GetContextName()
@@ -42,6 +44,27 @@ public partial class StorageCrate : Deployable, IContextActionProvider
 	public ContextAction GetPrimaryAction()
 	{
 		return OpenAction;
+	}
+
+	public virtual void OnContextAction( ForsakenPlayer player, ContextAction action )
+	{
+		if ( action == OpenAction )
+		{
+			if ( IsServer )
+			{
+				Open( player );
+			}
+		}
+		else if ( action == PickupAction )
+		{
+			if ( IsServer )
+			{
+				var item = InventorySystem.CreateItem<StorageCrateItem>();
+				player.TryGiveItem( item );
+				player.PlaySound( "inventory.move" );
+				Delete();
+			}
+		}
 	}
 
 	public override void Spawn()

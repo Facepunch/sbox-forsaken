@@ -1,5 +1,6 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
+using static Sandbox.Event;
 
 namespace Facepunch.Forsaken;
 
@@ -13,11 +14,11 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider
 	public Color GlowColor => Item.Value?.Color ?? Color.White;
 	public float GlowWidth => 0.4f;
 
-	private PickupAction PickupAction { get; set; }
+	private ContextAction PickupAction { get; set; }
 
 	public ItemEntity()
 	{
-		PickupAction = new( this );
+		PickupAction = new( "pickup", "Pickup", "textures/ui/actions/pickup.png" );
 	}
 
 	public string GetContextName()
@@ -72,6 +73,23 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider
 		}
 
 		return null;
+	}
+
+	public virtual void OnContextAction( ForsakenPlayer player, ContextAction action )
+	{
+		if ( action == PickupAction )
+		{
+			if ( IsServer )
+			{
+				var item = Take();
+
+				if ( item.IsValid() )
+				{
+					player.TryGiveItem( item );
+					player.PlaySound( "inventory.move" );
+				}
+			}
+		}
 	}
 
 	public virtual void Reset()
