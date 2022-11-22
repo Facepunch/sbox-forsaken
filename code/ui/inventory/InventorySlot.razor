@@ -11,6 +11,7 @@
 @implements ITooltipProvider
 
 <root>
+    <div @ref="Glow" class="glow"></div>
     <div @ref="Icon" class="icon"></div>
     <label class="stacksize">@StackSize</label>
     <div class="overlay"></div>
@@ -28,6 +29,7 @@
     public ArmorSlot ArmorSlot { get; set; }
     public Action<InventorySlot> OnSelected { get; set; }
     public Panel Icon { get; set; }
+    public Panel Glow { get; set; }
     public string Description => Item.Description;
     public ItemTag[] Tags => Item.Tags;
     public string Name => Item.Name;
@@ -136,11 +138,7 @@
             else
                 Icon.Style.BackgroundImage = null;
 
-            Style.SetLinearGradientBackground( Color.Black, 0.7f, new Color( 0.1f ), 0.7f );
-            Style.BorderColor = null;
-
             SetClass( "is-empty", true );
-
             Item = null;
 
             return;
@@ -158,8 +156,7 @@
             Icon.Style.BackgroundImage = null;
         }
 
-        Style.SetLinearGradientBackground( Item.Color, 0.2f, new Color( 0.1f ), 0.7f );
-        Style.BorderColor = Item.Color.WithAlpha( 0.4f );
+        Glow.Style.SetRadialGradientBackground( Item.Color, 0.6f, Color.Black, 0f );
 
         SetClass( "is-empty", false );
     }
