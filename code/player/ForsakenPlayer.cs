@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Facepunch.Forsaken.UI;
 using Sandbox;
 using Sandbox.Component;
 
@@ -9,6 +10,15 @@ namespace Facepunch.Forsaken;
 public partial class ForsakenPlayer : Player
 {
 	public static ForsakenPlayer Me => Local.Pawn as ForsakenPlayer;
+
+	private static string[] InvalidPlacementThoughts = new string[]
+	{
+		"It won't fit here, I should try elsewhere.",
+		"Hmm... this doesn't go there.",
+		"I can't place that here.",
+		"It doesn't seem to go there.",
+		"I should try to place it somewhere else."
+	};
 
 	[Net] public float Temperature { get; private set; }
 	[Net, Predicted] public float Stamina { get; private set; }
@@ -456,14 +466,21 @@ public partial class ForsakenPlayer : Player
 			ghost.ResetInterpolation();
 		}
 
-		if ( Input.Released( InputButton.PrimaryAttack ) && isPositionValid )
+		if ( Input.Released( InputButton.PrimaryAttack ) )
 		{
 			if ( IsServer )
 			{
-				var entity = TypeLibrary.Create<Deployable>( deployable.Deployable );
-				entity.Position = trace.EndPosition;
-				entity.ResetInterpolation();
-				deployable.Remove();
+				if ( isPositionValid )
+				{
+					var entity = TypeLibrary.Create<Deployable>( deployable.Deployable );
+					entity.Position = trace.EndPosition;
+					entity.ResetInterpolation();
+					deployable.Remove();
+				}
+				else
+				{
+					Thoughts.Show( To.Single( this ), Rand.FromArray( InvalidPlacementThoughts ) );
+				}
 			}
 		}
 	}
@@ -542,6 +559,7 @@ public partial class ForsakenPlayer : Player
 
 					if ( !isValid )
 					{
+						Thoughts.Show( To.Single( this ), Rand.FromArray( InvalidPlacementThoughts ) );
 						structure.Delete();
 					}
 				}

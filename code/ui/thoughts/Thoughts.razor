@@ -1,0 +1,37 @@
+﻿@using System;
+@using Sandbox;
+@using Sandbox.UI;
+@using Facepunch.Forsaken;
+
+@namespace Facepunch.Forsaken.UI
+@attribute [StyleSheet( "/ui/thoughts/Thoughts.scss" )]
+@inherits Panel
+
+@{
+    var player = ForsakenPlayer.Me;
+    if ( !player.IsValid() ) return;
+}
+
+<root>
+    <div @ref="Entries" class="thoughts">
+
+    </div>
+</root>
+
+@code
+{
+    private static Thoughts Instance { get; set; }
+
+    private Panel Entries { get; set; }
+
+    public Thoughts()
+    {
+        Instance = this;
+    }
+
+    private void AddEntry( string thought )
+    {
+        var entry = Entries.AddChild<ThoughtEntry>();
+        entry.Initialize( thought );
+    }
+}

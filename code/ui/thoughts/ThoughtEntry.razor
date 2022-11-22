@@ -1,0 +1,67 @@
+﻿@using System;
+@using Sandbox;
+@using Sandbox.UI;
+@using Facepunch.Forsaken;
+
+@namespace Facepunch.Forsaken.UI
+@inherits Panel
+
+<label>@DisplayText</label>
+
+@code
+{
+    private string DisplayText { get; set; }
+    private string TargetText { get; set; }
+    private TimeUntil NextStageTime { get; set; }
+    private float StageDuration { get; set; }
+    private DisplayStage Stage { get; set; }
+
+    private enum DisplayStage
+    {
+        Enter,
+        Leave
+    }
+
+    public void Initialize( string thought )
+    {
+        TargetText = thought;
+        NextStageTime = 1f;
+        StageDuration = 1f;
+        Stage = DisplayStage.Enter;
+    }
+
+    public override void Tick()
+    {
+        if ( !IsDeleting && !string.IsNullOrEmpty( TargetText ) )
+        {
+            if ( Stage == DisplayStage.Enter )
+            {
+                var fraction = (NextStageTime.Passed / StageDuration);
+                var characters = (TargetText.Length * fraction).CeilToInt().Clamp( 0, TargetText.Length );
+                DisplayText = TargetText[0..characters];
+
+                if ( NextStageTime )
+                {
+                    NextStageTime = 2f;
+                    StageDuration = 2f;
+                    Stage = DisplayStage.Leave;
+                }
+            }
+            else if ( Stage == DisplayStage.Leave )
+            {
+                if ( NextStageTime )
+                {
+                    Delete();
+                }
+            }
+        }
+
+        base.Tick();
+    }
+
+    protected override int BuildHash()
+    {
+        var player = ForsakenPlayer.Me;
+        return HashCode.Combine( player, DisplayText );
+    }
+}
