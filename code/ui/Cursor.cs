@@ -7,7 +7,8 @@ namespace Facepunch.Forsaken.UI;
 
 public class CursorAction : Panel
 {
-	private ContextAction Action { get; set; }
+	public ContextAction Action { get; private set; }
+
 	private Image Icon { get; set; }
 	private Label Name { get; set; }
 
@@ -35,13 +36,11 @@ public class CursorAction : Panel
 
 	public void ClearAction()
 	{
-		Action = null;
+		Action = default;
 	}
 
 	public void SetAction( ContextAction action )
 	{
-		Assert.NotNull( action );
-
 		if ( !string.IsNullOrEmpty( action.Icon ) )
 		{
 			Icon.Texture = Texture.Load( FileSystem.Mounted, action.Icon );
@@ -98,7 +97,10 @@ public class Cursor : Panel
 	private void SetActionProvider( IContextActionProvider provider )
 	{
 		if ( ActionProvider == provider )
-			return;
+		{
+			if ( PrimaryAction.Action == provider.GetPrimaryAction() )
+				return;
+		}
 
 		ActionProvider = provider;
 

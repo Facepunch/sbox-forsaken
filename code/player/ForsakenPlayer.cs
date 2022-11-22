@@ -113,7 +113,7 @@ public partial class ForsakenPlayer : Player
 
 	public void SetContextAction( ContextAction action )
 	{
-		ContextActionId = TypeLibrary.GetTypeIdent( action.GetType() );
+		ContextActionId = action.Hash;
 	}
 
 	public InventoryItem GetActiveHotbarItem()
@@ -154,11 +154,10 @@ public partial class ForsakenPlayer : Player
 		if ( Input.StopProcessing ) return;
 
 		var mouseDelta = Input.MouseDelta / new Vector2( Screen.Width, Screen.Height );
-		var sensitivity = 0.06f;
 
 		if ( !Mouse.Visible )
 		{
-			Cursor += (mouseDelta * sensitivity);
+			Cursor += (mouseDelta * 20f * Time.Delta);
 			Cursor = Cursor.Clamp( 0f, 1f );
 		}
 
@@ -290,6 +289,7 @@ public partial class ForsakenPlayer : Player
 	public override void FrameSimulate( Client cl )
 	{
 		SimulateConstruction();
+		SimulateDeployable();
 
 		base.FrameSimulate( cl );
 	}
@@ -388,14 +388,14 @@ public partial class ForsakenPlayer : Player
 
 		if ( actions.IsValid() && Position.Distance( actions.Position ) <= actions.InteractionRange )
 		{
-			if ( actionId > 0 )
+			if ( actionId != 0 )
 			{
 				var allActions = IContextActionProvider.GetAllActions( actions );
-				var action = allActions.Where( a => a.IsAvailable( this ) && TypeLibrary.GetTypeIdent( a.GetType() ) == actionId ).FirstOrDefault();
+				var action = allActions.Where( a => a.IsAvailable( this ) && a.Hash == actionId ).FirstOrDefault();
 
 				if ( action.IsValid() )
 				{
-					action.Select( this );
+					actions.OnContextAction( this, action );
 				}
 			}
 
