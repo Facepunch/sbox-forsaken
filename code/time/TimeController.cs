@@ -133,8 +133,7 @@ public partial class TimeController : ModelEntity
 	{
 		get
 		{
-			if ( InternalEnvironment == null )
-				InternalEnvironment = All.OfType<EnvironmentLightEntity>().FirstOrDefault();
+			InternalEnvironment ??= All.OfType<EnvironmentLightEntity>().FirstOrDefault();
 			return InternalEnvironment;
 		}
 	}
