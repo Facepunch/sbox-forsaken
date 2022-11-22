@@ -130,10 +130,10 @@ public partial class Campfire : Deployable, IContextActionProvider
 
 	private void UpdateDynamicLight()
 	{
-		DynamicLight.Brightness = 0.8f + MathF.Abs( MathF.Sin( Time.Now * 4f ) ) * 0.2f;
+		DynamicLight.Brightness = 0.1f + MathF.Sin( Time.Now * 4f ) * 0.02f;
 		DynamicLight.Position = Position + Vector3.Up * 40f;
 		DynamicLight.Position += new Vector3( MathF.Sin( Time.Now * 2f ) * 4f, MathF.Cos( Time.Now * 2f ) * 4f );
-		DynamicLight.Range = 1000f + MathF.Abs( MathF.Sin( Time.Now ) ) * 200f;
+		DynamicLight.Range = 700f + MathF.Sin( Time.Now ) * 50f;
 	}
 
 	private void OnIsBurningChanged()
