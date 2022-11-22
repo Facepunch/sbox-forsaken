@@ -1,31 +1,45 @@
 ﻿using Sandbox;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Facepunch.Forsaken;
 
-public abstract class ContextAction : BaseNetworkable, IValid
+public class ContextAction : EqualityComparer<ContextAction>, IValid
 {
-	public abstract string Name { get; }
-	public virtual string Icon => "";
+	public string Id { get; private set; }
+	public string Name { get; private set; }
+	public string Icon { get; private set; }
+	public bool IsValid => !string.IsNullOrEmpty( Id );
+	public int Hash { get; private set; }
 
-	public bool IsServer => Host.IsServer;
-	public bool IsClient => Host.IsClient;
+	private Func<ForsakenPlayer,bool> Condition { get; set; }
 
-	public IContextActionProvider Provider { get; protected set; }
-
-	public bool IsValid => Provider.IsValid();
-
-	public void SetOwner( IContextActionProvider owner )
+	public ContextAction( string id, string name, string icon )
 	{
-		Provider = owner;
+		Id = id;
+		Name = name;
+		Icon = icon;
+		Hash = id.FastHash();
 	}
 
-	public virtual void Select( ForsakenPlayer player )
+	public void SetCondition( Func<ForsakenPlayer, bool> condition )
 	{
-		Log.Info( "You selected it!" );
+		Condition = condition;
 	}
 
-	public virtual bool IsAvailable( ForsakenPlayer player )
+	public bool IsAvailable( ForsakenPlayer player )
 	{
-		return true;
+		return Condition?.Invoke( player ) ?? true;
+	}
+
+	public override bool Equals( ContextAction x, ContextAction y )
+	{
+		return x.Id == y.Id;
+	}
+
+	public override int GetHashCode( [DisallowNull] ContextAction obj )
+	{
+		return Id.GetHashCode();
 	}
 }

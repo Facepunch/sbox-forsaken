@@ -31,4 +31,5 @@ public interface IContextActionProvider : IValid
 	public ContextAction GetPrimaryAction();
 	public Vector3 Position { get; }
 	public string GetContextName();
+	public void OnContextAction( ForsakenPlayer player, ContextAction action );
 }
