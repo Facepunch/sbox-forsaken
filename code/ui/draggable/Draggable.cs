@@ -139,10 +139,13 @@ public partial class Draggable : Panel
 			if ( !child.Box.Rect.IsInside( Mouse.Position ) )
 				continue;
 
-			var panel = FindDroppable( child );
+			if ( child.IsVisible )
+			{
+				var panel = FindDroppable( child );
 
-			if ( panel != null )
-				return panel;
+				if ( panel != null )
+					return panel;
+			}
 		}
 
 		if ( root is IDroppable droppable )
