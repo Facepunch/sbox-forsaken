@@ -22,6 +22,7 @@ public partial class Campfire : Deployable, IContextActionProvider
 	[Net, Change( nameof( OnIsBurningChanged ) )] public bool IsBurning { get; private set; }
 	[Net] public bool IsEmpty { get; private set; }
 
+	private PointLightEntity DynamicLight { get; set; }
 	private Particles ParticleEffect { get; set; }
 
 	public Campfire()
@@ -110,14 +111,58 @@ public partial class Campfire : Deployable, IContextActionProvider
 		base.Spawn();
 	}
 
+	protected override void OnDestroy()
+	{
+		DynamicLight?.Delete();
+		DynamicLight = null;
+
+		base.OnDestroy();
+	}
+
+	[Event.Tick.Client]
+	private void ClientTick()
+	{
+		if ( DynamicLight.IsValid() )
+		{
+			UpdateDynamicLight();
+		}
+	}
+
+	private void UpdateDynamicLight()
+	{
+		DynamicLight.Brightness = 0.8f + MathF.Abs( MathF.Sin( Time.Now * 4f ) ) * 0.2f;
+		DynamicLight.Position = Position + Vector3.Up * 40f;
+		DynamicLight.Position += new Vector3( MathF.Sin( Time.Now * 2f ) * 4f, MathF.Cos( Time.Now * 2f ) * 4f );
+		DynamicLight.Range = 1000f + MathF.Abs( MathF.Sin( Time.Now ) ) * 200f;
+	}
+
 	private void OnIsBurningChanged()
 	{
-		ParticleEffect?.Destroy();
-		ParticleEffect = null;
-
 		if ( IsBurning )
 		{
-			ParticleEffect = Particles.Create( "particles/campfire/campfire.vpcf", this );
+			if ( !DynamicLight.IsValid() )
+			{
+				DynamicLight = new();
+				DynamicLight.SetParent( this );
+				DynamicLight.EnableShadowCasting = true;
+				DynamicLight.DynamicShadows = true;
+				DynamicLight.Color = Color.Orange;
+
+				UpdateDynamicLight();
+			}
+
+			if ( ParticleEffect == null )
+			{
+				ParticleEffect = Particles.Create( "particles/campfire/campfire.vpcf", this );
+			}
+		}
+		else
+		{
+			ParticleEffect?.Destroy();
+			ParticleEffect = null;
+
+			DynamicLight?.Delete();
+			DynamicLight = null;
 		}
 	}
 
