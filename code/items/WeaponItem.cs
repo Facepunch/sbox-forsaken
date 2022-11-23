@@ -16,7 +16,7 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerIt
 	public virtual AmmoType AmmoType => Resource?.AmmoType ?? AmmoType.None;
 	public virtual Curve RecoilCurve => Resource?.RecoilCurve ?? default;
 
-	public InventoryContainer Attachments { get; private set; }
+	public AttachmentContainer Attachments { get; private set; }
 	public InventoryContainer Container => Attachments;
 	public string ContainerName => "Attachments";
 
@@ -44,7 +44,7 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerIt
 
 	public override void Read( BinaryReader reader )
 	{
-		Attachments = reader.ReadInventoryContainer();
+		Attachments = reader.ReadInventoryContainer() as AttachmentContainer;
 		Weapon = (Entity.FindByIndex( reader.ReadInt32() ) as Weapon);
 		Ammo = reader.ReadInt32();
 
@@ -55,8 +55,7 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerIt
 	{
 		if ( IsServer )
 		{
-			Attachments = new InventoryContainer();
-			Attachments.SetSlotLimit( 4 );
+			Attachments = new AttachmentContainer();
 			Attachments.SetParent( this );
 			InventorySystem.Register( Attachments );
 		}
@@ -66,6 +65,11 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerIt
 
 	public override void OnRemoved()
 	{
+		if ( IsServer && Attachments.IsValid() )
+		{
+			InventorySystem.Remove( Attachments, true );
+		}
+
 		if ( IsServer && Weapon.IsValid() )
 		{
 			Weapon.Delete();
