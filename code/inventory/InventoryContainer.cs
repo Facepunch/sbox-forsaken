@@ -43,6 +43,8 @@ public class InventoryContainer : IValid
 		}
 	}
 
+	public HashSet<string> Blacklist { get; set; } = new();
+	public HashSet<string> Whitelist { get; set; } = new();
 	public ulong InventoryId { get; private set; }
 	public Entity Entity { get; }
 	public List<Client> Connections { get; }
@@ -636,53 +638,21 @@ public class InventoryContainer : IValid
 		return output;
 	}
 
-	private void SendGiveEvent( ushort slot, InventoryItem instance )
+	public bool DoesPassFilter( InventoryItem item )
 	{
-		if ( IsClient )
+		if ( Whitelist.Count > 0 )
 		{
-			return;
+			if ( !item.Tags.Any( Whitelist.Contains ) )
+				return false;
 		}
 
-		var recipients = GetRecipients();
-
-		if ( recipients.Any() )
+		if ( Blacklist.Count > 0 )
 		{
-			InventorySystem.SendGiveItemEvent( To.Multiple( recipients ), this, slot, instance );
+			if ( item.Tags.Any( Blacklist.Contains ) )
+				return false;
 		}
 
-		HandleSlotChanged( slot );
-
-		ItemGiven?.Invoke( slot, instance );
-		OnItemGiven( slot, instance );
-	}
-
-	private void SendTakeEvent( ushort slot, InventoryItem instance )
-	{
-		if ( IsClient )
-		{
-			return;
-		}
-
-		var recipients = GetRecipients();
-
-		if ( recipients.Any() )
-		{
-			InventorySystem.SendTakeItemEvent( To.Multiple( recipients ), this, slot );
-		}
-
-		HandleSlotChanged( slot );
-
-		if ( instance != null )
-		{
-			ItemTaken?.Invoke( slot, instance );
-			OnItemTaken( slot, instance );
-		}
-	}
-
-	private void HandleSlotChanged( ushort slot )
-	{
-		SlotChanged?.Invoke( slot );
-		OnSlotChanged( slot );
+		return true;
 	}
 
 	public void ProcessGiveItemEvent( BinaryReader reader )
@@ -741,12 +711,34 @@ public class InventoryContainer : IValid
 
 	public virtual void Serialize( BinaryWriter writer )
 	{
+		writer.Write( Whitelist.Count );
+		foreach ( var tag in Whitelist )
+			writer.Write( tag );
 
+		writer.Write( Blacklist.Count );
+		foreach ( var tag in Blacklist )
+			writer.Write( tag );
 	}
 
 	public virtual void Deserialize( BinaryReader reader )
 	{
+		Whitelist.Clear();
 
+		var count = reader.ReadInt32();
+
+		for ( var i = 0; i < count; i++ )
+		{
+			Whitelist.Add( reader.ReadString() );
+		}
+
+		Blacklist.Clear();
+
+		count = reader.ReadInt32();
+
+		for ( var i = 0; i < count; i++ )
+		{
+			Blacklist.Add( reader.ReadString() );
+		}
 	}
 
 	public virtual bool CanTakeItem( ushort slot, InventoryItem item )
@@ -756,7 +748,7 @@ public class InventoryContainer : IValid
 
 	public virtual bool CanGiveItem( ushort slot, InventoryItem item )
 	{
-		return true;
+		return DoesPassFilter( item );
 	}
 
 	protected virtual void OnSlotChanged( ushort slot )
@@ -772,5 +764,54 @@ public class InventoryContainer : IValid
 	protected virtual void OnItemGiven( ushort slot, InventoryItem item )
 	{
 
+	}
+
+	private void SendGiveEvent( ushort slot, InventoryItem instance )
+	{
+		if ( IsClient )
+		{
+			return;
+		}
+
+		var recipients = GetRecipients();
+
+		if ( recipients.Any() )
+		{
+			InventorySystem.SendGiveItemEvent( To.Multiple( recipients ), this, slot, instance );
+		}
+
+		HandleSlotChanged( slot );
+
+		ItemGiven?.Invoke( slot, instance );
+		OnItemGiven( slot, instance );
+	}
+
+	private void SendTakeEvent( ushort slot, InventoryItem instance )
+	{
+		if ( IsClient )
+		{
+			return;
+		}
+
+		var recipients = GetRecipients();
+
+		if ( recipients.Any() )
+		{
+			InventorySystem.SendTakeItemEvent( To.Multiple( recipients ), this, slot );
+		}
+
+		HandleSlotChanged( slot );
+
+		if ( instance != null )
+		{
+			ItemTaken?.Invoke( slot, instance );
+			OnItemTaken( slot, instance );
+		}
+	}
+
+	private void HandleSlotChanged( ushort slot )
+	{
+		SlotChanged?.Invoke( slot );
+		OnSlotChanged( slot );
 	}
 }

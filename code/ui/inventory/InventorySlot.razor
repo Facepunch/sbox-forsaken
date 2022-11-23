@@ -26,7 +26,6 @@
     public string StackSize => GetStackSize();
     public float IconSize => Box.Rect.Size.Length;
     public string DefaultIcon { get; set; }
-    public ArmorSlot ArmorSlot { get; set; }
     public Action<InventorySlot> OnSelected { get; set; }
     public Panel Icon { get; set; }
     public Panel Glow { get; set; }
@@ -65,16 +64,10 @@
         if ( draggable is not InventorySlot slot ) return false;
         if ( slot.Item == Item ) return false;
 
-        if ( ArmorSlot != ArmorSlot.None )
-        {
-            if ( slot.Item is not ArmorItem armor )
-                return false;
+        if ( Item.IsValid() && !Container.CanTakeItem( Slot, Item ) )
+            return false;
 
-            if ( armor.ArmorSlot != ArmorSlot )
-                return false;
-        }
-
-        return true;
+        return Container.CanGiveItem( Slot, slot.Item );
     }
 
     public void OnDrop( IDraggable draggable, DraggableMode mode )
@@ -155,7 +148,7 @@
 
     protected override int BuildHash()
     {
-        return HashCode.Combine( Item, ArmorSlot, DefaultIcon, StackSize );
+        return HashCode.Combine( Item, DefaultIcon, StackSize );
     }
 
     protected override void OnMouseDown( MousePanelEvent e )
