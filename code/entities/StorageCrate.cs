@@ -74,7 +74,7 @@ public partial class StorageCrate : Deployable, IContextActionProvider
 
 		var inventory = new InventoryContainer( this );
 		inventory.SetSlotLimit( 16 );
-		inventory.OnSlotChanged += OnSlotChanged;
+		inventory.SlotChanged += OnSlotChanged;
 		InventorySystem.Register( inventory );
 
 		InternalInventory = new NetInventoryContainer( inventory );

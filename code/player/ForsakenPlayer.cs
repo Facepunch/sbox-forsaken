@@ -296,18 +296,6 @@ public partial class ForsakenPlayer : Player
 		base.OnKilled();
 	}
 
-	public override void ClientSpawn()
-	{
-		if ( IsLocalPawn )
-		{
-			Backpack.SetTransferHandler( GetBackpackTransferTarget );
-			Equipment.SetTransferHandler( GetEquipmentTransferTarget );
-			Hotbar.SetTransferHandler( GetHotbarTransferTarget );
-		}
-
-		base.ClientSpawn();
-	}
-
 	public override void FrameSimulate( Client cl )
 	{
 		SimulateConstruction();

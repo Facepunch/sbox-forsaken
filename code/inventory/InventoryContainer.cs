@@ -11,16 +11,14 @@ public class InventoryContainer : IValid
 	public delegate void ItemTakenCallback( ushort slot, InventoryItem instance );
 	public delegate void ItemGivenCallback( ushort slot, InventoryItem instance );
 	public delegate void SlotChangedCallback( ushort slot );
-	public delegate bool GiveConditionCallback( ushort slot, InventoryItem instance );
-	public delegate bool TakeConditionCallback( ushort slot, InventoryItem instance );
-	public delegate InventoryContainer TransferHandlerCallback( InventoryItem instance );
+	public delegate InventoryContainer TransferHandlerCallback();
 
-	public event SlotChangedCallback OnSlotChanged;
-	public event SlotChangedCallback OnDataChanged;
-	public event ItemGivenCallback OnItemGiven;
-	public event ItemTakenCallback OnItemTaken;
-	public event Action<Client> OnConnectionRemoved;
-	public event Action<Client> OnConnectionAdded;
+	public event SlotChangedCallback SlotChanged;
+	public event SlotChangedCallback DataChanged;
+	public event ItemGivenCallback ItemGiven;
+	public event ItemTakenCallback ItemTaken;
+	public event Action<Client> ConnectionRemoved;
+	public event Action<Client> ConnectionAdded;
 
 	private bool InternalIsDirty;
 
@@ -48,17 +46,15 @@ public class InventoryContainer : IValid
 		}
 	}
 
-	public TransferHandlerCallback TransferHandler { get; private set; }
-	public GiveConditionCallback GiveCondition { get; private set; }
-	public TakeConditionCallback TakeCondition { get; private set; }
 	public ulong InventoryId { get; private set; }
 	public Entity Entity { get; }
 	public List<Client> Connections { get; }
 	public List<InventoryItem> ItemList { get; }
 	public ushort SlotLimit { get; private set; }
 	public bool IsEmpty => !ItemList.Any( i => i.IsValid() );
-
 	public bool IsValid => true;
+
+	protected TransferHandlerCallback TransferHandler { get; set; }
 
 	public static InventoryContainer Deserialize( byte[] data )
 	{
@@ -90,24 +86,14 @@ public class InventoryContainer : IValid
 		}
 	}
 
-	public void InvokeDataChanged( ushort slot )
-	{
-		OnDataChanged?.Invoke( slot );
-	}
-
 	public void SetTransferHandler( TransferHandlerCallback callback )
 	{
 		TransferHandler = callback;
 	}
 
-	public void SetGiveCondition( GiveConditionCallback condition )
+	public void InvokeDataChanged( ushort slot )
 	{
-		GiveCondition = condition;
-	}
-
-	public void SetTakeCondition( TakeConditionCallback condition )
-	{
-		TakeCondition = condition;
+		DataChanged?.Invoke( slot );
 	}
 
 	public bool IsOccupied( ushort slot )
@@ -161,7 +147,7 @@ public class InventoryContainer : IValid
 		if ( !Connections.Contains( connection ) )
 		{
 			Connections.Add( connection );
-			OnConnectionAdded?.Invoke( connection );
+			ConnectionAdded?.Invoke( connection );
 		}
 	}
 
@@ -170,7 +156,7 @@ public class InventoryContainer : IValid
 		if ( Connections.Contains( connection ) )
 		{
 			Connections.Remove( connection );
-			OnConnectionRemoved?.Invoke( connection );
+			ConnectionRemoved?.Invoke( connection );
 		}
 	}
 
@@ -250,10 +236,10 @@ public class InventoryContainer : IValid
 
 		var item = GetFromSlot( fromSlot );
 
-		if ( TakeCondition != null && !TakeCondition( fromSlot, item ) )
+		if ( !CanTakeItem( fromSlot, item ) )
 			return false;
 
-		if ( target.GiveCondition != null && !target.GiveCondition( toSlot, item ) )
+		if ( !target.CanGiveItem( toSlot, item ) )
 			return false;
 
 		if ( IsClient )
@@ -303,10 +289,10 @@ public class InventoryContainer : IValid
 
 		var fromInstance = ItemList[fromSlot];
 
-		if ( TakeCondition != null && !TakeCondition( fromSlot, fromInstance ) )
+		if ( !CanTakeItem( fromSlot, fromInstance ) )
 			return false;
 
-		if ( target.GiveCondition != null && !target.GiveCondition( toSlot, fromInstance ) )
+		if (!target.CanGiveItem( toSlot, fromInstance ) )
 			return false;
 
 		if ( IsClient )
@@ -559,7 +545,7 @@ public class InventoryContainer : IValid
 		var amount = instance.StackSize;
 		var item = ItemList[slot];
 
-		if ( GiveCondition != null && !GiveCondition( slot, item ) )
+		if ( !CanGiveItem( slot, item ) )
 			return amount;
 
 		if ( item != null && item.IsSameType( instance ) && item.CanStackWith( instance ) )
@@ -600,7 +586,7 @@ public class InventoryContainer : IValid
 		{
 			var item = ItemList[i];
 
-			if ( GiveCondition != null && !GiveCondition( (ushort)i, instance ) )
+			if ( !CanGiveItem( (ushort)i, instance ) )
 				continue;
 
 			if ( item != null && item.IsSameType( instance ) && item.CanStackWith( instance ) )
@@ -669,7 +655,8 @@ public class InventoryContainer : IValid
 
 		HandleSlotChanged( slot );
 
-		OnItemGiven?.Invoke( slot, instance );
+		ItemGiven?.Invoke( slot, instance );
+		OnItemGiven( slot, instance );
 	}
 
 	private void SendTakeEvent( ushort slot, InventoryItem instance )
@@ -690,13 +677,15 @@ public class InventoryContainer : IValid
 
 		if ( instance != null )
 		{
-			OnItemTaken?.Invoke( slot, instance );
+			ItemTaken?.Invoke( slot, instance );
+			OnItemTaken( slot, instance );
 		}
 	}
 
 	private void HandleSlotChanged( ushort slot )
 	{
-		OnSlotChanged?.Invoke( slot );
+		SlotChanged?.Invoke( slot );
+		OnSlotChanged( slot );
 	}
 
 	public void ProcessGiveItemEvent( BinaryReader reader )
@@ -709,7 +698,8 @@ public class InventoryContainer : IValid
 
 		ItemList[slot] = instance;
 		HandleSlotChanged( slot );
-		OnItemGiven?.Invoke( slot, instance );
+		ItemGiven?.Invoke( slot, instance );
+		OnItemGiven( slot, instance );
 	}
 
 	public void ProcessTakeItemEvent( BinaryReader reader )
@@ -727,7 +717,8 @@ public class InventoryContainer : IValid
 
 			ItemList[slot] = null;
 			HandleSlotChanged( slot );
-			OnItemTaken?.Invoke( slot, instance );
+			ItemTaken?.Invoke( slot, instance );
+			OnItemTaken( slot, instance );
 		}
 	}
 
@@ -744,5 +735,45 @@ public class InventoryContainer : IValid
 		}
 
 		return HashCode.Combine( hash, SlotLimit );
+	}
+
+	public virtual InventoryContainer GetTransferTarget()
+	{
+		return TransferHandler?.Invoke();
+	}
+
+	public virtual void Serialize( BinaryWriter writer )
+	{
+
+	}
+
+	public virtual void Deserialize( BinaryReader reader )
+	{
+
+	}
+
+	public virtual bool CanTakeItem( ushort slot, InventoryItem item )
+	{
+		return true;
+	}
+
+	public virtual bool CanGiveItem( ushort slot, InventoryItem item )
+	{
+		return true;
+	}
+
+	protected virtual void OnSlotChanged( ushort slot )
+	{
+
+	}
+
+	protected virtual void OnItemTaken( ushort slot, InventoryItem item )
+	{
+
+	}
+
+	protected virtual void OnItemGiven( ushort slot, InventoryItem item )
+	{
+
 	}
 }

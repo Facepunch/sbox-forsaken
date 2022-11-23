@@ -205,23 +205,6 @@ public partial class ForsakenPlayer
 		}
 	}
 
-	private bool CanGiveEquipmentItem( ushort slot, InventoryItem item )
-	{
-		if ( item is not ArmorItem armor )
-			return false;
-
-		if ( armor.ArmorSlot == ArmorSlot.Head )
-			return slot == 0;
-
-		if ( armor.ArmorSlot == ArmorSlot.Chest )
-			return slot == 1;
-
-		if ( armor.ArmorSlot == ArmorSlot.Legs )
-			return slot == 2;
-
-		return false;
-	}
-
 	private void AddClothingToArmorSlot( ArmorSlot slot, BaseClothing clothing )
 	{
 		if ( !Armor.TryGetValue( slot, out var models ) )
@@ -306,21 +289,6 @@ public partial class ForsakenPlayer
 		}
 	}
 
-	private InventoryContainer GetBackpackTransferTarget( InventoryItem item )
-	{
-		return UI.Storage.Current.IsOpen ? UI.Storage.Current.Container : Hotbar;
-	}
-
-	private InventoryContainer GetEquipmentTransferTarget( InventoryItem item )
-	{
-		return UI.Storage.Current.IsOpen ? UI.Storage.Current.Container : Backpack;
-	}
-
-	private InventoryContainer GetHotbarTransferTarget( InventoryItem item )
-	{
-		return UI.Storage.Current.IsOpen ? UI.Storage.Current.Container : Backpack;
-	}
-
 	private void GiveInitialItems()
 	{
 		var mp5 = InventorySystem.CreateItem<WeaponItem>( "mp5a4" );
@@ -350,30 +318,26 @@ public partial class ForsakenPlayer
 
 	private void CreateInventories()
 	{
-		var hotbar = new InventoryContainer( this );
-		hotbar.SetSlotLimit( 8 );
+		var hotbar = new HotbarContainer( this );
 		hotbar.AddConnection( Client );
-		hotbar.OnItemTaken += OnHotbarItemTaken;
-		hotbar.OnItemGiven += OnHotbarItemGiven;
+		hotbar.ItemTaken += OnHotbarItemTaken;
+		hotbar.ItemGiven += OnHotbarItemGiven;
 		InventorySystem.Register( hotbar );
 
 		InternalHotbar = new NetInventoryContainer( hotbar );
 
-		var backpack = new InventoryContainer( this );
-		backpack.SetSlotLimit( 24 );
+		var backpack = new BackpackContainer( this );
 		backpack.AddConnection( Client );
-		backpack.OnItemTaken += OnBackpackItemTaken;
-		backpack.OnItemGiven += OnBackpackItemGiven;
+		backpack.ItemTaken += OnBackpackItemTaken;
+		backpack.ItemGiven += OnBackpackItemGiven;
 		InventorySystem.Register( backpack );
 
 		InternalBackpack = new NetInventoryContainer( backpack );
 
-		var equipment = new InventoryContainer( this );
-		equipment.SetSlotLimit( 3 );
+		var equipment = new EquipmentContainer( this );
 		equipment.AddConnection( Client );
-		equipment.OnItemTaken += OnEquipmentItemTaken;
-		equipment.OnItemGiven += OnEquipmentItemGiven;
-		equipment.SetGiveCondition( CanGiveEquipmentItem );
+		equipment.ItemTaken += OnEquipmentItemTaken;
+		equipment.ItemGiven += OnEquipmentItemGiven;
 		InventorySystem.Register( equipment );
 
 		InternalEquipment = new NetInventoryContainer( equipment );

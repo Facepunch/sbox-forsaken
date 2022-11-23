@@ -34,6 +34,7 @@ public static class BinaryReaderExtension
 
 	public static InventoryContainer ReadInventoryContainer( this BinaryReader buffer )
 	{
+		var typeDescId = buffer.ReadInt32();
 		var inventoryId = buffer.ReadUInt64();
 		var slotLimit = buffer.ReadUInt16();
 		var entityId = buffer.ReadInt32();
@@ -43,13 +44,21 @@ public static class BinaryReaderExtension
 
 		if ( !entity.IsValid() )
 		{
-			Log.Error( "Unable to read an inventory container with an unscoped entity!" );
+			Log.Error( "Unable to read an inventory container with an invalid entity!" );
 			return null;
 		}
 
 		if ( container == null )
 		{
-			container = new InventoryContainer( entity );
+			var type = TypeLibrary.GetDescriptionByIdent( typeDescId );
+
+			if ( type == null )
+			{
+				Log.Error( $"Unable to create an inventory container with unknown type id ({typeDescId})!" );
+				return null;
+			}
+
+			container = type.Create<InventoryContainer>( new object[] { entity } );
 			container.SetSlotLimit( slotLimit );
 			InventorySystem.Register( container, inventoryId );
 		}
@@ -67,6 +76,8 @@ public static class BinaryReaderExtension
 				container.ItemList[i] = buffer.ReadInventoryItem();
 			}
 		}
+
+		container.Deserialize( buffer );
 
 		return container;
 	}

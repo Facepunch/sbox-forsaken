@@ -45,18 +45,13 @@ public partial class InventorySlot
             return false;
 
         var container = Item.Container;
-        if ( container.TransferHandler == null )
+        var target = container.GetTransferTarget();
+
+        if ( !target.IsValid() )
             return false;
 
-        var transferContainer = container.TransferHandler.Invoke( Item );
-
-        if ( transferContainer.IsValid() )
-        {
-            InventorySystem.SendTransferEvent( container, transferContainer, Item.SlotId );
-            return true;
-        }
-
-        return false;
+        InventorySystem.SendTransferEvent( container, target, Item.SlotId );
+        return true;
     }
 
     protected override void OnRightClick( MousePanelEvent e )

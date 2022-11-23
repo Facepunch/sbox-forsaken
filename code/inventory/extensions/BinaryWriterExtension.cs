@@ -23,6 +23,9 @@ public static class BinaryWriterExtension
 
 	public static void WriteInventoryContainer( this BinaryWriter writer, InventoryContainer container )
 	{
+		var typeDesc = TypeLibrary.GetDescription( container.GetType() );
+
+		writer.Write( typeDesc.Identity );
 		writer.Write( container.InventoryId );
 		writer.Write( container.SlotLimit );
 		writer.Write( container.Entity.NetworkIdent );
@@ -41,6 +44,7 @@ public static class BinaryWriterExtension
 				writer.Write( false );
 			}
 		}
-	}
 
+		container.Serialize( writer );
+	}
 }
