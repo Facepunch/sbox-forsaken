@@ -42,6 +42,11 @@ public static partial class InventorySystem
 
 	public static ulong Register( InventoryContainer container, ulong inventoryId = 0 )
 	{
+		if ( inventoryId == 0 && IsClient )
+		{
+			throw new Exception( "Cannot register a new InventoryContainer client-side without an explicit inventory id!" );
+		}
+
 		if ( inventoryId == 0 )
 		{
 			inventoryId = ++NextContainerId;

@@ -76,6 +76,23 @@
     </div>
 
     <div class="hotbar">
+        @if ( Selected != null && Selected.Item is IChildContainerItem selected )
+        {
+            <label class="title">@selected.ChildContainerName</label>
+
+            <div class="slots" style="margin-bottom: 24px;">
+                @{
+                    var childContainer = selected.ChildContainer;
+                }
+
+                @for ( ushort i = 0; i < childContainer.SlotLimit; i++ )
+                {
+                    var item = childContainer.GetFromSlot( i );
+                    <InventorySlot Container=@childContainer Slot=@i Item=@item></InventorySlot>
+                }
+            </div>
+        }
+
         <label class="title">Hotbar</label>
 
         <div class="slots">
@@ -92,6 +109,7 @@
 {
     public static Backpack Current { get; private set; }
 
+    public InventorySlot Selected { get; private set; }
     public bool IsOpen { get; set; }
 
     public Backpack()
@@ -103,6 +121,7 @@
     public void Open()
     {
         if ( IsOpen ) return;
+        ClearSelected();
         Dialog.Activate( this );
         IsOpen = true;
     }
@@ -127,19 +146,41 @@
         }
     }
 
+    protected void Select( InventorySlot slot )
+    {
+        if ( Selected != null )
+        {
+            Selected.IsSelected = false;
+        }
+
+        Sound.FromScreen( "inventory.select" );
+
+        slot.IsSelected = true;
+        Selected = slot;
+    }
+
+    protected void ClearSelected()
+    {
+        if ( Selected != null )
+        {
+            Selected.IsSelected = false;
+            Selected = null;
+        }
+    }
+
     protected virtual void OnBackpackSlotSelected( InventorySlot slot )
     {
-        Sound.FromScreen( "inventory.select" );
+        Select( slot );
     }
 
     protected virtual void OnEquipmentSlotSelected( InventorySlot slot )
     {
-        Sound.FromScreen( "inventory.select" );
+        Select( slot );
     }
 
     protected virtual void OnHotbarSlotSelected( InventorySlot slot )
     {
-        Sound.FromScreen( "inventory.select" );
+        Select( slot );
     }
 
     protected override int BuildHash()
@@ -148,6 +189,12 @@
         var backpack = ForsakenPlayer.Me?.Backpack;
         var hotbar = ForsakenPlayer.Me?.Hotbar;
 
-        return HashCode.Combine( ForsakenPlayer.Me, equipment, backpack, hotbar );
+        InventoryContainer childContainer = null;
+        if (Selected != null && Selected.Item is IChildContainerItem selected )
+        {
+            childContainer = selected.ChildContainer;
+        }
+
+        return HashCode.Combine( ForsakenPlayer.Me, Selected, childContainer, equipment, backpack, hotbar );
     }
 }

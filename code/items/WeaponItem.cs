@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Facepunch.Forsaken;
 
-public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>
+public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IChildContainerItem
 {
 	public override Color Color => ItemColors.Weapon;
 
@@ -16,6 +16,10 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>
 	public virtual AmmoType AmmoType => Resource?.AmmoType ?? AmmoType.None;
 	public virtual Curve RecoilCurve => Resource?.RecoilCurve ?? default;
 
+	public InventoryContainer Attachments { get; private set; }
+	public InventoryContainer ChildContainer => Attachments;
+	public string ChildContainerName => "Attachments";
+
 	public Weapon Weapon { get; set; }
 	public int Ammo { get; set; }
 
@@ -26,6 +30,8 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>
 
 	public override void Write( BinaryWriter writer )
 	{
+		writer.WriteInventoryContainer( Attachments );
+
 		if ( Weapon.IsValid() )
 			writer.Write( Weapon.NetworkIdent );
 		else
@@ -38,10 +44,24 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>
 
 	public override void Read( BinaryReader reader )
 	{
+		Attachments = reader.ReadInventoryContainer();
 		Weapon = (Entity.FindByIndex( reader.ReadInt32() ) as Weapon);
 		Ammo = reader.ReadInt32();
 
 		base.Read( reader );
+	}
+
+	public override void OnCreated()
+	{
+		if ( IsServer )
+		{
+			Attachments = new InventoryContainer();
+			Attachments.SetSlotLimit( 4 );
+			Attachments.SetParentItem( this );
+			InventorySystem.Register( Attachments );
+		}
+
+		base.OnCreated();
 	}
 
 	public override void OnRemoved()

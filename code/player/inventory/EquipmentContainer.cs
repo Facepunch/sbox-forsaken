@@ -4,7 +4,7 @@ namespace Facepunch.Forsaken;
 
 public partial class EquipmentContainer : InventoryContainer
 {
-	public EquipmentContainer( Entity owner ) : base( owner )
+	public EquipmentContainer() : base()
 	{
 		SetSlotLimit( 4 );
 	}

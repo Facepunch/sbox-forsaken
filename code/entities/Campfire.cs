@@ -100,7 +100,8 @@ public partial class Campfire : Deployable, IContextActionProvider
 		SetModel( "models/campfire/campfire.vmdl" );
 		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
 
-		var inventory = new InventoryContainer( this );
+		var inventory = new InventoryContainer();
+		inventory.SetEntity( this );
 		inventory.SetSlotLimit( 1 );
 		inventory.SlotChanged += OnSlotChanged;
 		InventorySystem.Register( inventory );

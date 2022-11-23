@@ -43,10 +43,12 @@ public class InventoryContainer : IValid
 		}
 	}
 
+	public InventoryItem ParentItem => InventorySystem.FindInstance( ParentItemId );
+	public ulong ParentItemId { get; private set; }
 	public HashSet<string> Blacklist { get; set; } = new();
 	public HashSet<string> Whitelist { get; set; } = new();
 	public ulong InventoryId { get; private set; }
-	public Entity Entity { get; }
+	public Entity Entity { get; private set; }
 	public List<Client> Connections { get; }
 	public List<InventoryItem> ItemList { get; }
 	public ushort SlotLimit { get; private set; }
@@ -66,11 +68,30 @@ public class InventoryContainer : IValid
 		}
 	}
 
-	public InventoryContainer( Entity owner )
+	public InventoryContainer()
 	{
 		ItemList = new List<InventoryItem>();
 		Connections = new List<Client>();
-		Entity = owner;
+	}
+
+	public void SetEntity( Entity entity )
+	{
+		Entity = entity;
+	}
+
+	public void SetParentItem( InventoryItem item )
+	{
+		ParentItemId = item.ItemId;
+	}
+
+	public void SetParentItem( ulong itemId )
+	{
+		ParentItemId = itemId;
+	}
+
+	public void ClearParentItem()
+	{
+		ParentItemId = 0;
 	}
 
 	public byte[] Serialize()
@@ -176,10 +197,16 @@ public class InventoryContainer : IValid
 
 	public IEnumerable<Client> GetRecipients()
 	{
-		return Client.All
+		var recipients = Client.All
 			.Where( c => c.Components.TryGet<InventoryViewer>( out var viewer ) && viewer.ContainerId == InventoryId )
-			.Concat( Connections )
-			.Distinct();
+			.Concat( Connections );
+
+		if ( ParentItem.IsValid() && ParentItem.Container.IsValid() )
+		{
+			recipients = recipients.Concat( ParentItem.Container.GetRecipients() );
+		}
+
+		return recipients.Distinct();
 	}
 
 	public void SendDirtyItems()
@@ -291,7 +318,10 @@ public class InventoryContainer : IValid
 		if ( !CanTakeItem( fromSlot, fromInstance ) )
 			return false;
 
-		if (!target.CanGiveItem( toSlot, fromInstance ) )
+		if ( target.ParentItem == fromInstance )
+			return false;
+
+		if ( !target.CanGiveItem( toSlot, fromInstance ) )
 			return false;
 
 		if ( IsClient )
@@ -544,6 +574,9 @@ public class InventoryContainer : IValid
 		var amount = instance.StackSize;
 		var item = ItemList[slot];
 
+		if ( ParentItem == instance )
+			return amount;
+
 		if ( !CanGiveItem( slot, item ) )
 			return amount;
 
@@ -584,6 +617,9 @@ public class InventoryContainer : IValid
 		for ( int i = 0; i < ItemList.Count; i++ )
 		{
 			var item = ItemList[i];
+
+			if ( ParentItem == item )
+				continue;
 
 			if ( !CanGiveItem( (ushort)i, instance ) )
 				continue;
@@ -706,6 +742,11 @@ public class InventoryContainer : IValid
 
 	public virtual InventoryContainer GetTransferTarget()
 	{
+		if ( TransferHandler == null && ParentItem.IsValid() && ParentItem.Container.IsValid() )
+		{
+			return ParentItem.Container.GetTransferTarget();
+		}
+
 		return TransferHandler?.Invoke();
 	}
 

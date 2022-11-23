@@ -35,18 +35,12 @@ public static class BinaryReaderExtension
 	public static InventoryContainer ReadInventoryContainer( this BinaryReader buffer )
 	{
 		var typeDescId = buffer.ReadInt32();
+		var parentItemId = buffer.ReadUInt64();
 		var inventoryId = buffer.ReadUInt64();
 		var slotLimit = buffer.ReadUInt16();
-		var entityId = buffer.ReadInt32();
+		var entity = buffer.ReadEntity();
 
 		var container = InventorySystem.Find( inventoryId );
-		var entity = Entity.FindByIndex( entityId );
-
-		if ( !entity.IsValid() )
-		{
-			Log.Error( "Unable to read an inventory container with an invalid entity!" );
-			return null;
-		}
 
 		if ( container == null )
 		{
@@ -58,7 +52,9 @@ public static class BinaryReaderExtension
 				return null;
 			}
 
-			container = type.Create<InventoryContainer>( new object[] { entity } );
+			container = type.Create<InventoryContainer>();
+			container.SetEntity( entity );
+			container.SetParentItem( parentItemId );
 			container.SetSlotLimit( slotLimit );
 			InventorySystem.Register( container, inventoryId );
 		}

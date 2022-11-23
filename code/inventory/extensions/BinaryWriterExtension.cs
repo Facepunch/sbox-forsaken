@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using Sandbox;
+using System.IO;
 
 namespace Facepunch.Forsaken;
 
@@ -26,9 +27,14 @@ public static class BinaryWriterExtension
 		var typeDesc = TypeLibrary.GetDescription( container.GetType() );
 
 		writer.Write( typeDesc.Identity );
+		writer.Write( container.ParentItemId );
 		writer.Write( container.InventoryId );
 		writer.Write( container.SlotLimit );
-		writer.Write( container.Entity.NetworkIdent );
+
+		if ( container.Entity.IsValid() )
+			writer.Write( container.Entity );
+		else
+			writer.Write( -1 );
 
 		for ( var i = 0; i < container.SlotLimit; i++ )
 		{

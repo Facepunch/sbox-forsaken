@@ -2,42 +2,48 @@
     position: absolute;
     width: 100%;
     height: 100%;
-    justify-content: center;
     align-items: center;
     display: flex;
-    flex-direction: column;
     pointer-events: all;
     backdrop-filter-blur: 24px;
+    flex-direction: column;
     background-color: rgba(0, 0, 0, 0.9);
     transition: backdrop-filter-blur 0.15s ease-in;
     transition: opacity 0.15s ease-in;
+    padding-bottom: 100px;
+    z-index: 100;
     opacity: 1;
 
-    .equipment,
-    .backpack,
-    .storage {
-        .slots {
-            max-width: 472px;
+    .body-container {
+        flex-direction: row;
+        margin-top: 100px;
+
+        .title {
+            color: white;
+            font-family: Vollkorn;
+            font-size: 40px;
+        }
+
+        .backpack {
+            flex-direction: column;
+            width: 560px;
+        }
+
+        .equipment {
+            flex-direction: column;
+            width: 300px;
+        }
+
+        .storage {
+            flex-direction: column;
+            width: 560px;
         }
     }
 
-    .equipment,
     .backpack,
+    .equipment,
     .storage,
     .hotbar {
-        padding: 32px;
-        width: 30%;
-        display: flex;
-        align-items: center;
-        flex-direction: column;
-
-        .title {
-            margin-bottom: 24px;
-            font-family: Roboto;
-            font-size: 32px;
-            color: white;
-        }
-
         .slots {
             display: flex;
             flex-direction: row;
@@ -45,35 +51,52 @@
             flex-shrink: 1;
 
             InventorySlot {
-                margin-left: 8px;
+                margin-right: 8px;
                 margin-top: 8px;
             }
 
             &:last-child {
-                margin-left: 0px;
+                margin-right: 0px;
             }
         }
     }
 
-    .equipment {
-        margin-right: 32px;
-        width: 20%;
-    }
-
-    .backpack {
-        margin-right: 32px;
-    }
-
     .hotbar {
-        width: 100%;
+        flex-direction: column;
+        position: absolute;
+        bottom: 0;
+        padding: 0;
+        bottom: 32px;
+
+        .title {
+            color: white;
+            font-family: Vollkorn;
+            font-size: 40px;
+        }
+
+        .slots {
+            InventorySlot {
+                margin-right: 8px;
+
+                &:last-child {
+                    margin-right: 0;
+                }
+            }
+        }
+    }
+
+    .equipment,
+    .storage,
+    .backpack {
+        margin-bottom: 32px;
     }
 
     &.hidden {
         opacity: 0;
 
-        .storage,
         .equipment,
         .backpack,
+        .storage,
         .hotbar {
             pointer-events: none;
         }

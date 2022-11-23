@@ -327,7 +327,8 @@ public partial class ForsakenPlayer
 
 	private void CreateInventories()
 	{
-		var hotbar = new HotbarContainer( this );
+		var hotbar = new HotbarContainer();
+		hotbar.SetEntity( this );
 		hotbar.AddConnection( Client );
 		hotbar.ItemTaken += OnHotbarItemTaken;
 		hotbar.ItemGiven += OnHotbarItemGiven;
@@ -335,7 +336,8 @@ public partial class ForsakenPlayer
 
 		InternalHotbar = new NetInventoryContainer( hotbar );
 
-		var backpack = new BackpackContainer( this );
+		var backpack = new BackpackContainer();
+		backpack.SetEntity( this );
 		backpack.AddConnection( Client );
 		backpack.ItemTaken += OnBackpackItemTaken;
 		backpack.ItemGiven += OnBackpackItemGiven;
@@ -343,7 +345,8 @@ public partial class ForsakenPlayer
 
 		InternalBackpack = new NetInventoryContainer( backpack );
 
-		var equipment = new EquipmentContainer( this );
+		var equipment = new EquipmentContainer();
+		equipment.SetEntity( this );
 		equipment.AddConnection( Client );
 		equipment.ItemTaken += OnEquipmentItemTaken;
 		equipment.ItemGiven += OnEquipmentItemGiven;

@@ -24,7 +24,7 @@
 }
 
 <root>
-    <div>
+    <div class="body-container">
         <div class="equipment">
             <label class="title">Equipment</label>
 
@@ -65,7 +65,7 @@
                 @for ( ushort i = 0; i < backpack.SlotLimit; i++ )
                 {
                     var item = backpack.GetFromSlot( i );
-                    <InventorySlot Container=@backpack Slot=@i Item=@item></InventorySlot>
+                    <InventorySlot OnSelected=@OnBackpackSlotSelected Container=@backpack Slot=@i Item=@item></InventorySlot>
                 }
             </div>
         </div>
@@ -76,23 +76,38 @@
                 @for ( ushort i = 0; i < Container.SlotLimit; i++ )
                 {
                     var item = Container.GetFromSlot( i );
-                    <InventorySlot Container=@Container Slot=@i Item=@item></InventorySlot>
+                    <InventorySlot OnSelected=@OnStorageSlotSelected Container=@Container Slot=@i Item=@item></InventorySlot>
                 }
             </div>
         </div>
     </div>
 
-    <div>
-        <div class="hotbar">
-            <label class="title">Hotbar</label>
+    <div class="hotbar">
+        @if ( Selected != null && Selected.Item is IChildContainerItem selected )
+        {
+            <label class="title">@selected.ChildContainerName</label>
 
-            <div class="slots">
-                @for ( ushort i = 0; i < hotbar.SlotLimit; i++ )
+            <div class="slots" style="margin-bottom: 24px;">
+                @{
+                    var childContainer = selected.ChildContainer;
+                }
+
+                @for ( ushort i = 0; i < childContainer.SlotLimit; i++ )
                 {
-                    var item = hotbar.GetFromSlot( i );
-                    <InventorySlot Container=@hotbar Slot=@i Item=@item></InventorySlot>
+                    var item = childContainer.GetFromSlot( i );
+                    <InventorySlot Container=@childContainer Slot=@i Item=@item></InventorySlot>
                 }
             </div>
+        }
+
+        <label class="title">Hotbar</label>
+
+        <div class="slots">
+            @for ( ushort i = 0; i < hotbar.SlotLimit; i++ )
+            {
+                var item = hotbar.GetFromSlot(i);
+                <InventorySlot OnSelected=@OnHotbarSlotSelected Container=@hotbar Slot=@i Item=@item></InventorySlot>
+            }
         </div>
     </div>
 </root>
@@ -102,6 +117,7 @@
     public static Storage Current { get; private set; }
 
     public InventoryContainer Container { get; private set; }
+    public InventorySlot Selected { get; private set; }
     public bool IsOpen { get; private set; }
     public Entity Entity { get; private set; }
     public string Name { get; private set; }
@@ -115,6 +131,7 @@
     public void Open()
     {
         if ( IsOpen ) return;
+        ClearSelected();
         Dialog.Activate( this );
         IsOpen = true;
     }
@@ -157,12 +174,55 @@
         }
     }
 
+    protected void Select( InventorySlot slot )
+    {
+        if ( Selected != null )
+        {
+            Selected.IsSelected = false;
+        }
+
+        Sound.FromScreen( "inventory.select" );
+
+        slot.IsSelected = true;
+        Selected = slot;
+    }
+
+    protected void ClearSelected()
+    {
+        if ( Selected != null )
+        {
+            Selected.IsSelected = false;
+            Selected = null;
+        }
+    }
+
+    protected virtual void OnBackpackSlotSelected( InventorySlot slot )
+    {
+        Select( slot );
+    }
+
+    protected virtual void OnHotbarSlotSelected( InventorySlot slot )
+    {
+        Select( slot );
+    }
+
+    protected virtual void OnStorageSlotSelected( InventorySlot slot )
+    {
+        Select( slot );
+    }
+
     protected override int BuildHash()
     {
         var backpack = ForsakenPlayer.Me?.Backpack;
         var hotbar = ForsakenPlayer.Me?.Hotbar;
 
-        return HashCode.Combine( ForsakenPlayer.Me, backpack, hotbar, Container );
+        InventoryContainer childContainer = null;
+        if ( Selected != null && Selected.Item is IChildContainerItem selected )
+        {
+            childContainer = selected.ChildContainer;
+        }
+
+        return HashCode.Combine( ForsakenPlayer.Me, Selected, childContainer, backpack, hotbar, Container );
     }
 
     private InventoryContainer GetTransferTarget()

@@ -4,7 +4,7 @@ namespace Facepunch.Forsaken;
 
 public partial class HotbarContainer : InventoryContainer
 {
-	public HotbarContainer( Entity owner ) : base( owner )
+	public HotbarContainer() : base()
 	{
 		SetSlotLimit( 8 );
 	}

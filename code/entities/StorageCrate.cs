@@ -72,7 +72,8 @@ public partial class StorageCrate : Deployable, IContextActionProvider
 		SetModel( "models/citizen_props/crate01.vmdl" );
 		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
 
-		var inventory = new InventoryContainer( this );
+		var inventory = new InventoryContainer();
+		inventory.SetEntity( this );
 		inventory.SetSlotLimit( 16 );
 		inventory.SlotChanged += OnSlotChanged;
 		InventorySystem.Register( inventory );
