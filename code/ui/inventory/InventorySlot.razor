@@ -15,6 +15,11 @@
     <div @ref="Icon" class="icon"></div>
     <label class="stacksize">@StackSize</label>
     <div class="overlay"></div>
+
+    @if ( ContainsItems )
+    {
+        <div class="more"></div>
+    }
 </root>
 
 @code
@@ -33,6 +38,17 @@
     public IReadOnlySet<string> Tags => Item.Tags;
     public string Name => Item.Name;
     public Color Color => Item.Color;
+
+    public bool ContainsItems
+    {
+        get
+        {
+            if ( Item is IContainerItem item && item.Container.IsValid() )
+                return !item.Container.IsEmpty;
+
+            return false;
+        }
+    }
 
     public InventorySlot()
     {
@@ -151,7 +167,7 @@
 
     protected override int BuildHash()
     {
-        return HashCode.Combine( Item, DefaultIcon, StackSize );
+        return HashCode.Combine( Item, ContainsItems, DefaultIcon, StackSize );
     }
 
     protected override void OnMouseDown( MousePanelEvent e )

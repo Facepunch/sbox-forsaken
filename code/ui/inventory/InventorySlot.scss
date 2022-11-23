@@ -23,6 +23,17 @@
         height: 80px;
     }
 
+    .more {
+        background-image: url( /textures/ui/plus.png );
+        background-size: cover;
+        transition: all 0.2s ease-in;
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        left: 4px;
+        bottom: 4px;
+    }
+
     .overlay {
         position: absolute;
         width: 100%;
@@ -37,7 +48,7 @@
         text-shadow: 0 2px 0 rgba(0, 0, 0, 0.8);
         font-size: 20px;
         color: white;
-        bottom: 2px;
+        bottom: -2px;
         right: 4px;
     }
 
