@@ -51,8 +51,8 @@
             flex-shrink: 1;
 
             InventorySlot {
-                margin-right: 10px;
-                margin-top: 10px;
+                margin-right: 8px;
+                margin-top: 8px;
             }
 
             &:last-child {
@@ -76,7 +76,7 @@
 
         .slots {
             InventorySlot {
-                margin-right: 16px;
+                margin-right: 8px;
 
                 &:last-child {
                     margin-right: 0;
