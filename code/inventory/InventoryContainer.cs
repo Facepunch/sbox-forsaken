@@ -43,8 +43,8 @@ public class InventoryContainer : IValid
 		}
 	}
 
-	public InventoryItem ParentItem => InventorySystem.FindInstance( ParentItemId );
-	public ulong ParentItemId { get; private set; }
+	public InventoryItem Parent => InventorySystem.FindInstance( ParentId );
+	public ulong ParentId { get; private set; }
 	public HashSet<string> Blacklist { get; set; } = new();
 	public HashSet<string> Whitelist { get; set; } = new();
 	public ulong InventoryId { get; private set; }
@@ -79,19 +79,19 @@ public class InventoryContainer : IValid
 		Entity = entity;
 	}
 
-	public void SetParentItem( InventoryItem item )
+	public void SetParent( InventoryItem item )
 	{
-		ParentItemId = item.ItemId;
+		ParentId = item.ItemId;
 	}
 
-	public void SetParentItem( ulong itemId )
+	public void SetParent( ulong itemId )
 	{
-		ParentItemId = itemId;
+		ParentId = itemId;
 	}
 
-	public void ClearParentItem()
+	public void ClearParent()
 	{
-		ParentItemId = 0;
+		ParentId = 0;
 	}
 
 	public byte[] Serialize()
@@ -201,9 +201,9 @@ public class InventoryContainer : IValid
 			.Where( c => c.Components.TryGet<InventoryViewer>( out var viewer ) && viewer.ContainerId == InventoryId )
 			.Concat( Connections );
 
-		if ( ParentItem.IsValid() && ParentItem.Container.IsValid() )
+		if ( Parent.IsValid() && Parent.Parent.IsValid() )
 		{
-			recipients = recipients.Concat( ParentItem.Container.GetRecipients() );
+			recipients = recipients.Concat( Parent.Parent.GetRecipients() );
 		}
 
 		return recipients.Distinct();
@@ -318,7 +318,7 @@ public class InventoryContainer : IValid
 		if ( !CanTakeItem( fromSlot, fromInstance ) )
 			return false;
 
-		if ( target.ParentItem == fromInstance )
+		if ( target.Parent == fromInstance )
 			return false;
 
 		if ( !target.CanGiveItem( toSlot, fromInstance ) )
@@ -367,10 +367,10 @@ public class InventoryContainer : IValid
 				}
 			}
 
-			fromInstance.Container = target;
+			fromInstance.Parent = target;
 			fromInstance.SlotId = toSlot;
 
-			toInstance.Container = this;
+			toInstance.Parent = this;
 			toInstance.SlotId = fromSlot;
 
 			SendTakeEvent( fromSlot, fromInstance );
@@ -385,7 +385,7 @@ public class InventoryContainer : IValid
 		else
 		{
 			fromInstance.SlotId = toSlot;
-			fromInstance.Container = target;
+			fromInstance.Parent = target;
 
 			target.ItemList[toSlot] = fromInstance;
 			target.SendGiveEvent( toSlot, fromInstance );
@@ -447,9 +447,9 @@ public class InventoryContainer : IValid
 
 		if ( clearItemContainer )
 		{
-			if ( instance.Container == this )
+			if ( instance.Parent == this )
 			{
-				instance.Container = null;
+				instance.Parent = null;
 				instance.SlotId = 0;
 			}
 		}
@@ -524,12 +524,12 @@ public class InventoryContainer : IValid
 
 		if ( oldItem.IsValid() )
 		{
-			oldItem.Container = null;
+			oldItem.Parent = null;
 			oldItem.SlotId = 0;
 		}
 
 		instance.SlotId = slot;
-		instance.Container = this;
+		instance.Parent = this;
 
 		ItemList[slot] = instance;
 
@@ -560,7 +560,7 @@ public class InventoryContainer : IValid
 		}
 
 		instance.SlotId = slot;
-		instance.Container = this;
+		instance.Parent = this;
 
 		ItemList[slot] = instance;
 
@@ -574,7 +574,7 @@ public class InventoryContainer : IValid
 		var amount = instance.StackSize;
 		var item = ItemList[slot];
 
-		if ( ParentItem == instance )
+		if ( Parent == instance )
 			return amount;
 
 		if ( !CanGiveItem( slot, item ) )
@@ -618,7 +618,7 @@ public class InventoryContainer : IValid
 		{
 			var item = ItemList[i];
 
-			if ( ParentItem == item )
+			if ( Parent == item )
 				continue;
 
 			if ( !CanGiveItem( (ushort)i, instance ) )
@@ -696,7 +696,7 @@ public class InventoryContainer : IValid
 		var instance = reader.ReadInventoryItem();
 		var slot = reader.ReadUInt16();
 
-		instance.Container = this;
+		instance.Parent = this;
 		instance.SlotId = slot;
 
 		ItemList[slot] = instance;
@@ -712,9 +712,9 @@ public class InventoryContainer : IValid
 
 		if ( instance != null )
 		{
-			if ( instance.Container == this && instance.SlotId == slot )
+			if ( instance.Parent == this && instance.SlotId == slot )
 			{
-				instance.Container = null;
+				instance.Parent = null;
 				instance.SlotId = 0;
 			}
 
@@ -742,9 +742,9 @@ public class InventoryContainer : IValid
 
 	public virtual InventoryContainer GetTransferTarget()
 	{
-		if ( TransferHandler == null && ParentItem.IsValid() && ParentItem.Container.IsValid() )
+		if ( TransferHandler == null && Parent.IsValid() && Parent.Parent.IsValid() )
 		{
-			return ParentItem.Container.GetTransferTarget();
+			return Parent.Parent.GetTransferTarget();
 		}
 
 		return TransferHandler?.Invoke();

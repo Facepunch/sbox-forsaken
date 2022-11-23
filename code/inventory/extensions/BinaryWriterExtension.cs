@@ -27,7 +27,7 @@ public static class BinaryWriterExtension
 		var typeDesc = TypeLibrary.GetDescription( container.GetType() );
 
 		writer.Write( typeDesc.Identity );
-		writer.Write( container.ParentItemId );
+		writer.Write( container.ParentId );
 		writer.Write( container.InventoryId );
 		writer.Write( container.SlotLimit );
 

@@ -67,7 +67,7 @@
         if ( Item.IsValid() && !Container.CanTakeItem( Slot, Item ) )
             return false;
 
-        if ( Container.ParentItem == slot.Item )
+        if ( Container.Parent == slot.Item )
             return false;
 
         return Container.CanGiveItem( Slot, slot.Item );

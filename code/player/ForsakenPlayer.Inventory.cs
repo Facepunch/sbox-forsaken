@@ -244,7 +244,7 @@ public partial class ForsakenPlayer
 
 	private void OnEquipmentItemTaken( ushort slot, InventoryItem instance )
 	{
-		if ( instance is ArmorItem armor && !Equipment.Is( instance.Container ) )
+		if ( instance is ArmorItem armor && !Equipment.Is( instance.Parent ) )
 		{
 			if ( Armor.TryGetValue( armor.ArmorSlot, out var models ) )
 			{
@@ -280,7 +280,7 @@ public partial class ForsakenPlayer
 	{
 		if ( instance is WeaponItem weapon )
 		{
-			if ( weapon.Weapon.IsValid() && !Hotbar.Is( instance.Container ) )
+			if ( weapon.Weapon.IsValid() && !Hotbar.Is( instance.Parent ) )
 			{
 				weapon.Weapon.Delete();
 				weapon.Weapon = null;

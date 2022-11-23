@@ -54,7 +54,7 @@ public static class BinaryReaderExtension
 
 			container = type.Create<InventoryContainer>();
 			container.SetEntity( entity );
-			container.SetParentItem( parentItemId );
+			container.SetParent( parentItemId );
 			container.SetSlotLimit( slotLimit );
 			InventorySystem.Register( container, inventoryId );
 		}

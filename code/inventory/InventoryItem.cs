@@ -7,7 +7,7 @@ namespace Facepunch.Forsaken;
 
 public class InventoryItem : IValid
 {
-	public InventoryContainer Container { get; set; }
+	public InventoryContainer Parent { get; set; }
 	public ItemEntity WorldEntity { get; private set; }
 	public bool IsWorldEntity { get; private set; }
 
@@ -85,7 +85,7 @@ public class InventoryItem : IValid
 		{
 			if ( IsServer )
 			{
-				if ( Container == null )
+				if ( Parent == null )
 				{
 					InternalIsDirty = false;
 					return;
@@ -95,7 +95,7 @@ public class InventoryItem : IValid
 
 				if ( InternalIsDirty )
 				{
-					Container.IsDirty = true;
+					Parent.IsDirty = true;
 				}
 			}
 		}
@@ -122,17 +122,17 @@ public class InventoryItem : IValid
 
 	public void Remove()
 	{
-		if ( Container.IsValid() )
+		if ( Parent.IsValid() )
 		{
-			Container.Remove( this );
+			Parent.Remove( this );
 		}
 	}
 
 	public void Replace( InventoryItem other )
 	{
-		if ( Container.IsValid() )
+		if ( Parent.IsValid() )
 		{
-			Container.Replace( SlotId, other );
+			Parent.Replace( SlotId, other );
 		}
 	}
 

@@ -76,13 +76,13 @@
     </div>
 
     <div class="hotbar">
-        @if ( Selected != null && Selected.Item is IChildContainerItem selected )
+        @if ( Selected != null && Selected.Item is IContainerItem selected )
         {
-            <label class="title">@selected.ChildContainerName</label>
+            <label class="title">@selected.ContainerName</label>
 
             <div class="slots" style="margin-bottom: 24px;">
                 @{
-                    var childContainer = selected.ChildContainer;
+                    var childContainer = selected.Container;
                 }
 
                 @for ( ushort i = 0; i < childContainer.SlotLimit; i++ )
@@ -190,9 +190,9 @@
         var hotbar = ForsakenPlayer.Me?.Hotbar;
 
         InventoryContainer childContainer = null;
-        if (Selected != null && Selected.Item is IChildContainerItem selected )
+        if (Selected != null && Selected.Item is IContainerItem selected )
         {
-            childContainer = selected.ChildContainer;
+            childContainer = selected.Container;
         }
 
         return HashCode.Combine( ForsakenPlayer.Me, Selected, childContainer, equipment, backpack, hotbar );

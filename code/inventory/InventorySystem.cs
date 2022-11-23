@@ -107,7 +107,7 @@ public static partial class InventorySystem
 
 		if ( Items.Remove( itemId ) )
 		{
-			instance.Container?.Remove( itemId );
+			instance.Parent?.Remove( itemId );
 			instance.OnRemoved();
 		}
 	}
@@ -616,7 +616,7 @@ public static partial class InventorySystem
 		{
 			var item = kv.Value;
 
-			if ( !item.Container.IsValid() && !item.WorldEntity.IsValid() )
+			if ( !item.Parent.IsValid() && !item.WorldEntity.IsValid() )
 			{
 				OrphanedItems.Enqueue( kv.Key );
 				item.IsValid = false;

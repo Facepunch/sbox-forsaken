@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Facepunch.Forsaken;
 
-public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IChildContainerItem
+public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerItem
 {
 	public override Color Color => ItemColors.Weapon;
 
@@ -17,8 +17,8 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IChildContai
 	public virtual Curve RecoilCurve => Resource?.RecoilCurve ?? default;
 
 	public InventoryContainer Attachments { get; private set; }
-	public InventoryContainer ChildContainer => Attachments;
-	public string ChildContainerName => "Attachments";
+	public InventoryContainer Container => Attachments;
+	public string ContainerName => "Attachments";
 
 	public Weapon Weapon { get; set; }
 	public int Ammo { get; set; }
@@ -57,7 +57,7 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IChildContai
 		{
 			Attachments = new InventoryContainer();
 			Attachments.SetSlotLimit( 4 );
-			Attachments.SetParentItem( this );
+			Attachments.SetParent( this );
 			InventorySystem.Register( Attachments );
 		}
 
