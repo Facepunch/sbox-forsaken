@@ -335,6 +335,7 @@ public partial class ForsakenPlayer : Player
 	protected virtual void ServerTick()
 	{
 		Temperature = TimeSystem.Temperature;
+		Temperature += Equipment.FindItems<ArmorItem>().Sum( i => i.TemperatureModifier );
 	}
 
 	protected override void OnDestroy()

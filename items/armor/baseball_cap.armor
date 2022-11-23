@@ -6,9 +6,10 @@
 		ArmorSlot = "Head"
 		SecondaryModel = null
 		PrimaryModel = resource:"models/citizen_clothes/hat/baseball_cap/model/baseball_cap.vmdl"
+		TemperatureModifier = 1
 		ItemName = "Baseball Cap"
 		UniqueId = "baseball_cap"
-		Description = "A simple baseball cap. It does nothing, but it looks cool."
+		Description = "A simple baseball cap. It\'ll keep your head a bit warm."
 		Icon = resource:"clothing_icons/baseball_cap.png"
 		WorldModel = resource:"models/sbox_props/burger_box/burger_box.vmdl"
 		Tags = [  ]

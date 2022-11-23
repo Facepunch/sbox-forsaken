@@ -17,4 +17,7 @@ public class ArmorResource : ItemResource
 
 	[Property, ResourceType( "vmdl" )]
 	public string PrimaryModel { get; set; }
+
+	[Property]
+	public float TemperatureModifier { get; set; }
 }

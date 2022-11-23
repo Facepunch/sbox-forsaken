@@ -5,6 +5,7 @@ namespace Facepunch.Forsaken;
 public class ArmorItem : ResourceItem<ArmorResource, ArmorItem>
 {
 	public override Color Color => ItemColors.Armor;
+	public virtual float TemperatureModifier => Resource?.TemperatureModifier ?? 0f;
 	public virtual float DamageMultiplier => Resource?.DamageMultiplier ?? 1f;
 	public virtual ArmorSlot ArmorSlot => Resource?.ArmorSlot ?? ArmorSlot.None;
 	public virtual string SecondaryModel => Resource?.SecondaryModel ?? string.Empty;
