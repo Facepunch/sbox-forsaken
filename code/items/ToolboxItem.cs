@@ -15,8 +15,10 @@ public class ToolboxItem : InventoryItem
 		return false;
 	}
 
-	public override void BuildTags( List<ItemTag> tags )
+	protected override void BuildTags( HashSet<string> tags )
 	{
-		tags.Add( ItemTag.Construction );
+		tags.Add( "tool" );
+
+		base.BuildTags( tags );
 	}
 }

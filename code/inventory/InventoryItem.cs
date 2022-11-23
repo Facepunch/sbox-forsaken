@@ -1,6 +1,7 @@
 ﻿using Sandbox;
 using System.IO;
 using System.Collections.Generic;
+using System;
 
 namespace Facepunch.Forsaken;
 
@@ -21,24 +22,15 @@ public class InventoryItem : IValid
 	public virtual string UniqueId => string.Empty;
 	public virtual string Icon => string.Empty;
 
+	public virtual IReadOnlySet<string> Tags => InternalTags;
 	public virtual Dictionary<string, int> RequiredItems => null;
 	public virtual bool IsCraftable => false;
 
-	private ItemTag[] InternalTags;
+	protected HashSet<string> InternalTags = new( StringComparer.OrdinalIgnoreCase );
 
-	public ItemTag[] Tags
+	public InventoryItem()
 	{
-		get
-		{
-			if ( InternalTags == null )
-			{
-				var tags = new List<ItemTag>();
-				BuildTags( tags );
-				InternalTags = tags.ToArray();
-			}
-
-			return InternalTags;
-		}
+		BuildTags( InternalTags );
 	}
 
 	public static InventoryItem Deserialize( byte[] data )
@@ -144,11 +136,6 @@ public class InventoryItem : IValid
 		}
 	}
 
-	public virtual void BuildTags( List<ItemTag> tags )
-	{
-		
-	}
-
 	public virtual bool IsSameType( InventoryItem other )
 	{
 		return (GetType() == other.GetType());
@@ -189,6 +176,11 @@ public class InventoryItem : IValid
 	}
 
 	public virtual void OnCreated()
+	{
+
+	}
+
+	protected virtual void BuildTags( HashSet<string> tags )
 	{
 
 	}

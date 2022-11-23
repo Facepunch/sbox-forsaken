@@ -88,14 +88,17 @@
 
         DescriptionLabel.SetClass( "hidden", string.IsNullOrEmpty( Provider.Description ) );
 
-        if ( Provider.Tags != null && Provider.Tags.Length > 0 )
+        if ( Provider.Tags != null && Provider.Tags.Count > 0 )
         {
-            foreach ( var tag in Provider.Tags )
+            foreach ( var tagId in Provider.Tags )
             {
-                var panel = TagContainer.Add.Panel( "tag" );
-                var label = panel.Add.Label( tag.Name, "name" );
-                panel.Style.BackgroundColor = Color.Lerp( tag.Color, Color.Black, 0.7f );
-                label.Style.FontColor = Color.Lerp( tag.Color, Color.White, 0.1f );
+                if ( ItemTag.TryGetTag( tagId, out var tag ) )
+                {
+                    var panel = TagContainer.Add.Panel( "tag" );
+                    var label = panel.Add.Label( tag.Name, "name" );
+                    panel.Style.BackgroundColor = Color.Lerp( tag.Color, Color.Black, 0.7f );
+                    label.Style.FontColor = Color.Lerp( tag.Color, Color.White, 0.1f );
+                }
             }
         }
         else

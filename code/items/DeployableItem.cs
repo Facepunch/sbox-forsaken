@@ -21,8 +21,10 @@ public class DeployableItem : InventoryItem
 		return false;
 	}
 
-	public override void BuildTags( List<ItemTag> tags )
+	protected override void BuildTags( HashSet<string> tags )
 	{
-		tags.Add( ItemTag.Deployable );
+		tags.Add( "deployable" );
+
+		base.BuildTags( tags );
 	}
 }

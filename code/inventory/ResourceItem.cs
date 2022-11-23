@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Facepunch.Forsaken;
 
@@ -22,6 +24,9 @@ public class ResourceItem<A,T> : InventoryItem, IResourceItem where A : ItemReso
 			return;
 		}
 
+		InternalTags = new HashSet<string>( resource.Tags, StringComparer.OrdinalIgnoreCase );
 		Resource = resource as A;
+
+		BuildTags( InternalTags );
 	}
 }

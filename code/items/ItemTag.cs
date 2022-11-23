@@ -1,10 +1,23 @@
-﻿namespace Facepunch.Forsaken;
+﻿using System.Collections.Generic;
+
+namespace Facepunch.Forsaken;
 
 public struct ItemTag
 {
-	public static ItemTag Construction { get; private set; } = new ItemTag( "Construction", ItemColors.Tool );
-	public static ItemTag Consumable { get; private set; } = new ItemTag( "Consumable", ItemColors.Consumable );
-	public static ItemTag Deployable { get; private set; } = new ItemTag( "Deployable", ItemColors.Deployable );
+	private static Dictionary<string, ItemTag> Tags { get; set; } = new();
+
+	public static void Register( string id, string name, Color color )
+	{
+		if ( !Tags.ContainsKey( id ) )
+		{
+			Tags.Add( id, new ItemTag( name, color ) );
+		}
+	}
+
+	public static bool TryGetTag( string id, out ItemTag tag )
+	{
+		return Tags.TryGetValue( id, out tag );
+	}
 
 	public string Name { get; set; }
 	public Color Color { get; set; }

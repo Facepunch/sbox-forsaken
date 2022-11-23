@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Facepunch.Forsaken;
@@ -51,5 +52,12 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>
 		}
 
 		base.OnRemoved();
+	}
+
+	protected override void BuildTags( HashSet<string> tags )
+	{
+		tags.Add( "weapon" );
+
+		base.BuildTags( tags );
 	}
 }

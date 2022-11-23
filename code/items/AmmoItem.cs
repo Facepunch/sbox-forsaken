@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 
 namespace Facepunch.Forsaken;
 
@@ -12,5 +13,12 @@ public class AmmoItem : ResourceItem<AmmoResource, AmmoItem>
 	public override bool CanStackWith( InventoryItem other )
 	{
 		return (other is AmmoItem item && item.AmmoType == AmmoType);
+	}
+
+	protected override void BuildTags( HashSet<string> tags )
+	{
+		tags.Add( "ammo" );
+
+		base.BuildTags( tags );
 	}
 }

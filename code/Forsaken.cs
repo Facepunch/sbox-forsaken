@@ -18,6 +18,10 @@ public partial class Forsaken : Game
 	{
 		InventorySystem.Initialize();
 
+		ItemTag.Register( "deployable", "Deployable", ItemColors.Deployable );
+		ItemTag.Register( "consumable", "Consumable", ItemColors.Consumable );
+		ItemTag.Register( "tool", "Tool", ItemColors.Tool );
+
 		Local.Hud?.Delete( true );
 		Local.Hud = new UI.Hud();
 

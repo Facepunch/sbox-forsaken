@@ -31,7 +31,7 @@
     public Panel Icon { get; set; }
     public Panel Glow { get; set; }
     public string Description => Item.Description;
-    public ItemTag[] Tags => Item.Tags;
+    public IReadOnlySet<string> Tags => Item.Tags;
     public string Name => Item.Name;
     public Color Color => Item.Color;
 

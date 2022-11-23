@@ -1,4 +1,6 @@
-﻿namespace Facepunch.Forsaken;
+﻿using System.Collections.Generic;
+
+namespace Facepunch.Forsaken;
 
 public class ArmorItem : ResourceItem<ArmorResource, ArmorItem>
 {
@@ -11,5 +13,19 @@ public class ArmorItem : ResourceItem<ArmorResource, ArmorItem>
 	public override bool CanStackWith( InventoryItem other )
 	{
 		return false;
+	}
+
+	protected override void BuildTags( HashSet<string> tags )
+	{
+		tags.Add( "armor" );
+
+		if ( ArmorSlot == ArmorSlot.Head )
+			tags.Add( "head" );
+		else if ( ArmorSlot == ArmorSlot.Chest )
+			tags.Add( "chest" );
+		else if ( ArmorSlot == ArmorSlot.Legs )
+			tags.Add( "legs" );
+
+		base.BuildTags( tags );
 	}
 }

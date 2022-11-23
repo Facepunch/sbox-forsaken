@@ -536,6 +536,12 @@ public static partial class InventorySystem
 			return;
 		}
 
+		if ( TypeLibrary == null )
+		{
+			Log.Info( "Unable to reload Forsaken item definitions because TypeLibrary is null!" );
+			return;
+		}
+
 		var resources = ResourceLibrary.GetAll<ItemResource>();
 
 		foreach ( var resource in resources )

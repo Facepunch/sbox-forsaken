@@ -20,6 +20,9 @@ public class ItemResource : GameResource
 	[Property, ResourceType( "vmdl" )]
 	public string WorldModel { get; set; } = "models/sbox_props/burger_box/burger_box.vmdl";
 
+	[Property]
+	public List<string> Tags { get; set; } = new();
+
 	protected override void PostLoad()
 	{
 		if ( Host.IsMenu ) return;

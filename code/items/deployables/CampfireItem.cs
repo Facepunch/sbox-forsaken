@@ -23,9 +23,4 @@ public class CampfireItem : DeployableItem
 	{
 		return false;
 	}
-
-	public override void BuildTags( List<ItemTag> tags )
-	{
-		tags.Add( ItemTag.Deployable );
-	}
 }
