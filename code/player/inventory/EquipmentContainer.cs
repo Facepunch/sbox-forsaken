@@ -6,7 +6,7 @@ public partial class EquipmentContainer : InventoryContainer
 {
 	public EquipmentContainer( Entity owner ) : base( owner )
 	{
-		SetSlotLimit( 3 );
+		SetSlotLimit( 4 );
 	}
 
 	public override InventoryContainer GetTransferTarget()
@@ -32,6 +32,9 @@ public partial class EquipmentContainer : InventoryContainer
 
 		if ( armor.ArmorSlot == ArmorSlot.Legs )
 			return slot == 2;
+
+		if ( armor.ArmorSlot == ArmorSlot.Feet )
+			return slot == 3;
 
 		return false;
 	}

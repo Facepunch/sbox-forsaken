@@ -51,6 +51,14 @@
                     Slot=@((ushort)2)
                     Item=@equipment.GetFromSlot( 2 )>
                 </InventorySlot>
+
+                <InventorySlot
+                    OnSelected=@OnEquipmentSlotSelected
+                    DefaultIcon="textures/ui/armor_slot_feet.png"
+                    Container=@equipment
+                    Slot=@((ushort)3)
+                    Item=@equipment.GetFromSlot( 3 )>
+                </InventorySlot>
             </div>
         </div>
 

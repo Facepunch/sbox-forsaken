@@ -303,6 +303,15 @@ public partial class ForsakenPlayer
 		var armor = InventorySystem.CreateItem<ArmorItem>( "baseball_cap" );
 		TryGiveItem( armor );
 
+		armor = InventorySystem.CreateItem<ArmorItem>( "black_hoodie" );
+		TryGiveItem( armor );
+
+		armor = InventorySystem.CreateItem<ArmorItem>( "cargo_pants" );
+		TryGiveItem( armor );
+
+		armor = InventorySystem.CreateItem<ArmorItem>( "army_boots" );
+		TryGiveItem( armor );
+
 		var toolbox = InventorySystem.CreateItem<ToolboxItem>();
 		TryGiveItem( toolbox );
 

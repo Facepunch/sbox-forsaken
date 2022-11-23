@@ -5,5 +5,6 @@ public enum ArmorSlot
 	None,
 	Head,
 	Chest,
-	Legs
+	Legs,
+	Feet
 }

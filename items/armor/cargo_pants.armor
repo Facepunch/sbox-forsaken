@@ -1,0 +1,17 @@
+<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:generic:version{7412167c-06e9-4698-aff2-e63eb59037e7} -->
+{
+	data = 
+	{
+		DamageMultiplier = 0.9
+		ArmorSlot = "Legs"
+		SecondaryModel = null
+		PrimaryModel = resource:"models/citizen_clothes/trousers/cargopants/models/cargo_pants.vmdl"
+		TemperatureModifier = 2
+		ItemName = "Cargo Pants"
+		UniqueId = "cargo_pants"
+		Description = "A pair of cargo pants. They come in a sneaky camouflage color."
+		Icon = resource:"clothing_icons/cargo_pants_army.png"
+		WorldModel = resource:"models/sbox_props/burger_box/burger_box.vmdl"
+		Tags = [  ]
+	}
+}
