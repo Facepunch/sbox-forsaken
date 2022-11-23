@@ -10,12 +10,12 @@ public static partial class InventorySystem
 {
 	public enum NetworkEvent
 	{
-		SendDirtyItems,
-		MoveInventory,
-		SplitInventory,
-		TransferInventory,
-		GiveItem,
-		TakeItem
+		DirtyItems,
+		Move,
+		Split,
+		Transfer,
+		Give,
+		Take
 	}
 
 	private static Dictionary<ulong, InventoryContainer> Containers { get; set; } = new();
@@ -255,7 +255,7 @@ public static partial class InventorySystem
 				writer.Write( fromSlot );
 				writer.Write( from.InventoryId );
 				writer.Write( to.InventoryId );
-				SendEventDataToServer( NetworkEvent.TransferInventory, Convert.ToBase64String( stream.ToArray() ) );
+				SendEventDataToServer( NetworkEvent.Transfer, Convert.ToBase64String( stream.ToArray() ) );
 			}
 		}
 	}
@@ -270,7 +270,7 @@ public static partial class InventorySystem
 				writer.Write( from.InventoryId );
 				writer.Write( toSlot );
 				writer.Write( to.InventoryId );
-				SendEventDataToServer( NetworkEvent.SplitInventory, Convert.ToBase64String( stream.ToArray() ) );
+				SendEventDataToServer( NetworkEvent.Split, Convert.ToBase64String( stream.ToArray() ) );
 			}
 		}
 	}
@@ -285,7 +285,7 @@ public static partial class InventorySystem
 				writer.Write( from.InventoryId );
 				writer.Write( toSlot );
 				writer.Write( to.InventoryId );
-				SendEventDataToServer( NetworkEvent.MoveInventory, Convert.ToBase64String( stream.ToArray() ) );
+				SendEventDataToServer( NetworkEvent.Move, Convert.ToBase64String( stream.ToArray() ) );
 			}
 		}
 	}
@@ -299,7 +299,7 @@ public static partial class InventorySystem
 				writer.Write( container.InventoryId );
 				writer.WriteInventoryItem( instance );
 				writer.Write( slotId );
-				SendEventDataToClient( to, NetworkEvent.GiveItem, stream.ToArray() );
+				SendEventDataToClient( to, NetworkEvent.Give, stream.ToArray() );
 			}
 		}
 	}
@@ -312,7 +312,7 @@ public static partial class InventorySystem
 			{
 				writer.Write( container.InventoryId );
 				writer.Write( slotId );
-				SendEventDataToClient( to, NetworkEvent.TakeItem, stream.ToArray() );
+				SendEventDataToClient( to, NetworkEvent.Take, stream.ToArray() );
 			}
 		}
 	}
@@ -351,7 +351,7 @@ public static partial class InventorySystem
 					}
 				}
 
-				SendEventDataToClient( to, NetworkEvent.SendDirtyItems, stream.ToArray() );
+				SendEventDataToClient( to, NetworkEvent.DirtyItems, stream.ToArray() );
 			}
 		}
 	}
@@ -486,13 +486,13 @@ public static partial class InventorySystem
 			{
 				switch ( type )
 				{
-					case NetworkEvent.TransferInventory:
+					case NetworkEvent.Transfer:
 						ProcessTransferInventoryEvent( reader );
 						break;
-					case NetworkEvent.SplitInventory:
+					case NetworkEvent.Split:
 						ProcessSplitInventoryEvent( reader );
 						break;
-					case NetworkEvent.MoveInventory:
+					case NetworkEvent.Move:
 						ProcessMoveInventoryEvent( reader );
 						break;
 				}
@@ -509,16 +509,16 @@ public static partial class InventorySystem
 			{
 				switch ( type )
 				{
-					case NetworkEvent.SendDirtyItems:
+					case NetworkEvent.DirtyItems:
 						ProcessSendDirtyItemsEvent( reader );
 						break;
-					case NetworkEvent.MoveInventory:
+					case NetworkEvent.Move:
 						ProcessMoveInventoryEvent( reader );
 						break;
-					case NetworkEvent.GiveItem:
+					case NetworkEvent.Give:
 						ProcessGiveItemEvent( reader );
 						break;
-					case NetworkEvent.TakeItem:
+					case NetworkEvent.Take:
 						ProcessTakeItemEvent( reader );
 						break;
 				}

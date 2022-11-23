@@ -31,17 +31,14 @@ public class InventoryContainer : IValid
 
 		set
 		{
-			if ( IsServer )
-			{
-				if ( InternalIsDirty != value )
-				{
-					InternalIsDirty = value;
+			if ( IsClient ) return;
+			if ( InternalIsDirty == value ) return;
 
-					if ( InternalIsDirty )
-					{
-						InventorySystem.AddToDirtyList( this );
-					}
-				}
+			InternalIsDirty = value;
+
+			if ( InternalIsDirty )
+			{
+				InventorySystem.AddToDirtyList( this );
 			}
 		}
 	}
