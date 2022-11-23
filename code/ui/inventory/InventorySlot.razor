@@ -105,28 +105,20 @@
         base.OnMouseOver( e );
     }
 
+    protected override void OnParametersSet()
+    {
+        if ( !Item.IsValid() )
+        {
+            CustomTooltip.Hide( this );
+        }
+
+        base.OnParametersSet();
+    }
+
     protected override void OnMouseOut( MousePanelEvent e )
     {
         CustomTooltip.Hide( this );
         base.OnMouseOut( e );
-    }
-
-    protected override void OnRightClick( MousePanelEvent e )
-    {
-        if ( !Item.IsValid() ) return;
-
-        var container = Item.Container;
-        if ( container.TransferHandler == null ) return;
-
-        var transferContainer = container.TransferHandler.Invoke( Item );
-
-        if ( transferContainer.IsValid() )
-        {
-            InventorySystem.SendTransferEvent( container, transferContainer, Item.SlotId );
-            Sound.FromScreen( "inventory.move" );
-        }
-
-        base.OnRightClick( e );
     }
 
     protected override void OnAfterTreeRender( bool firstTime )

@@ -56,6 +56,10 @@
         }
     }
 
+    &.pending-transfer {
+        opacity: 0.5;
+    }
+
     &.is-empty {
         opacity: 0.7;
 
@@ -80,7 +84,7 @@
         opacity: 0.8;
 
         .overlay {
-            background: linear-gradient(darken( red, 0.3 ), rgba(red, 0.5));
+            background: linear-gradient(darken( red, 0.3 ), rgba( red, 0.5 ));
             border-radius: 4px;
             display: flex;
             opacity: 0.6;
