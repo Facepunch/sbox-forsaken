@@ -20,8 +20,22 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerIt
 	public InventoryContainer Container => Attachments;
 	public string ContainerName => "Attachments";
 
-	public Weapon Weapon { get; set; }
+	public Weapon Weapon
+	{
+		get => InternalWeapon;
+		set
+		{
+			if ( InternalWeapon != value )
+			{
+				InternalWeapon = value;
+				OnWeaponChanged( value );
+			}
+		}
+	}
+
 	public int Ammo { get; set; }
+
+	private Weapon InternalWeapon;
 
 	public override bool CanStackWith( InventoryItem other )
 	{
@@ -76,6 +90,14 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerIt
 		}
 
 		base.OnRemoved();
+	}
+
+	protected virtual void OnWeaponChanged( Weapon weapon )
+	{
+		foreach ( var attachment in Attachments.FindItems<AttachmentItem>() )
+		{
+			attachment.OnWeaponChanged( weapon );
+		}
 	}
 
 	protected override void BuildTags( HashSet<string> tags )
