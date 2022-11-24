@@ -219,38 +219,30 @@ public class InventoryContainer : IValid
 		}
 	}
 
-	public List<InventoryItem> FindItems( Type type )
+	public IEnumerable<InventoryItem> FindItems( Type type )
 	{
-		var output = new List<InventoryItem>();
-
 		for ( int i = 0; i < ItemList.Count; i++ )
 		{
 			var item = ItemList[i];
 
 			if ( item.IsValid() && item.GetType().IsAssignableTo( type ) )
 			{
-				output.Add( item );
+				yield return item;
 			}
 		}
-
-		return output;
 	}
 
-	public List<T> FindItems<T>() where T : InventoryItem
+	public IEnumerable<T> FindItems<T>() where T : InventoryItem
 	{
-		var output = new List<T>();
-
 		for ( int i = 0; i < ItemList.Count; i++ )
 		{
 			var instance = (ItemList[i] as T);
 
-			if ( instance != null )
+			if ( instance.IsValid() )
 			{
-				output.Add( instance );
+				yield return instance;
 			}
 		}
-
-		return output;
 	}
 
 	public bool Split( InventoryContainer target, ushort fromSlot, ushort toSlot )

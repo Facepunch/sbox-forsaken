@@ -34,22 +34,18 @@ public partial class ForsakenPlayer
 		ThrowItemCmd( item.ItemId, csv );
 	}
 
-	public List<T> FindItems<T>() where T : InventoryItem
+	public IEnumerable<T> FindItems<T>() where T : InventoryItem
 	{
-		var items = new List<T>();
-		items.AddRange( Hotbar.FindItems<T>() );
-		items.AddRange( Backpack.FindItems<T>() );
-		items.AddRange( Equipment.FindItems<T>() );
-		return items;
+		foreach ( var item in Hotbar.FindItems<T>() ) yield return item;
+		foreach ( var item in Backpack.FindItems<T>() ) yield return item;
+		foreach ( var item in Equipment.FindItems<T>() ) yield return item;
 	}
 
-	public List<InventoryItem> FindItems( Type type )
+	public IEnumerable<InventoryItem> FindItems( Type type )
 	{
-		var items = new List<InventoryItem>();
-		items.AddRange( Hotbar.FindItems( type ) );
-		items.AddRange( Backpack.FindItems( type ) );
-		items.AddRange( Equipment.FindItems( type ) );
-		return items;
+		foreach ( var item in Hotbar.FindItems( type ) ) yield return item;
+		foreach ( var item in Backpack.FindItems( type ) ) yield return item;
+		foreach ( var item in Equipment.FindItems( type ) ) yield return item;
 	}
 
 	public ushort TakeAmmo( AmmoType type, ushort count )
