@@ -15,7 +15,7 @@
 <root>
     @foreach ( var client in Client.All )
     {
-        if ( Local.Client == client )
+        if ( !ShowOwnNametag && Local.Client == client )
             continue;
 
         var pawn = client.Pawn as ForsakenPlayer;
@@ -31,6 +31,6 @@
 {
     protected override int BuildHash()
     {
-        return HashCode.Combine( Client.All.Count );
+        return HashCode.Combine( Client.All.Count, ShowOwnNametag );
     }
 }
