@@ -1,15 +1,17 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using Sandbox;
+using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
-public class AttachmentItem : ResourceItem<AttachmentResource, AttachmentItem>
+public class AttachmentItem : InventoryItem
 {
 	public override Color Color => ItemColors.Tool;
 	public override ushort DefaultStackSize => 1;
 	public override ushort MaxStackSize => 1;
 
-	public virtual int AttachmentSlot => Resource?.AttachmentSlot ?? 0;
+	public virtual int AttachmentSlot => 0;
+
+	public WeaponItem AttachedTo => Parent?.Parent as WeaponItem;
 
 	public override bool CanStackWith( InventoryItem other )
 	{
@@ -21,5 +23,35 @@ public class AttachmentItem : ResourceItem<AttachmentResource, AttachmentItem>
 		tags.Add( "attachment" );
 
 		base.BuildTags( tags );
+	}
+
+	public virtual void OnWeaponChanged( Weapon weapon )
+	{
+
+	}
+
+	public virtual void OnAttached( WeaponItem item )
+	{
+
+	}
+
+	public virtual void OnDetatched( WeaponItem item )
+	{
+
+	}
+
+	public virtual void Simulate( Client client )
+	{
+
+	}
+
+	public override void OnRemoved()
+	{
+		if ( AttachedTo.IsValid() )
+		{
+			OnDetatched( AttachedTo );
+		}
+
+		base.OnRemoved();
 	}
 }
