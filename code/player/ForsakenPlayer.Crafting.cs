@@ -43,7 +43,7 @@ public partial class ForsakenPlayer
 	{
 		Host.AssertServer();
 
-		for ( var i = CraftingQueue.Count; i >= 0; i-- )
+		for ( var i = CraftingQueue.Count - 1; i >= 0; i-- )
 		{
 			CancelCrafting( CraftingQueue[i] );
 		}
