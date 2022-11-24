@@ -1,0 +1,36 @@
+﻿@using System;
+@using Sandbox;
+@using Sandbox.UI;
+@using Facepunch.Forsaken;
+
+@namespace Facepunch.Forsaken.UI
+@attribute [StyleSheet( "/ui/nametags/Nametags.scss" )]
+@inherits Panel
+
+@{
+    var player = ForsakenPlayer.Me;
+    if ( !player.IsValid() ) return;
+}
+
+<root>
+    @foreach ( var client in Client.All )
+    {
+        if ( Local.Client == client )
+            continue;
+
+        var pawn = client.Pawn as ForsakenPlayer;
+
+        if ( pawn.IsValid() )
+        {
+            <Nametag Player=@pawn></Nametag>
+        }
+    }
+</root>
+
+@code
+{
+    protected override int BuildHash()
+    {
+        return HashCode.Combine( Client.All.Count );
+    }
+}

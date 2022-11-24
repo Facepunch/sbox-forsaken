@@ -1,0 +1,45 @@
+﻿@using System;
+@using Sandbox;
+@using Sandbox.UI;
+@using Facepunch.Forsaken;
+
+@namespace Facepunch.Forsaken.UI
+@attribute [StyleSheet( "/ui/nametags/Nametag.scss" )]
+@inherits Panel
+
+@if ( !Player.IsValid() ) return;
+@if ( Player.LifeState != LifeState.Alive ) return;
+
+<div class="dot"></div>
+<label class="name">@Player.Client.Name</label>
+
+@code
+{
+    public ForsakenPlayer Player { get; set; }
+
+    public override void Tick()
+    {
+        var isHidden = true;
+        var position = (Player.EyePosition - Player.Rotation.Forward * 20f).ToScreen();
+
+        if ( position.z >= 0f )
+        {
+            position.x *= Screen.Size.x * ScaleFromScreen;
+            position.y *= Screen.Size.y * ScaleFromScreen;
+
+            Style.Left = Length.Pixels( position.x );
+            Style.Top = Length.Pixels( position.y );
+
+            isHidden = false;
+        }
+
+        SetClass( "hidden", isHidden );
+
+        base.Tick();
+    }
+
+    protected override int BuildHash()
+    {
+        return HashCode.Combine( Player, Player.Client.Name, Player.LifeState );
+    }
+}
