@@ -4,7 +4,6 @@ using System.Linq;
 
 namespace Facepunch.Forsaken;
 
-
 public partial class Forsaken : Game
 {
 	public override void Spawn()

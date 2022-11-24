@@ -1,0 +1,248 @@
+﻿Crafting {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    display: flex;
+    pointer-events: all;
+    backdrop-filter-blur: 24px;
+    background-color: rgba(0, 0, 0, 0.9);
+    transition: backdrop-filter-blur 0.15s ease-in;
+    transition: opacity 0.15s ease-in;
+    z-index: 100;
+    opacity: 1;
+
+    > .vertical {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        height: 80%;
+
+        > .title {
+            color: white;
+            font-family: Vollkorn;
+            font-size: 40px;
+        }
+
+        > .queue {
+            margin-top: 32px;
+
+            > .queue-item {
+                border: 2px solid rgba( #FFF, 0.2 );
+                background: linear-gradient(rgba(#000000, 0.8), rgba(#444, 0.8));
+                border-radius: 2px;
+                height: 80px;
+                width: 80px;
+
+                &:not( :last-child ) {
+                    margin-right: 8px;
+                }
+            }
+        }
+
+        > .horizontal {
+            flex-direction: row;
+            margin-top: 16px;
+            height: 100%;
+    
+            > .left {
+                flex-direction: column;
+                border-radius: 4px;
+                margin-right: 64px;
+                height: 100%;
+                width: 20%;
+    
+                TextEntry {
+                    background-color: rgba( 0 0 0 0.6 );
+                    align-items: center;
+                    border-radius: 4px;
+                    padding: 8px;
+                    font-size: 24px;
+                    font-family: Vollkorn;
+                    color: white;
+
+                    &:hover {
+                        background-color: rgba( 0 0 0 0.7 );
+                    }
+                }
+        
+                > .categories {
+                    flex-direction: column;
+                    overflow: scroll;
+                    font-family: Vollkorn;
+                    margin-top: 16px;
+                    font-size: 24px;
+                    color: white;
+
+                    .category {
+                        background-color:rgba( 0 0 0 0.2 );
+                        transition: all 0.1s ease-in-out;
+                        justify-content: center;
+                        border-radius: 4px;
+                        margin-top: 8px;
+                        align-items: center;
+                        font-size: 28px;
+                        height: 60px;
+                        width: 100%;
+
+                        &:hover {
+                            background-color:rgba( 150 150 150 0.1 );
+                        }
+                    }
+                }
+            }
+        
+            > .middle {
+                flex-direction: column;
+                border-radius: 4px;
+                margin-right: 64px;
+                font-family: Vollkorn;
+                font-size: 24px;
+                color: white;
+                padding: 16px;
+                height: 100%;
+                width: 580px;
+
+                > .items {
+                    overflow: scroll;
+                    flex-direction: row;
+                    flex-shrink: 1;
+                    flex-wrap: wrap;
+                    display: flex;
+
+                    > .item {
+                        border: 2px solid rgba( #FFF, 0.2 );
+                        background: linear-gradient(rgba(#000000, 0.8), rgba(#444, 0.8));
+                        border-radius: 2px;
+                        margin-right: 8px;
+                        margin-top: 8px;
+                        height: 100px;
+                        width: 100px;
+
+                        &:hover {
+                            background-color:rgba( 0 0 0 0.6 );
+                            border: 2px solid rgba( #FFF, 0.4 );
+                        }
+                    }
+                }
+            }
+        
+            > .right {
+                flex-direction: column;
+                border-radius: 4px;
+                padding: 16px;
+                height: 100%;
+                width: 30%;
+
+                > .item-name {
+                    font-family: Vollkorn;
+                    font-size: 40px;
+                    color: white;
+                }
+
+                > .item-description {
+                    font-family: Vollkorn;
+                    font-size: 24px;
+                    color: white;
+                }
+
+                > .craft-box {
+                    flex-direction: row;
+                    justify-content: center;
+                    align-items: center;
+                    margin-top: 32px;
+
+                    > .less-button {
+                        background-color:rgba( 0 0 0 0.4 );
+                        border-top-left-radius: 4px;
+                        border-bottom-left-radius: 4px;
+                        width: 64px;
+                        height: 64px;
+
+                        &:hover {
+                            background-color:rgba( 0 0 0 0.6 );
+                        }
+                    }
+
+                    > .more-button {
+                        background-color:rgba( 0 0 0 0.4 );
+                        margin-right: 64px;
+                        border-top-right-radius: 4px;
+                        border-bottom-right-radius: 4px;
+                        width: 64px;
+                        height: 64px;
+
+                        &:hover {
+                            background-color:rgba( 0 0 0 0.6 );
+                        }
+                    }
+
+                    > .current {
+                        background-color:rgba( 0 0 0 0.3 );
+                        justify-content: center;
+                        align-items: center;
+                        height: 64px;
+                        width: 80px;
+
+                        > .amount {
+                            font-family: Vollkorn;
+                            font-size: 32px;
+                            color: white;
+                        }
+                    }
+
+                    > .craft-button {
+                        background-color:rgba( 0 0 0 0.4 );
+                        margin-right: 32px;
+                        justify-content: center;
+                        align-items: center;
+                        border-radius: 4px;
+                        height: 64px;
+                        padding-right: 32px;
+                        padding-left: 32px;
+
+                        label {
+                            font-family: Vollkorn;
+                            font-size: 32px;
+                            color: white;
+                        }
+
+                        &:hover {
+                            background-color:rgba( 0 0 0 0.6 );
+                        }
+                    }
+                }
+
+                > .inputs {
+                    background-color:rgba( 0 0 0 0.3 );
+                    border-radius: 4px;
+                    flex-direction: column;
+                    margin-top: 32px;
+                    padding: 16px;
+
+                    > .input {
+                        flex-direction: row;
+
+                        > .name {
+                            font-family: Vollkorn;
+                            margin-right: 32px;
+                            font-size: 24px;
+                            color: white;
+                        }
+
+                        > .quantity {
+                            font-family: Vollkorn;
+                            font-size: 24px;
+                            color: white;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    &.hidden {
+        pointer-events: none;
+        opacity: 0;
+    }
+}

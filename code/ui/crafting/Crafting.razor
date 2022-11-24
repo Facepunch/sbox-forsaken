@@ -1,0 +1,123 @@
+﻿@using System;
+@using Sandbox;
+@using Sandbox.UI;
+@using Facepunch.Forsaken;
+
+@namespace Facepunch.Forsaken.UI
+@attribute [StyleSheet( "/ui/crafting/Crafting.scss" )]
+@inherits Panel
+@implements IDialog
+
+@if ( !ForsakenPlayer.Me.IsValid() ) return;
+
+@{
+    var equipment = ForsakenPlayer.Me.Equipment;
+    if (!equipment.IsValid()) return;
+
+    var backpack = ForsakenPlayer.Me.Backpack;
+    if ( !backpack.IsValid() ) return;
+
+    var hotbar = ForsakenPlayer.Me.Hotbar;
+    if ( !hotbar.IsValid() ) return;
+}
+
+<root>
+	<div class="vertical">
+		<label class="title">Crafting</label>
+		<div class="horizontal">
+			<div class="left">
+				<textentry class="search"></textentry>
+				<div class="categories">
+					<div class="category">All</div>
+					<div class="category">Tools</div>
+					<div class="category">Weapons</div>
+					<div class="category">Armor</div>
+				</div>
+			</div>
+			<div class="middle">
+				<div class="items">
+					<div class="item"></div>
+					<div class="item"></div>
+					<div class="item"></div>
+					<div class="item"></div>
+					<div class="item"></div>
+					<div class="item"></div>
+				</div>
+			</div>
+			<div class="right">
+				<label class="item-name">Bolt (x2)</label>
+				<label class="item-description">A bolt for a Crossbow blah blah blah</label>
+
+				<div class="inputs">
+					<div class="input">
+						<div class="name">Stone</div>
+						<div class="quantity">x25</div>
+					</div>
+
+					<div class="input">
+						<div class="name">Wood</div>
+						<div class="quantity">x50</div>
+					</div>
+				</div>
+
+				<div class="craft-box">
+					<div class="less-button">
+
+					</div>
+					<div class="current">
+						<label class="amount">1</label>
+					</div>
+					<div class="more-button">
+						
+					</div>
+
+					<div class="craft-button">
+						<label>Craft</label>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="queue">
+			<div class="queue-item"></div>
+			<div class="queue-item"></div>
+			<div class="queue-item"></div>
+			<div class="queue-item"></div>
+			<div class="queue-item"></div>
+			<div class="queue-item"></div>
+			<div class="queue-item"></div>
+			<div class="queue-item"></div>
+		</div>
+	</div>
+</root>
+
+@code
+{
+    public static Crafting Current { get; private set; }
+
+    public bool IsOpen { get; set; }
+
+    public Crafting()
+    {
+        BindClass( "hidden", () => !IsOpen );
+        Current = this;
+    }
+
+    public void Open()
+    {
+        if ( IsOpen ) return;
+        Dialog.Activate( this );
+        IsOpen = true;
+    }
+
+    public void Close()
+    {
+        if ( !IsOpen ) return;
+        Dialog.Deactivate( this );
+        IsOpen = false;
+    }
+
+    protected override int BuildHash()
+    {
+        return HashCode.Combine( ForsakenPlayer.Me );
+    }
+}

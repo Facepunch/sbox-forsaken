@@ -465,6 +465,14 @@ public partial class ForsakenPlayer
 					UI.Backpack.Current?.Close();
 				}
 			}
+
+			if ( Input.Released( InputButton.Menu ) )
+			{
+				if ( UI.Dialog.IsActive() )
+					UI.Dialog.Close();
+				else
+					UI.Crafting.Current?.Open();
+			}
 		}
 	}
 
