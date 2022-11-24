@@ -74,7 +74,7 @@ public abstract partial class Weapon : BaseWeapon
 		}
 	}
 
-	public WeaponItem WeaponItem => Item.Value as WeaponItem;
+	public WeaponItem WeaponItem => Item.IsValid() ? Item.Value as WeaponItem : null;
 
 	public int AvailableAmmo()
 	{
@@ -220,6 +220,16 @@ public abstract partial class Weapon : BaseWeapon
 		if ( IsReloading && TimeSinceReload > ReloadTime )
 		{
 			OnReloadFinish();
+		}
+
+		if ( WeaponItem.IsValid() )
+		{
+			var attachments = WeaponItem.Attachments.FindItems<AttachmentItem>();
+
+			foreach ( var attachment in attachments )
+			{
+				attachment.Simulate( owner );
+			}
 		}
 	}
 

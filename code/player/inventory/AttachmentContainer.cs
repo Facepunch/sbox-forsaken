@@ -21,4 +21,27 @@ public partial class AttachmentContainer : InventoryContainer
 
 		return !existing.Any();
 	}
+
+	protected override void OnItemGiven( ushort slot, InventoryItem item )
+	{
+		if ( item is AttachmentItem attachment && Parent is WeaponItem weapon )
+		{
+			attachment.OnAttached( weapon );
+		}
+
+		base.OnItemGiven( slot, item );
+	}
+
+	protected override void OnItemTaken( ushort slot, InventoryItem item )
+	{
+		base.OnItemTaken( slot, item );
+
+		if ( !item.Parent.IsValid() || !item.Parent.Is( this ) )
+		{
+			if ( item is AttachmentItem attachment && Parent is WeaponItem weapon )
+			{
+				attachment.OnDetatched( weapon );
+			}
+		}
+	}
 }
