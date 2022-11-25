@@ -3,11 +3,8 @@
 public enum RecipeCategory
 {
 	None,
-	Deployables,
-	Construction,
-	Armor,
+	Building,
+	Clothing,
 	Weapons,
-	Tools,
-	Traps,
-	Ammo
+	Tools
 }

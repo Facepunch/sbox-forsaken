@@ -2,7 +2,7 @@
 {
 	data = 
 	{
-		Category = "Ammo"
+		Category = "Weapons"
 		Output = "ammo_bolt"
 		StackSize = 2
 		Inputs = 
