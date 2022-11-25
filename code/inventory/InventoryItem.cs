@@ -184,4 +184,9 @@ public class InventoryItem : IValid
 	{
 
 	}
+
+	public override int GetHashCode()
+	{
+		return HashCode.Combine( IsValid, StackSize );
+	}
 }

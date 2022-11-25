@@ -26,7 +26,7 @@
 {
     public InventoryContainer Container { get; set; }
     public ushort Slot { get; set; }
-    public InventoryItem Item { get; set; }
+    public InventoryItem Item => Container.GetFromSlot( Slot );
     public bool IsSelected { get; set; }
     public string StackSize => GetStackSize();
     public float IconSize => Box.Rect.Size.Length;
@@ -143,7 +143,6 @@
                 Icon.Style.BackgroundImage = null;
 
             SetClass( "is-empty", true );
-            Item = null;
 
             return;
         }

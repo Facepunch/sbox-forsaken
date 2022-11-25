@@ -32,32 +32,28 @@
                     OnSelected=@OnEquipmentSlotSelected
                     DefaultIcon="textures/ui/armor_slot_head.png"
                     Container=@equipment
-                    Slot=@((ushort)0)
-                    Item=@equipment.GetFromSlot( 0 )>
+                    Slot=@((ushort)0)>
                 </InventorySlot>
 
                 <InventorySlot
                     OnSelected=@OnEquipmentSlotSelected
                     DefaultIcon="textures/ui/armor_slot_chest.png"
                     Container=@equipment
-                    Slot=@((ushort)1)
-                    Item=@equipment.GetFromSlot( 1 )>
+                    Slot=@((ushort)1)>
                 </InventorySlot>
 
                 <InventorySlot
                     OnSelected=@OnEquipmentSlotSelected
                     DefaultIcon="textures/ui/armor_slot_legs.png"
                     Container=@equipment
-                    Slot=@((ushort)2)
-                    Item=@equipment.GetFromSlot( 2 )>
+                    Slot=@((ushort)2)>
                 </InventorySlot>
 
                 <InventorySlot
                     OnSelected=@OnEquipmentSlotSelected
                     DefaultIcon="textures/ui/armor_slot_feet.png"
                     Container=@equipment
-                    Slot=@((ushort)3)
-                    Item=@equipment.GetFromSlot( 3 )>
+                    Slot=@((ushort)3)>
                 </InventorySlot>
             </div>
         </div>
@@ -68,8 +64,7 @@
             <div class="slots">
                 @for ( ushort i = 0; i < backpack.SlotLimit; i++ )
                 {
-                    var item = backpack.GetFromSlot( i );
-                    <InventorySlot OnSelected=@OnBackpackSlotSelected Container=@backpack Slot=@i Item=@item></InventorySlot>
+                    <InventorySlot OnSelected=@OnBackpackSlotSelected Container=@backpack Slot=@i></InventorySlot>
                 }
             </div>
         </div>
@@ -87,8 +82,7 @@
 
                 @for ( ushort i = 0; i < childContainer.SlotLimit; i++ )
                 {
-                    var item = childContainer.GetFromSlot( i );
-                    <InventorySlot Container=@childContainer Slot=@i Item=@item></InventorySlot>
+                    <InventorySlot Container=@childContainer Slot=@i></InventorySlot>
                 }
             </div>
         }
@@ -98,8 +92,7 @@
         <div class="slots">
             @for ( ushort i = 0; i < hotbar.SlotLimit; i++ )
             {
-                var item = hotbar.GetFromSlot(i);
-                <InventorySlot OnSelected=@OnHotbarSlotSelected Container=@hotbar Slot=@i Item=@item></InventorySlot>
+                <InventorySlot OnSelected=@OnHotbarSlotSelected Container=@hotbar Slot=@i></InventorySlot>
             }
         </div>
     </div>

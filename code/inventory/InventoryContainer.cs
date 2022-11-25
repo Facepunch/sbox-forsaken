@@ -564,43 +564,43 @@ public class InventoryContainer : IValid
 
 	public ushort Stack( InventoryItem instance, ushort slot )
 	{
-		var amount = instance.StackSize;
 		var item = ItemList[slot];
 
-		if ( Parent == instance )
-			return amount;
+		if ( Parent == item )
+			return instance.StackSize;
 
-		if ( !CanGiveItem( slot, item ) )
-			return amount;
+		if ( !CanGiveItem( slot, instance ) )
+			return instance.StackSize;
 
 		if ( item != null && item.IsSameType( instance ) && item.CanStackWith( instance ) )
 		{
 			var amountCanStack = (ushort)Math.Max( item.MaxStackSize - item.StackSize, 0 );
 
-			if ( amountCanStack >= amount )
+			if ( amountCanStack >= instance.StackSize )
 			{
-				item.StackSize += amount;
-				amount = 0;
+				item.StackSize += instance.StackSize;
+				instance.StackSize = 0;
 			}
 			else
 			{
+				instance.StackSize = (ushort)Math.Max( instance.StackSize - amountCanStack, 0 );
 				item.StackSize += amountCanStack;
-				amount = (ushort)Math.Max( amount - amountCanStack, 0 );
 			}
 
-			if ( amount == 0 ) return 0;
+			if ( instance.StackSize == 0 ) return 0;
 		}
 
-		if ( amount > 0 )
+		if ( instance.StackSize > 0 )
 		{
-			if ( Give( instance, slot ) )
+			var success = Give( instance );
+
+			if ( success )
 			{
-				instance.StackSize = amount;
 				return 0;
 			}
 		}
 
-		return amount;
+		return instance.StackSize;
 	}
 
 	public ushort Stack( InventoryItem instance )

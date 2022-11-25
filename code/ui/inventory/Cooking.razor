@@ -33,8 +33,7 @@
             <div class="slots">
                 @for ( ushort i = 0; i < backpack.SlotLimit; i++ )
                 {
-                    var item = backpack.GetFromSlot( i );
-                    <InventorySlot Container=@backpack Slot=@i Item=@item></InventorySlot>
+                    <InventorySlot Container=@backpack Slot=@i></InventorySlot>
                 }
             </div>
         </div>
@@ -45,8 +44,7 @@
             <div class="slots">
                 @for ( ushort i = 0; i < fuel.SlotLimit; i++ )
                 {
-                    var item = fuel.GetFromSlot( i );
-                    <InventorySlot Container=@fuel Slot=@i Item=@item></InventorySlot>
+                    <InventorySlot Container=@fuel Slot=@i></InventorySlot>
                 }
             </div>
 
@@ -54,8 +52,7 @@
             <div class="slots">
                 @for ( ushort i = 0; i < input.SlotLimit; i++ )
                 {
-                    var item = input.GetFromSlot( i );
-                    <InventorySlot Container=@input Slot=@i Item=@item></InventorySlot>
+                    <InventorySlot Container=@input Slot=@i></InventorySlot>
                 }
             </div>
 
@@ -63,8 +60,7 @@
             <div class="slots">
                 @for ( ushort i = 0; i < output.SlotLimit; i++ )
                 {
-                    var item = output.GetFromSlot( i );
-                    <InventorySlot Container=@output Slot=@i Item=@item></InventorySlot>
+                    <InventorySlot Container=@output Slot=@i></InventorySlot>
                 }
             </div>
 
@@ -85,8 +81,7 @@
         <div class="slots">
             @for ( ushort i = 0; i < hotbar.SlotLimit; i++ )
             {
-                var item = hotbar.GetFromSlot(i);
-                <InventorySlot Container=@hotbar Slot=@i Item=@item></InventorySlot>
+                <InventorySlot Container=@hotbar Slot=@i></InventorySlot>
             }
         </div>
     </div>
@@ -162,7 +157,7 @@
 
     private void OnToggleButtonClicked()
     {
-        ICookerEntity.ToggleCmd(Cooker.NetworkIdent);
+        ICookerEntity.ToggleCmd( Cooker.NetworkIdent );
     }
 
     private InventoryContainer GetTransferTarget()

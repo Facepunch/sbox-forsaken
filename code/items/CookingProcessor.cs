@@ -123,7 +123,8 @@ public partial class CookingProcessor : BaseNetworkable
 		{
 			var entity = new ItemEntity();
 			entity.SetItem( cookedItem );
-			entity.Position = Cooker.Position + Vector3.Up * 40f + Cooker.Rotation.Forward * 40f;
+			entity.Position = Cooker.Position + Vector3.Up * 40f + Cooker.Rotation.Forward * 30f;
+			entity.ApplyAbsoluteImpulse( (Cooker.Rotation.Forward + Vector3.Random) * 40f );
 
 			Stop();
 		}

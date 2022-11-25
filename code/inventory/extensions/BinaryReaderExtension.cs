@@ -69,7 +69,14 @@ public static class BinaryReaderExtension
 
 			if ( isValid )
 			{
-				container.ItemList[i] = buffer.ReadInventoryItem();
+				var item = buffer.ReadInventoryItem();
+				item.IsValid = true;
+				item.Parent = container;
+				container.ItemList[i] = item;
+			}
+			else
+			{
+				container.ItemList[i] = null;
 			}
 		}
 
