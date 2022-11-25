@@ -2,8 +2,9 @@
 {
 	data = 
 	{
+		Category = "Ammo"
 		Output = "ammo_bolt"
-		StackSize = 1
+		StackSize = 2
 		Inputs = 
 		{
 			wood = 10
