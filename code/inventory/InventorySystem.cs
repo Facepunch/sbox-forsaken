@@ -587,6 +587,8 @@ public static partial class InventorySystem
 			return;
 		}
 
+		definition.IsValid = true;
+
 		Definitions.Add( uniqueId, definition );
 	}
 
