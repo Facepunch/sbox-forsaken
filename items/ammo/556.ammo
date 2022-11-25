@@ -3,14 +3,13 @@
 	data = 
 	{
 		AmmoType = "Rifle"
-		MaxStackSize = 1
+		MaxStackSize = 128
 		DefaultStackSize = 1
 		ItemName = "5.56 Ammo"
 		UniqueId = "ammo_rifle"
 		Description = "Ammunition typically used for rifles."
 		Icon = resource:"textures/items/ammo_bolt.png"
 		WorldModel = null
-		IsCraftable = false
-		RequiredItems = null
+		Tags = [  ]
 	}
 }
