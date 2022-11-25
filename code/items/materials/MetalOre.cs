@@ -1,6 +1,8 @@
-﻿namespace Facepunch.Forsaken;
+﻿using System.Collections.Generic;
 
-public class MetalOre : InventoryItem
+namespace Facepunch.Forsaken;
+
+public class MetalOre : InventoryItem, ICookableItem
 {
 	public override Color Color => ItemColors.Material;
 	public override string Name => "Metal Ore";
@@ -8,4 +10,14 @@ public class MetalOre : InventoryItem
 	public override string Description => "Raw metal ore as extracted directly from a deposit.";
 	public override ushort MaxStackSize => 20;
 	public override string Icon => "textures/items/metal_ore.png";
+
+	public string CookedItemId => "metal_fragments";
+	public int CookedQuantity => 1;
+
+	protected override void BuildTags( HashSet<string> tags )
+	{
+		tags.Add( "ore" );
+
+		base.BuildTags( tags );
+	}
 }
