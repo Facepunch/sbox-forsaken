@@ -474,6 +474,16 @@ public abstract partial class Weapon : BaseWeapon
 		return EffectEntity;
 	}
 
+	protected void CreateLightSource( Vector3 position, Color color, float range, float brightness, float lifeTime )
+	{
+		var light = new PointLightEntity();
+		light.Brightness = brightness;
+		light.Position = position;
+		light.Range = range;
+		light.Color = color;
+		light.DeleteAsync( lifeTime );
+	}
+
 	protected void DealDamage( Entity target, Vector3 position, Vector3 force )
 	{
 		DealDamage( target, position, force, WeaponItem.Damage );
