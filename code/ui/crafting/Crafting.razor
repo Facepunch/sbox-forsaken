@@ -63,7 +63,15 @@
                 {
                     var output = InventorySystem.GetDefinition( SelectedRecipe.Output );
 
-                    <label class="item-name">@output.Name (x@(SelectedRecipe.StackSize))</label>
+                    @if ( SelectedRecipe.StackSize == 1 )
+                    {
+                        <label class="item-name">@output.Name</label>                        
+                    }
+                    else
+                    {
+                        <label class="item-name">@output.Name (x@(SelectedRecipe.StackSize))</label>
+                    }
+
                     <label class="item-description">@output.Description</label>
 
 				    <div class="inputs">
