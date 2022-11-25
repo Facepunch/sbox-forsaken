@@ -120,7 +120,7 @@
 
 	public override void Tick()
 	{
-		if ( Provider == null || !Provider.IsVisible || !Provider.HasHovered )
+        if ( !Provider.IsValid() || !Provider.IsVisible || !Provider.HasHovered )
 		{
 			if ( !IsDeleting )
 			{
