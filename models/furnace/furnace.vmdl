@@ -32,9 +32,9 @@
 						parent_bone = ""
 						surface_prop = "default"
 						collision_tags = "solid"
-						origin = [ -0.236494, 0.352695, 39.740292 ]
+						origin = [ 1.387324, -0.348774, 27.197968 ]
 						angles = [ 0.0, 0.0, 0.0 ]
-						dimensions = [ 46.811527, 47.008797, 79.152306 ]
+						dimensions = [ 30.450018, 28.846046, 54.067657 ]
 					},
 				]
 			},
@@ -62,7 +62,7 @@
 						filename = "models/furnace/furnace_v3.fbx"
 						import_translation = [ 0.0, 0.0, 0.0 ]
 						import_rotation = [ 0.0, 0.0, 0.0 ]
-						import_scale = 0.5
+						import_scale = 0.35
 						align_origin_x_type = "None"
 						align_origin_y_type = "None"
 						align_origin_z_type = "None"

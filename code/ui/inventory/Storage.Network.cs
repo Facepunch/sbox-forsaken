@@ -9,7 +9,7 @@ public partial class Storage
         OpenForClient( To.Single(player), name, entity, container.Serialize() );
 
 		var viewer = player.Client.Components.Get<InventoryViewer>();
-		viewer?.SetContainer( container );
+		viewer?.AddContainer( container );
     }
 
     [ClientRpc]

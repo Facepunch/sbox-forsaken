@@ -1,0 +1,172 @@
+﻿@using System;
+@using Sandbox;
+@using Sandbox.UI;
+@using Facepunch.Forsaken;
+
+@namespace Facepunch.Forsaken.UI
+@attribute [StyleSheet( "/ui/inventory/Cooking.scss" )]
+@inherits Panel
+@implements IDialog
+@implements IDroppable
+
+@if ( !ForsakenPlayer.Me.IsValid() ) return;
+@if ( !Cooker.IsValid() ) return;
+@if ( Cooker.Processor is null ) return;
+
+@{
+    var backpack = ForsakenPlayer.Me.Backpack;
+    if ( !backpack.IsValid() ) return;
+
+    var hotbar = ForsakenPlayer.Me.Hotbar;
+    if ( !hotbar.IsValid() ) return;
+
+    var fuel = Cooker.Processor.Fuel;
+    var input = Cooker.Processor.Input;
+    var output = Cooker.Processor.Output;
+}
+
+<root>
+    <div class="body-container">
+        <div class="backpack">
+            <label class="title">Backpack</label>
+
+            <div class="slots">
+                @for ( ushort i = 0; i < backpack.SlotLimit; i++ )
+                {
+                    var item = backpack.GetFromSlot( i );
+                    <InventorySlot Container=@backpack Slot=@i Item=@item></InventorySlot>
+                }
+            </div>
+        </div>
+        <div class="cooking">
+            <label class="title">@Name</label>
+
+            <label class="subtitle">Fuel</label>
+            <div class="slots">
+                @for ( ushort i = 0; i < fuel.SlotLimit; i++ )
+                {
+                    var item = fuel.GetFromSlot( i );
+                    <InventorySlot Container=@fuel Slot=@i Item=@item></InventorySlot>
+                }
+            </div>
+
+            <label class="subtitle">Input</label>
+            <div class="slots">
+                @for ( ushort i = 0; i < input.SlotLimit; i++ )
+                {
+                    var item = input.GetFromSlot( i );
+                    <InventorySlot Container=@input Slot=@i Item=@item></InventorySlot>
+                }
+            </div>
+
+            <label class="subtitle">Output</label>
+            <div class="slots">
+                @for ( ushort i = 0; i < output.SlotLimit; i++ )
+                {
+                    var item = output.GetFromSlot( i );
+                    <InventorySlot Container=@output Slot=@i Item=@item></InventorySlot>
+                }
+            </div>
+
+            @if ( Cooker.Processor.IsActive )
+            {
+                <div class="toggle-button" onclick=@OnToggleButtonClicked>Stop</div>
+            }
+            else
+            {
+                <div class="toggle-button" onclick=@OnToggleButtonClicked>Start</div>
+            }
+        </div>
+    </div>
+
+    <div class="hotbar">
+        <label class="title">Hotbar</label>
+
+        <div class="slots">
+            @for ( ushort i = 0; i < hotbar.SlotLimit; i++ )
+            {
+                var item = hotbar.GetFromSlot(i);
+                <InventorySlot Container=@hotbar Slot=@i Item=@item></InventorySlot>
+            }
+        </div>
+    </div>
+</root>
+
+@code
+{
+    public static Cooking Current { get; private set; }
+
+    public ICookerEntity Cooker { get; private set; }
+    public bool IsOpen { get; private set; }
+    public Entity Entity { get; private set; }
+    public string Name { get; private set; }
+
+    public Cooking()
+    {
+        Current = this;
+        BindClass( "hidden", () => !IsOpen );
+    }
+
+    public void Open()
+    {
+        if ( IsOpen ) return;
+        Dialog.Activate( this );
+        IsOpen = true;
+    }
+
+    public void Close()
+    {
+        if ( !IsOpen ) return;
+        Dialog.Deactivate( this );
+        IsOpen = false;
+    }
+
+    public void SetName( string name )
+    {
+        Name = name;
+    }
+
+    public void SetCooker( ICookerEntity cooker )
+    {
+        Cooker = cooker;
+
+        cooker.Processor.Fuel.SetTransferHandler( GetTransferTarget );
+        cooker.Processor.Input.SetTransferHandler( GetTransferTarget );
+        cooker.Processor.Output.SetTransferHandler( GetTransferTarget );
+    }
+
+    public virtual bool CanDrop( IDraggable draggable, DraggableMode mode )
+    {
+        return true;
+    }
+
+    public virtual void OnDrop( IDraggable draggable, DraggableMode mode )
+    {
+        if ( draggable is InventorySlot slot )
+        {
+            ForsakenPlayer.ThrowItem( slot.Item, Screen.GetDirection( Mouse.Position ) );
+        }
+    }
+
+    protected override int BuildHash()
+    {
+        var backpack = ForsakenPlayer.Me?.Backpack;
+        var hotbar = ForsakenPlayer.Me?.Hotbar;
+
+        return HashCode.Combine( ForsakenPlayer.Me, backpack, hotbar, Cooker,
+            Cooker?.Processor?.Fuel ?? null,
+            Cooker?.Processor?.Input ?? null,
+            Cooker?.Processor?.Output ?? null,
+            Cooker?.Processor?.IsActive ?? false );
+    }
+
+    private void OnToggleButtonClicked()
+    {
+        ICookerEntity.ToggleCmd(Cooker.NetworkIdent);
+    }
+
+    private InventoryContainer GetTransferTarget()
+    {
+        return ForsakenPlayer.Me?.Backpack;
+    }
+}
