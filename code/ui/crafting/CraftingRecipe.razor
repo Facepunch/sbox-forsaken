@@ -1,0 +1,77 @@
+﻿@using System;
+@using Sandbox;
+@using Sandbox.UI;
+@using Facepunch.Forsaken;
+
+@namespace Facepunch.Forsaken.UI
+@attribute [StyleSheet( "/ui/crafting/CraftingRecipe.scss" )]
+@inherits Panel
+@implements ITooltipProvider
+
+<root>
+    <div @ref="Glow" class="glow"></div>
+    <div @ref="Icon" class="icon"></div>
+</root>
+
+@code
+{
+    public Action<RecipeResource> OnSelected { get; set; }
+    public RecipeResource Recipe { get; set; }
+    public bool IsSelected { get; set; }
+
+    public string Description => Output.Description;
+    public IReadOnlySet<string> Tags => Output.Tags;
+    public string Name => Output.Name;
+    public Color Color => Output.Color;
+
+    private InventoryItem Output { get; set; }
+    private Panel Icon { get; set; }
+    private Panel Glow { get; set; }
+
+    public CraftingRecipe()
+    {
+        AddEventListener( "onclick", () => OnSelected?.Invoke( Recipe ) );
+        BindClass( "selected", () => IsSelected );
+    }
+
+    protected override void OnMouseOver( MousePanelEvent e )
+    {
+        if ( Output.IsValid() )
+        {
+            CustomTooltip.Show( this );
+        }
+
+        base.OnMouseOver( e );
+    }
+
+    protected override void OnMouseOut( MousePanelEvent e )
+    {
+        CustomTooltip.Hide( this );
+        base.OnMouseOut( e );
+    }
+
+    protected override void OnParametersSet()
+    {
+        Output = InventorySystem.GetDefinition( Recipe.Output );
+        base.OnParametersSet();
+    }
+
+    protected override void OnAfterTreeRender( bool firstTime )
+    {
+        var icon = Output.Icon;
+
+        if ( !string.IsNullOrEmpty( icon ) )
+        {
+            Icon.Style.SetBackgroundImage( icon );
+            Icon.Style.BackgroundTint = Output.IconTintColor;
+        }
+        else
+        {
+            Icon.Style.BackgroundImage = null;
+        }
+
+        Glow.Style.SetRadialGradientBackground( Output.Color, 0.6f, Color.Black, 0f );
+
+        base.OnAfterTreeRender( firstTime );
+    }
+}

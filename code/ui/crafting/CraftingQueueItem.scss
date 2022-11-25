@@ -1,0 +1,45 @@
+﻿CraftingQueueItem {
+    border: 2px solid rgba( #FFF, 0.2 );
+    background: linear-gradient(rgba(#000000, 0.8), rgba(#444, 0.8));
+    border-radius: 2px;
+    height: 80px;
+    width: 80px;
+
+    > .icon {
+        width: 70px;
+        height: 70px;
+        background-position: center;
+        background-size: cover;
+        pointer-events: none;
+    }
+
+    > .quantity {
+        position: absolute;
+        pointer-events: none;
+        font-family: Vollkorn;
+        text-shadow: 0 2px 0 rgba(0, 0, 0, 0.8);
+        font-size: 20px;
+        color: white;
+        bottom: -2px;
+        right: 4px;
+    }
+
+    > .glow {
+        position: absolute;
+        border-radius: 4px;
+        width: 80px;
+        height: 80px;
+    }
+
+    &:not( :last-child ) {
+        margin-right: 8px;
+    }
+
+    &.is-empty {
+        opacity: 0.7;
+
+        .glow {
+            display: none;
+        }
+    }
+}

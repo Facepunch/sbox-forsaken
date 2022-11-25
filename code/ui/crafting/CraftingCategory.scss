@@ -1,0 +1,23 @@
+﻿CraftingCategory {
+    background-color: rgba( 0 0 0 0.1 );
+    justify-content: center;
+    border-radius: 4px;
+    margin-top: 8px;
+    align-items: center;
+    font-family: Vollkorn;
+    color: rgba( white 0.8 );
+    font-size: 24px;
+    height: 60px;
+    width: 100%;
+
+    &.selected {
+        background-color: rgba( 0 0 0 0.5 );
+        color: rgba( white 1 );
+    }
+
+    &:hover {
+        &:not( .selected ) {
+            background-color: rgba( 0 0 0 0.3 );
+        }
+    }
+}

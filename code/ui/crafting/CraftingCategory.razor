@@ -1,0 +1,23 @@
+﻿@using System;
+@using Sandbox;
+@using Sandbox.UI;
+@using Facepunch.Forsaken;
+
+@namespace Facepunch.Forsaken.UI
+@attribute [StyleSheet( "/ui/crafting/CraftingCategory.scss" )]
+@inherits Panel
+
+<root>@(Category.HasValue ? Category.Value.ToString() : "All")</root>
+
+@code
+{
+	public Action<RecipeCategory?> OnSelected { get; set; }
+	public RecipeCategory? Category { get; set; }
+	public bool IsSelected { get; set; }
+
+	public CraftingCategory()
+	{
+		AddEventListener( "onclick", () => OnSelected?.Invoke( Category ) );
+		BindClass( "selected", () => IsSelected );
+	}
+}

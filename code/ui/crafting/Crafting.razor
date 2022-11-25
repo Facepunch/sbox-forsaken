@@ -26,67 +26,102 @@
 		<label class="title">Crafting</label>
 		<div class="horizontal">
 			<div class="left">
-				<textentry class="search"></textentry>
+                <TextEntry @ref="TextEntry" OnTextEdited=@OnSearchQueryChanged class="search" placeholder="Search recipes..." icon="search"></TextEntry>
 				<div class="categories">
-					<div class="category">All</div>
-					<div class="category">Tools</div>
-					<div class="category">Weapons</div>
-					<div class="category">Armor</div>
+                    <CraftingCategory
+                        OnSelected=@OnCategorySelected
+                        IsSelected=@(!SelectedCategory.HasValue)>
+                    </CraftingCategory>
+
+                    @foreach ( var category in (RecipeCategory[])Enum.GetValues( typeof( RecipeCategory ) ) )
+                    {
+                        if (category == RecipeCategory.None) continue;
+
+                        <CraftingCategory
+                            Category=@category
+                            OnSelected=@OnCategorySelected
+                            IsSelected=@(SelectedCategory.HasValue && SelectedCategory.Value == category)>
+                         </CraftingCategory>
+                    }
 				</div>
 			</div>
 			<div class="middle">
 				<div class="items">
-					<div class="item"></div>
-					<div class="item"></div>
-					<div class="item"></div>
-					<div class="item"></div>
-					<div class="item"></div>
-					<div class="item"></div>
+                    @foreach ( var recipe in GetCategoryRecipes() )
+                    {
+                        <CraftingRecipe Recipe=@recipe OnSelected=@OnRecipeSelected IsSelected=@(SelectedRecipe == recipe)></CraftingRecipe>
+                    }
 				</div>
 			</div>
 			<div class="right">
-				<label class="item-name">Bolt (x2)</label>
-				<label class="item-description">A bolt for a Crossbow blah blah blah</label>
+                @if ( SelectedRecipe == null )
+                {
+				    <label class="item-name">Crafting</label>
+                    <label class="item-description">Items can be crafted from recipes. Select a recipe to look at what is required to make it.</label>
+                }
+                else
+                {
+                    var output = InventorySystem.GetDefinition( SelectedRecipe.Output );
 
-				<div class="inputs">
-					<div class="input">
-						<div class="name">Stone</div>
-						<div class="quantity">x25</div>
-					</div>
+                    <label class="item-name">@output.Name (x@(SelectedRecipe.StackSize))</label>
+                    <label class="item-description">@output.Description</label>
 
-					<div class="input">
-						<div class="name">Wood</div>
-						<div class="quantity">x50</div>
-					</div>
-				</div>
+				    <div class="inputs">
+                        @foreach ( var kv in SelectedRecipe.Inputs )
+                        {
+                            var input = InventorySystem.GetDefinition( kv.Key );
+                            if (!input.IsValid()) continue;
 
-				<div class="craft-box">
-					<div class="less-button">
-						<label>-</label>
-					</div>
-					<div class="current">
-						<label class="amount">1</label>
-					</div>
-					<div class="more-button">
-						<label>+</label>
-					</div>
+                            var canAfford = false;
 
-					<div class="craft-button">
-						<label>Craft</label>
-					</div>
-				</div>
-			</div>
+                            if ( ForsakenPlayer.Me.HasItems( kv.Key, kv.Value * Quantity ) )
+                                canAfford = true;
+
+                            <div class="input">
+                                <div class="name">@input.Name</div>
+                                <div class="quantity @(!canAfford ? "cannot-afford" : "")">x@(kv.Value * Quantity)</div>
+                            </div>
+                        }
+                    </div>
+
+				    <div class="craft-box">
+					    <div onclick=@OnLessClicked class="less-button">
+						    <label>-</label>
+					    </div>
+					    <div class="current">
+                            <label class="amount">@Quantity</label>
+					    </div>
+					    <div onclick=@OnMoreClicked class="more-button">
+						    <label>+</label>
+					    </div>
+
+					    <div onclick=@OnCraftClicked class="craft-button">
+						    <label>Craft</label>
+					    </div>
+				    </div>
+                }
+            </div>
 		</div>
-		<div class="queue">
-			<div class="queue-item is-empty"></div>
-			<div class="queue-item is-empty"></div>
-			<div class="queue-item is-empty"></div>
-			<div class="queue-item is-empty"></div>
-			<div class="queue-item is-empty"></div>
-			<div class="queue-item is-empty"></div>
-			<div class="queue-item is-empty"></div>
-			<div class="queue-item is-empty"></div>
-		</div>
+        <div class="queue">
+            <div class="title">Queue</div>
+		    <div class="queue-items">
+                @{
+                    var craftingQueue = ForsakenPlayer.Me.CraftingQueue;
+                }
+
+                @for ( var i = 0; i < 10; i++ )
+                {
+                    if (craftingQueue.Count > i)
+                    {
+                        <CraftingQueueItem Entry=@craftingQueue[i] OnSelected=@OnCraftingEntrySelected></CraftingQueueItem>
+                    }
+                    else
+                    {
+                        <CraftingQueueItem></CraftingQueueItem>
+                    }
+                }
+		    </div>
+        </div>
 	</div>
 </root>
 
@@ -95,6 +130,12 @@
     public static Crafting Current { get; private set; }
 
     public bool IsOpen { get; set; }
+
+    private RecipeCategory? SelectedCategory { get; set; }
+    private RecipeResource SelectedRecipe { get; set; }
+    private TextEntry TextEntry { get; set; }
+    private string SearchQuery { get; set; }
+    private int Quantity { get; set; }
 
     public Crafting()
     {
@@ -118,6 +159,79 @@
 
     protected override int BuildHash()
     {
-        return HashCode.Combine( ForsakenPlayer.Me );
+        return HashCode.Combine( ForsakenPlayer.Me, SelectedRecipe, SelectedCategory, SearchQuery, Quantity, ForsakenPlayer.Me.CraftingQueue.Count );
+    }
+
+    private void OnSearchQueryChanged( string value )
+    {
+        SearchQuery = value;
+    }
+
+    private void OnLessClicked()
+    {
+        if ( Quantity == 1 ) return;
+        Quantity--;
+    }
+
+    private void OnMoreClicked()
+    {
+        if ( SelectedRecipe == null ) return;
+
+        if ( ForsakenPlayer.Me.CanCraftRecipe( SelectedRecipe, Quantity + 1 ) )
+            Quantity++;
+    }
+
+    private void OnCraftClicked()
+    {
+        if ( SelectedRecipe == null ) return;
+        if ( !ForsakenPlayer.Me.CanCraftRecipe( SelectedRecipe, Quantity ) ) return;
+        ForsakenPlayer.AddCraftingCmd( SelectedRecipe.ResourceName, Quantity );
+    }
+
+    private IEnumerable<RecipeResource> GetCategoryRecipes()
+    {
+        var recipes = ResourceLibrary.GetAll<RecipeResource>();
+
+        foreach ( var recipe in recipes )
+        {
+            if ( recipe.Category == RecipeCategory.None )
+                continue;
+
+            if ( !SelectedCategory.HasValue || SelectedCategory.Value == recipe.Category )
+            {
+                var definition = InventorySystem.GetDefinition( recipe.Output );
+
+                if ( definition.IsValid() )
+                {
+                    if ( string.IsNullOrEmpty( SearchQuery ) || definition.Name.ToLower().Contains( SearchQuery.ToLower() ) )
+                        yield return recipe; 
+                }
+            }
+        }
+    }
+
+    private void OnCraftingEntrySelected( CraftingQueueEntry entry )
+    {
+        var index = ForsakenPlayer.Me.CraftingQueue.IndexOf( entry );
+        if ( index < 0 ) return;
+
+        ForsakenPlayer.CancelCraftingCmd( index );
+    }
+
+    private void OnRecipeSelected( RecipeResource recipe )
+    {
+        if ( SelectedRecipe == recipe )
+        {
+            SelectedRecipe = null;
+            return;
+        }
+
+        SelectedRecipe = recipe;
+        Quantity = 1;
+    }
+
+    private void OnCategorySelected( RecipeCategory? category )
+    {
+        SelectedCategory = category;
     }
 }
