@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
-public partial class Campfire : Deployable, IContextActionProvider
+public partial class Furnace : Deployable, IContextActionProvider
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.White;
@@ -22,9 +22,8 @@ public partial class Campfire : Deployable, IContextActionProvider
 	[Net] public bool IsEmpty { get; private set; }
 
 	private PointLightEntity DynamicLight { get; set; }
-	private Particles ParticleEffect { get; set; }
 
-	public Campfire()
+	public Furnace()
 	{
 		PickupAction = new( "pickup", "Pickup", "textures/ui/actions/pickup.png" );
 		PickupAction.SetCondition( p => IsEmpty && !IsBurning );
@@ -37,7 +36,7 @@ public partial class Campfire : Deployable, IContextActionProvider
 
 	public string GetContextName()
 	{
-		return "Campfire";
+		return "Furnace";
 	}
 
 	public void Open( ForsakenPlayer player )
@@ -96,7 +95,7 @@ public partial class Campfire : Deployable, IContextActionProvider
 
 	public override void Spawn()
 	{
-		SetModel( "models/campfire/campfire.vmdl" );
+		SetModel( "models/furnace/furnace.vmdl" );
 		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
 
 		var inventory = new InventoryContainer();
@@ -126,14 +125,21 @@ public partial class Campfire : Deployable, IContextActionProvider
 		{
 			UpdateDynamicLight();
 		}
+
+		SceneObject?.Attributes?.Set( "Brightness", IsBurning ? 4f : 0f );
 	}
 
 	private void UpdateDynamicLight()
 	{
+		var position = Position;
+		var attachment = GetAttachment( "fire" );
+
+		if ( attachment.HasValue )
+			position = attachment.Value.Position;
+
 		DynamicLight.Brightness = 0.1f + MathF.Sin( Time.Now * 4f ) * 0.02f;
-		DynamicLight.Position = Position + Vector3.Up * 40f;
-		DynamicLight.Position += new Vector3( MathF.Sin( Time.Now * 2f ) * 4f, MathF.Cos( Time.Now * 2f ) * 4f );
-		DynamicLight.Range = 700f + MathF.Sin( Time.Now ) * 50f;
+		DynamicLight.Position = position;
+		DynamicLight.Range = 200f + MathF.Sin( Time.Now ) * 50f;
 	}
 
 	private void OnIsBurningChanged()
@@ -150,17 +156,9 @@ public partial class Campfire : Deployable, IContextActionProvider
 
 				UpdateDynamicLight();
 			}
-
-			if ( ParticleEffect == null )
-			{
-				ParticleEffect = Particles.Create( "particles/campfire/campfire.vpcf", this );
-			}
 		}
 		else
 		{
-			ParticleEffect?.Destroy();
-			ParticleEffect = null;
-
 			DynamicLight?.Delete();
 			DynamicLight = null;
 		}
