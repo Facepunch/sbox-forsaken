@@ -43,6 +43,16 @@ public partial class MP5A4 : ProjectileWeapon<CrossbowBoltProjectile>
 		anim.SetAnimParameter( "holdtype", 2 );
 	}
 
+	protected override void ShootEffects()
+	{
+		var position = GetMuzzlePosition();
+
+		if ( position.HasValue )
+			CreateLightSource( position.Value, Color.White, 300f, 0.1f, Time.Delta );
+
+		base.ShootEffects();
+	}
+
 	protected override void OnProjectileHit( CrossbowBoltProjectile projectile, TraceResult trace )
 	{
 		if ( IsServer && trace.Entity is ForsakenPlayer victim )
