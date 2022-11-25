@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
@@ -6,26 +7,38 @@ public partial class InventoryViewer : EntityComponent, IValid
 {
 	public bool IsValid => Entity.IsValid();
 
-	[Net] public ulong ContainerId { get; private set; }
+	[Net] public List<ulong> ContainerIds { get; private set; } = new List<ulong>();
 
 	/// <summary>
 	/// The container that this viewer is currently viewing.
 	/// </summary>
-	public InventoryContainer Container => InventorySystem.Find( ContainerId );
+	public IEnumerable<InventoryContainer> Containers
+	{
+		get
+		{
+			foreach ( var id in ContainerIds )
+			{
+				yield return InventorySystem.Find( id );
+			}
+		}
+	}
 
 	/// <summary>
 	/// Set the container this viewer is currently viewing.
 	/// </summary>
-	public void SetContainer( InventoryContainer container )
+	public void AddContainer( InventoryContainer container )
 	{
-		ContainerId = container.InventoryId;
+		if ( !ContainerIds.Contains( container.InventoryId ) )
+		{
+			ContainerIds.Add( container.InventoryId );
+		}
 	}
 
 	/// <summary>
 	/// Clear the container this viewer is currently viewing.
 	/// </summary>
-	public void ClearContainer()
+	public void ClearContainers()
 	{
-		ContainerId = 0;
+		ContainerIds.Clear();
 	}
 }

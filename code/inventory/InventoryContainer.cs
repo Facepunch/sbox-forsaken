@@ -198,7 +198,8 @@ public class InventoryContainer : IValid
 	public IEnumerable<Client> GetRecipients()
 	{
 		var recipients = Client.All
-			.Where( c => c.Components.TryGet<InventoryViewer>( out var viewer ) && viewer.ContainerId == InventoryId )
+			.Where( c => c.Components.TryGet<InventoryViewer>( out var viewer )
+			&& viewer.ContainerIds.Contains( InventoryId ) )
 			.Concat( Connections );
 
 		if ( Parent.IsValid() && Parent.Parent.IsValid() )
@@ -604,8 +605,6 @@ public class InventoryContainer : IValid
 
 	public ushort Stack( InventoryItem instance )
 	{
-		var amount = instance.StackSize;
-
 		for ( int i = 0; i < ItemList.Count; i++ )
 		{
 			var item = ItemList[i];
@@ -620,33 +619,32 @@ public class InventoryContainer : IValid
 			{
 				var amountCanStack = (ushort)Math.Max( item.MaxStackSize - item.StackSize, 0 );
 
-				if ( amountCanStack >= amount )
+				if ( amountCanStack >= instance.StackSize )
 				{
-					item.StackSize += amount;
-					amount = 0;
+					item.StackSize += instance.StackSize;
+					instance.StackSize = 0;
 				}
 				else
 				{
+					instance.StackSize = ( ushort)Math.Max( instance.StackSize - amountCanStack, 0 );
 					item.StackSize += amountCanStack;
-					amount = (ushort)Math.Max( amount - amountCanStack, 0 );
 				}
 
-				if ( amount == 0 ) return 0;
+				if ( instance.StackSize == 0 ) return 0;
 			}
 		}
 
-		if ( amount > 0 )
+		if ( instance.StackSize > 0 )
 		{
 			var success = Give( instance );
 
 			if ( success )
 			{
-				instance.StackSize = amount;
 				return 0;
 			}
 		}
 
-		return amount;
+		return instance.StackSize;
 	}
 
 	public List<InventoryItem> RemoveAll()

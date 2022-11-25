@@ -38,7 +38,7 @@ public partial class ForsakenPlayer : Player
 	[ClientInput] public Vector3 CameraPosition { get; private set; }
 	[ClientInput] public int ContextActionId { get; private set; }
 	[ClientInput] public Entity HoveredEntity { get; private set; }
-	[ClientInput] public ulong OpenStorageId { get; private set; }
+	[ClientInput] public string OpenContainerIds { get; private set; }
 	[ClientInput] public bool HasDialogOpen { get; private set; }
 
 	public Dictionary<ArmorSlot, List<BaseClothing>> Armor { get; private set; }
@@ -165,11 +165,14 @@ public partial class ForsakenPlayer : Player
 		base.BuildInput();
 
 		var storage = UI.Storage.Current;
+		var cooking = UI.Cooking.Current;
 
-		if ( storage.IsOpen && storage.Container.IsValid() )
-			OpenStorageId = storage.Container.InventoryId;
+		if ( cooking.IsOpen && cooking.Cooker.IsValid() )
+			OpenContainerIds = cooking.Cooker.Processor.GetContainerIdString();
+		else if ( storage.IsOpen && storage.Container.IsValid() )
+			OpenContainerIds = storage.Container.InventoryId.ToString();
 		else
-			OpenStorageId = 0;
+			OpenContainerIds = string.Empty;
 
 		HasDialogOpen = UI.Dialog.IsActive();
 
@@ -316,7 +319,7 @@ public partial class ForsakenPlayer : Player
 		Projectiles.Simulate();
 
 		SimulateCrafting();
-		SimulateOpenStorage();
+		SimulateOpenContainers();
 
 		if ( !HasDialogOpen )
 		{
@@ -350,17 +353,27 @@ public partial class ForsakenPlayer : Player
 		base.OnDestroy();
 	}
 
-	private void SimulateOpenStorage()
+	private void SimulateOpenContainers()
 	{
 		if ( IsClient ) return;
 
-		var container = InventorySystem.Find( OpenStorageId );
 		var viewer = Client.Components.Get<InventoryViewer>();
+		viewer.ClearContainers();
 
-		if ( container.IsValid() )
-			viewer.SetContainer( container );
-		else
-			viewer.ClearContainer();
+		if ( string.IsNullOrEmpty( OpenContainerIds ) ) return;
+
+		var split = OpenContainerIds.Split( ',' );
+
+		foreach ( var id in split )
+		{
+			if ( ulong.TryParse( id, out var value ) )
+			{
+				var container = InventorySystem.Find( value );
+
+				if ( container.IsValid() )
+					viewer.AddContainer( container );
+			}
+		}
 	}
 
 	private bool SimulateContextActions()
