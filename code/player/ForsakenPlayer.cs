@@ -208,7 +208,7 @@ public partial class ForsakenPlayer : Player
 			.Ignore( ActiveChild )
 			.Run();
 
-		if ( visible.Fraction > 0.9f )
+		if ( visible.Entity == cursor.Entity || visible.Fraction > 0.9f )
 			HoveredEntity = cursor.Entity;
 		else
 			HoveredEntity = null;
