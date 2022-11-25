@@ -7,6 +7,11 @@ namespace Facepunch.Forsaken;
 public class RecipeResource : GameResource
 {
 	/// <summary>
+	/// The display category for this recipe.
+	/// </summary>
+	[Property] public RecipeCategory Category { get; set; }
+
+	/// <summary>
 	/// The unique id of the item to produce as an output.
 	/// </summary>
 	[Property] public string Output { get; set; }
