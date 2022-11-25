@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Sandbox;
+using System.Collections.Generic;
 
 namespace Facepunch.Forsaken.UI;
 
-public interface ITooltipProvider
+public interface ITooltipProvider : IValid
 {
 	public string Name { get; }
 	public string Description { get; }
