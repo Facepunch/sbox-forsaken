@@ -3,8 +3,8 @@
 	data = 
 	{
 		AmmoType = "Shotgun"
-		MaxStackSize = 1
-		DefaultStackSize = 32
+		MaxStackSize = 32
+		DefaultStackSize = 0
 		ItemName = "Slug"
 		UniqueId = "ammo_slug"
 		Description = "A longer range shotgun ammo. Hits hard at range with far less falloff."
