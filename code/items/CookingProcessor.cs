@@ -95,7 +95,6 @@ public partial class CookingProcessor : BaseNetworkable
 		if ( !fuel.IsValid() ) return;
 
 		fuel.StackSize--;
-		fuel.IsDirty = true;
 
 		if ( fuel.StackSize <= 0 )
 			fuel.Remove();
@@ -107,7 +106,6 @@ public partial class CookingProcessor : BaseNetworkable
 		if ( cookable is null ) return;
 
 		input.StackSize--;
-		input.IsDirty = true;
 
 		if ( input.StackSize <= 0 )
 			input.Remove();

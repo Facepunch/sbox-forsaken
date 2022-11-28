@@ -8,7 +8,7 @@
 		ItemName = "9mm Ammo"
 		UniqueId = "ammo_pistol"
 		Description = "Ammunition typically used for pistols and SMGs."
-		Icon = resource:"textures/items/ammo_bolt.png"
+		Icon = resource:"textures/items/ammo_pistol.png"
 		WorldModel = null
 		Tags = [  ]
 	}

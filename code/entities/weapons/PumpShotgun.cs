@@ -2,8 +2,8 @@
 
 namespace Facepunch.Forsaken;
 
-[Library( "weapon_mp5a4" )]
-public partial class MP5A4 : ProjectileWeapon<CrossbowBoltProjectile>
+[Library( "weapon_pump_shotgun" )]
+public partial class PumpShotgun : ProjectileWeapon<CrossbowBoltProjectile>
 {
 	public override string ImpactEffect => GetImpactEffect();
 	public override string TrailEffect => GetTrailEffect();
@@ -11,16 +11,18 @@ public partial class MP5A4 : ProjectileWeapon<CrossbowBoltProjectile>
 	public override string MuzzleFlashEffect => "particles/pistol_muzzleflash.vpcf";
 	public override string HitSound => null;
 	public override DamageFlags DamageType => DamageFlags.Bullet;
-	public override float PrimaryRate => 10f;
+	public override float PrimaryRate => 1f;
 	public override float SecondaryRate => 1f;
 	public override float Speed => 1500f;
+	public override int HoldType => 3;
 	public override float Gravity => 6f;
 	public override float InheritVelocity => 0f;
 	public override string ReloadSoundName => "rust_smg.reload";
 	public override string ProjectileModel => null;
-	public override float ReloadTime => 3f;
+	public override int ProjectileCount => 8;
+	public override float ReloadTime => 1f;
 	public override float ProjectileLifeTime => 4f;
-	public override int HoldType => 2;
+	public override float Spread => 0.6f;
 
 	public override void AttackPrimary()
 	{
@@ -32,10 +34,43 @@ public partial class MP5A4 : ProjectileWeapon<CrossbowBoltProjectile>
 
 		PlayAttackAnimation();
 		ShootEffects();
-		PlaySound( $"smg1_shoot" );
+		PlaySound( $"shotgun1_shoot" );
 		ApplyRecoil();
 
 		base.AttackPrimary();
+	}
+
+	protected override void OnReloadFinish()
+	{
+		IsReloading = false;
+		TimeSinceReload = 0f;
+		TimeSincePrimaryAttack = 0;
+		TimeSinceSecondaryAttack = 0;
+
+		if ( AmmoClip >= ClipSize )
+			return;
+
+		if ( Owner is not ForsakenPlayer player )
+			return;
+
+		if ( !UnlimitedAmmo )
+		{
+			var ammo = player.TakeAmmo( WeaponItem.AmmoType, 1 );
+
+			if ( ammo == 0 )
+				return;
+
+			AmmoClip += 1;
+		}
+		else
+		{
+			AmmoClip += 1;
+		}
+
+		if ( AmmoClip < ClipSize )
+		{
+			Reload();
+		}
 	}
 
 	protected override void ShootEffects()

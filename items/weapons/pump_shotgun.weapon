@@ -1,0 +1,33 @@
+<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:generic:version{7412167c-06e9-4698-aff2-e63eb59037e7} -->
+{
+	data = 
+	{
+		WorldModelMaterialGroup = 0
+		ViewModelMaterialGroup = 0
+		WorldModelPath = null
+		AmmoType = "Shotgun"
+		DefaultAmmo = 0
+		ClipSize = 6
+		RecoilCurve = 
+		[
+			{
+			},
+			{
+				x = 0.174877
+				y = 0.822691
+			},
+			{
+				x = 1
+				y = 1
+			},
+		]
+		Damage = 20
+		ClassName = "weapon_pump_shotgun"
+		ItemName = "Pump Shotgun"
+		UniqueId = "pump_shotgun"
+		Description = "The kind of weapon that\'ll blast your entire face off."
+		Icon = resource:"textures/items/pump_shotgun.png"
+		WorldModel = resource:"models/r870/w_r870.vmdl"
+		Tags = [  ]
+	}
+}

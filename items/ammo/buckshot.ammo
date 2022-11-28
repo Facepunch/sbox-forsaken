@@ -1,0 +1,18 @@
+<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:generic:version{7412167c-06e9-4698-aff2-e63eb59037e7} -->
+{
+	data = 
+	{
+		AmmoType = "Shotgun"
+		MaxStackSize = 32
+		DefaultStackSize = 1
+		ItemName = "Buckshot"
+		UniqueId = "ammo_buckshot"
+		Description = "Short range ammo for a shotgun. This will obliterate anything."
+		Icon = resource:"textures/items/ammo_buckshot.png"
+		WorldModel = resource:"models/sbox_props/burger_box/burger_box.vmdl"
+		Tags = 
+		[
+			"buckshot",
+		]
+	}
+}

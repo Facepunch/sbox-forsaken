@@ -8,7 +8,7 @@
 		ItemName = "5.56 Ammo"
 		UniqueId = "ammo_rifle"
 		Description = "Ammunition typically used for rifles."
-		Icon = resource:"textures/items/ammo_bolt.png"
+		Icon = resource:"textures/items/ammo_rifle.png"
 		WorldModel = null
 		Tags = [  ]
 	}

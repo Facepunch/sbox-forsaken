@@ -1,0 +1,18 @@
+<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:generic:version{7412167c-06e9-4698-aff2-e63eb59037e7} -->
+{
+	data = 
+	{
+		AmmoType = "Shotgun"
+		MaxStackSize = 1
+		DefaultStackSize = 32
+		ItemName = "Slug"
+		UniqueId = "ammo_slug"
+		Description = "A longer range shotgun ammo. Hits hard at range with far less falloff."
+		Icon = resource:"textures/items/ammo_slug.png"
+		WorldModel = resource:"models/sbox_props/burger_box/burger_box.vmdl"
+		Tags = 
+		[
+			"slug",
+		]
+	}
+}
