@@ -8,6 +8,7 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 	public virtual string ProjectileModel => "";
 	public virtual float ProjectileRadius => 10f;
 	public virtual float ProjectileLifeTime => 10f;
+	public virtual int ProjectileCount => 1;
 	public virtual string TrailEffect => null;
 	public virtual string HitSound => null;
 	public virtual float InheritVelocity => 0f;
@@ -29,46 +30,50 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 		if ( Owner is not ForsakenPlayer player )
 			return;
 
-		var projectile = new T()
+		for ( var i = 0; i < ProjectileCount; i++ )
 		{
-			ExplosionEffect = ImpactEffect,
-			FaceDirection = true,
-			IgnoreEntity = this,
-			TrailEffect = TrailEffect,
-			Simulator = player.Projectiles,
-			Attacker = player,
-			HitSound = HitSound,
-			LifeTime = ProjectileLifeTime,
-			Gravity = Gravity,
-			ModelName = ProjectileModel
-		};
+			var projectile = new T()
+			{
+				ExplosionEffect = ImpactEffect,
+				FaceDirection = true,
+				IgnoreEntity = this,
+				TrailEffect = TrailEffect,
+				Simulator = player.Projectiles,
+				Attacker = player,
+				HitSound = HitSound,
+				LifeTime = ProjectileLifeTime,
+				Gravity = Gravity,
+				ModelName = ProjectileModel
+			};
 
-		OnCreateProjectile( projectile );
+			OnCreateProjectile( projectile );
 
-		var forward = player.EyeRotation.Forward;
-		var position = player.EyePosition + forward * 40f;
-		var muzzle = GetMuzzlePosition();
+			var forward = player.EyeRotation.Forward;
+			var position = player.EyePosition + forward * 40f;
+			var muzzle = GetMuzzlePosition();
 
-		if ( muzzle.HasValue )
-		{
-			position = muzzle.Value;
+			if ( muzzle.HasValue )
+			{
+				position = muzzle.Value;
+			}
+
+			var endPosition = player.EyePosition + forward * BulletRange;
+			var trace = Trace.Ray( player.EyePosition, endPosition )
+				.Ignore( player )
+				.Ignore( this )
+				.Run();
+
+			var direction = (trace.EndPosition - position).Normal;
+			direction += (Vector3.Random + Vector3.Random + Vector3.Random + Vector3.Random) * Spread * 0.25f;
+			direction = direction.Normal;
+
+			var velocity = (direction * Speed) + (player.Velocity * InheritVelocity);
+			velocity = AdjustProjectileVelocity( velocity );
+			position -= direction * velocity.Length * Time.Delta;
+			projectile.Initialize( position, velocity, ProjectileRadius, ( p, t ) => OnProjectileHit( (T)p, t ) );
+
+			OnProjectileFired( projectile );
 		}
-
-		var endPosition = player.EyePosition + forward * BulletRange;
-		var trace = Trace.Ray( player.EyePosition, endPosition )
-			.Ignore( player )
-			.Ignore( this )
-			.Run();
-
-		var direction = (trace.EndPosition - position).Normal;
-		direction += (Vector3.Random + Vector3.Random + Vector3.Random + Vector3.Random) * Spread * 0.25f;
-		direction = direction.Normal;
-
-		var velocity = (direction * Speed) + (player.Velocity * InheritVelocity);
-		velocity = AdjustProjectileVelocity( velocity );
-		projectile.Initialize( position, velocity, ProjectileRadius, ( p, t ) => OnProjectileHit( (T)p, t ) );
-
-		OnProjectileFired( projectile );
 	}
 
 	protected virtual void OnProjectileFired( T projectile )
