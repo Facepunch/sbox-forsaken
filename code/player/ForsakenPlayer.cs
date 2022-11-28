@@ -21,6 +21,13 @@ public partial class ForsakenPlayer : Player
 		"I should try to place it somewhere else."
 	};
 
+	private static string[] MissingItemsThoughts = new string[]
+	{
+		"I don't have the required items to do that.",
+		"I seem to be missing some items for that.",
+		"I don't have enough to do that."
+	};
+
 	[Net] public float Temperature { get; private set; }
 	[Net, Predicted] public float Stamina { get; private set; }
 	[Net, Predicted] public bool IsOutOfBreath { get; private set; }
@@ -549,8 +556,7 @@ public partial class ForsakenPlayer : Player
 		if ( IsClient )
 		{
 			var ghost = Structure.GetOrCreateGhost( structureType );
-
-			ghost.RenderColor = Color.Cyan.WithAlpha( 0.5f );
+			var renderColor = Color.Cyan.WithAlpha( 0.5f );
 
 			var match = ghost.LocateSocket( trace.EndPosition );
 
@@ -564,39 +570,53 @@ public partial class ForsakenPlayer : Player
 				ghost.ResetInterpolation();
 
 				if ( ghost.RequiresSocket || !ghost.IsValidPlacement( ghost.Position, trace.Normal ) )
-					ghost.RenderColor = Color.Red.WithAlpha( 0.5f );
+					renderColor = Color.Red.WithAlpha( 0.5f );
 			}
+
+			if ( !Structure.CanAfford( this, structureType ) )
+			{
+				renderColor = Color.Red.WithAlpha( 0.5f );
+			}
+
+			ghost.RenderColor = renderColor;
 		}
 
 		if ( Prediction.FirstTime && Input.Released( InputButton.PrimaryAttack ) )
 		{
 			if ( IsServer )
 			{
-				var structure = structureType.Create<Structure>();
-
-				if ( structure.IsValid() )
+				if ( Structure.CanAfford( this, structureType ) )
 				{
-					var isValid = false;
-					var match = structure.LocateSocket( trace.EndPosition );
+					var structure = structureType.Create<Structure>();
 
-					if ( match.IsValid )
+					if ( structure.IsValid() )
 					{
-						structure.SnapToSocket( match );
-						structure.OnConnected( match.Ours, match.Theirs );
-						match.Ours.Connect( match.Theirs );
-						isValid = true;
-					}
-					else if ( !structure.RequiresSocket )
-					{
-						structure.Position = trace.EndPosition;
-						isValid = structure.IsValidPlacement( structure.Position, trace.Normal );
-					}
+						var isValid = false;
+						var match = structure.LocateSocket( trace.EndPosition );
 
-					if ( !isValid )
-					{
-						Thoughts.Show( To.Single( this ), Rand.FromArray( InvalidPlacementThoughts ) );
-						structure.Delete();
+						if ( match.IsValid )
+						{
+							structure.SnapToSocket( match );
+							structure.OnConnected( match.Ours, match.Theirs );
+							match.Ours.Connect( match.Theirs );
+							isValid = true;
+						}
+						else if ( !structure.RequiresSocket )
+						{
+							structure.Position = trace.EndPosition;
+							isValid = structure.IsValidPlacement( structure.Position, trace.Normal );
+						}
+
+						if ( !isValid )
+						{
+							Thoughts.Show( To.Single( this ), "invalid_placement", Rand.FromArray( InvalidPlacementThoughts ) );
+							structure.Delete();
+						}
 					}
+				}
+				else
+				{
+					Thoughts.Show( To.Single( this ), "missing_items", Rand.FromArray( MissingItemsThoughts ) );
 				}
 			}
 

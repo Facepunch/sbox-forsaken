@@ -12,6 +12,11 @@
         <div class="info">
             <label class="name">@Name</label>
             <label class="description">@Description</label>
+
+            @if ( !string.IsNullOrEmpty( Subtitle ) )
+            {
+                <label class="subtitle">@Subtitle</label>                
+            }
         </div>
 
         <img @ref="Arrow" src="textures/ui/radial_arrow.png" class="arrow"/>
@@ -34,6 +39,8 @@
         public string Name { get; set; }
         public string Description { get; set; }
         public string Icon { get; set; }
+        public string Subtitle { get; set; }
+        public string RootClass { get; set; }
         public Action OnSelected { get; set; }
     }
 
@@ -45,6 +52,7 @@
     public Panel ItemContainer { get; set; }
     public string Name => HoveredItem?.Name;
     public string Description => HoveredItem?.Description;
+    public string Subtitle => HoveredItem?.Subtitle;
     public Panel Dot { get; set; }
     public Image Arrow { get; set; }
     public bool IsOpen { get; private set; }
@@ -54,7 +62,7 @@
     private Vector2 VirtualMouse { get; set; }
     private bool HasPressedButton { get; set; }
 
-    public void AddItem( string name, string description, string icon, Action callback )
+    public Item AddItem( string name, string description, string icon, Action callback )
     {
         var item = new Item
         {
@@ -65,6 +73,8 @@
         };
 
         Items.Add( item );
+
+        return item;
     }
 
     [Event.BuildInput]
@@ -212,7 +222,7 @@
 
     protected override int BuildHash()
     {
-        return HashCode.Combine( Name, Description, Items.Count, IsOpen );
+        return HashCode.Combine( Name, Description, Items.Count, IsOpen, HoveredItem );
     }
 
     protected override void FinalLayoutChildren( Vector2 offset )
@@ -238,6 +248,6 @@
 
     private string GetRootClass()
     {
-        return !IsOpen ? "hidden" : string.Empty;
+        return $"{( !IsOpen ? "hidden" : string.Empty )} {HoveredItem?.RootClass ?? string.Empty}";
     }
 }

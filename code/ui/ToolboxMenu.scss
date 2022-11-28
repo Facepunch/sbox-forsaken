@@ -1,0 +1,18 @@
+﻿@import "RadialMenu.scss";
+
+.radial-menu {
+    &.cannot-afford {
+        .center {
+            .info {
+                .subtitle {
+                    color: red;
+                }
+            }
+
+            .arrow {
+                background-tint: rgba( red 0.8 );
+                position: absolute;
+            }
+        }
+    }
+}
