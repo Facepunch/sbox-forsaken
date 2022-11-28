@@ -162,6 +162,9 @@ public static partial class InventorySystem
 
 	public static InventoryItem GetDefinition( string uniqueId )
 	{
+		if ( string.IsNullOrEmpty( uniqueId ) )
+			return null;
+
 		if ( Definitions.TryGetValue( uniqueId, out var definition ) )
 		{
 			return definition;
