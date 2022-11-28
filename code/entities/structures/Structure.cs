@@ -1,6 +1,6 @@
 ﻿using Sandbox;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace Facepunch.Forsaken;
@@ -8,6 +8,12 @@ namespace Facepunch.Forsaken;
 public abstract partial class Structure : ModelEntity
 {
 	public static Structure Ghost { get; private set; }
+
+	public static Dictionary<string,int> GetCostsFor( TypeDescription type )
+	{
+		var attributes = type.GetAttributes<ItemCostAttribute>();
+		return attributes.ToDictionary( k => k.UniqueId, v => v.Quantity );
+	}
 
 	public static Structure GetOrCreateGhost( TypeDescription type )
 	{
@@ -23,6 +29,19 @@ public abstract partial class Structure : ModelEntity
 		}
 
 		return Ghost;
+	}
+
+	public static bool CanAfford( ForsakenPlayer player, TypeDescription type )
+	{
+		var costs = GetCostsFor( type );
+
+		foreach ( var kv in costs )
+		{
+			if ( !player.HasItems( kv.Key, kv.Value ) )
+				return false;
+		}
+
+		return true;
 	}
 
 	public static void ClearGhost()
