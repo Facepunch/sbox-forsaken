@@ -51,6 +51,9 @@ public partial class InventorySlot
         if ( !target.IsValid() )
             return false;
 
+        if ( target.IsTakeOnly )
+            return false;
+
         InventorySystem.SendTransferEvent( container, target, Item.SlotId );
         return true;
     }

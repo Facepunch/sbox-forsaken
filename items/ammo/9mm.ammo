@@ -5,6 +5,9 @@
 		AmmoType = "Pistol"
 		MaxStackSize = 128
 		DefaultStackSize = 8
+		IsLootable = true
+		SpawnChance = 0.1
+		AmountToSpawn = "8.00,16.00,1"
 		ItemName = "9mm Ammo"
 		UniqueId = "ammo_pistol"
 		Description = "Ammunition typically used for pistols and SMGs."

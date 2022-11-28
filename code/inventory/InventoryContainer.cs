@@ -48,6 +48,7 @@ public class InventoryContainer : IValid
 	public HashSet<string> Blacklist { get; set; } = new();
 	public HashSet<string> Whitelist { get; set; } = new();
 	public ulong InventoryId { get; private set; }
+	public bool IsTakeOnly { get; set; }
 	public Entity Entity { get; private set; }
 	public List<Client> Connections { get; }
 	public List<InventoryItem> ItemList { get; }
@@ -742,6 +743,8 @@ public class InventoryContainer : IValid
 
 	public virtual void Serialize( BinaryWriter writer )
 	{
+		writer.Write( IsTakeOnly );
+
 		writer.Write( Whitelist.Count );
 		foreach ( var tag in Whitelist )
 			writer.Write( tag );
@@ -753,6 +756,8 @@ public class InventoryContainer : IValid
 
 	public virtual void Deserialize( BinaryReader reader )
 	{
+		IsTakeOnly = reader.ReadBoolean();
+
 		Whitelist.Clear();
 
 		var count = reader.ReadInt32();

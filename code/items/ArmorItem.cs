@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Sandbox;
+using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
-public class ArmorItem : ResourceItem<ArmorResource, ArmorItem>
+public class ArmorItem : ResourceItem<ArmorResource, ArmorItem>, ILootTableItem
 {
 	public override Color Color => ItemColors.Armor;
 	public virtual float TemperatureModifier => Resource?.TemperatureModifier ?? 0f;
@@ -10,6 +11,9 @@ public class ArmorItem : ResourceItem<ArmorResource, ArmorItem>
 	public virtual ArmorSlot ArmorSlot => Resource?.ArmorSlot ?? ArmorSlot.None;
 	public virtual string SecondaryModel => Resource?.SecondaryModel ?? string.Empty;
 	public virtual string PrimaryModel => Resource?.PrimaryModel ?? string.Empty;
+	public virtual float SpawnChance => Resource?.SpawnChance ?? default;
+	public virtual int AmountToSpawn => Resource?.AmountToSpawn.GetValue().CeilToInt() ?? default;
+	public virtual bool IsLootable => Resource?.IsLootable ?? default;
 
 	public override bool CanStackWith( InventoryItem other )
 	{

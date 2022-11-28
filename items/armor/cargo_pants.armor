@@ -7,6 +7,9 @@
 		SecondaryModel = null
 		PrimaryModel = resource:"models/citizen_clothes/trousers/cargopants/models/cargo_pants.vmdl"
 		TemperatureModifier = 2
+		IsLootable = true
+		SpawnChance = 0.15
+		AmountToSpawn = "1.00,0.00,0"
 		ItemName = "Cargo Pants"
 		UniqueId = "cargo_pants"
 		Description = "A pair of cargo pants. They come in a sneaky camouflage color."

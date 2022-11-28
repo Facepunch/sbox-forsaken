@@ -1,11 +1,10 @@
 ﻿using Sandbox;
-using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
 [GameResource( "Weapon", "weapon", "A weapon for use with Forsaken.", Icon = "crisis_alert" )]
 [ItemClass( typeof( WeaponItem ) )]
-public class WeaponResource : ItemResource
+public class WeaponResource : LootTableResource
 {
 	[Property]
 	public int WorldModelMaterialGroup { get; set; }

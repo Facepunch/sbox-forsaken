@@ -5,6 +5,9 @@
 		AmmoType = "Rifle"
 		MaxStackSize = 128
 		DefaultStackSize = 1
+		IsLootable = true
+		SpawnChance = 0.1
+		AmountToSpawn = "4.00,12.00,1"
 		ItemName = "5.56 Ammo"
 		UniqueId = "ammo_rifle"
 		Description = "Ammunition typically used for rifles."

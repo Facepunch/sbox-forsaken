@@ -7,6 +7,9 @@
 		SecondaryModel = null
 		PrimaryModel = resource:"models/citizen_clothes/hat/baseball_cap/model/baseball_cap.vmdl"
 		TemperatureModifier = 1
+		IsLootable = true
+		SpawnChance = 0.3
+		AmountToSpawn = "1.00,0.00,0"
 		ItemName = "Baseball Cap"
 		UniqueId = "baseball_cap"
 		Description = "A simple baseball cap. It\'ll keep your head a bit warm."

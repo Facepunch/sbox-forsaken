@@ -5,16 +5,14 @@
 		AmmoType = "Bolt"
 		MaxStackSize = 10
 		DefaultStackSize = 2
+		IsLootable = true
+		SpawnChance = 0.2
+		AmountToSpawn = "2.00,8.00,1"
 		ItemName = "Bolt"
 		UniqueId = "ammo_bolt"
 		Description = "Ammunition typically used for crossbows."
 		Icon = resource:"textures/items/ammo_bolt.png"
 		WorldModel = null
-		IsCraftable = true
-		RequiredItems = 
-		{
-			wood = 10
-			stone = 2
-		}
+		Tags = [  ]
 	}
 }

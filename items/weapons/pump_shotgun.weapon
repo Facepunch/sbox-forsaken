@@ -36,6 +36,9 @@
 		]
 		Damage = 10
 		ClassName = "weapon_pump_shotgun"
+		IsLootable = true
+		SpawnChance = 0.02
+		AmountToSpawn = "1.00,0.00,0"
 		ItemName = "Pump Shotgun"
 		UniqueId = "pump_shotgun"
 		Description = "The kind of weapon that\'ll blast your entire face off."

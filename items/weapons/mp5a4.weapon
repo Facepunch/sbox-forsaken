@@ -52,6 +52,9 @@
 		}
 		Damage = 20
 		ClassName = "weapon_mp5a4"
+		IsLootable = true
+		SpawnChance = 0.01
+		AmountToSpawn = "1.00,0.00,0"
 		ItemName = "MP5A4"
 		UniqueId = "mp5a4"
 		Description = "A rapid-fire submachine gun that deals light damage."

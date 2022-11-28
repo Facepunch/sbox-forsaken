@@ -5,6 +5,9 @@
 		AmmoType = "Shotgun"
 		MaxStackSize = 32
 		DefaultStackSize = 1
+		IsLootable = true
+		SpawnChance = 0.1
+		AmountToSpawn = "2.00,6.00,1"
 		ItemName = "Buckshot"
 		UniqueId = "ammo_buckshot"
 		Description = "Short range ammo for a shotgun. This will obliterate anything."

@@ -40,6 +40,14 @@ public static partial class InventorySystem
 		DirtyList.Add( container );
 	}
 
+	public static IEnumerable<InventoryItem> GetDefinitions()
+	{
+		foreach ( var kv in Definitions )
+		{
+			yield return kv.Value;
+		}
+	}
+
 	public static ulong Register( InventoryContainer container, ulong inventoryId = 0 )
 	{
 		if ( inventoryId == 0 && IsClient )

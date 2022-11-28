@@ -5,6 +5,9 @@
 		AmmoType = "Shotgun"
 		MaxStackSize = 32
 		DefaultStackSize = 0
+		IsLootable = true
+		SpawnChance = 0.1
+		AmountToSpawn = "1.00,4.00,1"
 		ItemName = "Slug"
 		UniqueId = "ammo_slug"
 		Description = "A longer range shotgun ammo. Hits hard at range with far less falloff."

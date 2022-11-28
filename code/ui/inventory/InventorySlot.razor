@@ -86,12 +86,16 @@
         if ( Container.Parent == slot.Item )
             return false;
 
+        if ( Container.IsTakeOnly )
+            return false;
+
         return Container.CanGiveItem( Slot, slot.Item );
     }
 
     public void OnDrop( IDraggable draggable, DraggableMode mode )
     {
         if ( draggable is not InventorySlot slot ) return;
+        if ( Container.IsTakeOnly ) return;
 
         if ( mode == DraggableMode.Move )
             InventorySystem.SendMoveEvent( slot.Container, Container, slot.Slot, Slot );

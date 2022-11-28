@@ -2,7 +2,7 @@
 
 namespace Facepunch.Forsaken;
 
-public class ConsumableItem : InventoryItem, IConsumableItem
+public class ConsumableItem : InventoryItem, IConsumableItem, ILootTableItem
 {
 	public override ushort MaxStackSize => 4;
 	public override Color Color => ItemColors.Consumable;
@@ -10,6 +10,9 @@ public class ConsumableItem : InventoryItem, IConsumableItem
 	public virtual string ConsumeEffect => null;
 	public virtual string ActivateSound => string.Empty;
 	public virtual float ActivateDelay => 0.5f;
+	public virtual float SpawnChance => default;
+	public virtual int AmountToSpawn => default;
+	public virtual bool IsLootable => default;
 
 	public async void Consume( ForsakenPlayer player )
 	{
