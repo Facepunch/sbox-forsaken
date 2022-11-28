@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Facepunch.Forsaken.UI;
 
-[StyleSheet( "/ui/ReloadMenu.scss" )]
+[StyleSheet( "/ui/RadialMenu.scss" )]
 public partial class ReloadMenu : RadialMenu
 {
 	public static ReloadMenu Current { get; private set; }
