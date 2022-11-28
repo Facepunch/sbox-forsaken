@@ -14,6 +14,7 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerIt
 	public virtual int ClipSize => Resource?.ClipSize ?? 0;
 	public virtual int Damage => Resource?.Damage ?? 0;
 	public virtual AmmoType AmmoType => Resource?.AmmoType ?? AmmoType.None;
+	public virtual Curve DamageFalloff => Resource?.DamageFalloff ?? default;
 	public virtual Curve RecoilCurve => Resource?.RecoilCurve ?? default;
 
 	public AttachmentContainer Attachments { get; private set; }
