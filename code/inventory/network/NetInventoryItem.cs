@@ -22,11 +22,19 @@ public class NetInventoryItem : BaseNetworkable, INetworkSerializer, IValid
 	public void Read( ref NetRead read )
 	{
 		var version = read.Read<uint>();
+		var itemId = read.Read<ulong>();
 		var totalBytes = read.Read<int>();
 		var output = new byte[totalBytes];
 		read.ReadUnmanagedArray( output );
 
 		if ( Version == version ) return;
+
+		var item = InventorySystem.FindInstance( itemId );
+		if ( item.IsValid() )
+		{
+			Value = item;
+			return;
+		}
 
 		Value = InventoryItem.Deserialize( output );
 		Version = version;
@@ -36,6 +44,7 @@ public class NetInventoryItem : BaseNetworkable, INetworkSerializer, IValid
 	{
 		var serialized = Value.Serialize();
 		write.Write( ++Version );
+		write.Write( Value.ItemId );
 		write.Write( serialized.Length );
 		write.Write( serialized );
 	}
