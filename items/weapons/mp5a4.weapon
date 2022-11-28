@@ -8,6 +8,19 @@
 		AmmoType = "Pistol"
 		DefaultAmmo = 0
 		ClipSize = 30
+		DamageFalloff = 
+		{
+			rangex = "0,4000"
+			frames = 
+			[
+				{
+					y = 1
+				},
+				{
+					x = 1
+				},
+			]
+		}
 		RecoilCurve = 
 		{
 			rangey = "-20,20"
@@ -42,9 +55,8 @@
 		ItemName = "MP5A4"
 		UniqueId = "mp5a4"
 		Description = "A rapid-fire submachine gun that deals light damage."
-		Icon = resource:"textures/items/weapon_crossbow.png"
+		Icon = resource:"textures/items/mp5a4.png"
 		WorldModel = resource:"models/mp5/w_mp5.vmdl"
-		IsCraftable = false
-		RequiredItems = null
+		Tags = [  ]
 	}
 }

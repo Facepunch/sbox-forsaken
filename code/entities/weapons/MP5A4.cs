@@ -26,7 +26,7 @@ public partial class MP5A4 : ProjectileWeapon<CrossbowBoltProjectile>
 	{
 		if ( !TakeAmmo( 1 ) )
 		{
-			PlaySound( "pistol.dryfire" );
+			PlaySound( "gun.dryfire" );
 			return;
 		}
 

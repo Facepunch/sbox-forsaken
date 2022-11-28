@@ -22,13 +22,13 @@ public partial class PumpShotgun : ProjectileWeapon<CrossbowBoltProjectile>
 	public override int ProjectileCount => IsSlugAmmo() ? 1 : 8;
 	public override float ReloadTime => 1f;
 	public override float ProjectileLifeTime => 4f;
-	public override float Spread => IsSlugAmmo() ? 0.05f : 0.6f;
+	public override float Spread => IsSlugAmmo() ? 0.05f : 1f;
 
 	public override void AttackPrimary()
 	{
 		if ( !TakeAmmo( 1 ) )
 		{
-			PlaySound( "pistol.dryfire" );
+			PlaySound( "gun.dryfire" );
 			return;
 		}
 
