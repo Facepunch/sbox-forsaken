@@ -48,12 +48,12 @@ public partial class ForsakenPlayer
 		foreach ( var item in Equipment.FindItems( type ) ) yield return item;
 	}
 
-	public ushort TakeAmmo( AmmoType type, ushort count )
+	public ushort TakeAmmo( string uniqueId, ushort count )
 	{
 		var items = new List<AmmoItem>();
 
-		items.AddRange( Hotbar.FindItems<AmmoItem>() );
-		items.AddRange( Backpack.FindItems<AmmoItem>() );
+		items.AddRange( Hotbar.FindItems<AmmoItem>().Where( i => i.UniqueId == uniqueId ) );
+		items.AddRange( Backpack.FindItems<AmmoItem>().Where( i => i.UniqueId == uniqueId ) );
 
 		var amountLeftToTake = count;
 		ushort totalAmountTaken = 0;
@@ -62,58 +62,42 @@ public partial class ForsakenPlayer
 		{
 			var item = items[i];
 
-			if ( item.AmmoType == type )
+			if ( item.StackSize >= amountLeftToTake )
 			{
-				if ( item.StackSize >= amountLeftToTake )
-				{
-					totalAmountTaken += amountLeftToTake;
-					item.StackSize -= amountLeftToTake;
+				totalAmountTaken += amountLeftToTake;
+				item.StackSize -= amountLeftToTake;
 
-					if ( item.StackSize > 0 )
-						return totalAmountTaken;
-				}
-				else
-				{
-					amountLeftToTake -= item.StackSize;
-					totalAmountTaken += item.StackSize;
-					item.StackSize = 0;
-				}
-
-				item.Remove();
+				if ( item.StackSize > 0 )
+					return totalAmountTaken;
 			}
+			else
+			{
+				amountLeftToTake -= item.StackSize;
+				totalAmountTaken += item.StackSize;
+				item.StackSize = 0;
+			}
+
+			item.Remove();
 		}
 
 		return totalAmountTaken;
 	}
 
-	public int GetAmmoCount( AmmoType type )
+	public int GetAmmoCount( string uniqueId )
 	{
 		var items = new List<AmmoItem>();
 
-		items.AddRange( Hotbar.FindItems<AmmoItem>() );
-		items.AddRange( Backpack.FindItems<AmmoItem>() );
+		items.AddRange( Hotbar.FindItems<AmmoItem>().Where( i => i.UniqueId == uniqueId ) );
+		items.AddRange( Backpack.FindItems<AmmoItem>().Where( i => i.UniqueId == uniqueId ) );
 
 		var output = 0;
 
 		foreach ( var item in items )
 		{
-			if ( item.AmmoType == type )
-			{
-				output += item.StackSize;
-			}
+			output += item.StackSize;
 		}
 
 		return output;
-	}
-
-	public int GetItemCount( string uniqueId )
-	{
-		var totalItems = 0;
-
-		totalItems += Hotbar.FindItems<InventoryItem>().Where( i => i.UniqueId == uniqueId ).Sum( i => i.StackSize );
-		totalItems += Backpack.FindItems<InventoryItem>().Where( i => i.UniqueId == uniqueId ).Sum( i => i.StackSize );
-
-		return totalItems;
 	}
 
 	public bool HasItems( string uniqueId, int count )
@@ -156,6 +140,16 @@ public partial class ForsakenPlayer
 		}
 
 		return totalAmountTaken;
+	}
+
+	public int GetItemCount( string uniqueId )
+	{
+		var totalItems = 0;
+
+		totalItems += Hotbar.FindItems<InventoryItem>().Where( i => i.UniqueId == uniqueId ).Sum( i => i.StackSize );
+		totalItems += Backpack.FindItems<InventoryItem>().Where( i => i.UniqueId == uniqueId ).Sum( i => i.StackSize );
+
+		return totalItems;
 	}
 
 	public bool TryGiveArmor( ArmorItem item )

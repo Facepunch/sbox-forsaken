@@ -244,6 +244,9 @@ public class Cursor : Panel
 		if ( ToolboxMenu.Current?.IsOpen ?? false )
 			return true;
 
+		if ( ReloadMenu.Current?.IsOpen ?? false )
+			return true;
+
 		if ( Dialog.IsActive() )
 			return true;
 

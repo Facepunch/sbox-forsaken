@@ -38,6 +38,7 @@
     }
 
     public virtual InputButton Button => InputButton.Score;
+    public virtual float OpenDelay => 0f;
 
     public List<Item> Items { get; private set; } = new();
     public Item HoveredItem { get; private set; }
@@ -48,8 +49,10 @@
     public Image Arrow { get; set; }
     public bool IsOpen { get; private set; }
 
+    private TimeSince TimeSinceButtonHeld { get; set; }
     private TimeSince LastCloseTime { get; set; }
     private Vector2 VirtualMouse { get; set; }
+    private bool HasPressedButton { get; set; }
 
     public void AddItem( string name, string description, string icon, Action callback )
     {
@@ -74,12 +77,24 @@
 
         if ( Input.Pressed( Button ) && shouldOpen )
         {
+            TimeSinceButtonHeld = 0f;
+            HasPressedButton = true;
             VirtualMouse = Screen.Size * 0.5f;
-            IsOpen = true;
+        }
+
+        if ( HasPressedButton && Input.Down( Button ) && shouldOpen )
+        {
+            if ( !IsOpen && TimeSinceButtonHeld > OpenDelay )
+            {
+                Items.Clear();
+                Populate();
+                IsOpen = true;
+            }
         }
 
         if ( Input.Released( Button ) || !shouldOpen )
         {
+            HasPressedButton = false;
             IsOpen = false;
         }
 
@@ -133,6 +148,7 @@
             if ( HoveredItem != null && Input.Down( InputButton.PrimaryAttack ) )
             {
                 HoveredItem.OnSelected?.Invoke();
+                HasPressedButton = false;
                 LastCloseTime = 0f;
                 IsOpen = false;
             }
@@ -184,7 +200,6 @@
     protected override void OnParametersSet()
     {
         Items.Clear();
-
         Populate();
 
         base.OnParametersSet();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using Facepunch.Forsaken.UI;
 using Sandbox;
 using Sandbox.Component;
@@ -39,6 +40,7 @@ public partial class ForsakenPlayer : Player
 	[ClientInput] public int ContextActionId { get; private set; }
 	[ClientInput] public Entity HoveredEntity { get; private set; }
 	[ClientInput] public string OpenContainerIds { get; private set; }
+	[ClientInput] public string ChangeAmmoType { get; private set; }
 	[ClientInput] public bool HasDialogOpen { get; private set; }
 
 	public Dictionary<ArmorSlot, List<BaseClothing>> Armor { get; private set; }
@@ -101,6 +103,12 @@ public partial class ForsakenPlayer : Player
 		CraftingQueue = new List<CraftingQueueEntry>();
 		HotbarIndex = 0;
 		Armor = new();
+	}
+
+	public void SetAmmoType( string uniqueId )
+	{
+		Assert.NotNull( uniqueId );
+		ChangeAmmoType = uniqueId;
 	}
 
 	public void SetStructureType( TypeDescription type )
@@ -327,6 +335,7 @@ public partial class ForsakenPlayer : Player
 				return;
 		}
 
+		SimulateAmmoType();
 		SimulateHotbar();
 		SimulateInventory();
 		SimulateConstruction();
@@ -351,6 +360,30 @@ public partial class ForsakenPlayer : Player
 		}
 
 		base.OnDestroy();
+	}
+
+	private void SimulateAmmoType()
+	{
+		if ( IsServer )
+		{
+			if ( string.IsNullOrEmpty( ChangeAmmoType ) )
+				return;
+
+			var weapon = ActiveChild as Weapon;
+
+			if ( weapon.IsValid() )
+			{
+				var definition = InventorySystem.GetDefinition( ChangeAmmoType ) as AmmoItem;
+
+				if ( definition.IsValid() )
+				{
+					weapon.SetAmmoItem( definition );
+					weapon.Reload();
+				}
+			}
+		}
+
+		ChangeAmmoType = string.Empty;
 	}
 
 	private void SimulateOpenContainers()

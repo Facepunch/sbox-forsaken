@@ -17,12 +17,12 @@ public partial class PumpShotgun : ProjectileWeapon<CrossbowBoltProjectile>
 	public override int HoldType => 3;
 	public override float Gravity => 6f;
 	public override float InheritVelocity => 0f;
-	public override string ReloadSoundName => "rust_smg.reload";
+	public override string ReloadSoundName => "shotgun_load";
 	public override string ProjectileModel => null;
-	public override int ProjectileCount => 8;
+	public override int ProjectileCount => IsSlugAmmo() ? 1 : 8;
 	public override float ReloadTime => 1f;
 	public override float ProjectileLifeTime => 4f;
-	public override float Spread => 0.6f;
+	public override float Spread => IsSlugAmmo() ? 0.05f : 0.6f;
 
 	public override void AttackPrimary()
 	{
@@ -42,10 +42,12 @@ public partial class PumpShotgun : ProjectileWeapon<CrossbowBoltProjectile>
 
 	protected override void OnReloadFinish()
 	{
+		Host.AssertServer();
+
 		IsReloading = false;
 		TimeSinceReload = 0f;
-		TimeSincePrimaryAttack = 0;
-		TimeSinceSecondaryAttack = 0;
+
+		ResetReloading();
 
 		if ( AmmoClip >= ClipSize )
 			return;
@@ -53,13 +55,13 @@ public partial class PumpShotgun : ProjectileWeapon<CrossbowBoltProjectile>
 		if ( Owner is not ForsakenPlayer player )
 			return;
 
+		if ( !AmmoItem.IsValid() )
+			return;
+
 		if ( !UnlimitedAmmo )
 		{
-			var ammo = player.TakeAmmo( WeaponItem.AmmoType, 1 );
-
-			if ( ammo == 0 )
-				return;
-
+			var ammo = player.TakeAmmo( AmmoItem.UniqueId, 1 );
+			if ( ammo == 0 ) return;
 			AmmoClip += 1;
 		}
 		else
@@ -104,6 +106,11 @@ public partial class PumpShotgun : ProjectileWeapon<CrossbowBoltProjectile>
 				victim.PlaySound( "melee.hitflesh" );
 			}
 		}
+	}
+
+	private bool IsSlugAmmo()
+	{
+		return AmmoItem.IsValid() && AmmoItem.Tags.Contains( "slug" );
 	}
 
 	private string GetTrailEffect()

@@ -1,6 +1,7 @@
 ﻿using Sandbox;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Facepunch.Forsaken;
 
@@ -13,8 +14,6 @@ public abstract partial class Weapon : BaseWeapon
 	public virtual float ReloadTime => 3.0f;
 	public virtual bool IsMelee => false;
 	public virtual float MeleeRange => 100f;
-	public virtual float DamageFalloffStart => 0f;
-	public virtual float DamageFalloffEnd => 0f;
 	public virtual float BulletRange => 20000f;
 	public virtual string TracerEffect => null;
 	public virtual bool ReloadAnimation => true;
@@ -27,30 +26,34 @@ public abstract partial class Weapon : BaseWeapon
 	public virtual int ViewModelMaterialGroup => 0;
 
 	[Net, Change( nameof( OnWeaponItemChanged ) )]
-	public NetInventoryItem Item { get; private set; }
+	private NetInventoryItem InternalWeaponItem { get; set; }
+
+	[Net, Predicted]
+	public TimeSince TimeSinceDeployed { get; protected set; }
+
+	[Net, Predicted]
+	public TimeSince TimeSinceReloadPressed { get; protected set; }
+
+	[Net, Predicted]
+	public TimeSince TimeSinceChargeAttack { get; protected set; }
+
+	[Net, Predicted]
+	public TimeSince TimeSincePrimaryHeld { get; protected set; }
 
 	[Net]
-	public int Slot { get; set; }
+	public TimeSince TimeSinceReload { get; protected set; }
 
-	[Net, Predicted]
-	public TimeSince TimeSinceReload { get; set; }
+	[Net]
+	public bool IsReloading { get; protected set; }
 
-	[Net, Predicted]
-	public bool IsReloading { get; set; }
+	[Net]
+	private string AmmoItemId { get; set; }
 
-	[Net, Predicted]
-	public TimeSince TimeSinceDeployed { get; set; }
-
-	[Net, Predicted]
-	public TimeSince TimeSinceChargeAttack { get; set; }
-
-	[Net, Predicted]
-	public TimeSince TimeSincePrimaryHeld { get; set; }
-
-	public float ChargeAttackEndTime { get; private set; }
 	public AnimatedEntity AnimationOwner => Owner as AnimatedEntity;
+	public float ChargeAttackEndTime { get; private set; }
 
-	public Queue<float> RecoilQueue { get; set; } = new();
+	private Queue<float> RecoilQueue { get; set; } = new();
+	private bool WasReloading { get; set; }
 	private Sound ReloadSound { get; set; }
 
 	public int AmmoClip
@@ -74,41 +77,55 @@ public abstract partial class Weapon : BaseWeapon
 		}
 	}
 
-	public WeaponItem WeaponItem => Item.IsValid() ? Item.Value as WeaponItem : null;
+	public AmmoItem AmmoItem => InventorySystem.GetDefinition( AmmoItemId ) as AmmoItem;
+	public WeaponItem WeaponItem => InternalWeaponItem.IsValid() ? InternalWeaponItem.Value as WeaponItem : null;
 
 	public int AvailableAmmo()
 	{
-		if ( Owner is not ForsakenPlayer owner ) return 0;
-		return owner.GetAmmoCount( WeaponItem.AmmoType );
+		if ( Owner is not ForsakenPlayer owner )
+			return 0;
+
+		if ( !AmmoItem.IsValid() )
+			return 0;
+
+		return owner.GetAmmoCount( AmmoItem.UniqueId );
+	}
+
+	public bool SetAmmoItem( AmmoItem item )
+	{
+		Host.AssertServer();
+
+		if ( AmmoItem == item ) return false;
+		if ( Owner is not ForsakenPlayer player ) return false;
+
+		if ( AmmoItem.IsValid() && AmmoClip > 0 )
+		{
+			var oldAmmoItem = InventorySystem.DuplicateItem( AmmoItem );
+			oldAmmoItem.StackSize = (ushort)AmmoClip;
+
+			var remaining = player.TryGiveItem( oldAmmoItem );
+			if ( remaining > 0 )
+			{
+				AmmoClip = remaining;
+				return false;
+			}
+		}
+
+		AmmoItemId = item.UniqueId;
+		AmmoClip = 0;
+
+		return true;
 	}
 
 	public void SetWeaponItem( WeaponItem item )
 	{
-		Item = new NetInventoryItem( item );
+		InternalWeaponItem = new NetInventoryItem( item );
 		OnWeaponItemChanged();
 	}
 
 	public float GetDamageFalloff( float distance, float damage )
 	{
-		if ( DamageFalloffEnd > 0f )
-		{
-			if ( DamageFalloffStart > 0f )
-			{
-				if ( distance < DamageFalloffStart )
-				{
-					return damage;
-				}
-
-				var falloffRange = DamageFalloffEnd - DamageFalloffStart;
-				var difference = (distance - DamageFalloffStart);
-
-				return Math.Max( damage - (damage / falloffRange) * difference, 0f );
-			}
-
-			return Math.Max( damage - (damage / DamageFalloffEnd) * distance, 0f );
-		}
-
-		return damage;
+		return damage * WeaponItem.DamageFalloff.Evaluate( distance );
 	}
 
 	public virtual bool IsAvailable()
@@ -121,9 +138,20 @@ public abstract partial class Weapon : BaseWeapon
 		AnimationOwner?.SetAnimParameter( "b_attack", true );
 	}
 
-	public virtual void PlayReloadAnimation()
+	public override bool CanReload()
 	{
-		AnimationOwner?.SetAnimParameter( "b_reload", true );
+		if ( IsClient ) return false;
+
+		if ( !Owner.IsValid() )
+			return false;
+
+		if ( !Input.Released( InputButton.Reload ) )
+			return false;
+
+		if ( TimeSinceReloadPressed > 0.1f )
+			return false;
+
+		return true;
 	}
 
 	public override void ActiveStart( Entity owner )
@@ -171,17 +199,24 @@ public abstract partial class Weapon : BaseWeapon
 
 	public override void Reload()
 	{
+		Host.AssertServer();
+
 		if ( IsMelee || IsReloading )
 			return;
 
 		if ( AmmoClip >= ClipSize )
 			return;
 
+		UpdateAmmoItem();
+
+		if ( !AmmoItem.IsValid() )
+			return;
+
 		if ( Owner is ForsakenPlayer player )
 		{
 			if ( !UnlimitedAmmo )
 			{
-				if ( player.GetAmmoCount( WeaponItem.AmmoType ) <= 0 )
+				if ( player.GetAmmoCount( AmmoItem.UniqueId ) <= 0 )
 					return;
 			}
 		}
@@ -189,17 +224,20 @@ public abstract partial class Weapon : BaseWeapon
 		TimeSinceReload = 0f;
 		IsReloading = true;
 
-		if ( ReloadAnimation )
-			PlayReloadAnimation();
-
-		if ( !string.IsNullOrEmpty( ReloadSoundName ) )
-			ReloadSound = PlaySound( ReloadSoundName );
-
-		DoClientReload();
+		using ( Prediction.Off() )
+		{
+			if ( !string.IsNullOrEmpty( ReloadSoundName ) )
+				ReloadSound = PlaySound( ReloadSoundName );
+		}
 	}
 
 	public override void Simulate( Client owner )
 	{
+		if ( Input.Pressed( InputButton.Reload ) )
+		{
+			TimeSinceReloadPressed = 0f;
+		}
+
 		if ( Input.Pressed( InputButton.PrimaryAttack ) )
 		{
 			TimeSincePrimaryHeld = 0f;
@@ -218,14 +256,26 @@ public abstract partial class Weapon : BaseWeapon
 			ChargeAttackEndTime = 0f;
 		}
 
-		if ( !IsReloading )
+		if ( IsReloading )
+		{
+			if ( Prediction.FirstTime && !WasReloading )
+			{
+				AnimationOwner?.SetAnimParameter( "b_reload", true );
+			}
+		}
+		else
 		{
 			base.Simulate( owner );
 		}
 
-		if ( IsReloading && TimeSinceReload > ReloadTime )
+		WasReloading = IsReloading;
+
+		if ( IsServer && IsReloading && TimeSinceReload > ReloadTime )
 		{
-			OnReloadFinish();
+			using ( Prediction.Off() )
+			{
+				OnReloadFinish();
+			}
 		}
 
 		if ( WeaponItem.IsValid() )
@@ -264,15 +314,6 @@ public abstract partial class Weapon : BaseWeapon
 	}
 
 	public virtual void OnChargeAttackFinish() { }
-
-	[ClientRpc]
-	public virtual void DoClientReload()
-	{
-		if ( ReloadAnimation )
-		{
-			ViewModelEntity?.SetAnimParameter( "reload", true );
-		}
-	}
 
 	public override void AttackPrimary()
 	{
@@ -423,23 +464,25 @@ public abstract partial class Weapon : BaseWeapon
 
 	protected virtual void OnReloadFinish()
 	{
+		Host.AssertServer();
+
 		IsReloading = false;
 
-		if ( Owner is ForsakenPlayer player )
+		if ( Owner is not ForsakenPlayer player )
+			return;
+
+		if ( !AmmoItem.IsValid() )
+			return;
+
+		if ( !UnlimitedAmmo )
 		{
-			if ( !UnlimitedAmmo )
-			{
-				var ammo = player.TakeAmmo( WeaponItem.AmmoType, (ushort)(ClipSize - AmmoClip) );
-
-				if ( ammo == 0 )
-					return;
-
-				AmmoClip += ammo;
-			}
-			else
-			{
-				AmmoClip = ClipSize;
-			}
+			var ammo = player.TakeAmmo( AmmoItem.UniqueId, (ushort)(ClipSize - AmmoClip) );
+			if ( ammo == 0 ) return;
+			AmmoClip += ammo;
+		}
+		else
+		{
+			AmmoClip = ClipSize;
 		}
 	}
 
@@ -480,6 +523,12 @@ public abstract partial class Weapon : BaseWeapon
 		return EffectEntity;
 	}
 
+	[ClientRpc]
+	protected void ResetReloading()
+	{
+		WasReloading = false;
+	}
+
 	protected void CreateLightSource( Vector3 position, Color color, float range, float brightness, float lifeTime )
 	{
 		var light = new PointLightEntity();
@@ -507,5 +556,30 @@ public abstract partial class Weapon : BaseWeapon
 		damageInfo.Damage = damage;
 
 		target.TakeDamage( damageInfo );
+	}
+
+	protected void UpdateAmmoItem()
+	{
+		if ( Owner is not ForsakenPlayer player )
+			return;
+
+		if ( AmmoItem.IsValid() )
+			return;
+
+		var availableId = player.FindItems<AmmoItem>()
+			.Where( i => i.AmmoType == WeaponItem.AmmoType )
+			.Select( i=> i.UniqueId )
+			.Distinct()
+			.FirstOrDefault();
+
+		if ( !string.IsNullOrEmpty( availableId ) )
+		{
+			var definition = InventorySystem.GetDefinition( availableId );
+
+			if ( definition is AmmoItem ammo )
+			{
+				SetAmmoItem( ammo );
+			}
+		}
 	}
 }

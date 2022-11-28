@@ -32,7 +32,7 @@ public class WeaponFlashlightItem : AttachmentItem
 
 	public override void OnWeaponChanged( Weapon weapon )
 	{
-		if ( weapon.IsValid() && weapon.Item.IsValid() )
+		if ( weapon.IsValid() && weapon.WeaponItem.IsValid() )
 			CreateEntity( weapon );
 		else
 			DestroyEntity();

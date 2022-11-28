@@ -16,9 +16,9 @@ public partial class MP5A4 : ProjectileWeapon<CrossbowBoltProjectile>
 	public override float Speed => 1500f;
 	public override float Gravity => 6f;
 	public override float InheritVelocity => 0f;
-	public override string ReloadSoundName => "rust_smg.reload";
+	public override string ReloadSoundName => "mp5.mag";
 	public override string ProjectileModel => null;
-	public override float ReloadTime => 3f;
+	public override float ReloadTime => 2f;
 	public override float ProjectileLifeTime => 4f;
 	public override int HoldType => 2;
 
