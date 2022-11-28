@@ -552,6 +552,13 @@ public static partial class InventorySystem
 		foreach ( var resource in resources )
 		{
 			var type = TypeLibrary.GetDescription( resource.GetType() );
+
+			if ( type == null )
+			{
+				Log.Error( $"Unable to find the TypeDescription for type {resource.GetType()}" );
+				continue;
+			}
+
 			var attribute = type.GetAttribute<ItemClassAttribute>();
 			if ( attribute == null ) continue;
 
