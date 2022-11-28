@@ -8,13 +8,26 @@
 		AmmoType = "Shotgun"
 		DefaultAmmo = 0
 		ClipSize = 6
+		DamageFalloff = 
+		{
+			rangex = "0,4000"
+			frames = 
+			[
+				{
+					y = 1
+				},
+				{
+					x = 1
+				},
+			]
+		}
 		RecoilCurve = 
 		[
 			{
+				y = 1
 			},
 			{
-				x = 0.174877
-				y = 0.822691
+				x = 0.5
 			},
 			{
 				x = 1

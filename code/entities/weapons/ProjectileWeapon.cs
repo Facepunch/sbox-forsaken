@@ -69,7 +69,7 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 
 			var velocity = (direction * Speed) + (player.Velocity * InheritVelocity);
 			velocity = AdjustProjectileVelocity( velocity );
-			position -= direction * velocity.Length * Time.Delta;
+			position -= direction * Speed * Time.Delta;
 			projectile.Initialize( position, velocity, ProjectileRadius, ( p, t ) => OnProjectileHit( (T)p, t ) );
 
 			OnProjectileFired( projectile );
