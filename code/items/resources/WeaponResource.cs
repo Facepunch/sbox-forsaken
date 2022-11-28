@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
@@ -23,6 +24,9 @@ public class WeaponResource : ItemResource
 
 	[Property]
 	public int ClipSize { get; set; } = 0;
+
+	[Property]
+	public Curve DamageFalloff { get; set; }
 
 	[Property]
 	public Curve RecoilCurve { get; set; }

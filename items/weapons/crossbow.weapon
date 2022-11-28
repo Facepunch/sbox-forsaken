@@ -8,11 +8,26 @@
 		AmmoType = "Bolt"
 		DefaultAmmo = 0
 		ClipSize = 10
-		RecoilCurve = 
+		DamageFalloff = 
 		{
-			rangex = "0,0"
-			rangey = "0,0"
+			rangex = "0,4000"
+			frames = 
+			[
+				{
+					y = 1
+				},
+				{
+					x = 1
+				},
+			]
 		}
+		RecoilCurve = 
+		[
+			{
+				x = 0.5
+				y = 0.5
+			},
+		]
 		Damage = 40
 		ClassName = "weapon_crossbow"
 		ItemName = "Crossbow"
@@ -20,7 +35,6 @@
 		Description = "A light damage crossbow for dealing ranged damage."
 		Icon = resource:"textures/items/weapon_crossbow.png"
 		WorldModel = resource:"weapons/rust_crossbow/rust_crossbow.vmdl"
-		IsCraftable = false
-		RequiredItems = null
+		Tags = [  ]
 	}
 }

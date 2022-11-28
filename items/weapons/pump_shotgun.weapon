@@ -21,7 +21,7 @@
 				y = 1
 			},
 		]
-		Damage = 20
+		Damage = 10
 		ClassName = "weapon_pump_shotgun"
 		ItemName = "Pump Shotgun"
 		UniqueId = "pump_shotgun"
