@@ -9,7 +9,7 @@ public abstract partial class Weapon : BaseWeapon
 	public virtual string MuzzleAttachment => "muzzle";
 	public virtual string MuzzleFlashEffect => null;
 	public virtual string ImpactEffect => null;
-	public virtual int ClipSize => 16;
+	public virtual int ClipSize => WeaponItem.ClipSize;
 	public virtual float ReloadTime => 3.0f;
 	public virtual bool IsMelee => false;
 	public virtual float MeleeRange => 100f;
@@ -142,6 +142,12 @@ public abstract partial class Weapon : BaseWeapon
 		IsReloading = false;
 	}
 
+	public override void SimulateAnimator( PawnAnimator anim )
+	{
+		anim.SetAnimParameter( "holdtype", HoldType );
+		anim.SetAnimParameter( "aim_body_weight", 1f );
+	}
+
 	public override void Spawn()
 	{
 		base.Spawn();
@@ -258,28 +264,6 @@ public abstract partial class Weapon : BaseWeapon
 	}
 
 	public virtual void OnChargeAttackFinish() { }
-
-	public virtual void OnReloadFinish()
-	{
-		IsReloading = false;
-
-		if ( Owner is ForsakenPlayer player )
-		{
-			if ( !UnlimitedAmmo )
-			{
-				var ammo = player.TakeAmmo( WeaponItem.AmmoType, (ushort)(ClipSize - AmmoClip) );
-
-				if ( ammo == 0 )
-					return;
-
-				AmmoClip += ammo;
-			}
-			else
-			{
-				AmmoClip = ClipSize;
-			}
-		}
-	}
 
 	[ClientRpc]
 	public virtual void DoClientReload()
@@ -434,6 +418,28 @@ public abstract partial class Weapon : BaseWeapon
 			var time = TimeSincePrimaryHeld.Relative.Remap( 0f, 3f, 0f, 1f ) % 1f;
 			var recoil = WeaponItem.RecoilCurve.Evaluate( time );
 			RecoilQueue.Enqueue( recoil );
+		}
+	}
+
+	protected virtual void OnReloadFinish()
+	{
+		IsReloading = false;
+
+		if ( Owner is ForsakenPlayer player )
+		{
+			if ( !UnlimitedAmmo )
+			{
+				var ammo = player.TakeAmmo( WeaponItem.AmmoType, (ushort)(ClipSize - AmmoClip) );
+
+				if ( ammo == 0 )
+					return;
+
+				AmmoClip += ammo;
+			}
+			else
+			{
+				AmmoClip = ClipSize;
+			}
 		}
 	}
 
