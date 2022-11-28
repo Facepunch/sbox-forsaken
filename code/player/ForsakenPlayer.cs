@@ -612,6 +612,15 @@ public partial class ForsakenPlayer : Player
 							Thoughts.Show( To.Single( this ), "invalid_placement", Rand.FromArray( InvalidPlacementThoughts ) );
 							structure.Delete();
 						}
+						else
+						{
+							var costs = Structure.GetCostsFor( structureType );
+
+							foreach ( var kv in costs )
+							{
+								TakeItems( kv.Key, kv.Value );
+							}
+						}
 					}
 				}
 				else
