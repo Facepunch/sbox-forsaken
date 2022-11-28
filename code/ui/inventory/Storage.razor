@@ -145,6 +145,16 @@
         Entity = entity;
     }
 
+    public override void Tick()
+    {
+        if ( IsOpen && !Entity.IsValid() || ( Entity is LootSpawner spawner && Container.IsEmpty ) )
+        {
+            Close();
+        }
+
+        base.Tick();
+    }
+
     public void SetContainer( InventoryContainer container )
     {
         if ( !ForsakenPlayer.Me.IsValid() ) return;
