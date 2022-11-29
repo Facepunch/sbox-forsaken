@@ -15,6 +15,8 @@
 <root>
     <label class="health">Health: @(Health)</label>
     <label class="stamina">Stamina: @(Stamina)</label>
+    <label class="calories">Calories: @(Calories)</label>
+    <label class="hydration">Hydration: @(Hydration)</label>
     <label class="temperature">Temperature: @(Temperature)&deg;C</label>
 </root>
 
@@ -22,6 +24,8 @@
 {
     private float Health => ForsakenPlayer.Me.Health.CeilToInt();
     private float Stamina => ForsakenPlayer.Me.Stamina.CeilToInt();
+    private float Calories => ForsakenPlayer.Me.Calories.CeilToInt();
+    private float Hydration => ForsakenPlayer.Me.Hydration.CeilToInt();
     private float Temperature => ForsakenPlayer.Me.Temperature.CeilToInt();
 
     protected override int BuildHash()

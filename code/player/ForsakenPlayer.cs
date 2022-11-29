@@ -28,6 +28,8 @@ public partial class ForsakenPlayer : Player
 	};
 
 	[Net] public float Temperature { get; private set; }
+	[Net] public float Calories { get; private set; }
+	[Net] public float Hydration { get; private set; }
 	[Net, Predicted] public float Stamina { get; private set; }
 	[Net, Predicted] public bool IsOutOfBreath { get; private set; }
 	[Net, Predicted] public ushort HotbarIndex { get; private set; }
@@ -250,6 +252,8 @@ public partial class ForsakenPlayer : Player
 		EnableAllCollisions = true;
 		EnableDrawing = true;
 		LifeState = LifeState.Alive;
+		Calories = 100f;
+		Hydration = 30f;
 		Stamina = 100f;
 		Health = 100f;
 		Velocity = Vector3.Zero;
@@ -361,6 +365,11 @@ public partial class ForsakenPlayer : Player
 
 		Projectiles.Simulate();
 
+		if ( IsServer )
+		{
+			SimulateNeeds();
+		}
+		
 		SimulateCrafting();
 		SimulateOpenContainers();
 
@@ -407,6 +416,26 @@ public partial class ForsakenPlayer : Player
 		}
 
 		base.OnDestroy();
+	}
+
+	private void SimulateNeeds()
+	{
+		var baseReduction = 0.02f;
+		var calorieReduction = baseReduction;
+		var hydrationReduction = baseReduction;
+
+		if ( Velocity.Length > 0f )
+		{
+			var movementReduction = Velocity.Length.Remap( 0f, 300f, 0f, 0.075f );
+			calorieReduction += movementReduction;
+			hydrationReduction += movementReduction;
+		}
+
+		calorieReduction *= Temperature.Remap( -20, 0f, 4f, 2f );
+		hydrationReduction *= Temperature.Remap( 0f, 40f, 0.5f, 4f );
+
+		Calories = Math.Max( Calories - calorieReduction * Time.Delta, 0f );
+		Hydration = Math.Max( Hydration - hydrationReduction * Time.Delta, 0f );
 	}
 
 	private void SimulateAmmoType()

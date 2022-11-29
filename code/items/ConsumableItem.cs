@@ -1,18 +1,21 @@
 ﻿using Sandbox;
+using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
-public class ConsumableItem : InventoryItem, IConsumableItem, ILootTableItem
+public class ConsumableItem : ResourceItem<ConsumableResource, ConsumableItem>, ILootTableItem, IConsumableItem
 {
-	public override ushort MaxStackSize => 4;
 	public override Color Color => ItemColors.Consumable;
-	public virtual string ConsumeSound => string.Empty;
-	public virtual string ConsumeEffect => null;
-	public virtual string ActivateSound => string.Empty;
-	public virtual float ActivateDelay => 0.5f;
-	public virtual float SpawnChance => default;
-	public virtual int AmountToSpawn => default;
-	public virtual bool IsLootable => default;
+	public override ushort DefaultStackSize => (ushort)(Resource?.DefaultStackSize ?? 1);
+	public override ushort MaxStackSize => (ushort)(Resource?.MaxStackSize ?? 1);
+	public virtual int AmountToSpawn => Resource?.AmountToSpawn.GetValue().CeilToInt() ?? default;
+	public virtual float SpawnChance => Resource?.SpawnChance ?? default;
+	public virtual bool IsLootable => Resource?.IsLootable ?? default;
+	public virtual string ConsumeSound => Resource?.ConsumeSound ?? default;
+	public virtual string ConsumeEffect => Resource?.ConsumeEffect ?? default;
+	public virtual string ActivateSound => Resource?.ActivateSound ?? default;
+	public virtual float ActivateDelay => Resource?.ActivateDelay ?? default;
+	public virtual List<ConsumableEffect> Effects => Resource?.Effects ?? default;
 
 	public async void Consume( ForsakenPlayer player )
 	{
@@ -54,11 +57,21 @@ public class ConsumableItem : InventoryItem, IConsumableItem, ILootTableItem
 
 	public virtual void OnActivated( ForsakenPlayer player )
 	{
-
+		foreach ( var effect in Effects )
+		{
+			Log.Info( effect.Target + " / " + effect.Amount );
+		}
 	}
 
 	public override bool CanStackWith( InventoryItem other )
 	{
 		return true;
+	}
+
+	protected override void BuildTags( HashSet<string> tags )
+	{
+		tags.Add( "consumable" );
+
+		base.BuildTags( tags );
 	}
 }
