@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Facepunch.Forsaken;
 
-public class PlayerCorpse : ModelEntity, IContextActionProvider
+public partial class PlayerCorpse : ModelEntity, IContextActionProvider
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.White;
@@ -13,7 +13,8 @@ public class PlayerCorpse : ModelEntity, IContextActionProvider
 	private InventoryContainer Inventory { get; set; }
 	private ContextAction SearchAction { get; set; }
 	private TimeSince TimeSinceSpawned { get; set; }
-	private string PlayerName { get; set; }
+	
+	[Net] private string PlayerName { get; set; }
 
 	public PlayerCorpse()
 	{
