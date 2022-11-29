@@ -9,6 +9,13 @@ namespace Facepunch.Forsaken;
 
 public partial class ForsakenPlayer : Player
 {
+	private class ActiveEffect
+	{
+		public ConsumableEffect Type { get; set; }
+		public TimeUntil EndTime { get; set; }
+		public float AmountGiven { get; set; }
+	}
+
 	public static ForsakenPlayer Me => Local.Pawn as ForsakenPlayer;
 
 	private static string[] InvalidPlacementThoughts = new string[]
@@ -51,6 +58,11 @@ public partial class ForsakenPlayer : Player
 	[ClientInput] public string ChangeAmmoType { get; private set; }
 	[ClientInput] public bool HasDialogOpen { get; private set; }
 
+	public int MaxHealth => 100;
+	public int MaxStamina => 100;
+	public int MaxCalories => 300;
+	public int MaxHydration => 200;
+
 	public Dictionary<ArmorSlot, List<ArmorEntity>> Armor { get; private set; }
 	public ProjectileSimulator Projectiles { get; private set; }
 	public Vector2 Cursor { get; set; }
@@ -64,6 +76,7 @@ public partial class ForsakenPlayer : Player
 	private TimeSince TimeSinceBackpackOpen { get; set; }
 	private bool IsBackpackToggleMode { get; set; }
 	private Entity LastHoveredEntity { get; set; }
+	private List<ActiveEffect> ActiveEffects { get; set; } = new();
 
 	[ConCmd.Server( "fsk.player.structuretype" )]
 	private static void SetStructureTypeCmd( int identity )
@@ -170,6 +183,32 @@ public partial class ForsakenPlayer : Player
 	public void RenderHud()
 	{ 
 
+	}
+
+	public void AddEffect( ConsumableEffect effect )
+	{
+		if ( effect.Duration > 0f )
+		{
+			var instance = new ActiveEffect()
+			{
+				EndTime = effect.Duration,
+				AmountGiven = 0f,
+				Type = effect
+			};
+
+			ActiveEffects.Add( instance );
+		}
+		else
+		{
+			if ( effect.Target == ConsumableType.Calories )
+				Calories = Math.Clamp( Calories + effect.Amount, 0f, MaxCalories );
+			else if ( effect.Target == ConsumableType.Hydration )
+				Hydration = Math.Clamp( Hydration + effect.Amount, 0f, MaxHydration );
+			else if ( effect.Target == ConsumableType.Health )
+				Health = Math.Clamp( Health + effect.Amount, 0f, MaxHealth );
+			else if ( effect.Target == ConsumableType.Stamina )
+				Stamina = Math.Clamp( Stamina + effect.Amount, 0f, MaxStamina );
+		}
 	}
 
 	public override void Spawn()
@@ -404,6 +443,27 @@ public partial class ForsakenPlayer : Player
 		}
 
 		Temperature = Temperature.LerpTo( CalculatedTemperature, Time.Delta * 2f );
+
+		for ( var i = ActiveEffects.Count - 1; i >= 0; i-- )
+		{
+			var effect = ActiveEffects[i];
+			var ticksPerSecond = (1f / Time.Delta) * effect.Type.Duration;
+			var amountToGive = effect.Type.Amount / ticksPerSecond;
+
+			if ( effect.Type.Target == ConsumableType.Calories )
+				Calories = Math.Clamp( Calories + amountToGive, 0f, MaxCalories );
+			else if ( effect.Type.Target == ConsumableType.Hydration )
+				Hydration = Math.Clamp( Hydration + amountToGive, 0f, MaxHydration );
+			else if ( effect.Type.Target == ConsumableType.Health )
+				Health = Math.Clamp( Health + amountToGive, 0f, MaxHealth );
+			else if ( effect.Type.Target == ConsumableType.Stamina )
+				Stamina = Math.Clamp( Stamina + amountToGive, 0f, MaxStamina );
+
+			if ( effect.EndTime )
+			{
+				ActiveEffects.RemoveAt( i );
+			}
+		}
 	}
 
 	protected override void OnDestroy()

@@ -443,48 +443,50 @@ public partial class ForsakenPlayer
 
 	private void UpdateHotbarSlotKeys()
 	{
-		var index = HotbarIndex;
+		var pressedIndex = -1;
 
 		if ( Input.Pressed( InputButton.Slot1 ) )
-			index = (ushort)Math.Min( 0, Hotbar.SlotLimit - 1 );
+			pressedIndex = Math.Min( 0, Hotbar.SlotLimit - 1 );
 
 		if ( Input.Pressed( InputButton.Slot2 ) )
-			index = (ushort)Math.Min( 1, Hotbar.SlotLimit - 1 );
+			pressedIndex = Math.Min( 1, Hotbar.SlotLimit - 1 );
 
 		if ( Input.Pressed( InputButton.Slot3 ) )
-			index = (ushort)Math.Min( 2, Hotbar.SlotLimit - 1 );
+			pressedIndex = Math.Min( 2, Hotbar.SlotLimit - 1 );
 
 		if ( Input.Pressed( InputButton.Slot4 ) )
-			index = (ushort)Math.Min( 3, Hotbar.SlotLimit - 1 );
+			pressedIndex = Math.Min( 3, Hotbar.SlotLimit - 1 );
 
 		if ( Input.Pressed( InputButton.Slot5 ) )
-			index = (ushort)Math.Min( 4, Hotbar.SlotLimit - 1 );
+			pressedIndex = Math.Min( 4, Hotbar.SlotLimit - 1 );
 
 		if ( Input.Pressed( InputButton.Slot6 ) )
-			index = (ushort)Math.Min( 5, Hotbar.SlotLimit - 1 );
+			pressedIndex = Math.Min( 5, Hotbar.SlotLimit - 1 );
 
 		if ( Input.Pressed( InputButton.Slot7 ) )
-			index = (ushort)Math.Min( 6, Hotbar.SlotLimit - 1 );
+			pressedIndex = Math.Min( 6, Hotbar.SlotLimit - 1 );
 
 		if ( Input.Pressed( InputButton.Slot8 ) )
-			index = (ushort)Math.Min( 7, Hotbar.SlotLimit - 1 );
+			pressedIndex = Math.Min( 7, Hotbar.SlotLimit - 1 );
 
-		if ( index != HotbarIndex )
+		if ( pressedIndex < 0 )
+			return;
+
+		var item = Hotbar.GetFromSlot( (ushort)pressedIndex );
+
+		if ( item is IConsumableItem consumable )
 		{
-			var container = Hotbar;
-			var item = container.GetFromSlot( index );
-
-			if ( item is IConsumableItem consumable )
+			if ( IsServer )
 			{
-				if ( IsServer )
-				{
-					consumable.Consume( this );
-				}
-
-				return;
+				consumable.Consume( this );
 			}
 
-			HotbarIndex = index;
+			return;
+		}
+
+		if ( pressedIndex != HotbarIndex )
+		{
+			HotbarIndex = (ushort)pressedIndex;
 		}
 	}
 }

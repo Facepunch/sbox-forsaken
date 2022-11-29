@@ -59,7 +59,7 @@ public class ConsumableItem : ResourceItem<ConsumableResource, ConsumableItem>, 
 	{
 		foreach ( var effect in Effects )
 		{
-			Log.Info( effect.Target + " / " + effect.Amount );
+			player.AddEffect( effect );
 		}
 	}
 
