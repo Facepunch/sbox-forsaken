@@ -472,16 +472,19 @@ public class InventoryContainer : IValid
 		return remainder;
 	}
 
-	public bool FindFreeSlot( out ushort slot )
+	public bool FindFreeSlot( out ushort slot, InventoryItem instance = null )
 	{
 		var slotLimit = SlotLimit;
 
 		for ( ushort i = 0; i < slotLimit; i++ )
 		{
-			if ( ItemList[i] == null )
+			if ( !ItemList[i].IsValid() )
 			{
-				slot = i;
-				return true;
+				if ( !instance.IsValid() || CanGiveItem( i, instance ) )
+				{
+					slot = i;
+					return true;
+				}
 			}
 		}
 
@@ -491,7 +494,7 @@ public class InventoryContainer : IValid
 
 	public bool Give( InventoryItem instance )
 	{
-		if ( !FindFreeSlot( out var slot ) )
+		if ( !FindFreeSlot( out var slot, instance ) )
 		{
 			return false;
 		}
@@ -567,7 +570,7 @@ public class InventoryContainer : IValid
 	{
 		var item = ItemList[slot];
 
-		if ( Parent == item )
+		if ( Parent == instance )
 			return instance.StackSize;
 
 		if ( !CanGiveItem( slot, instance ) )
@@ -604,14 +607,41 @@ public class InventoryContainer : IValid
 		return instance.StackSize;
 	}
 
-	public ushort Stack( InventoryItem instance )
+	public bool CouldTakeAny( InventoryItem instance )
 	{
+		if ( Parent == instance )
+			return false;
+
 		for ( int i = 0; i < ItemList.Count; i++ )
 		{
 			var item = ItemList[i];
 
-			if ( Parent == item )
+			if ( !CanGiveItem( (ushort)i, instance ) )
 				continue;
+
+			if ( !item.IsValid() )
+				return true;
+
+			if ( item.IsSameType( instance ) && item.CanStackWith( instance ) )
+			{
+				var amountCanStack = (ushort)Math.Max( item.MaxStackSize - item.StackSize, 0 );
+
+				if ( amountCanStack > 0 )
+					return true;
+			}
+		}
+
+		return false;
+	}
+
+	public ushort Stack( InventoryItem instance )
+	{
+		if ( Parent == instance )
+			return instance.StackSize;
+
+		for ( int i = 0; i < ItemList.Count; i++ )
+		{
+			var item = ItemList[i];
 
 			if ( !CanGiveItem( (ushort)i, instance ) )
 				continue;

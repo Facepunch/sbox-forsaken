@@ -30,6 +30,13 @@ public partial class BackpackContainer : InventoryContainer
 			return storage.Container;
 		}
 
-		return storage.IsOpen ? storage.Container : ForsakenPlayer.Me.Hotbar;
+		var equipment = ForsakenPlayer.Me.Equipment;
+
+		if ( item is ArmorItem && equipment.CouldTakeAny( item ) )
+		{
+			return equipment;
+		}
+
+		return ForsakenPlayer.Me.Hotbar;
 	}
 }
