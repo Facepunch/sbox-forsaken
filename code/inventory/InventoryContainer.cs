@@ -11,7 +11,7 @@ public class InventoryContainer : IValid
 	public delegate void ItemTakenCallback( ushort slot, InventoryItem instance );
 	public delegate void ItemGivenCallback( ushort slot, InventoryItem instance );
 	public delegate void SlotChangedCallback( ushort slot );
-	public delegate InventoryContainer TransferHandlerCallback();
+	public delegate InventoryContainer TransferHandlerCallback( InventoryItem item );
 
 	public event SlotChangedCallback SlotChanged;
 	public event SlotChangedCallback DataChanged;
@@ -731,14 +731,14 @@ public class InventoryContainer : IValid
 		return HashCode.Combine( hash, SlotLimit );
 	}
 
-	public virtual InventoryContainer GetTransferTarget()
+	public virtual InventoryContainer GetTransferTarget( InventoryItem item )
 	{
 		if ( TransferHandler == null && Parent.IsValid() && Parent.Parent.IsValid() )
 		{
-			return Parent.Parent.GetTransferTarget();
+			return Parent.Parent.GetTransferTarget( item );
 		}
 
-		return TransferHandler?.Invoke();
+		return TransferHandler?.Invoke( item );
 	}
 
 	public virtual void Serialize( BinaryWriter writer )

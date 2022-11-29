@@ -9,14 +9,14 @@ public partial class EquipmentContainer : InventoryContainer
 		SetSlotLimit( 4 );
 	}
 
-	public override InventoryContainer GetTransferTarget()
+	public override InventoryContainer GetTransferTarget( InventoryItem item )
 	{
 		if ( Entity is ForsakenPlayer player )
 		{
 			return UI.Storage.Current.IsOpen ? UI.Storage.Current.Container : ForsakenPlayer.Me.Backpack;
 		}
 
-		return base.GetTransferTarget();
+		return base.GetTransferTarget( item );
 	}
 
 	public override bool CanGiveItem( ushort slot, InventoryItem item )

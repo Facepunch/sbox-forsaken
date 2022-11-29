@@ -46,7 +46,7 @@ public partial class InventorySlot
             return false;
 
         var container = Item.Parent;
-        var target = container.GetTransferTarget();
+        var target = container.GetTransferTarget( Item );
 
         if ( !target.IsValid() )
             return false;
