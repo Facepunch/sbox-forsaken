@@ -46,7 +46,8 @@
         "ladder": "Ignore",
         "water": "Trigger",
         "player": "Collide",
-        "item": "Collide"
+        "item": "Collide",
+        "corpse": "Collide"
       },
       "Pairs": [
         {
@@ -78,8 +79,14 @@
           "a": "player",
           "b": "item",
           "r": "Ignore"
+        },
+        {
+          "a": "player",
+          "b": "corpse",
+          "r": "Ignore"
         }
       ]
-    }
+    },
+    "DefaultLeaderboards": null
   }
 }

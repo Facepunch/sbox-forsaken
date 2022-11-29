@@ -517,6 +517,8 @@ public class InventoryContainer : IValid
 			return null;
 		}
 
+		instance.Remove();
+
 		var oldItem = ItemList[slot];
 
 		if ( oldItem.IsValid() )
@@ -555,6 +557,8 @@ public class InventoryContainer : IValid
 			Log.Info( "Unable to give an item to this inventory because slot #" + slot + " is occupied!" );
 			return false;
 		}
+
+		instance.Remove();
 
 		instance.SlotId = slot;
 		instance.Parent = this;

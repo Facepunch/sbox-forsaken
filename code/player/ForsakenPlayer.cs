@@ -49,7 +49,7 @@ public partial class ForsakenPlayer : Player
 	[ClientInput] public string ChangeAmmoType { get; private set; }
 	[ClientInput] public bool HasDialogOpen { get; private set; }
 
-	public Dictionary<ArmorSlot, List<BaseClothing>> Armor { get; private set; }
+	public Dictionary<ArmorSlot, List<ArmorEntity>> Armor { get; private set; }
 	public ProjectileSimulator Projectiles { get; private set; }
 	public Vector2 Cursor { get; set; }
 	public DamageInfo LastDamageTaken { get; private set; }
@@ -314,7 +314,7 @@ public partial class ForsakenPlayer : Player
 
 	public override void OnKilled()
 	{
-		BecomeRagdollOnClient( LastDamageTaken.Force, LastDamageTaken.BoneIndex );
+		BecomeRagdollOnServer( LastDamageTaken.Force, LastDamageTaken.BoneIndex );
 
 		EnableAllCollisions = false;
 		EnableDrawing = false;

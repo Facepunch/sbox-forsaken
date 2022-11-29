@@ -1,18 +1,47 @@
 ﻿using Sandbox;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Facepunch.Forsaken;
 
-public class PlayerCorpse : ModelEntity
+public class PlayerCorpse : ModelEntity, IContextActionProvider
 {
-	public ForsakenPlayer Player { get; set; }
+	public float InteractionRange => 150f;
+	public Color GlowColor => Color.White;
+	public float GlowWidth => 0.4f;
 
+	private InventoryContainer Inventory { get; set; }
+	private ContextAction SearchAction { get; set; }
 	private TimeSince TimeSinceSpawned { get; set; }
+	private string PlayerName { get; set; }
 
 	public PlayerCorpse()
 	{
 		UsePhysicsCollision = true;
 		TimeSinceSpawned = 0f;
 		PhysicsEnabled = true;
+
+		SearchAction = new( "search", "Search", "textures/ui/actions/open.png" );
+	}
+
+	public string GetContextName()
+	{
+		return $"{PlayerName}'s Corpse";
+	}
+
+	public void Search( ForsakenPlayer player )
+	{
+		UI.Storage.Open( player, GetContextName(), this, Inventory );
+	}
+
+	public IEnumerable<ContextAction> GetSecondaryActions()
+	{
+		yield break;
+	}
+
+	public ContextAction GetPrimaryAction()
+	{
+		return SearchAction;
 	}
 
 	public void CopyFrom( ForsakenPlayer player )
@@ -27,14 +56,43 @@ public class PlayerCorpse : ModelEntity
 
 		foreach ( var child in player.Children )
 		{
-			if ( child is BaseClothing e )
+			if ( child is ArmorEntity e )
 			{
 				var model = e.GetModelName();
-				var clothing = new ModelEntity();
+				var armor = new ArmorEntity();
 
-				clothing.RenderColor = e.RenderColor;
-				clothing.SetModel( model );
-				clothing.SetParent( this, true );
+				armor.RenderColor = e.RenderColor;
+				armor.SetModel( model );
+				armor.SetParent( this, true );
+				armor.Item = e.Item;
+			}
+		}
+
+		var items = player.FindItems<InventoryItem>();
+
+		var inventory = new InventoryContainer();
+		inventory.SetEntity( this );
+		inventory.ItemTaken += OnItemTaken;
+		inventory.SetSlotLimit( (ushort)items.Count() );
+		inventory.IsTakeOnly = true;
+		InventorySystem.Register( inventory );
+
+		foreach ( var item in items )
+		{
+			inventory.Give( item );
+		}
+
+		PlayerName = player.Client.Name;
+		Inventory = inventory;
+	}
+
+	public void OnContextAction( ForsakenPlayer player, ContextAction action )
+	{
+		if ( action == SearchAction )
+		{
+			if ( IsServer )
+			{
+				Search( player );
 			}
 		}
 	}
@@ -57,15 +115,29 @@ public class PlayerCorpse : ModelEntity
 	public override void Spawn()
 	{
 		Tags.Add( "corpse" );
+
 		base.Spawn();
 	}
 
 	[Event.Tick.Client]
-	protected virtual void ClientTick()
+	private void ClientTick()
 	{
-		if ( IsClientOnly && TimeSinceSpawned > 10f )
+		if ( IsClientOnly && TimeSinceSpawned > 120f )
 		{
 			Delete();
+		}
+	}
+
+	private void OnItemTaken( ushort slot, InventoryItem instance )
+	{
+		var armor = Children.OfType<ArmorEntity>().Where( c => c.Item == instance ).ToList();
+
+		foreach ( var entity in armor )
+		{
+			if ( entity.IsValid() )
+			{
+				entity.Delete();
+			}
 		}
 	}
 }

@@ -17,7 +17,6 @@ public partial class ForsakenPlayer
 
 		ragdoll.CopyFrom( this );
 		ragdoll.ApplyForceToBone( force, forceBone );
-		ragdoll.Player = this;
 
 		Ragdoll = ragdoll;
 	}
@@ -32,7 +31,6 @@ public partial class ForsakenPlayer
 
 		ragdoll.CopyFrom( this );
 		ragdoll.ApplyForceToBone( force, forceBone );
-		ragdoll.Player = this;
 
 		Ragdoll = ragdoll;
 	}

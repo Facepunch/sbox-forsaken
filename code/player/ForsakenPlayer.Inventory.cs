@@ -195,15 +195,15 @@ public partial class ForsakenPlayer
 		}
 	}
 
-	private void AddClothingToArmorSlot( ArmorSlot slot, BaseClothing clothing )
+	private void AddToArmorSlot( ArmorSlot slot, ArmorEntity armor )
 	{
 		if ( !Armor.TryGetValue( slot, out var models ) )
 		{
-			models = new List<BaseClothing>();
+			models = new List<ArmorEntity>();
 			Armor[slot] = models;
 		}
 
-		models.Add( clothing );
+		models.Add( armor );
 	}
 
 	private void OnEquipmentItemGiven( ushort slot, InventoryItem instance )
@@ -222,12 +222,14 @@ public partial class ForsakenPlayer
 
 			if ( !string.IsNullOrEmpty( armor.PrimaryModel ) )
 			{
-				AddClothingToArmorSlot( armor.ArmorSlot, AttachClothing( armor.PrimaryModel ) );
+				var clothing = AttachArmor( armor.PrimaryModel, armor );
+				AddToArmorSlot( armor.ArmorSlot, clothing );
 			}
 
 			if ( !string.IsNullOrEmpty( armor.SecondaryModel ) )
 			{
-				AddClothingToArmorSlot( armor.ArmorSlot, AttachClothing( armor.SecondaryModel ) );
+				var clothing = AttachArmor( armor.SecondaryModel, armor );
+				AddToArmorSlot( armor.ArmorSlot, clothing );
 			}
 		}
 	}
@@ -281,38 +283,7 @@ public partial class ForsakenPlayer
 
 	private void GiveInitialItems()
 	{
-		var mp5 = InventorySystem.CreateItem<WeaponItem>( "mp5a4" );
-		TryGiveWeapon( mp5 );
 
-		var crossbow = InventorySystem.CreateItem<WeaponItem>( "crossbow" );
-		TryGiveWeapon( crossbow );
-
-		TryGiveAmmo( AmmoType.Pistol, 200 );
-		TryGiveAmmo( AmmoType.Bolt, 10 );
-
-		var armor = InventorySystem.CreateItem<ArmorItem>( "baseball_cap" );
-		TryGiveItem( armor );
-
-		armor = InventorySystem.CreateItem<ArmorItem>( "black_hoodie" );
-		TryGiveItem( armor );
-
-		armor = InventorySystem.CreateItem<ArmorItem>( "cargo_pants" );
-		TryGiveItem( armor );
-
-		armor = InventorySystem.CreateItem<ArmorItem>( "army_boots" );
-		TryGiveItem( armor );
-
-		var toolbox = InventorySystem.CreateItem<ToolboxItem>();
-		TryGiveItem( toolbox );
-
-		var crate = InventorySystem.CreateItem<StorageCrateItem>();
-		TryGiveItem( crate );
-
-		crate = InventorySystem.CreateItem<StorageCrateItem>();
-		TryGiveItem( crate );
-
-		crate = InventorySystem.CreateItem<StorageCrateItem>();
-		TryGiveItem( crate );
 	}
 
 	private void CreateInventories()
