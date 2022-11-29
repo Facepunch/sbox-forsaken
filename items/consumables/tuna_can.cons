@@ -13,10 +13,6 @@
 			{
 				Amount = 20
 			},
-			{
-				Amount = 20
-				Duration = 5
-			},
 		]
 		IsLootable = true
 		SpawnChance = 0.2

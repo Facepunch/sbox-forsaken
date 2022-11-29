@@ -1,0 +1,36 @@
+<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:generic:version{7412167c-06e9-4698-aff2-e63eb59037e7} -->
+{
+	data = 
+	{
+		MaxStackSize = 8
+		DefaultStackSize = 1
+		ConsumeSound = null
+		ConsumeEffect = null
+		ActivateSound = null
+		ActivateDelay = 0
+		Effects = 
+		[
+			{
+				Amount = 40
+				Duration = 5
+			},
+			{
+				Target = "Health"
+				Amount = 5
+				Duration = 3
+			},
+		]
+		IsCookable = false
+		CookedItemId = ""
+		CookedQuantity = 0
+		IsLootable = false
+		SpawnChance = 0.5
+		AmountToSpawn = "0.00,0.00,0"
+		ItemName = "Cooked Meat"
+		UniqueId = "cooked_meat"
+		Description = "Cooked meat. It looks delicious!"
+		Icon = resource:"textures/items/cooked_meat.png"
+		WorldModel = resource:"models/sbox_props/burger_box/burger_box.vmdl"
+		Tags = [  ]
+	}
+}

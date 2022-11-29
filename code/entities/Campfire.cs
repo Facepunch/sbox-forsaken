@@ -4,25 +4,21 @@ using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
-public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
+public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter, ICookerEntity
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.White;
 	public float GlowWidth => 0.4f;
 
-	[Net] private NetInventoryContainer InternalInventory { get; set; }
-	public InventoryContainer Inventory => InternalInventory.Value;
+	[Net] public CookingProcessor Processor { get; private set; }
 
 	private ContextAction ExtinguishAction { get; set; }
 	private ContextAction IgniteAction { get; set; }
 	private ContextAction PickupAction { get; set; }
 	private ContextAction OpenAction { get; set; }
 
-	[Net, Change( nameof( OnIsBurningChanged ) )] public bool IsBurning { get; private set; }
-	[Net] public bool IsEmpty { get; private set; }
-
 	public float EmissionRadius => 100f;
-	public float HeatToEmit => IsBurning ? 20f : 0f;
+	public float HeatToEmit => Processor.IsActive ? 20f : 0f;
 
 	private PointLightEntity DynamicLight { get; set; }
 	private Particles ParticleEffect { get; set; }
@@ -30,7 +26,7 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 	public Campfire()
 	{
 		PickupAction = new( "pickup", "Pickup", "textures/ui/actions/pickup.png" );
-		PickupAction.SetCondition( p => IsEmpty && !IsBurning );
+		PickupAction.SetCondition( p => Processor.IsEmpty && !Processor.IsActive );
 
 		OpenAction = new( "open", "Open", "textures/ui/actions/open.png" );
 
@@ -45,7 +41,7 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 
 	public void Open( ForsakenPlayer player )
 	{
-		UI.Storage.Open( player, GetContextName(), this, Inventory );
+		UI.Cooking.Open( player, GetContextName(), this );
 	}
 
 	public IEnumerable<ContextAction> GetSecondaryActions()
@@ -56,7 +52,7 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 
 	public ContextAction GetPrimaryAction()
 	{
-		if ( IsBurning )
+		if ( Processor.IsActive )
 			return ExtinguishAction;
 		else
 			return IgniteAction;
@@ -85,14 +81,14 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 		{
 			if ( IsServer )
 			{
-				IsBurning = true;
+				Processor.Start();
 			}
 		}
 		else if ( action == ExtinguishAction )
 		{
 			if ( IsServer )
 			{
-				IsBurning = false;
+				Processor.Stop();
 			}
 		}
 	}
@@ -102,18 +98,25 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 		SetModel( "models/campfire/campfire.vmdl" );
 		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
 
-		var inventory = new InventoryContainer();
-		inventory.SetEntity( this );
-		inventory.SetSlotLimit( 1 );
-		inventory.SlotChanged += OnSlotChanged;
-		InventorySystem.Register( inventory );
-
-		InternalInventory = new NetInventoryContainer( inventory );
-		IsEmpty = inventory.IsEmpty;
+		Processor = new();
+		Processor.SetCooker( this );
+		Processor.OnStarted += OnStarted;
+		Processor.OnStopped += OnStopped;
+		Processor.Fuel.Whitelist.Add( "fuel" );
+		Processor.Input.Whitelist.Add( "cookable" );
 
 		SphereTrigger.Attach( this, EmissionRadius );
 
 		base.Spawn();
+	}
+
+	public override void ClientSpawn()
+	{
+		Processor.SetCooker( this );
+		Processor.OnStarted += OnStarted;
+		Processor.OnStopped += OnStopped;
+
+		base.ClientSpawn();
 	}
 
 	protected override void OnDestroy()
@@ -133,6 +136,12 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 		}
 	}
 
+	[Event.Tick.Server]
+	private void ServerTick()
+	{
+		Processor.Process();
+	}
+
 	private void UpdateDynamicLight()
 	{
 		DynamicLight.Brightness = 0.1f + MathF.Sin( Time.Now * 4f ) * 0.02f;
@@ -141,41 +150,35 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 		DynamicLight.Range = 700f + MathF.Sin( Time.Now ) * 50f;
 	}
 
-	private void OnIsBurningChanged()
+	private void OnStarted()
 	{
-		if ( IsBurning )
+		if ( Host.IsServer ) return;
+
+		if ( !DynamicLight.IsValid() )
 		{
-			if ( !DynamicLight.IsValid() )
-			{
-				DynamicLight = new();
-				DynamicLight.SetParent( this );
-				DynamicLight.EnableShadowCasting = true;
-				DynamicLight.DynamicShadows = true;
-				DynamicLight.Color = Color.Orange;
+			DynamicLight = new();
+			DynamicLight.SetParent( this );
+			DynamicLight.EnableShadowCasting = true;
+			DynamicLight.DynamicShadows = true;
+			DynamicLight.Color = Color.Orange;
 
-				UpdateDynamicLight();
-			}
-
-			if ( ParticleEffect == null )
-			{
-				ParticleEffect = Particles.Create( "particles/campfire/campfire.vpcf", this );
-			}
+			UpdateDynamicLight();
 		}
-		else
-		{
-			ParticleEffect?.Destroy();
-			ParticleEffect = null;
 
-			DynamicLight?.Delete();
-			DynamicLight = null;
+		if ( ParticleEffect == null )
+		{
+			ParticleEffect = Particles.Create( "particles/campfire/campfire.vpcf", this );
 		}
 	}
 
-	private void OnSlotChanged( ushort slot )
+	private void OnStopped()
 	{
-		if ( IsServer )
-		{
-			IsEmpty = Inventory.IsEmpty;
-		}
+		if ( Host.IsServer ) return;
+
+		ParticleEffect?.Destroy();
+		ParticleEffect = null;
+
+		DynamicLight?.Delete();
+		DynamicLight = null;
 	}
 }

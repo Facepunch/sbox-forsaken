@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
-public class ConsumableItem : ResourceItem<ConsumableResource, ConsumableItem>, ILootTableItem, IConsumableItem
+public class ConsumableItem : ResourceItem<ConsumableResource, ConsumableItem>, ILootTableItem, IConsumableItem, ICookableItem
 {
 	public override Color Color => ItemColors.Consumable;
 	public override ushort DefaultStackSize => (ushort)(Resource?.DefaultStackSize ?? 1);
@@ -16,6 +16,9 @@ public class ConsumableItem : ResourceItem<ConsumableResource, ConsumableItem>, 
 	public virtual string ActivateSound => Resource?.ActivateSound ?? default;
 	public virtual float ActivateDelay => Resource?.ActivateDelay ?? default;
 	public virtual List<ConsumableEffect> Effects => Resource?.Effects ?? default;
+	public virtual string CookedItemId => Resource?.CookedItemId ?? default;
+	public virtual int CookedQuantity => Resource?.CookedQuantity ?? default;
+	public virtual bool IsCookable => Resource?.IsCookable ?? default;
 
 	public async void Consume( ForsakenPlayer player )
 	{
@@ -71,6 +74,9 @@ public class ConsumableItem : ResourceItem<ConsumableResource, ConsumableItem>, 
 	protected override void BuildTags( HashSet<string> tags )
 	{
 		tags.Add( "consumable" );
+
+		if ( IsCookable )
+			tags.Add( "cookable" );
 
 		base.BuildTags( tags );
 	}

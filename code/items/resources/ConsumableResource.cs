@@ -27,4 +27,13 @@ public class ConsumableResource : LootTableResource
 
 	[Property]
 	public List<ConsumableEffect> Effects { get; set; }
+
+	[Property]
+	public bool IsCookable { get; set; }
+
+	[Property, ShowIf( nameof( IsCookable ), true )]
+	public string CookedItemId { get; set; }
+
+	[Property, ShowIf( nameof( IsCookable ), true )]
+	public int CookedQuantity { get; set; }
 }

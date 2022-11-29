@@ -1,0 +1,37 @@
+<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:generic:version{7412167c-06e9-4698-aff2-e63eb59037e7} -->
+{
+	data = 
+	{
+		MaxStackSize = 8
+		DefaultStackSize = 1
+		ConsumeSound = null
+		ConsumeEffect = null
+		ActivateSound = null
+		ActivateDelay = 0
+		Effects = 
+		[
+			{
+				Target = "Health"
+				Amount = -10
+				Duration = 5
+			},
+			{
+				Target = "Hydration"
+				Amount = -20
+				Duration = 5
+			},
+		]
+		IsCookable = true
+		CookedItemId = "cooked_meat"
+		CookedQuantity = 1
+		IsLootable = true
+		SpawnChance = 0.3
+		AmountToSpawn = "1.00,4.00,1"
+		ItemName = "Raw Meat"
+		UniqueId = "raw_meat"
+		Description = "A disgusting slab of uncooked meat. I wouldn\'t eat this..."
+		Icon = resource:"textures/items/raw_meat.png"
+		WorldModel = resource:"models/sbox_props/burger_box/burger_box.vmdl"
+		Tags = [  ]
+	}
+}
