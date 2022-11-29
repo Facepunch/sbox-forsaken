@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
-public partial class Campfire : Deployable, IContextActionProvider
+public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.White;
@@ -20,6 +20,9 @@ public partial class Campfire : Deployable, IContextActionProvider
 
 	[Net, Change( nameof( OnIsBurningChanged ) )] public bool IsBurning { get; private set; }
 	[Net] public bool IsEmpty { get; private set; }
+
+	public float EmissionRadius => 100f;
+	public float HeatToEmit => IsBurning ? 20f : 0f;
 
 	private PointLightEntity DynamicLight { get; set; }
 	private Particles ParticleEffect { get; set; }
@@ -107,6 +110,8 @@ public partial class Campfire : Deployable, IContextActionProvider
 
 		InternalInventory = new NetInventoryContainer( inventory );
 		IsEmpty = inventory.IsEmpty;
+
+		SphereTrigger.Attach( this, EmissionRadius );
 
 		base.Spawn();
 	}

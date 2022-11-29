@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
-public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
+public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity, IHeatEmitter
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.White;
@@ -18,6 +18,9 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 	private ContextAction OpenAction { get; set; }
 
 	private PointLightEntity DynamicLight { get; set; }
+
+	public float EmissionRadius => 200f;
+	public float HeatToEmit => Processor.IsActive ? 10f : 0f;
 
 	public Furnace()
 	{
@@ -100,6 +103,8 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 		Processor.OnStopped += OnStopped;
 		Processor.Fuel.Whitelist.Add( "fuel" );
 		Processor.Input.Whitelist.Add( "ore" );
+
+		SphereTrigger.Attach( this, EmissionRadius );
 
 		base.Spawn();
 	}

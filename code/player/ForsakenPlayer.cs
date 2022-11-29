@@ -56,6 +56,9 @@ public partial class ForsakenPlayer : Player
 
 	[Net] private int StructureType { get; set; }
 
+	private TimeUntil NextCalculateTemperature { get; set; }
+	private float CalculatedTemperature { get; set; }
+	private List<IHeatEmitter> HeatEmitters { get; set; } = new();
 	private TimeSince TimeSinceBackpackOpen { get; set; }
 	private bool IsBackpackToggleMode { get; set; }
 	private Entity LastHoveredEntity { get; set; }
@@ -171,6 +174,8 @@ public partial class ForsakenPlayer : Player
 	{
 		SetModel( "models/citizen/citizen.vmdl" );
 
+		NextCalculateTemperature = 0f;
+
 		base.Spawn();
 	}
 
@@ -256,6 +261,30 @@ public partial class ForsakenPlayer : Player
 		ResetCursor();
 
 		base.Respawn();
+	}
+
+	public override void StartTouch( Entity other )
+	{
+		var emitter = other.FindParentOfType<IHeatEmitter>();
+
+		if ( emitter.IsValid() && !HeatEmitters.Contains( emitter ) )
+		{
+			HeatEmitters.Add( emitter );
+		}
+
+		base.StartTouch( other );
+	}
+
+	public override void EndTouch( Entity other )
+	{
+		var emitter = other.FindParentOfType<IHeatEmitter>();
+
+		if ( other is not null )
+		{
+			HeatEmitters.Remove( emitter );
+		}
+
+		base.EndTouch( other );
 	}
 
 	public override void TakeDamage( DamageInfo info )
@@ -352,8 +381,20 @@ public partial class ForsakenPlayer : Player
 	[Event.Tick.Server]
 	protected virtual void ServerTick()
 	{
-		Temperature = TimeSystem.Temperature;
-		Temperature += Equipment.FindItems<ArmorItem>().Sum( i => i.TemperatureModifier );
+		if ( NextCalculateTemperature )
+		{
+			CalculatedTemperature = TimeSystem.Temperature;
+			CalculatedTemperature += Equipment.FindItems<ArmorItem>().Sum( i => i.TemperatureModifier );
+			CalculatedTemperature += HeatEmitters.Sum( e =>
+			{
+				var distanceFraction = 1f - ((1f / e.EmissionRadius) * Position.Distance( e.Position ));
+				return e.HeatToEmit * distanceFraction;
+			} );
+
+			NextCalculateTemperature = 1f;
+		}
+
+		Temperature = Temperature.LerpTo( CalculatedTemperature, Time.Delta * 2f );
 	}
 
 	protected override void OnDestroy()
