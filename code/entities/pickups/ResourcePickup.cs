@@ -1,4 +1,5 @@
-﻿using Sandbox;
+﻿using System;
+using Sandbox;
 using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
@@ -10,6 +11,10 @@ public abstract partial class ResourcePickup : ModelEntity, IContextActionProvid
 	public float GlowWidth => 0.4f;
 
 	private ContextAction HarvestAction { get; set; }
+
+	public abstract string ModelPath { get; }
+	public abstract Type ItemType { get; }
+	public abstract int StackSize { get; }
 
 	public ResourcePickup()
 	{
@@ -37,19 +42,14 @@ public abstract partial class ResourcePickup : ModelEntity, IContextActionProvid
 		{
 			if ( IsServer )
 			{
-				player.StartTimedAction( "Harvesting...", Position, 3f, () =>
-				{
-					if ( IsValid )
-					{
-						var item = InventorySystem.CreateItem<WoodItem>();
-						item.StackSize = 20;
+				var timedAction = new TimedActionInfo( OnHarvested );
 
-						player.TryGiveItem( item );
-						player.PlaySound( "inventory.move" );
+				timedAction.Title = "Harvesting..";
+				timedAction.Origin = Position;
+				timedAction.Duration = 2f;
+				timedAction.Icon = "textures/ui/actions/pickup.png";
 
-						Delete();
-					}
-				} );
+				player.StartTimedAction( timedAction );
 			}
 		}
 	}
@@ -62,10 +62,35 @@ public abstract partial class ResourcePickup : ModelEntity, IContextActionProvid
 
 	public override void Spawn()
 	{
-		SetModel( "models/resources/tree_stump.vmdl" );
-
+		SetModel( ModelPath );
 		Tags.Add( "pickup" );
-
 		base.Spawn();
+	}
+
+	private void OnHarvested( ForsakenPlayer player )
+	{
+		if ( IsValid )
+		{
+			var item = InventorySystem.CreateItem( ItemType );
+			item.StackSize = (ushort)StackSize;
+
+			var remaining = player.TryGiveItem( item );
+
+			if ( remaining < StackSize )
+			{
+				player.PlaySound( "inventory.move" );
+			}
+
+			if ( remaining == StackSize ) return;
+
+			if ( remaining > 0 )
+			{
+				var entity = new ItemEntity();
+				entity.Position = Position;
+				entity.SetItem( item );
+			}
+
+			Delete();
+		}
 	}
 }

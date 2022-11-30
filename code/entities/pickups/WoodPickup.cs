@@ -1,18 +1,15 @@
-﻿using Sandbox;
-using System.Collections.Generic;
+﻿using System;
 
 namespace Facepunch.Forsaken;
 
 public partial class WoodPickup : ResourcePickup
 {
+	public override string ModelPath => "models/resources/tree_stump.vmdl";
+	public override Type ItemType => typeof( WoodItem );
+	public override int StackSize => 20;
+
 	public override string GetContextName()
 	{
 		return "Tree Stump";
-	}
-
-	public override void Spawn()
-	{
-		SetModel( "models/resources/tree_stump.vmdl" );
-		base.Spawn();
 	}
 }

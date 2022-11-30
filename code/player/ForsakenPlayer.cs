@@ -68,6 +68,7 @@ public partial class ForsakenPlayer : Player
 	public ProjectileSimulator Projectiles { get; private set; }
 	public Vector2 Cursor { get; set; }
 	public DamageInfo LastDamageTaken { get; private set; }
+	public bool HasTimedAction => TimedAction is not null;
 
 	[Net] private int StructureType { get; set; }
 
@@ -181,10 +182,9 @@ public partial class ForsakenPlayer : Player
 		Stamina = Math.Min( Stamina + amount, 100f );
 	}
 
-	public void StartTimedAction( string title, Vector3 origin, float duration, Action callback )
+	public void StartTimedAction( TimedActionInfo info )
 	{
-		TimedAction = new();
-		TimedAction.Start( title, origin, duration, callback );
+		TimedAction = new( info );
 	}
 
 	public void CancelTimedAction()
@@ -247,7 +247,7 @@ public partial class ForsakenPlayer : Player
 
 		var mouseDelta = Input.MouseDelta / new Vector2( Screen.Width, Screen.Height );
 
-		if ( !Mouse.Visible )
+		if ( !Mouse.Visible && !HasTimedAction )
 		{
 			Cursor += (mouseDelta * 20f * Time.Delta);
 			Cursor = Cursor.Clamp( 0f, 1f );
@@ -271,6 +271,8 @@ public partial class ForsakenPlayer : Player
 		var endPosition = CameraPosition + CursorDirection * 1000f;
 		var cursor = Trace.Ray( startPosition, endPosition )
 			.EntitiesOnly()
+			.Ignore( this )
+			.Ignore( ActiveChild )
 			.Size( 16f )
 			.Run();
 
@@ -279,7 +281,7 @@ public partial class ForsakenPlayer : Player
 			.Ignore( ActiveChild )
 			.Run();
 
-		if ( visible.Entity == cursor.Entity || visible.Fraction > 0.9f )
+		if ( !HasTimedAction && ( visible.Entity == cursor.Entity || visible.Fraction > 0.9f ) )
 			HoveredEntity = cursor.Entity;
 		else
 			HoveredEntity = null;
@@ -499,7 +501,7 @@ public partial class ForsakenPlayer : Player
 
 		if ( TimedAction.EndTime )
 		{
-			TimedAction.OnFinished?.Invoke();
+			TimedAction.OnFinished?.Invoke( this );
 			TimedAction = null;
 		}
 	}
@@ -574,6 +576,7 @@ public partial class ForsakenPlayer : Player
 	private bool SimulateContextActions()
 	{
 		var actions = HoveredEntity as IContextActionProvider;
+		var actionId = ContextActionId;
 
 		if ( IsClient )
 		{
@@ -596,12 +599,7 @@ public partial class ForsakenPlayer : Player
 			}
 
 			LastHoveredEntity = HoveredEntity;
-		}
 
-		var actionId = ContextActionId;
-
-		if ( IsClient )
-		{
 			ContextActionId = 0;
 		}
 

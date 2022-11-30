@@ -123,6 +123,18 @@ Cursor {
         display: none;
     }
 
+    &.recent-action {
+        .title, .primary-action {
+            display: none;
+        }
+    }
+
+    &.was-deleted {
+        .title, .primary-action {
+            display: none;
+        }
+    }
+
     &.secondary-open {
         .actions {
             opacity: 1;

@@ -61,12 +61,14 @@ public class Cursor : Panel
 	private Panel ActionContainer { get; set; }
 	private bool IsSecondaryOpen { get; set; }
 	private Vector2 ActionCursorPosition { get; set; }
+	private TimeSince LastActionTime { get; set; }
 	private Panel PlusMoreIcon { get; set; }
 	private Panel ActionCursor { get; set; }
 	private Label Title { get; set; }
 
 	public Cursor()
 	{
+		LastActionTime = 0f;
 		PrimaryAction = AddChild<CursorAction>( "primary-action" );
 		PlusMoreIcon = Add.Panel( "plus-more" );
 		ActionContainer = Add.Panel( "actions" );
@@ -78,20 +80,24 @@ public class Cursor : Panel
 	{
 		var player = ForsakenPlayer.Me;
 
-		if ( player.IsValid() )
+		if ( !player.IsValid() ) return;
+
+		Style.Left = Length.Fraction( player.Cursor.x );
+		Style.Top = Length.Fraction( player.Cursor.y );
+
+		var provider = player.HoveredEntity as IContextActionProvider;
+
+		if ( player.HasTimedAction )
 		{
-			Style.Left = Length.Fraction( player.Cursor.x );
-			Style.Top = Length.Fraction( player.Cursor.y );
-
-			var provider = player.HoveredEntity as IContextActionProvider;
-
-			if ( provider.IsValid() && player.Position.Distance( provider.Position ) <= provider.InteractionRange )
-				SetActionProvider( provider );
-			else
-				ClearActionProvider();
+			LastActionTime = 0f;
 		}
 
-		base.Tick();
+		SetClass( "recent-action", LastActionTime < 0.5f );
+
+		if ( LastActionTime > 0.5f && provider.IsValid() && player.Position.Distance( provider.Position ) <= provider.InteractionRange )
+			SetActionProvider( provider );
+		else
+			ClearActionProvider();
 	}
 
 	private void SetActionProvider( IContextActionProvider provider )
@@ -125,6 +131,7 @@ public class Cursor : Panel
 
 		Title.Text = provider.GetContextName();
 
+		SetClass( "was-deleted", false );
 		SetClass( "has-secondary", secondaries.Any() );
 		SetClass( "has-actions", true );
 	}
@@ -137,10 +144,11 @@ public class Cursor : Panel
 		ActionContainer.DeleteChildren( true );
 		PrimaryAction.ClearAction();
 
-		ActionProvider = null;
-
+		SetClass( "was-deleted", !ActionProvider.IsValid() );
 		SetClass( "has-secondary", false );
 		SetClass( "has-actions", false );
+
+		ActionProvider = null;
 	}
 
 	[Event.BuildInput]
@@ -180,6 +188,7 @@ public class Cursor : Panel
 		{
 			if ( PrimaryAction.Select() )
 			{
+				LastActionTime = 0f;
 				return;
 			}
 		}
@@ -221,7 +230,10 @@ public class Cursor : Panel
 
 			if ( Input.Released( InputButton.PrimaryAttack ) )
 			{
-				closestItem.Select();
+				if ( closestItem.Select() )
+				{
+					LastActionTime = 0f;
+				}
 			}
 		}
 
@@ -246,6 +258,9 @@ public class Cursor : Panel
 			return true;
 
 		if ( ReloadMenu.Current?.IsOpen ?? false )
+			return true;
+
+		if ( player.HasTimedAction )
 			return true;
 
 		if ( Dialog.IsActive() )

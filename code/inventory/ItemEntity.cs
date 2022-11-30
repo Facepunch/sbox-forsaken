@@ -6,12 +6,13 @@ namespace Facepunch.Forsaken;
 
 public partial class ItemEntity : ModelEntity, IContextActionProvider
 {
-	[Net] public NetInventoryItem Item { get; private set; }
+	[Net] private NetInventoryItem InternalItem { get; set; }
+	public InventoryItem Item => InternalItem.Value;
 
 	public TimeUntil TimeUntilCanPickup { get; set; }
 
 	public float InteractionRange => 150f;
-	public Color GlowColor => Item.Value?.Color ?? Color.White;
+	public Color GlowColor => Item?.Color ?? Color.White;
 	public float GlowWidth => 0.4f;
 
 	private ContextAction PickupAction { get; set; }
@@ -25,7 +26,7 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider
 	{
 		if ( !Item.IsValid() ) return "Unknown Item";
 
-		var item = Item.Value;
+		var item = Item;
 
 		if ( item.StackSize > 1 )
 			return $"{item.Name} ({item.StackSize})";
@@ -53,7 +54,7 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider
 			SetupPhysicsFromModel( PhysicsMotionType.Dynamic );
 		}
 
-		Item = new NetInventoryItem( item );
+		InternalItem = new NetInventoryItem( item );
 		item.SetWorldEntity( this );
 
 		Tags.Add( "item" );
@@ -61,12 +62,12 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider
 
 	public InventoryItem Take()
 	{
-		if ( IsValid )
+		if ( IsValid && Item.IsValid() )
 		{
-			var item = Item.Value;
+			var item = Item;
 
 			item.ClearWorldEntity();
-			Item = null;
+			InternalItem = null;
 			Delete();
 
 			return item;
@@ -79,14 +80,19 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider
 	{
 		if ( action == PickupAction )
 		{
-			if ( IsServer )
+			if ( IsServer && IsValid && Item.IsValid() )
 			{
-				var item = Take();
+				var initialAmount = Item.StackSize;
+				var remaining = player.TryGiveItem( Item );
 
-				if ( item.IsValid() )
+				if ( remaining < initialAmount )
 				{
-					player.TryGiveItem( item );
 					player.PlaySound( "inventory.move" );
+				}
+
+				if ( remaining == 0 )
+				{
+					Take();
 				}
 			}
 		}

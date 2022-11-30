@@ -8,7 +8,7 @@ namespace Facepunch.Forsaken;
 public partial class ForsakenPlayer
 {
 	[ConCmd.Server( "fsk.item.throw" )]
-	private static void ThrowItemCmd( ulong itemId, string directionCsv )
+	private static void ThrowItemCmd( ulong itemId, string directionCsv, bool splitStack )
 	{
 		if ( ConsoleSystem.Caller.Pawn is not ForsakenPlayer player )
 			return;
@@ -21,17 +21,26 @@ public partial class ForsakenPlayer
 		{
 			var entity = new ItemEntity();
 
+			if ( splitStack && item.StackSize > 1 )
+			{
+				var splitAmount = item.StackSize / 2;
+				item.StackSize -= (ushort)splitAmount;
+
+				item = InventorySystem.DuplicateItem( item );
+				item.StackSize = (ushort)splitAmount;
+			}
+
 			entity.Position = player.EyePosition + direction * 10f;
 			entity.SetItem( item );
 			entity.ApplyLocalImpulse( direction * 300f + Vector3.Down * 10f );
 		}
 	}
 
-	public static void ThrowItem( InventoryItem item, Vector3 direction )
+	public static void ThrowItem( InventoryItem item, Vector3 direction, bool splitStack = false )
 	{
 		if ( !item.IsValid() ) return;
 		var csv = $"{direction.x},{direction.y}";
-		ThrowItemCmd( item.ItemId, csv );
+		ThrowItemCmd( item.ItemId, csv, splitStack );
 	}
 
 	public IEnumerable<T> FindItems<T>() where T : InventoryItem

@@ -135,7 +135,7 @@
     {
         if ( draggable is InventorySlot slot )
         {
-            ForsakenPlayer.ThrowItem( slot.Item, Screen.GetDirection( Mouse.Position ) );
+            ForsakenPlayer.ThrowItem( slot.Item, Screen.GetDirection( Mouse.Position ), mode == DraggableMode.Split ? true : false );
         }
     }
 

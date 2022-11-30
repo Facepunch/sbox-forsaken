@@ -61,7 +61,6 @@ public class PickupSpawner
 					var pickup = description.Create<ResourcePickup>();
 					pickup.Position = trace.EndPosition;
 					pickupsToSpawn--;
-					Log.Info( "Spawning " + Type.Name + " Pickup" );
 				}
 				else
 				{
