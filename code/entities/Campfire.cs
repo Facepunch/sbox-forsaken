@@ -100,6 +100,7 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 
 		Processor = new();
 		Processor.SetCooker( this );
+		Processor.Interval = 5f;
 		Processor.OnStarted += OnStarted;
 		Processor.OnStopped += OnStopped;
 		Processor.Fuel.Whitelist.Add( "fuel" );
