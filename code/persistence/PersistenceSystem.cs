@@ -56,7 +56,7 @@ public static class PersistenceSystem
 		}
 	}
 
-	[ConCmd.Server( "fsk.save" )]
+	[ConCmd.Admin( "fsk.save" )]
 	public static void SaveAll()
 	{
 		using ( var stream = new MemoryStream() )
@@ -81,7 +81,7 @@ public static class PersistenceSystem
 		}
 	}
 
-	[ConCmd.Server( "fsk.load" )]
+	[ConCmd.Admin( "fsk.load" )]
 	public static void LoadAll()
 	{
 		if ( !FileSystem.Data.FileExists( "world.save" ) )
