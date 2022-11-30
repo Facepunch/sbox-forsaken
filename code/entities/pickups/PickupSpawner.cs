@@ -60,6 +60,7 @@ public class PickupSpawner
 					var description = TypeLibrary.GetDescription( Type );
 					var pickup = description.Create<ResourcePickup>();
 					pickup.Position = trace.EndPosition;
+					pickup.Rotation = Rotation.Identity.RotateAroundAxis( Vector3.Up, Rand.Float() * 360f );
 					pickupsToSpawn--;
 				}
 				else
