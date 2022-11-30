@@ -40,6 +40,18 @@ public static partial class InventorySystem
 		DirtyList.Add( container );
 	}
 
+	public static void Serialize( BinaryWriter writer )
+	{
+		writer.Write( NextContainerId );
+		writer.Write( NextItemId );
+	}
+
+	public static void Deserialize( BinaryReader reader )
+	{
+		NextContainerId = reader.ReadUInt64();
+		NextItemId = reader.ReadUInt64();
+	}
+
 	public static IEnumerable<InventoryItem> GetDefinitions()
 	{
 		foreach ( var kv in Definitions )

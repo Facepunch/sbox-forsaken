@@ -37,6 +37,8 @@ public partial class Forsaken : Game
 			spawner.Interval = 180f;
 		}
 
+		PersistenceSystem.LoadAll();
+
 		base.Spawn();
 	}
 
@@ -62,12 +64,22 @@ public partial class Forsaken : Game
 		client.Pawn = pawn;
 		pawn.Respawn();
 
+		Log.Info( "Spawned Player" );
+
+		PersistenceSystem.Load( pawn );
+
 		base.ClientJoined( client );
 	}
 
 	public override void ClientDisconnect( Client client, NetworkDisconnectionReason reason )
 	{
+		if ( client.Pawn is ForsakenPlayer player )
+		{
+			PersistenceSystem.Save( player );
+		}
+
 		InventorySystem.ClientDisconnected( client );
+
 		base.ClientDisconnect( client, reason );
 	}
 

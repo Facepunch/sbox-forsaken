@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Facepunch.Forsaken.UI;
 using Sandbox;
@@ -7,7 +8,7 @@ using Sandbox.Component;
 
 namespace Facepunch.Forsaken;
 
-public partial class ForsakenPlayer : Player
+public partial class ForsakenPlayer : Player, IPersistent
 {
 	private class ActiveEffect
 	{
@@ -216,6 +217,41 @@ public partial class ForsakenPlayer : Player
 			else if ( effect.Target == ConsumableType.Stamina )
 				Stamina = Math.Clamp( Stamina + effect.Amount, 0f, MaxStamina );
 		}
+	}
+
+	public virtual void Serialize( BinaryWriter writer )
+	{
+		writer.Write( Health );
+		writer.Write( Stamina );
+		writer.Write( Calories );
+		writer.Write( Hydration );
+
+		writer.WriteInventoryContainer( Hotbar );
+		writer.WriteInventoryContainer( Backpack );
+		writer.WriteInventoryContainer( Equipment );
+	}
+
+	public virtual void Deserialize( BinaryReader reader )
+	{
+		Health = reader.ReadSingle();
+		Stamina = reader.ReadSingle();
+		Calories = reader.ReadSingle();
+		Hydration = reader.ReadSingle();
+
+		var hotbar = reader.ReadInventoryContainer();
+		hotbar.SetEntity( this );
+		hotbar.AddConnection( Client );
+		InternalHotbar = new NetInventoryContainer( hotbar );
+
+		var backpack = reader.ReadInventoryContainer();
+		backpack.SetEntity( this );
+		backpack.AddConnection( Client );
+		InternalBackpack = new NetInventoryContainer( backpack );
+
+		var equipment = reader.ReadInventoryContainer();
+		equipment.SetEntity( this );
+		equipment.AddConnection( Client );
+		InternalEquipment = new NetInventoryContainer( equipment );
 	}
 
 	public override void Spawn()
