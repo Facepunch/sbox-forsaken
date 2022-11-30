@@ -1,11 +1,10 @@
 ﻿using Sandbox;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Facepunch.Forsaken;
 
-public partial class LootSpawner : ModelEntity, IContextActionProvider
+public abstract partial class LootSpawner : ModelEntity, IContextActionProvider
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.White;
@@ -15,10 +14,11 @@ public partial class LootSpawner : ModelEntity, IContextActionProvider
 
 	public InventoryContainer Inventory { get; private set; }
 
-	public virtual string ModelPath => "models/citizen_props/crate01.vmdl";
-	public virtual string Title => "Loot Spawner";
-	public virtual float RestockTime => 30f;
-	public virtual int SlotLimit => 6;
+	public virtual string Title { get; set; } = "Loot Spawner";
+	public virtual float RestockTime { get; set; } = 30f;
+	public virtual int SlotLimit { get; set; } = 6;
+	public virtual float MinSpawnChance { get; set; } = 0f;
+	public virtual float MaxSpawnChance { get; set; } = 1f;
 
 	private ContextAction OpenAction { get; set; }
 	private bool IsHidden { get; set; }
@@ -59,11 +59,14 @@ public partial class LootSpawner : ModelEntity, IContextActionProvider
 		}
 	}
 
+	public override void OnNewModel( Model model )
+	{
+		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
+		base.OnNewModel( model );
+	}
+
 	public override void Spawn()
 	{
-		SetModel( "models/military_crate/military_crate.vmdl" );
-		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
-
 		var inventory = new InventoryContainer();
 		inventory.IsTakeOnly = true;
 		inventory.SetEntity( this );
@@ -81,7 +84,34 @@ public partial class LootSpawner : ModelEntity, IContextActionProvider
 
 	protected virtual void Restock()
 	{
+		var possibleItems = InventorySystem.GetDefinitions()
+			.OfType<ILootTableItem>()
+			.Where( i => i.IsLootable )
+			.Where( i => i.SpawnChance > 0f && i.SpawnChance > MinSpawnChance && i.SpawnChance < MaxSpawnChance );
 
+		if ( !possibleItems.Any() ) return;
+
+		var itemsToSpawn = Rand.Int( 1, SlotLimit );
+
+		for ( var i = 0; i < itemsToSpawn; i++ )
+		{
+			var u = possibleItems.Sum( p => p.SpawnChance );
+			var r = Rand.Float() * u;
+			var s = 0f;
+
+			foreach ( var item in possibleItems )
+			{
+				s += item.SpawnChance;
+
+				if ( r < s )
+				{
+					var instance = InventorySystem.CreateItem( item.UniqueId );
+					instance.StackSize = (ushort)item.AmountToSpawn;
+					Inventory.Give( instance );
+					break;
+				}
+			}
+		}
 	}
 
 	[Event.Tick.Server]

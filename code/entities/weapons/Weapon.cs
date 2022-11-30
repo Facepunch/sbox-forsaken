@@ -32,9 +32,6 @@ public abstract partial class Weapon : BaseWeapon
 	public TimeSince TimeSinceDeployed { get; protected set; }
 
 	[Net, Predicted]
-	public TimeSince TimeSinceReloadPressed { get; protected set; }
-
-	[Net, Predicted]
 	public TimeSince TimeSinceChargeAttack { get; protected set; }
 
 	[Net, Predicted]
@@ -52,6 +49,7 @@ public abstract partial class Weapon : BaseWeapon
 	public AnimatedEntity AnimationOwner => Owner as AnimatedEntity;
 	public float ChargeAttackEndTime { get; private set; }
 
+	private TimeSince TimeSinceReloadPressed { get; set; }
 	private Queue<float> RecoilQueue { get; set; } = new();
 	private bool WasReloading { get; set; }
 	private Sound ReloadSound { get; set; }
@@ -233,7 +231,7 @@ public abstract partial class Weapon : BaseWeapon
 
 	public override void Simulate( Client owner )
 	{
-		if ( Input.Pressed( InputButton.Reload ) )
+		if ( IsServer && Input.Pressed( InputButton.Reload ) )
 		{
 			TimeSinceReloadPressed = 0f;
 		}
