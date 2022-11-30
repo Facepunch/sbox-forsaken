@@ -146,6 +146,7 @@ public class Cursor : Panel
 	[Event.BuildInput]
 	private void BuildInput()
 	{
+		var hasSecondaries = ActionContainer.ChildrenCount > 0;
 		var secondaryHoldDelay = 0.25f;
 
 		if ( !ActionProvider.IsValid() )
@@ -160,7 +161,7 @@ public class Cursor : Panel
 			IsSecondaryOpen = false;
 		}
 
-		if ( Input.Down( InputButton.PrimaryAttack ) )
+		if ( Input.Down( InputButton.PrimaryAttack ) && hasSecondaries )
 		{
 			if ( TimeSincePressed > secondaryHoldDelay && !IsSecondaryOpen )
 			{
@@ -175,7 +176,7 @@ public class Cursor : Panel
 			return;
 		}
 
-		if ( Input.Released( InputButton.PrimaryAttack ) && TimeSincePressed < secondaryHoldDelay )
+		if ( Input.Released( InputButton.PrimaryAttack ) && ( !hasSecondaries || TimeSincePressed < secondaryHoldDelay ) )
 		{
 			if ( PrimaryAction.Select() )
 			{
