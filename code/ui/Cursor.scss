@@ -124,13 +124,13 @@ Cursor {
     }
 
     &.recent-action {
-        .title, .primary-action {
+        .title, .primary-action, .plus-more {
             display: none;
         }
     }
 
     &.was-deleted {
-        .title, .primary-action {
+        .title, .primary-action, .plus-more {
             display: none;
         }
     }
