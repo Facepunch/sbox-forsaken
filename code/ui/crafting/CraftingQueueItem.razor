@@ -12,6 +12,11 @@
     <div @ref="Glow" class="glow"></div>
     <div @ref="Icon" class="icon"></div>
 
+    @if ( TimeLeft > 0 )
+    {
+        <label class="timeleft">@(TimeLeft)s</label>
+    }
+
     @if ( Entry != null )
     {
         <label class="quantity">x@(Entry.Quantity)</label>
@@ -25,6 +30,7 @@
 
     public string Description => Output.Description;
     public IReadOnlySet<string> Tags => Output.Tags;
+    public int TimeLeft => Entry?.FinishTime.Relative.CeilToInt() ?? 0;
     public string Name => Output.Name;
     public Color Color => Output.Color;
     public bool IsEmpty => !Output.IsValid();
@@ -65,6 +71,11 @@
 
         Output = InventorySystem.GetDefinition( Entry.Recipe.Output );
         base.OnParametersSet();
+    }
+
+    protected override int BuildHash()
+    {
+        return HashCode.Combine(TimeLeft);
     }
 
     protected override void OnAfterTreeRender( bool firstTime )

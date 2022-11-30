@@ -15,6 +15,17 @@
         pointer-events: none;
     }
 
+    > .timeleft {
+        position: absolute;
+        pointer-events: none;
+        font-family: Vollkorn;
+        text-shadow: 0 2px 0 rgba(0, 0, 0, 0.8);
+        font-size: 20px;
+        color: white;
+        bottom: -2px;
+        left: 4px;
+    }
+
     > .quantity {
         position: absolute;
         pointer-events: none;

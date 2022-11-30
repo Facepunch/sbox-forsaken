@@ -25,15 +25,21 @@ public class ItemResource : GameResource
 
 	protected override void PostLoad()
 	{
-		if ( Host.IsMenu ) return;
-		InventorySystem.ReloadDefinitions();
+		if ( Host.IsServer || Host.IsClient )
+		{
+			InventorySystem.ReloadDefinitions();
+		}
+
 		base.PostLoad();
 	}
 
 	protected override void PostReload()
 	{
-		if ( Host.IsMenu ) return;
-		InventorySystem.ReloadDefinitions();
+		if ( Host.IsServer || Host.IsClient )
+		{
+			InventorySystem.ReloadDefinitions();
+		}
+		
 		base.PostReload();
 	}
 }
