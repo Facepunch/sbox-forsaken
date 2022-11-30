@@ -1,0 +1,51 @@
+﻿@using Sandbox;
+@using Sandbox.UI;
+@using Sandbox.UI.Construct;
+@using System;
+@using System.Collections.Generic;
+@using Facepunch.Forsaken;
+
+@namespace Facepunch.Forsaken.UI
+@attribute [StyleSheet( "/ui/TimedAction.scss" )]
+@inherits Panel
+
+@if ( Info is null ) return;
+
+<root>
+    <div @ref="Container" class="container">
+        <label class="title">@Info.Title</label>
+    </div>
+</root>
+
+@code
+{
+    public Facepunch.Forsaken.TimedAction Info => ForsakenPlayer.Me?.TimedAction ?? default;
+    public Panel Container { get; private set; }
+
+    public void UpdatePosition()
+    {
+        var position = Info.Origin.ToScreen();
+        if ( position.z < 0f ) return;
+
+        position.x *= Screen.Size.x * ScaleFromScreen;
+        position.y *= Screen.Size.y * ScaleFromScreen;
+
+        Container.Style.Left = Length.Pixels( position.x );
+        Container.Style.Top = Length.Pixels( position.y );
+    }
+
+    public override void Tick()
+    {
+        if ( Info is not null )
+        {
+            UpdatePosition();
+        }
+
+        base.Tick();
+    }
+
+    protected override int BuildHash()
+    {
+        return HashCode.Combine( Info );
+    }
+}

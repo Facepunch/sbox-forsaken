@@ -40,6 +40,7 @@ public partial class ForsakenPlayer : Player
 	[Net, Predicted] public float Stamina { get; private set; }
 	[Net, Predicted] public bool IsOutOfBreath { get; private set; }
 	[Net, Predicted] public ushort HotbarIndex { get; private set; }
+	[Net] public TimedAction TimedAction { get; private set; }
 
 	[Net] private NetInventoryContainer InternalBackpack { get; set; }
 	public InventoryContainer Backpack => InternalBackpack.Value;
@@ -180,9 +181,15 @@ public partial class ForsakenPlayer : Player
 		Stamina = Math.Min( Stamina + amount, 100f );
 	}
 
-	public void RenderHud()
-	{ 
+	public void StartTimedAction( string title, Vector3 origin, float duration, Action callback )
+	{
+		TimedAction = new();
+		TimedAction.Start( title, origin, duration, callback );
+	}
 
+	public void CancelTimedAction()
+	{
+		TimedAction = null;
 	}
 
 	public void AddEffect( ConsumableEffect effect )
@@ -264,6 +271,7 @@ public partial class ForsakenPlayer : Player
 		var endPosition = CameraPosition + CursorDirection * 1000f;
 		var cursor = Trace.Ray( startPosition, endPosition )
 			.EntitiesOnly()
+			.Size( 16f )
 			.Run();
 
 		var visible = Trace.Ray( EyePosition, cursor.EndPosition )
@@ -407,6 +415,7 @@ public partial class ForsakenPlayer : Player
 		if ( IsServer )
 		{
 			SimulateNeeds();
+			SimulateTimedAction();
 		}
 		
 		SimulateCrafting();
@@ -476,6 +485,23 @@ public partial class ForsakenPlayer : Player
 		}
 
 		base.OnDestroy();
+	}
+
+	private void SimulateTimedAction()
+	{
+		if ( TimedAction is null ) return;
+
+		if ( !InputDirection.IsNearZeroLength )
+		{
+			CancelTimedAction();
+			return;
+		}
+
+		if ( TimedAction.EndTime )
+		{
+			TimedAction.OnFinished?.Invoke();
+			TimedAction = null;
+		}
 	}
 
 	private void SimulateNeeds()

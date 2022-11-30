@@ -10,6 +10,15 @@ public partial class Forsaken : Game
 	{
 		InventorySystem.Initialize();
 
+		var spawner = new PickupSpawner();
+		spawner.SetType<WoodPickup>();
+		spawner.MaxPickups = 100;
+		spawner.MaxPickupsPerSpawn = 20;
+		spawner.MaxPickupsPerSpawn = 80;
+		spawner.Interval = 60f;
+
+		Log.Info( "what the fuck" );
+
 		base.Spawn();
 	}
 
@@ -42,14 +51,6 @@ public partial class Forsaken : Game
 	{
 		InventorySystem.ClientDisconnected( client );
 		base.ClientDisconnect( client, reason );
-	}
-
-	public override void RenderHud()
-	{
-		if ( ForsakenPlayer.Me.IsValid() )
-		{
-			ForsakenPlayer.Me.RenderHud();
-		}
 	}
 
 	public override void PostLevelLoaded()

@@ -47,7 +47,8 @@
         "water": "Trigger",
         "player": "Collide",
         "item": "Collide",
-        "corpse": "Collide"
+        "corpse": "Collide",
+        "pickup": "Ignore"
       },
       "Pairs": [
         {
