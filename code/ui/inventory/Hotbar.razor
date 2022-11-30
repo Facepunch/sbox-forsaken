@@ -19,7 +19,7 @@
     {
         var item = hotbar.GetFromSlot( i );
         var index = i;
-        <InventorySlot IsSelected=@(GetHotbarIndex() == i) Container=@hotbar Slot=@i></InventorySlot>
+        <InventorySlot IsSelected=@(GetHotbarIndex() == i) Container=@hotbar Slot=@i DisplaySlot=@(i + 1)></InventorySlot>
     }
 </root>
 
