@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,9 +9,11 @@ namespace Facepunch.Forsaken;
 
 public static class PersistenceSystem
 {
-	public static int Version => 3;
+	public static int Version => 5;
 
 	private static Dictionary<long, byte[]> PlayerData { get; set; } = new();
+
+	private static ulong PersistentId { get; set; } = 0;
 
 	[ConCmd.Admin( "fsk.save.me" )]
 	private static void SaveMe()
@@ -28,6 +31,11 @@ public static class PersistenceSystem
 		{
 			Load( player );
 		}
+	}
+
+	public static ulong GenerateId()
+	{
+		return ++PersistentId;
 	}
 
 	public static void Save( ForsakenPlayer player )
@@ -65,6 +73,7 @@ public static class PersistenceSystem
 			using ( var writer = new BinaryWriter( stream ) )
 			{
 				writer.Write( Version );
+				writer.Write( PersistentId );
 
 				InventorySystem.Serialize( writer );
 
@@ -96,6 +105,8 @@ public static class PersistenceSystem
 					return;
 				}
 
+				PersistentId = reader.ReadUInt64();
+
 				InventorySystem.Deserialize( reader );
 
 				LoadPlayers( reader );
@@ -108,6 +119,7 @@ public static class PersistenceSystem
 	{
 		var entities = Entity.All
 			.OfType<IPersistent>()
+			.Where( e => e.ShouldPersist() )
 			.Where( e => e is not ForsakenPlayer );
 
 		writer.Write( entities.Count() );
@@ -123,21 +135,46 @@ public static class PersistenceSystem
 	private static void LoadEntities( BinaryReader reader )
 	{
 		var count = reader.ReadInt32();
+		var entitiesAndData = new Dictionary<IPersistent, byte[]>();
 
 		for ( var i = 0; i < count; i++ )
 		{
 			var typeName = reader.ReadString();
 			var type = TypeLibrary.GetDescription( typeName );
+			var length = reader.ReadInt32();
+			var data = reader.ReadBytes( length );
 
-			reader.ReadWrapped( r =>
+			try
 			{
 				var entity = type.Create<Entity>();
 
-				if ( entity is IPersistent i )
+				if ( entity is IPersistent p )
 				{
-					i.Deserialize( r );
+					entitiesAndData.Add( p, data );
 				}
-			} );
+			}
+			catch ( Exception e )
+			{
+				Log.Error( e );
+			}
+		}
+
+		foreach ( var kv in entitiesAndData )
+		{
+			try
+			{
+				using ( var stream = new MemoryStream( kv.Value ) )
+				{
+					using ( reader = new BinaryReader( stream ) )
+					{
+						kv.Key.Deserialize( reader );
+					}
+				}
+			}
+			catch( Exception e )
+			{
+				Log.Error( e );
+			}
 		}
 	}
 

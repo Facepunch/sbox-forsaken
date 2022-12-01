@@ -1,5 +1,7 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Facepunch.Forsaken;
 
@@ -30,9 +32,13 @@ public partial class Socket : Entity
 	[Net] public IList<string> ConnectAny { get; set; } = new List<string>();
 	[Net] public IList<string> ConnectAll { get; set; } = new List<string>();
 
+	public ulong PersistentId { get; private set; }
+
 	public override void Spawn()
 	{
+		PersistentId = PersistenceSystem.GenerateId();
 		Transmit = TransmitType.Always;
+
 		base.Spawn();
 	}
 
@@ -68,5 +74,39 @@ public partial class Socket : Entity
 
 		socket.Connection = this;
 		Connection = socket;
+	}
+
+	public void Serialize( BinaryWriter writer )
+	{
+		writer.Write( PersistentId );
+
+		if ( Connection.IsValid() )
+		{
+			writer.Write( true );
+			writer.Write( Connection.PersistentId );
+		}
+		else
+		{
+			writer.Write( false );
+		}
+	}
+
+	public void Deserialize( BinaryReader reader )
+	{
+		PersistentId = reader.ReadUInt64();
+
+		var hasConnection = reader.ReadBoolean();
+
+		if ( hasConnection )
+		{
+			var connectionId = reader.ReadUInt64();
+			var socket = All.OfType<Socket>().FirstOrDefault( s => s.PersistentId.Equals( connectionId ) );
+
+			if ( socket.IsValid() )
+			{
+				Connect( socket );
+				Log.Info( "Reconnected to socket" );
+			}
+		}
 	}
 }

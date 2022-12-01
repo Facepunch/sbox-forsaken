@@ -34,6 +34,11 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersiste
 			return item.Name;
 	}
 
+	public bool ShouldPersist()
+	{
+		return true;
+	}
+
 	public IEnumerable<ContextAction> GetSecondaryActions()
 	{
 		yield break;

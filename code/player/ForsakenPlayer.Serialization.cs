@@ -5,6 +5,11 @@ namespace Facepunch.Forsaken;
 
 public partial class ForsakenPlayer
 {
+	public virtual bool ShouldPersist()
+	{
+		return true;
+	}
+
 	public virtual void Serialize( BinaryWriter writer )
 	{
 		writer.Write( Transform );

@@ -1,11 +1,12 @@
 ﻿using Sandbox;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Facepunch.Forsaken;
 
-public abstract partial class Structure : ModelEntity
+public abstract partial class Structure : ModelEntity, IPersistent
 {
 	public static Structure Ghost { get; private set; }
 
@@ -50,7 +51,6 @@ public abstract partial class Structure : ModelEntity
 		Ghost = null;
 	}
 
-	[Net] public Socket Socket { get; internal set; }
 	[Net] public IList<Socket> Sockets { get; set; } = new List<Socket>();
 
 	public virtual bool RequiresSocket => true;
@@ -70,6 +70,40 @@ public abstract partial class Structure : ModelEntity
 			Rotation = transform.Rotation;
 
 		ResetInterpolation();
+	}
+
+	public bool ShouldPersist()
+	{
+		return true;
+	}
+
+	public virtual void Serialize( BinaryWriter writer )
+	{
+		writer.Write( Transform );
+		writer.Write( Sockets.Count );
+
+		foreach ( var socket in Sockets )
+		{
+			socket.Serialize( writer );
+		}
+	}
+
+	public virtual void Deserialize( BinaryReader reader )
+	{
+		Transform = reader.ReadTransform();
+
+		var count = reader.ReadInt32();
+
+		for ( var i = 0; i < count; i++ )
+		{
+			var socket = Sockets.ElementAt( i );
+
+			if ( socket.IsValid() )
+			{
+				Log.Info( "Found our socket" );
+				socket.Deserialize( reader );
+			}
+		}
 	}
 
 	public virtual void OnConnected( Socket ours, Socket theirs )
