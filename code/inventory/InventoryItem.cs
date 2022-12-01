@@ -167,6 +167,17 @@ public class InventoryItem : IValid
 		if ( IsWorldEntity )
 		{
 			WorldEntity = (Entity.FindByIndex( reader.ReadInt32() ) as ItemEntity);
+			return;
+		}
+
+		if ( WorldEntity.IsValid() )
+		{
+			if ( IsServer )
+			{
+				WorldEntity.Delete();
+			}
+
+			WorldEntity = null;
 		}
 	}
 
