@@ -219,41 +219,6 @@ public partial class ForsakenPlayer : Player, IPersistent
 		}
 	}
 
-	public virtual void Serialize( BinaryWriter writer )
-	{
-		writer.Write( Health );
-		writer.Write( Stamina );
-		writer.Write( Calories );
-		writer.Write( Hydration );
-
-		writer.WriteInventoryContainer( Hotbar );
-		writer.WriteInventoryContainer( Backpack );
-		writer.WriteInventoryContainer( Equipment );
-	}
-
-	public virtual void Deserialize( BinaryReader reader )
-	{
-		Health = reader.ReadSingle();
-		Stamina = reader.ReadSingle();
-		Calories = reader.ReadSingle();
-		Hydration = reader.ReadSingle();
-
-		var hotbar = reader.ReadInventoryContainer();
-		hotbar.SetEntity( this );
-		hotbar.AddConnection( Client );
-		InternalHotbar = new NetInventoryContainer( hotbar );
-
-		var backpack = reader.ReadInventoryContainer();
-		backpack.SetEntity( this );
-		backpack.AddConnection( Client );
-		InternalBackpack = new NetInventoryContainer( backpack );
-
-		var equipment = reader.ReadInventoryContainer();
-		equipment.SetEntity( this );
-		equipment.AddConnection( Client );
-		InternalEquipment = new NetInventoryContainer( equipment );
-	}
-
 	public override void Spawn()
 	{
 		SetModel( "models/citizen/citizen.vmdl" );

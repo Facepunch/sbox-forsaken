@@ -7,7 +7,7 @@ namespace Facepunch.Forsaken;
 
 public static class PersistenceSystem
 {
-	public static int Version => 1;
+	public static int Version => 2;
 
 	private static Dictionary<long, byte[]> PlayerData { get; set; } = new();
 
