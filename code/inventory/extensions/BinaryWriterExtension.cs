@@ -1,40 +1,57 @@
 ﻿using Sandbox;
+using System;
 using System.IO;
 
 namespace Facepunch.Forsaken;
 
 public static class BinaryWriterExtension
 {
-	public static void WriteInventoryItem( this BinaryWriter writer, InventoryItem item )
+	public static void WriteInventoryItem( this BinaryWriter self, InventoryItem item )
 	{
 		if ( item != null )
 		{
-			writer.Write( item.UniqueId );
-			writer.Write( item.StackSize );
-			writer.Write( item.ItemId );
-			writer.Write( item.SlotId );
+			self.Write( item.UniqueId );
+			self.Write( item.StackSize );
+			self.Write( item.ItemId );
+			self.Write( item.SlotId );
 
-			item.Write( writer );
+			item.Write( self );
 		}
 		else
 		{
-			writer.Write( string.Empty );
+			self.Write( string.Empty );
 		}
 	}
 
-	public static void WriteInventoryContainer( this BinaryWriter writer, InventoryContainer container )
+	public static void WriteWrapped( this BinaryWriter self, Action<BinaryWriter> wrapper )
+	{
+		using ( var stream = new MemoryStream() )
+		{
+			using ( var writer = new BinaryWriter( stream ) )
+			{
+				wrapper( writer );
+			}
+
+			var data = stream.ToArray();
+
+			self.Write( data.Length );
+			self.Write( data );
+		}
+	}
+
+	public static void WriteInventoryContainer( this BinaryWriter self, InventoryContainer container )
 	{
 		var typeDesc = TypeLibrary.GetDescription( container.GetType() );
 
-		writer.Write( typeDesc.Name );
-		writer.Write( container.ParentId );
-		writer.Write( container.InventoryId );
-		writer.Write( container.SlotLimit );
+		self.Write( typeDesc.Name );
+		self.Write( container.ParentId );
+		self.Write( container.InventoryId );
+		self.Write( container.SlotLimit );
 
 		if ( container.Entity.IsValid() )
-			writer.Write( container.Entity );
+			self.Write( container.Entity );
 		else
-			writer.Write( -1 );
+			self.Write( -1 );
 
 		for ( var i = 0; i < container.SlotLimit; i++ )
 		{
@@ -42,15 +59,15 @@ public static class BinaryWriterExtension
 
 			if ( instance != null )
 			{
-				writer.Write( true );
-				writer.WriteInventoryItem( instance );
+				self.Write( true );
+				self.WriteInventoryItem( instance );
 			}
 			else
 			{
-				writer.Write( false );
+				self.Write( false );
 			}
 		}
 
-		container.Serialize( writer );
+		container.Serialize( self );
 	}
 }

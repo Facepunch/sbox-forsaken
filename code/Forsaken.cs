@@ -10,35 +10,6 @@ public partial class Forsaken : Game
 	{
 		InventorySystem.Initialize();
 
-		{
-			var spawner = new PickupSpawner();
-			spawner.SetType<WoodPickup>();
-			spawner.MaxPickups = 100;
-			spawner.MaxPickupsPerSpawn = 20;
-			spawner.MaxPickupsPerSpawn = 80;
-			spawner.Interval = 60f;
-		}
-
-		{
-			var spawner = new PickupSpawner();
-			spawner.SetType<StonePickup>();
-			spawner.MaxPickups = 70;
-			spawner.MaxPickupsPerSpawn = 20;
-			spawner.MaxPickupsPerSpawn = 60;
-			spawner.Interval = 120f;
-		}
-
-		{
-			var spawner = new PickupSpawner();
-			spawner.SetType<MetalOrePickup>();
-			spawner.MaxPickups = 50;
-			spawner.MaxPickupsPerSpawn = 20;
-			spawner.MaxPickupsPerSpawn = 60;
-			spawner.Interval = 180f;
-		}
-
-		PersistenceSystem.LoadAll();
-
 		base.Spawn();
 	}
 
@@ -86,6 +57,35 @@ public partial class Forsaken : Game
 	public override void PostLevelLoaded()
 	{
 		Map.Entity.Tags.Add( "world" );
+
+		{
+			var spawner = new PickupSpawner();
+			spawner.SetType<WoodPickup>();
+			spawner.MaxPickups = 100;
+			spawner.MaxPickupsPerSpawn = 20;
+			spawner.MaxPickupsPerSpawn = 80;
+			spawner.Interval = 60f;
+		}
+
+		{
+			var spawner = new PickupSpawner();
+			spawner.SetType<StonePickup>();
+			spawner.MaxPickups = 70;
+			spawner.MaxPickupsPerSpawn = 20;
+			spawner.MaxPickupsPerSpawn = 60;
+			spawner.Interval = 120f;
+		}
+
+		{
+			var spawner = new PickupSpawner();
+			spawner.SetType<MetalOrePickup>();
+			spawner.MaxPickups = 50;
+			spawner.MaxPickupsPerSpawn = 20;
+			spawner.MaxPickupsPerSpawn = 60;
+			spawner.Interval = 180f;
+		}
+
+		PersistenceSystem.LoadAll();
 
 		base.PostLevelLoaded();
 	}

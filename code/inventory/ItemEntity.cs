@@ -1,10 +1,10 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
-using static Sandbox.Event;
+using System.IO;
 
 namespace Facepunch.Forsaken;
 
-public partial class ItemEntity : ModelEntity, IContextActionProvider
+public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersistent
 {
 	[Net] private NetInventoryItem InternalItem { get; set; }
 	public InventoryItem Item => InternalItem.Value;
@@ -44,6 +44,39 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider
 		return PickupAction;
 	}
 
+	public void Serialize( BinaryWriter writer )
+	{
+		writer.Write( Transform );
+
+		if ( Item.IsValid() )
+		{
+			writer.Write( true );
+			writer.WriteInventoryItem( Item );
+		}
+		else
+		{
+			writer.Write( false );
+		}
+	}
+
+	public void Deserialize( BinaryReader reader )
+	{
+		Transform = reader.ReadTransform();
+
+		var isValid = reader.ReadBoolean();
+
+		
+		if ( isValid )
+		{
+			var item = reader.ReadInventoryItem();
+			SetItem( item );
+		}
+		else
+		{
+			Delete();
+		}
+	}
+
 	public void SetItem( InventoryItem item )
 	{
 		var worldModel = !string.IsNullOrEmpty( item.WorldModel ) ? item.WorldModel : "models/sbox_props/burger_box/burger_box.vmdl";
@@ -56,8 +89,6 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider
 
 		InternalItem = new NetInventoryItem( item );
 		item.SetWorldEntity( this );
-
-		Tags.Add( "item" );
 	}
 
 	public InventoryItem Take()
@@ -106,6 +137,7 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider
 	public override void Spawn()
 	{
 		TimeUntilCanPickup = 1f;
+		Transmit = TransmitType.Always;
 
 		Tags.Add( "item" );
 
