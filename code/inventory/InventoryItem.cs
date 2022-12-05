@@ -50,7 +50,7 @@ public class InventoryItem : IValid
 		{
 			using ( var writer = new BinaryWriter( stream ) )
 			{
-				writer.WriteInventoryItem( this );
+				writer.Write( this );
 				return stream.ToArray();
 			}
 		}

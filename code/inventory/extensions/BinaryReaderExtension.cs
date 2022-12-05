@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Facepunch.Forsaken;
 
-public static class BinaryReaderExtension
+public static partial class BinaryReaderExtension
 {
 	public static InventoryItem ReadInventoryItem( this BinaryReader buffer )
 	{

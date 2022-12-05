@@ -325,7 +325,7 @@ public static partial class InventorySystem
 			using ( var writer = new BinaryWriter( stream ) )
 			{
 				writer.Write( container.InventoryId );
-				writer.WriteInventoryItem( instance );
+				writer.Write( instance );
 				writer.Write( slotId );
 				SendEventDataToClient( to, NetworkEvent.Give, stream.ToArray() );
 			}
@@ -374,7 +374,7 @@ public static partial class InventorySystem
 
 					if ( item != null && item.IsDirty )
 					{
-						writer.WriteInventoryItem( item );
+						writer.Write( item );
 						item.IsDirty = false;
 					}
 				}

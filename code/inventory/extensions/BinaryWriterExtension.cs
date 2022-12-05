@@ -4,9 +4,9 @@ using System.IO;
 
 namespace Facepunch.Forsaken;
 
-public static class BinaryWriterExtension
+public static partial class BinaryWriterExtension
 {
-	public static void WriteInventoryItem( this BinaryWriter self, InventoryItem item )
+	public static void Write( this BinaryWriter self, InventoryItem item )
 	{
 		if ( item != null )
 		{
@@ -23,7 +23,7 @@ public static class BinaryWriterExtension
 		}
 	}
 
-	public static void WriteWrapped( this BinaryWriter self, Action<BinaryWriter> wrapper )
+	public static void Write( this BinaryWriter self, Action<BinaryWriter> wrapper )
 	{
 		using ( var stream = new MemoryStream() )
 		{
@@ -39,7 +39,7 @@ public static class BinaryWriterExtension
 		}
 	}
 
-	public static void WriteInventoryContainer( this BinaryWriter self, InventoryContainer container )
+	public static void Write( this BinaryWriter self, InventoryContainer container )
 	{
 		var typeDesc = TypeLibrary.GetDescription( container.GetType() );
 
@@ -60,7 +60,7 @@ public static class BinaryWriterExtension
 			if ( instance != null )
 			{
 				self.Write( true );
-				self.WriteInventoryItem( instance );
+				self.Write( instance );
 			}
 			else
 			{

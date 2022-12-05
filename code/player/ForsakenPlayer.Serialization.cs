@@ -21,9 +21,9 @@ public partial class ForsakenPlayer
 
 		SerializeCraftingQueue( writer );
 
-		writer.WriteInventoryContainer( Hotbar );
-		writer.WriteInventoryContainer( Backpack );
-		writer.WriteInventoryContainer( Equipment );
+		writer.Write( Hotbar );
+		writer.Write( Backpack );
+		writer.Write( Equipment );
 	}
 
 	public virtual void Deserialize( BinaryReader reader )

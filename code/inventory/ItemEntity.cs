@@ -56,7 +56,7 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersiste
 		if ( Item.IsValid() )
 		{
 			writer.Write( true );
-			writer.WriteInventoryItem( Item );
+			writer.Write( Item );
 		}
 		else
 		{

@@ -48,7 +48,7 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerIt
 
 	public override void Write( BinaryWriter writer )
 	{
-		writer.WriteInventoryContainer( Attachments );
+		writer.Write( Attachments );
 
 		if ( Weapon.IsValid() )
 			writer.Write( Weapon.NetworkIdent );

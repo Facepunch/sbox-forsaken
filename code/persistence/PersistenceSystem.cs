@@ -1,6 +1,7 @@
 ﻿using Sandbox;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -128,7 +129,7 @@ public static class PersistenceSystem
 		{
 			var description = TypeLibrary.GetDescription( entity.GetType() );
 			writer.Write( description.Name );
-			writer.WriteWrapped( entity.Serialize );
+			writer.Write( entity.Serialize );
 		}
 	}
 

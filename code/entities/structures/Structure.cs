@@ -100,7 +100,6 @@ public abstract partial class Structure : ModelEntity, IPersistent
 
 			if ( socket.IsValid() )
 			{
-				Log.Info( "Found our socket" );
 				socket.Deserialize( reader );
 			}
 		}

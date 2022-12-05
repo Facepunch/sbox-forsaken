@@ -32,13 +32,11 @@ public partial class Socket : Entity
 	[Net] public IList<string> ConnectAny { get; set; } = new List<string>();
 	[Net] public IList<string> ConnectAll { get; set; } = new List<string>();
 
-	public ulong PersistentId { get; private set; }
+	public PersistenceHandle Handle { get; private set; }
 
 	public override void Spawn()
 	{
-		PersistentId = PersistenceSystem.GenerateId();
 		Transmit = TransmitType.Always;
-
 		base.Spawn();
 	}
 
@@ -78,12 +76,12 @@ public partial class Socket : Entity
 
 	public void Serialize( BinaryWriter writer )
 	{
-		writer.Write( PersistentId );
+		writer.Write( Handle );
 
 		if ( Connection.IsValid() )
 		{
 			writer.Write( true );
-			writer.Write( Connection.PersistentId );
+			writer.Write( Connection.Handle );
 		}
 		else
 		{
@@ -93,19 +91,18 @@ public partial class Socket : Entity
 
 	public void Deserialize( BinaryReader reader )
 	{
-		PersistentId = reader.ReadUInt64();
+		Handle = reader.ReadPersistenceHandle();
 
 		var hasConnection = reader.ReadBoolean();
 
 		if ( hasConnection )
 		{
-			var connectionId = reader.ReadUInt64();
-			var socket = All.OfType<Socket>().FirstOrDefault( s => s.PersistentId.Equals( connectionId ) );
+			var connectionHandle = reader.ReadPersistenceHandle();
+			var socket = All.OfType<Socket>().FirstOrDefault( s => s.Handle.Equals( connectionHandle ) );
 
 			if ( socket.IsValid() )
 			{
 				Connect( socket );
-				Log.Info( "Reconnected to socket" );
 			}
 		}
 	}

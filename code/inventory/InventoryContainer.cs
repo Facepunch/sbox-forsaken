@@ -101,7 +101,7 @@ public class InventoryContainer : IValid
 		{
 			using ( var writer = new BinaryWriter( stream ) )
 			{
-				writer.WriteInventoryContainer( this );
+				writer.Write( this );
 				return stream.ToArray();
 			}
 		}
