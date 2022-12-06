@@ -45,13 +45,13 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 		UI.Cooking.Open( player, GetContextName(), this );
 	}
 
-	public IEnumerable<ContextAction> GetSecondaryActions()
+	public IEnumerable<ContextAction> GetSecondaryActions( ForsakenPlayer player )
 	{
 		yield return OpenAction;
 		yield return PickupAction;
 	}
 
-	public ContextAction GetPrimaryAction()
+	public ContextAction GetPrimaryAction( ForsakenPlayer player )
 	{
 		if ( Processor.IsActive )
 			return ExtinguishAction;

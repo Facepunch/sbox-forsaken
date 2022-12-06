@@ -1,10 +1,11 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Facepunch.Forsaken;
 
-public partial class SingleDoor : Structure, IContextActionProvider
+public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockable
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.White;
@@ -12,30 +13,90 @@ public partial class SingleDoor : Structure, IContextActionProvider
 
 	private ContextAction OpenAction { get; set; }
 	private ContextAction CloseAction { get; set; }
+	private ContextAction LockAction { get; set; }
+	private ContextAction AuthorizeAction { get; set; }
 
+	[Net] private IList<long> Authorized { get; set; } = new List<long>();
+	[Net] public bool IsLocked { get; private set; }
 	[Net] public bool IsOpen { get; private set; }
 
 	private Socket Socket { get; set; }
 
+	public string Code { get; private set; }
+
 	public SingleDoor()
 	{
 		CloseAction = new( "close", "Close", "textures/ui/actions/close_door.png" );
+		CloseAction.SetCondition( IsAuthorized );
+
 		OpenAction = new( "open", "Open", "textures/ui/actions/open_door.png" );
+		OpenAction.SetCondition( IsAuthorized );
+
+		LockAction = new( "lock", "Lock", "textures/ui/items/code_lock.png" );
+		LockAction.SetCondition( CanBeLockedBy );
+
+		AuthorizeAction = new( "authorize", "Authorize", "textures/ui/actions/authorize.png" );
 
 		Tags.Add( "hover" );
 	}
 
-	public IEnumerable<ContextAction> GetSecondaryActions()
+	public IEnumerable<ContextAction> GetSecondaryActions( ForsakenPlayer player )
 	{
-		yield break;
+		if ( !IsLocked )
+		{
+			yield return LockAction;
+		}
 	}
 
-	public ContextAction GetPrimaryAction()
+	public ContextAction GetPrimaryAction( ForsakenPlayer player )
 	{
+		if ( IsLocked && !IsAuthorized( player ) )
+			return AuthorizeAction;
+
 		if ( IsOpen )
 			return CloseAction;
 		else
 			return OpenAction;
+	}
+
+	public bool ApplyLock( ForsakenPlayer player, string code )
+	{
+		if ( !player.HasItems<CodeLockItem>( 1 ) )
+			return false;
+
+		IsLocked = true;
+		Code = code;
+
+		player.TakeItems<CodeLockItem>( 1 );
+
+		return true;
+	}
+
+	public void Authorize( ForsakenPlayer player )
+	{
+		if ( IsAuthorized( player ) ) return;
+		Authorized.Add( player.PlayerId );
+	}
+
+	public bool CanBeLockedBy( ForsakenPlayer player )
+	{
+		return IsAuthorized( player ) && player.HasItems<CodeLockItem>( 1 );
+	}
+
+	public void Deauthorize( ForsakenPlayer player )
+	{
+		Authorized.Remove( player.PlayerId );
+	}
+
+	public bool IsAuthorized( ForsakenPlayer player )
+	{
+		return Authorized.Contains( player.PlayerId );
+	}
+
+	public bool IsAuthorized()
+	{
+		Host.AssertClient();
+		return Authorized.Contains( Local.Client.PlayerId );
 	}
 
 	public string GetContextName()
@@ -47,10 +108,22 @@ public partial class SingleDoor : Structure, IContextActionProvider
 	{
 		if ( IsClient ) return;
 
-		if ( action == OpenAction )
+		if ( action == OpenAction && IsAuthorized( player ) )
+		{
 			IsOpen = true;
-		else if ( action == CloseAction )
+		}
+		else if ( action == CloseAction && IsAuthorized( player ) )
+		{
 			IsOpen = false;
+		}
+		else if ( action == LockAction && IsAuthorized( player ) )
+		{
+			UI.LockScreen.OpenToLock( player, this );
+		}
+		else if ( action == AuthorizeAction )
+		{
+
+		}
 	}
 
 	public override void Spawn()
@@ -61,6 +134,12 @@ public partial class SingleDoor : Structure, IContextActionProvider
 		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
 
 		Tags.Add( "solid", "door" );
+	}
+
+	public override void OnPlacedByPlayer( ForsakenPlayer player )
+	{
+		Authorize( player );
+		base.OnPlacedByPlayer( player );
 	}
 
 	public override bool CanConnectTo( Socket socket )
@@ -82,6 +161,31 @@ public partial class SingleDoor : Structure, IContextActionProvider
 		}
 
 		base.OnNewModel( model );
+	}
+
+	public override void Serialize( BinaryWriter writer )
+	{
+		writer.Write( Authorized.Count );
+
+		foreach ( var id in Authorized )
+		{
+			writer.Write( id );
+		}
+
+		base.Serialize( writer );
+	}
+
+	public override void Deserialize( BinaryReader reader )
+	{
+		var count = reader.ReadInt32();
+
+		for ( var i = 0; i < count; i++ )
+		{
+			var id = reader.ReadInt64();
+			Authorized.Add( id );
+		}
+
+		base.Deserialize( reader );
 	}
 
 	[Event.Tick.Server]

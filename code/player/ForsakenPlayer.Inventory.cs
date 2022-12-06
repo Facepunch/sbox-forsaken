@@ -114,13 +114,13 @@ public partial class ForsakenPlayer
 		return (GetItemCount( uniqueId ) >= count);
 	}
 
-	public int TakeItems( string uniqueId, int count )
+	public bool HasItems<T>( int count ) where T : InventoryItem
 	{
-		var items = new List<InventoryItem>();
+		return (GetItemCount<T>() >= count);
+	}
 
-		items.AddRange( Hotbar.FindItems<InventoryItem>().Where( i => i.UniqueId == uniqueId ) );
-		items.AddRange( Backpack.FindItems<InventoryItem>().Where( i => i.UniqueId == uniqueId ) );
-
+	public int TakeItems<T>( List<T> items, int count ) where T : InventoryItem
+	{
 		var amountLeftToTake = count;
 		var totalAmountTaken = 0;
 
@@ -149,6 +149,36 @@ public partial class ForsakenPlayer
 		}
 
 		return totalAmountTaken;
+	}
+
+	public int TakeItems<T>( int count ) where T : InventoryItem
+	{
+		var items = new List<T>();
+
+		items.AddRange( Hotbar.FindItems<T>() );
+		items.AddRange( Backpack.FindItems<T>() );
+
+		return TakeItems( items, count );
+	}
+
+	public int TakeItems( string uniqueId, int count )
+	{
+		var items = new List<InventoryItem>();
+
+		items.AddRange( Hotbar.FindItems<InventoryItem>().Where( i => i.UniqueId == uniqueId ) );
+		items.AddRange( Backpack.FindItems<InventoryItem>().Where( i => i.UniqueId == uniqueId ) );
+
+		return TakeItems( items, count );
+	}
+
+	public int GetItemCount<T>() where T : InventoryItem
+	{
+		var totalItems = 0;
+
+		totalItems += Hotbar.FindItems<T>().Sum( i => i.StackSize );
+		totalItems += Backpack.FindItems<T>().Sum( i => i.StackSize );
+
+		return totalItems;
 	}
 
 	public int GetItemCount( string uniqueId )

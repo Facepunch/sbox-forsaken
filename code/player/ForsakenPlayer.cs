@@ -72,9 +72,9 @@ public partial class ForsakenPlayer : Player, IPersistent
 	public DamageInfo LastDamageTaken { get; private set; }
 	public bool HasTimedAction => TimedAction is not null;
 	public bool IsSleeping => !Client.IsValid();
-	public long PlayerId { get; private set; }
 
 	[Net] private int StructureType { get; set; }
+	[Net] public long PlayerId { get; private set; }
 
 	private TimeUntil NextCalculateTemperature { get; set; }
 	private float CalculatedTemperature { get; set; }
@@ -634,7 +634,7 @@ public partial class ForsakenPlayer : Player, IPersistent
 		{
 			if ( actionId != 0 )
 			{
-				var allActions = IContextActionProvider.GetAllActions( actions );
+				var allActions = IContextActionProvider.GetAllActions( this, actions );
 				var action = allActions.Where( a => a.IsAvailable( this ) && a.Hash == actionId ).FirstOrDefault();
 
 				if ( action.IsValid() )
@@ -786,9 +786,10 @@ public partial class ForsakenPlayer : Player, IPersistent
 
 						if ( match.IsValid )
 						{
+							match.Ours.Connect( match.Theirs );
 							structure.SnapToSocket( match );
 							structure.OnConnected( match.Ours, match.Theirs );
-							match.Ours.Connect( match.Theirs );
+							structure.OnPlacedByPlayer( this );
 							isValid = true;
 						}
 						else if ( !structure.RequiresSocket )

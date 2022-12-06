@@ -1,0 +1,122 @@
+﻿LockScreen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    pointer-events: all;
+    backdrop-filter-blur: 24px;
+    flex-direction: column;
+    background-color: rgba( 0 0 0 0.9 );
+    transition: backdrop-filter-blur 0.15s ease-in;
+    transition: opacity 0.15s ease-in;
+    z-index: 100;
+    opacity: 1;
+
+    > .container {
+        flex-direction: column;
+
+        > .heading {
+            background-color: rgba( 0 0 0 0.9 );
+            border-radius: 4px;
+            border: 2px solid white;
+            align-items: center;
+            justify-content: center;
+            width: 400px;
+            height: 80px;
+
+            .code {
+                font-family: Vollkorn;
+                margin-top: 40px;
+                font-size: 64px;
+                color: white;
+            }
+        }
+
+        > .numbers {
+            background-color: rgba( 0 0 0 0.8 );
+            border: 2px solid black;
+            border-radius: 4px;
+            margin-top: 32px;
+            flex-direction: row;
+            align-items: center;
+            padding: 16px 0px 16px 0px;
+            justify-content: center;
+            width: 400px;
+            flex-wrap: wrap;
+
+            .number {
+                background-color: rgba( 255 255 255 0.4 );
+                border: 2px solid white;
+                border-radius: 4px;
+                width: 100px;
+                height: 100px;
+                margin-left: 8px;
+                margin-right: 8px;
+                margin-top: 16px;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.1s ease-in;
+
+                &:hover {
+                    background-color: rgba( 255 255 255 0.8 );
+                    transform: scale( 1.1 );
+                }
+
+                label {
+                    pointer-events: none;
+                    font-family: Vollkorn;
+                    font-size: 40px;
+                }
+            }
+        }
+
+        > .buttons {
+            background-color: rgba( 0 0 0 0.8 );
+            position: relative;
+            align-items: center;
+            justify-content: center;
+            margin-top: 32px;
+            width: 400px;
+            padding: 16px;
+
+            .submit, .delete {
+                background-color: rgba( 255 255 255 0.4 );
+                transition: all 0.1s ease-in;
+                border: 2px solid white;
+                align-items: center;
+                justify-content: center;
+                font-family: MaterialIcons;
+                font-size: 48px;
+                border-radius: 4px;
+                padding: 16px;
+                padding-left: 32px;
+                padding-right: 32px;
+                height: 80px;
+
+                &:hover {
+                    background-color: rgba( 255 255 255 0.8 );
+                    transform: scale( 1.1 );
+                    color: black;
+                }
+            }
+
+            .delete {
+                background-color: rgba( 150 50 50 0.8 );
+                margin-right: 32px;
+                color: white;
+            }
+
+            .submit {
+                background-color: rgba( 50 150 50 0.8 );
+                color: white;
+            }
+        }
+    }
+
+    &.hidden {
+        pointer-events: none;
+        opacity: 0;
+    }
+}

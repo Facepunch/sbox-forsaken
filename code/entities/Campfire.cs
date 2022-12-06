@@ -46,13 +46,13 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 		UI.Cooking.Open( player, GetContextName(), this );
 	}
 
-	public IEnumerable<ContextAction> GetSecondaryActions()
+	public IEnumerable<ContextAction> GetSecondaryActions( ForsakenPlayer player )
 	{
 		yield return OpenAction;
 		yield return PickupAction;
 	}
 
-	public ContextAction GetPrimaryAction()
+	public ContextAction GetPrimaryAction( ForsakenPlayer player )
 	{
 		if ( Processor.IsActive )
 			return ExtinguishAction;

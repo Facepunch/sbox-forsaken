@@ -1,0 +1,103 @@
+﻿@using System;
+@using Sandbox;
+@using Sandbox.UI;
+@using Facepunch.Forsaken;
+
+@namespace Facepunch.Forsaken.UI
+@attribute [StyleSheet( "/ui/LockScreen.scss" )]
+@inherits Panel
+@implements IDialog
+
+@if ( !ForsakenPlayer.Me.IsValid() ) return;
+
+<root>
+    <div class="container">
+        <div class="heading">
+            <label class="code">@(new string( '*', Code.Length ))</label>
+        </div>
+
+        <div class="numbers">
+            @for ( var i = 0; i < 10; i++ )
+            {
+                var number = i;
+                <div class="number" onclick=@(() => OnNumberClicked( number ))><label>@i</label></div>
+            }
+        </div>
+
+        <div class="buttons">
+            <div class="delete" onclick=@OnDeleteClicked>backspace</div>
+            <div class="submit" onclick=@OnSubmitClicked>done</div>
+        </div>
+    </div>
+</root>
+
+@code
+{
+    public static LockScreen Current { get; private set; }
+
+    public ICodeLockable Lockable { get; private set; }
+    public bool IsLockMode { get; private set; }
+    public bool IsOpen { get; private set; }
+    public string Code { get; private set; }
+
+    public LockScreen()
+    {
+        Current = this;
+        BindClass( "hidden", () => !IsOpen );
+    }
+
+    public void Open()
+    {
+        if ( IsOpen ) return;
+        Dialog.Activate( this );
+        IsOpen = true;
+        Code = string.Empty;
+    }
+
+    public void Close()
+    {
+        if ( !IsOpen ) return;
+        Dialog.Deactivate( this );
+        IsOpen = false;
+    }
+
+    public void SetLockable( ICodeLockable lockable, bool isLockMode )
+    {
+        IsLockMode = isLockMode;
+        Lockable = lockable;
+    }
+
+    protected override int BuildHash()
+    {
+        return HashCode.Combine( ForsakenPlayer.Me, Lockable, Code );
+    }
+
+    private void OnDeleteClicked()
+    {
+        if ( Code.Length > 0 )
+        {
+            Code = Code.Substring( 0, Code.Length - 1 );
+        }
+    }
+
+    private void OnSubmitClicked()
+    {
+        if ( Code.Length < 4 ) return;
+
+        if ( IsLockMode )
+            ICodeLockable.ApplyLock( Lockable.NetworkIdent, Code );
+        else
+            ICodeLockable.Authorize( Lockable.NetworkIdent, Code );
+
+        Close();
+    }
+
+    private void OnNumberClicked( int i )
+    {
+        if ( Code.Length < 4 )
+        {
+            Code += i;
+        }
+    }
+}
+

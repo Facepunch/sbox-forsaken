@@ -1,6 +1,8 @@
 ﻿using Sandbox;
 using Sandbox.UI;
 using Sandbox.UI.Construct;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Facepunch.Forsaken.UI;
@@ -62,6 +64,7 @@ public class Cursor : Panel
 	private bool IsSecondaryOpen { get; set; }
 	private Vector2 ActionCursorPosition { get; set; }
 	private TimeSince LastActionTime { get; set; }
+	private int ActionHash { get; set; }
 	private Panel PlusMoreIcon { get; set; }
 	private Panel ActionCursor { get; set; }
 	private Label Title { get; set; }
@@ -100,28 +103,55 @@ public class Cursor : Panel
 			ClearActionProvider();
 	}
 
+	private int GetActionHash( ContextAction primary, IEnumerable<ContextAction> secondaries )
+	{
+		var hash = 0;
+
+		if ( primary.IsValid() )
+		{
+			hash = HashCode.Combine( hash, primary, primary.IsAvailable( ForsakenPlayer.Me ) );
+		}
+
+		foreach ( var action in secondaries )
+		{
+			hash = HashCode.Combine( hash, action, action.IsAvailable( ForsakenPlayer.Me ) );
+		}
+
+		return hash;
+	}
+
 	private void SetActionProvider( IContextActionProvider provider )
 	{
-		if ( ActionProvider == provider )
+		var primary = provider.GetPrimaryAction( ForsakenPlayer.Me );
+		var secondaries = provider.GetSecondaryActions( ForsakenPlayer.Me );
+		var hash = GetActionHash( primary, secondaries );
+
+		if ( ActionProvider == provider && ActionHash == hash )
 		{
-			if ( PrimaryAction.Action == provider.GetPrimaryAction() )
-				return;
+			return;
 		}
 
 		ActionProvider = provider;
-
-		var primary = provider.GetPrimaryAction();
-		var secondaries = provider.GetSecondaryActions();
+		ActionHash = hash;
 
 		if ( !primary.IsValid() || !primary.IsAvailable( ForsakenPlayer.Me ) )
 		{
-			primary = secondaries.FirstOrDefault();
+			primary = secondaries.FirstOrDefault( s => s.IsAvailable( ForsakenPlayer.Me ) );
+
+			if ( !primary.IsValid() )
+			{
+				ClearActionProvider();
+				return;
+			}	
 		}
 
 		ActionContainer.DeleteChildren( true );
 
 		foreach ( var secondary in secondaries )
 		{
+			if ( secondary == primary )
+				continue;
+
 			var action = new CursorAction();
 			action.SetAction( secondary );
 			ActionContainer.AddChild( action );
@@ -132,7 +162,7 @@ public class Cursor : Panel
 		Title.Text = provider.GetContextName();
 
 		SetClass( "was-deleted", false );
-		SetClass( "has-secondary", secondaries.Any() );
+		SetClass( "has-secondary", ActionContainer.ChildrenCount > 0 );
 		SetClass( "has-actions", true );
 	}
 
@@ -197,9 +227,8 @@ public class Cursor : Panel
 	private void UpdateActionCursor()
 	{
 		var mouseDelta = Input.MouseDelta;
-		var sensitivity = 0.06f;
 
-		ActionCursorPosition += (mouseDelta * sensitivity);
+		ActionCursorPosition += (mouseDelta * 10f * Time.Delta);
 		ActionCursorPosition = ActionCursorPosition.Clamp( Vector2.One * -500f, Vector2.One * 500f );
 
 		CursorAction closestItem = null;

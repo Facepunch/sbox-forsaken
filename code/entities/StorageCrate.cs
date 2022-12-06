@@ -37,13 +37,13 @@ public partial class StorageCrate : Deployable, IContextActionProvider
 		UI.Storage.Open( player, GetContextName(), this, Inventory );
 	}
 
-	public IEnumerable<ContextAction> GetSecondaryActions()
+	public IEnumerable<ContextAction> GetSecondaryActions( ForsakenPlayer player )
 	{
 		yield return OpenAction;
 		yield return PickupAction;
 	}
 
-	public ContextAction GetPrimaryAction()
+	public ContextAction GetPrimaryAction( ForsakenPlayer player )
 	{
 		return OpenAction;
 	}

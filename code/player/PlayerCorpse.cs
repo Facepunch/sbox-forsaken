@@ -35,12 +35,12 @@ public partial class PlayerCorpse : ModelEntity, IContextActionProvider
 		UI.Storage.Open( player, GetContextName(), this, Inventory );
 	}
 
-	public IEnumerable<ContextAction> GetSecondaryActions()
+	public IEnumerable<ContextAction> GetSecondaryActions( ForsakenPlayer player )
 	{
 		yield break;
 	}
 
-	public ContextAction GetPrimaryAction()
+	public ContextAction GetPrimaryAction( ForsakenPlayer player )
 	{
 		return SearchAction;
 	}

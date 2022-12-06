@@ -114,6 +114,11 @@ public abstract partial class Structure : ModelEntity, IPersistent
 		}
 	}
 
+	public virtual void OnPlacedByPlayer( ForsakenPlayer player )
+	{
+
+	}
+
 	public virtual void OnConnected( Socket ours, Socket theirs )
 	{
 

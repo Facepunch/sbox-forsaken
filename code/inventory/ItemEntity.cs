@@ -41,12 +41,12 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersiste
 		return true;
 	}
 
-	public IEnumerable<ContextAction> GetSecondaryActions()
+	public IEnumerable<ContextAction> GetSecondaryActions( ForsakenPlayer player )
 	{
 		yield break;
 	}
 
-	public ContextAction GetPrimaryAction()
+	public ContextAction GetPrimaryAction( ForsakenPlayer player )
 	{
 		return PickupAction;
 	}
