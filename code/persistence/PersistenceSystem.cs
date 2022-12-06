@@ -82,17 +82,17 @@ public static class PersistenceSystem
 				SaveEntities( writer );
 			}
 
-			FileSystem.Data.WriteAllText( "world.save", Encoding.Unicode.GetString( stream.ToArray() ) );
+			FileSystem.Data.WriteAllText( $"{Map.Name.ToLower()}.save", Encoding.Unicode.GetString( stream.ToArray() ) );
 		}
 	}
 
 	[ConCmd.Admin( "fsk.load" )]
 	public static void LoadAll()
 	{
-		if ( !FileSystem.Data.FileExists( "world.save" ) )
+		if ( !FileSystem.Data.FileExists( $"{Map.Name.ToLower()}.save" ) )
 			return;
 
-		var data = Encoding.Unicode.GetBytes( FileSystem.Data.ReadAllText( "world.save" ) );
+		var data = Encoding.Unicode.GetBytes( FileSystem.Data.ReadAllText( $"{Map.Name.ToLower()}.save" ) );
 
 		using ( var stream = new MemoryStream( data ) )
 		{
