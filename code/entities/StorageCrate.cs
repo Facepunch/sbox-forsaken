@@ -23,6 +23,8 @@ public partial class StorageCrate : Deployable, IContextActionProvider
 		PickupAction.SetCondition( p => IsEmpty );
 
 		OpenAction = new( "open", "Open", "textures/ui/actions/open.png" );
+
+		Tags.Add( "hover" );
 	}
 
 	public string GetContextName()

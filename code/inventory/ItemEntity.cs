@@ -20,6 +20,8 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersiste
 	public ItemEntity()
 	{
 		PickupAction = new( "pickup", "Pickup", "textures/ui/actions/pickup.png" );
+
+		Tags.Add( "hover" );
 	}
 
 	public string GetContextName()

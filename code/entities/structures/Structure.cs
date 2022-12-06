@@ -58,16 +58,25 @@ public abstract partial class Structure : ModelEntity, IPersistent
 
 	public void SnapToSocket( Socket.Match match )
 	{
+		// TODO: Speak to the Rust team. I brute forced all of this until it kind of worked.
+
 		var transform = match.Theirs.Transform;
 
-		// TODO: This is pretty shitty. I'm sure there's a better way.
 		Rotation = Rotation.Identity;
-		var relative = Position - match.Ours.Position;
 
-		Position = transform.Position + relative;
+		var relative = Position - match.Ours.Position;
+		var rotation = transform.Rotation;
+		var theirStructure = match.Theirs.Parent as Structure;
+
+		if ( theirStructure.IsValid() && !theirStructure.ShouldRotate )
+		{
+			transform.Rotation = Rotation.Identity;
+		}
+
+		Position = transform.TransformVector( relative );
 
 		if ( ShouldRotate )
-			Rotation = transform.Rotation;
+			Rotation = rotation;
 
 		ResetInterpolation();
 	}

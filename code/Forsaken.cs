@@ -9,7 +9,6 @@ public partial class Forsaken : Game
 	public override void Spawn()
 	{
 		InventorySystem.Initialize();
-
 		base.Spawn();
 	}
 
@@ -31,11 +30,16 @@ public partial class Forsaken : Game
 	{
 		InventorySystem.ClientJoined( client );
 
-		var pawn = new ForsakenPlayer( client );
-		client.Pawn = pawn;
-		pawn.Respawn();
+		var pawn = All.OfType<ForsakenPlayer>()
+			.Where( p => p.PlayerId == client.PlayerId )
+			.FirstOrDefault();
 
-		Log.Info( "Spawned Player" );
+		if ( !pawn.IsValid() )
+		{
+			pawn = new ForsakenPlayer();
+			pawn.MakePawnOf( client );
+			pawn.Respawn();
+		}
 
 		PersistenceSystem.Load( pawn );
 

@@ -35,6 +35,7 @@ public partial class ForsakenPlayer : Player, IPersistent
 		"I don't have enough to do that."
 	};
 
+	[Net] public string DisplayName { get; private set; }
 	[Net] public float Temperature { get; private set; }
 	[Net] public float Calories { get; private set; }
 	[Net] public float Hydration { get; private set; }
@@ -70,6 +71,8 @@ public partial class ForsakenPlayer : Player, IPersistent
 	public Vector2 Cursor { get; set; }
 	public DamageInfo LastDamageTaken { get; private set; }
 	public bool HasTimedAction => TimedAction is not null;
+	public bool IsSleeping => !Client.IsValid();
+	public long PlayerId { get; private set; }
 
 	[Net] private int StructureType { get; set; }
 
@@ -119,17 +122,33 @@ public partial class ForsakenPlayer : Player, IPersistent
 	public ForsakenPlayer() : base()
 	{
 		Projectiles = new( this );
+
+		if ( IsServer )
+		{
+			CreateInventories();
+			CraftingQueue = new List<CraftingQueueEntry>();
+			HotbarIndex = 0;
+			Armor = new();
+		}
 	}
 
-	public ForsakenPlayer( Client client ) : this()
+	public void MakePawnOf( long playerId )
 	{
+		PlayerId = playerId;
+	}
+
+	public void MakePawnOf( Client client )
+	{
+		Host.AssertServer();
+
 		client.Pawn = this;
 
-		CreateInventories();
+		Equipment.AddConnection( client );
+		Backpack.AddConnection( client );
+		Hotbar.AddConnection( client );
 
-		CraftingQueue = new List<CraftingQueueEntry>();
-		HotbarIndex = 0;
-		Armor = new();
+		DisplayName = client.Name;
+		PlayerId = client.PlayerId;
 	}
 
 	public void SetAmmoType( string uniqueId )
@@ -272,20 +291,27 @@ public partial class ForsakenPlayer : Player, IPersistent
 		var endPosition = CameraPosition + CursorDirection * 1000f;
 		var cursor = Trace.Ray( startPosition, endPosition )
 			.EntitiesOnly()
+			.WithTag( "hover" )
 			.Ignore( this )
-			.Ignore( ActiveChild )
 			.Size( 16f )
 			.Run();
 
-		var visible = Trace.Ray( EyePosition, cursor.EndPosition )
-			.Ignore( this )
-			.Ignore( ActiveChild )
-			.Run();
+		if ( cursor.Entity.IsValid() )
+		{
+			var visible = Trace.Ray( EyePosition, cursor.Entity.WorldSpaceBounds.Center )
+				.Ignore( this )
+				.Ignore( ActiveChild )
+				.Run();
 
-		if ( !HasTimedAction && ( visible.Entity == cursor.Entity || visible.Fraction > 0.9f ) )
-			HoveredEntity = cursor.Entity;
+			if ( !HasTimedAction && (visible.Entity == cursor.Entity || visible.Fraction > 0.9f) )
+				HoveredEntity = cursor.Entity;
+			else
+				HoveredEntity = null;
+		}
 		else
+		{
 			HoveredEntity = null;
+		}
 	}
 
 	public override void Respawn()
@@ -625,7 +651,9 @@ public partial class ForsakenPlayer : Player, IPersistent
 
 	private void SimulateDeployable()
 	{
-		if ( GetActiveHotbarItem() is not DeployableItem deployable )
+		var deployable = GetActiveHotbarItem() as DeployableItem;
+
+		if ( !deployable.IsValid() || deployable.IsStructure )
 		{
 			Deployable.ClearGhost();
 			return;
@@ -683,13 +711,21 @@ public partial class ForsakenPlayer : Player, IPersistent
 
 	private void SimulateConstruction()
 	{
-		if ( GetActiveHotbarItem() is not ToolboxItem )
+		var item = GetActiveHotbarItem();
+		var deployable = item as DeployableItem;
+
+		if ( item is not ToolboxItem && ( !deployable.IsValid() || !deployable.IsStructure ) )
 		{
 			Structure.ClearGhost();
 			return;
 		}
 
 		var structureType = TypeLibrary.GetDescriptionByIdent( StructureType );
+
+		if ( deployable.IsValid() )
+		{
+			structureType = TypeLibrary.GetDescription( deployable.Deployable );
+		}
 
 		if ( structureType == null )
 		{

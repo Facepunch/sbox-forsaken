@@ -19,35 +19,37 @@ public partial class ToolboxMenu : RadialMenu
 
 	public override void Populate()
 	{
-		var descriptions = TypeLibrary.GetDescriptions<Structure>().OrderBy( d => d.Title );
+		var descriptions = new List<TypeDescription>();
+
+		descriptions.Add( TypeLibrary.GetDescription<Foundation>() );
+		descriptions.Add( TypeLibrary.GetDescription<Doorway>() );
+		descriptions.Add( TypeLibrary.GetDescription<Wall>() );
+
 		var player = ForsakenPlayer.Me;
 
 		foreach ( var type in descriptions )
 		{
-			if ( !type.IsAbstract )
+			var name = type.Name;
+			var title = type.Title;
+			var description = type.Description;
+			var costs = Structure.GetCostsFor( type );
+			var item = AddItem( title, description, type.Icon, () => Select( name ) );
+
+			if ( player.IsValid() )
 			{
-				var name = type.Name;
-				var title = type.Title;
-				var description = type.Description;
-				var costs = Structure.GetCostsFor( type );
-				var item = AddItem( title, description, type.Icon, () => Select( name ) );
+				var canAfford = true;
 
-				if ( player.IsValid() )
+				foreach ( var kv in costs )
 				{
-					var canAfford = true;
-
-					foreach ( var kv in costs )
+					if ( !player.HasItems( kv.Key, kv.Value ) )
 					{
-						if ( !player.HasItems( kv.Key, kv.Value ) )
-						{
-							canAfford = false;
-							break;
-						}
+						canAfford = false;
+						break;
 					}
-
-					item.Subtitle = string.Join( ", ", costs.Select( kv => GetCostString( kv ) ) );
-					item.RootClass = canAfford ? string.Empty : "cannot-afford";
 				}
+
+				item.Subtitle = string.Join( ", ", costs.Select( kv => GetCostString( kv ) ) );
+				item.RootClass = canAfford ? string.Empty : "cannot-afford";
 			}
 		}
 

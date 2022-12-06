@@ -10,6 +10,7 @@ public class DeployableItem : InventoryItem
 	public virtual Type Deployable => null;
 	public virtual string Model => "models/citizen_props/crate01.vmdl";
 	public virtual string[] ValidTags => new string[] { "world" };
+	public virtual bool IsStructure => false;
 
 	public virtual bool CanPlaceOn( Entity entity )
 	{

@@ -32,6 +32,8 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 
 		IgniteAction = new( "ignore", "Ignite", "textures/ui/actions/ignite.png" );
 		ExtinguishAction = new( "extinguish", "Extinguish", "textures/ui/actions/disable.png" );
+
+		Tags.Add( "hover" );
 	}
 
 	public string GetContextName()

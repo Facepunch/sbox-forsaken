@@ -10,8 +10,10 @@
 @if ( !Player.IsValid() ) return;
 @if ( Player.LifeState != LifeState.Alive ) return;
 
-<div class="dot"></div>
-<label class="name">@Player.Client.Name</label>
+<root class="@(Player.IsSleeping ? "sleeping" : "")">
+    <div class="dot"></div>
+    <label class="name">@Player.DisplayName</label>
+</root>
 
 @code
 {
@@ -40,6 +42,6 @@
 
     protected override int BuildHash()
     {
-        return HashCode.Combine( Player, Player.Client.Name, Player.LifeState );
+        return HashCode.Combine( Player, Player.DisplayName, Player.LifeState, Player.IsSleeping );
     }
 }

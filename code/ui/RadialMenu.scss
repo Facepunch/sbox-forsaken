@@ -36,7 +36,6 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            margin-top: -56px;
             width: 80%;
 
             .name {
@@ -49,7 +48,9 @@
             .description {
                 font-family: Vollkorn;
                 font-size: 20px;
-                color: rgba( white 0.8 );
+                max-width: 80%;
+                color: rgba( white 0.9 );
+                text-align: center;
             }
 
             .subtitle {

@@ -35,6 +35,10 @@ public partial class Doorway : Structure
 			var socket = AddSocket( "center" );
 			socket.ConnectAny.Add( "wall" );
 			socket.Tags.Add( "doorway" );
+
+			socket = AddSocket( "door" );
+			socket.ConnectAny.Add( "door" );
+			socket.Tags.Add( "doorway" );
 		}
 
 		base.OnNewModel( model );

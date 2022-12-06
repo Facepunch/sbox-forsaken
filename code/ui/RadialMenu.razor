@@ -9,6 +9,8 @@
 
 <root class="radial-menu @GetRootClass()">
     <div class="center @(string.IsNullOrEmpty( Name ) ? "hidden" : string.Empty)">
+        <img @ref="Arrow" src="textures/ui/radial_arrow.png" class="arrow" />
+        
         <div class="info">
             <label class="name">@Name</label>
             <label class="description">@Description</label>
@@ -18,8 +20,6 @@
                 <label class="subtitle">@Subtitle</label>                
             }
         </div>
-
-        <img @ref="Arrow" src="textures/ui/radial_arrow.png" class="arrow"/>
     </div>
 
     <div @ref="ItemContainer" class="items">
@@ -111,9 +111,8 @@
         if ( IsOpen )
         {
             var mouseDelta = Input.MouseDelta;
-            var sensitivity = 0.06f;
 
-            VirtualMouse += (mouseDelta * sensitivity);
+            VirtualMouse += (mouseDelta * 10f * Time.Delta);
             VirtualMouse = VirtualMouse.Clamp( Vector2.Zero, Screen.Size );
 
             var lx = VirtualMouse.x - Box.Left;
@@ -192,13 +191,13 @@
             child.IsSelected = (HoveredItem == child.Item);
 
             var fItemCount = (float)ItemContainer.ChildrenCount;
-            var maxItemScale = 1.3f;
-            var minItemScale = 0.9f - fItemCount.Remap( 4f, 10f, 0f, 0.2f );
+            var maxItemScale = 1.2f;
+            var minItemScale = 1f;
             var distanceToMouse = child.Box.Rect.Center.Distance( VirtualMouse );
             var distanceToScale = distanceToMouse.Remap( 0f, child.Box.Rect.Size.Length * 2f, maxItemScale, minItemScale ).Clamp( minItemScale, maxItemScale );
 
             var tx = new PanelTransform();
-            tx.AddScale( distanceToScale );
+            tx.AddScale( Easing.EaseIn( distanceToScale ) );
 
             child.Style.Transform = tx;
             child.Style.ZIndex = child.IsSelected ? 2 : 0;
@@ -227,7 +226,7 @@
 
     protected override void FinalLayoutChildren( Vector2 offset )
     {
-        var radius = Box.Rect.Size.x * 0.32f;
+        var radius = Box.Rect.Size.x * 0.5f;
         var center = Box.Rect.WithoutPosition.Center;
 
         for ( var i = 0; i < ItemContainer.ChildrenCount; i++ )

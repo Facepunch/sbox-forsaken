@@ -10,7 +10,7 @@ namespace Facepunch.Forsaken;
 
 public static class PersistenceSystem
 {
-	public static int Version => 5;
+	public static int Version => 6;
 
 	private static Dictionary<long, byte[]> PlayerData { get; set; } = new();
 
@@ -48,13 +48,13 @@ public static class PersistenceSystem
 				player.Serialize( writer );
 			}
 
-			PlayerData[player.Client.PlayerId] = stream.ToArray();
+			PlayerData[player.PlayerId] = stream.ToArray();
 		}
 	}
 
 	public static void Load( ForsakenPlayer player )
 	{
-		if ( PlayerData.TryGetValue( player.Client.PlayerId, out var data ) )
+		if ( PlayerData.TryGetValue( player.PlayerId, out var data ) )
 		{
 			using ( var stream = new MemoryStream( data ) )
 			{
@@ -190,6 +190,17 @@ public static class PersistenceSystem
 			var playerData = reader.ReadBytes( dataLength );
 
 			PlayerData[playerId] = playerData;
+
+			var pawn = Entity.All.OfType<ForsakenPlayer>()
+				.Where( p => p.PlayerId == playerId )
+				.FirstOrDefault();
+
+			if ( !pawn.IsValid() )
+			{
+				pawn = new ForsakenPlayer();
+				pawn.MakePawnOf( playerId );
+				Load( pawn );
+			}
 		}
 	}
 

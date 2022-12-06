@@ -22,6 +22,16 @@
         color: white;
     }
 
+    &.sleeping {
+        .name {
+            color: gray;
+        }
+
+        .dot {
+            background-color: dimgray;
+        }
+    }
+
     &.hidden {
         opacity: 0;
     }
