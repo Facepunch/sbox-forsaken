@@ -102,7 +102,7 @@ public static class PersistenceSystem
 
 				if ( Version != version )
 				{
-					Log.Error( "Unable to load a save from a different version!" );
+					Log.Warning( "Unable to load a save from a different version!" );
 					return;
 				}
 
