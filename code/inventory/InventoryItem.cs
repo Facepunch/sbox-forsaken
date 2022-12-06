@@ -69,6 +69,9 @@ public class InventoryItem : IValid
 			{
 				InternalStackSize = value;
 				IsDirty = true;
+
+				if ( InternalStackSize <= 0 )
+					Remove();
 			}
 		}
 	}

@@ -810,6 +810,11 @@ public partial class ForsakenPlayer : Player, IPersistent
 							{
 								TakeItems( kv.Key, kv.Value );
 							}
+
+							if ( deployable.IsValid() )
+							{
+								deployable.StackSize--;
+							}
 						}
 					}
 				}

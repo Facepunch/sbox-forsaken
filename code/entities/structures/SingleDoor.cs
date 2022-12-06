@@ -19,8 +19,8 @@ public partial class SingleDoor : Structure, IContextActionProvider
 
 	public SingleDoor()
 	{
-		CloseAction = new( "open", "Open", "textures/ui/actions/open.png" );
-		OpenAction = new( "open", "Open", "textures/ui/actions/open.png" );
+		CloseAction = new( "close", "Close", "textures/ui/actions/close_door.png" );
+		OpenAction = new( "open", "Open", "textures/ui/actions/open_door.png" );
 
 		Tags.Add( "hover" );
 	}

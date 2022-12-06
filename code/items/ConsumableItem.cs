@@ -24,9 +24,6 @@ public class ConsumableItem : ResourceItem<ConsumableResource, ConsumableItem>, 
 	{
 		StackSize--;
 
-		if ( StackSize <= 0 )
-			Remove();
-
 		using ( Prediction.Off() )
 		{
 			if ( !string.IsNullOrEmpty( ConsumeSound ) )

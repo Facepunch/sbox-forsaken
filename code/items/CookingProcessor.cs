@@ -96,9 +96,6 @@ public partial class CookingProcessor : BaseNetworkable
 
 		fuel.StackSize--;
 
-		if ( fuel.StackSize <= 0 )
-			fuel.Remove();
-
 		var input = Input.FindItems<InventoryItem>().FirstOrDefault();
 		if ( !input.IsValid() ) return;
 
@@ -106,9 +103,6 @@ public partial class CookingProcessor : BaseNetworkable
 		if ( cookable is null ) return;
 
 		input.StackSize--;
-
-		if ( input.StackSize <= 0 )
-			input.Remove();
 
 		var cookedItem = InventorySystem.CreateItem( cookable.CookedItemId );
 		if ( !cookedItem.IsValid() ) return;

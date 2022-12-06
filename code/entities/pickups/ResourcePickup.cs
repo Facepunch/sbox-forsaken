@@ -18,7 +18,7 @@ public abstract partial class ResourcePickup : ModelEntity, IContextActionProvid
 
 	public ResourcePickup()
 	{
-		HarvestAction = new( "harvest", "Harvest", "textures/ui/actions/pickup.png" );
+		HarvestAction = new( "harvest", "Harvest", "textures/ui/actions/harvest.png" );
 
 		Tags.Add( "hover" );
 	}
