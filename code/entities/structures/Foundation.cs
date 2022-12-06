@@ -6,7 +6,7 @@ namespace Facepunch.Forsaken;
 [Title( "Foundation" )]
 [Description( "The most fundamental building block. Walls, doors and windows can be attached to it." )]
 [Icon( "textures/ui/foundation.png" )]
-[ItemCost( "wood", 20 )]
+[ItemCost( "wood", 100 )]
 public partial class Foundation : Structure
 {
 	public override bool RequiresSocket => false;

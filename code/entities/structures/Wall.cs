@@ -6,7 +6,7 @@ namespace Facepunch.Forsaken;
 [Title( "Wall" )]
 [Description( "Prevents anything getting in or out. Must be attached to a foundation." )]
 [Icon( "textures/ui/wall.png" )]
-[ItemCost( "wood", 10 )]
+[ItemCost( "wood", 40 )]
 public partial class Wall : Structure
 {
 	public override void Spawn()

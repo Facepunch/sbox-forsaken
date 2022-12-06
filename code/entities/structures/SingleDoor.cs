@@ -32,7 +32,7 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 		OpenAction = new( "open", "Open", "textures/ui/actions/open_door.png" );
 		OpenAction.SetCondition( IsAuthorized );
 
-		LockAction = new( "lock", "Lock", "textures/ui/items/code_lock.png" );
+		LockAction = new( "lock", "Lock", "textures/items/code_lock.png" );
 		LockAction.SetCondition( CanBeLockedBy );
 
 		AuthorizeAction = new( "authorize", "Authorize", "textures/ui/actions/authorize.png" );
@@ -165,6 +165,9 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 
 	public override void Serialize( BinaryWriter writer )
 	{
+		writer.Write( IsOpen );
+		writer.Write( IsLocked );
+		writer.Write( string.IsNullOrEmpty( Code ) ? "" : Code );
 		writer.Write( Authorized.Count );
 
 		foreach ( var id in Authorized )
@@ -177,6 +180,10 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 
 	public override void Deserialize( BinaryReader reader )
 	{
+		IsOpen = reader.ReadBoolean();
+		IsLocked = reader.ReadBoolean();
+		Code = reader.ReadString();
+
 		var count = reader.ReadInt32();
 
 		for ( var i = 0; i < count; i++ )
