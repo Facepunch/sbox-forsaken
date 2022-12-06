@@ -6,7 +6,7 @@ public partial class WoodPickup : ResourcePickup
 {
 	public override string ModelPath => "models/resources/tree_stump.vmdl";
 	public override Type ItemType => typeof( WoodItem );
-	public override int StackSize => 20;
+	public override int StackSize => 40;
 
 	public override string GetContextName()
 	{
