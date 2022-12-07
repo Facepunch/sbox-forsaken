@@ -201,6 +201,8 @@
 
             child.Style.Transform = tx;
             child.Style.ZIndex = child.IsSelected ? 2 : 0;
+
+            child.SetClass( "selected", child.IsSelected );
         }
 
         base.Tick();

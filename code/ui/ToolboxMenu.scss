@@ -2,15 +2,27 @@
 
 .radial-menu {
     &.cannot-afford {
+        .items {
+            RadialMenuItem {
+                &.selected {
+                    border-color: rgba( red 0.6 );
+
+                    .icon {
+                        background-tint: rgba( red 0.6 );
+                    }
+                }
+            }
+        }
+
         .center {
             .info {
                 .subtitle {
-                    color: red;
+                    color: rgba( red 0.8 );
                 }
             }
 
             .arrow {
-                background-tint: rgba( red 0.8 );
+                background-tint: rgba( red 0.6 );
                 position: absolute;
             }
         }

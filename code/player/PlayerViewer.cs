@@ -4,24 +4,26 @@ using System;
 namespace Facepunch.Forsaken;
 
 [SceneCamera.AutomaticRenderHook]
-public class PlayerPeek : RenderHook
+public class PlayerViewer : RenderHook
 {
 	private static SceneCamera PeekCamera { get; set; } = new();
-	private static Material PlayerViewMaterial { get; set; } = Material.FromShader( "PlayerViewer.vfx" );
-	private static Texture PlayerView { get; set; } = null;
+	private static Material Material { get; set; } = Material.FromShader( "PlayerViewer.vfx" );
+	private static Texture RenderTexture { get; set; } = null;
 	private static float ViewDistance => 100f;
 	private static bool IsRenderingToTexture { get; set; } = false;
 	private static Vector2 LastCursorDistance { get; set; } = 0f;
 	private static float CurrentCursorRadius { get; set; } = 0.05f;
 	private static float MaxCursorRadius => 0.15f;
 	private static float MinCursorRadius => 0.05f;
+	private static bool IsEnabled => false;
 
 	[Event.Frame]
 	private static void OnFrame()
 	{
 		if ( !ForsakenPlayer.Me.IsValid() ) return;
+		if ( !IsEnabled ) return;
 
-		PlayerView = Texture.CreateRenderTarget( "Player Viewer", ImageFormat.RGBA8888, Screen.Size, PlayerView );
+		RenderTexture = Texture.CreateRenderTarget( "Player Viewer", ImageFormat.RGBA8888, Screen.Size, RenderTexture );
 
 		PeekCamera.World = Map.Scene;
 		PeekCamera.Name = "PlayerViewer";
@@ -37,7 +39,7 @@ public class PlayerPeek : RenderHook
 		PeekCamera.AmbientLightColor = Color.Black;
 
 		IsRenderingToTexture = true;
-		Graphics.RenderToTexture( PeekCamera, PlayerView );
+		Graphics.RenderToTexture( PeekCamera, RenderTexture );
 		IsRenderingToTexture = false;
 
 		PeekCamera.ZNear = znear;
@@ -47,6 +49,7 @@ public class PlayerPeek : RenderHook
 
 	public override void OnStage( SceneCamera target, Stage renderStage )
 	{
+		if ( !IsEnabled ) return;
 		if ( IsRenderingToTexture ) return;
 		if ( !ForsakenPlayer.Me.IsValid() ) return;
 
@@ -70,12 +73,12 @@ public class PlayerPeek : RenderHook
 
 			RenderAttributes attributes = new();
 
-			attributes.Set( "PlayerTexture", PlayerView );
+			attributes.Set( "PlayerTexture", RenderTexture );
 			Graphics.GrabFrameTexture( "ColorBuffer", attributes );
 
 			attributes.Set( "CursorUvs", cursor );
 			attributes.Set( "CursorScale", CurrentCursorRadius );
-			Graphics.Blit( PlayerViewMaterial, attributes );
+			Graphics.Blit( Material, attributes );
 		}
 	}
 }
