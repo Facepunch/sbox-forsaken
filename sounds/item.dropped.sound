@@ -3,16 +3,14 @@
 	data = 
 	{
 		UI = false
-		Volume = 0.05
-		VolumeRandom = 0
-		Pitch = 0.8
-		PitchRandom = 0.1
+		Volume = "0.05,0.05,0"
+		Pitch = "0.80,0.80,0"
 		Decibels = 50
+		SelectionMode = "Random"
 		Sounds = 
 		[
-			resource:"sound/item.dropped.vsnd",
+			resource:"sounds/item.dropped.vsnd",
 		]
-		SelectionMode = 3
 		MaximumDistance = 599.31305
 		MinimumDistance = 29.965652
 	}

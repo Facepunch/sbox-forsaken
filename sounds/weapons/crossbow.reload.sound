@@ -3,16 +3,14 @@
 	data = 
 	{
 		UI = false
-		Volume = 0.6
-		VolumeRandom = 0
-		Pitch = 1
-		PitchRandom = 0
+		Volume = "0.60,0.60,0"
+		Pitch = "1.00,1.00,0"
 		Decibels = 65
+		SelectionMode = "Random"
 		Sounds = 
 		[
-			resource:"sound/weapons/crossbow.reload.vsnd",
+			resource:"sounds/weapons/crossbow.reload.vsnd",
 		]
-		SelectionMode = 3
 		MaximumDistance = 990.75903
 		MinimumDistance = 49.537952
 	}
