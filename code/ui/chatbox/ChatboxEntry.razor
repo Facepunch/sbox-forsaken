@@ -18,8 +18,18 @@
 
     protected override async void OnParametersSet()
     {
-        await Task.DelaySeconds( 10f );
-        HasFaded = true;
+        try
+        {
+            await Task.DelaySeconds( 10f );
+            HasFaded = true;
+        }
+        catch ( TaskCanceledException e )
+        {
+        }
+        catch ( Exception e )
+        {
+            Log.Error( e.Message );
+        }
     }
 
     protected override int BuildHash()
