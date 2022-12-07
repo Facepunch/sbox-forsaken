@@ -21,7 +21,6 @@ public partial class PlayerCorpse : ModelEntity, IContextActionProvider
 		UsePhysicsCollision = true;
 		TimeSinceSpawned = 0f;
 		PhysicsEnabled = true;
-
 		SearchAction = new( "search", "Search", "textures/ui/actions/open.png" );
 	}
 
@@ -115,7 +114,7 @@ public partial class PlayerCorpse : ModelEntity, IContextActionProvider
 
 	public override void Spawn()
 	{
-		Tags.Add( "corpse" );
+		Tags.Add( "passplayers" );
 
 		base.Spawn();
 	}

@@ -64,7 +64,7 @@ public abstract partial class ResourcePickup : ModelEntity, IContextActionProvid
 	{
 		SetModel( ModelPath );
 
-		Tags.Add( "hover", "solid", "pickup" );
+		Tags.Add( "hover", "solid", "passplayers" );
 
 		base.Spawn();
 	}

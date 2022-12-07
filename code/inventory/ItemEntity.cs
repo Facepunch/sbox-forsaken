@@ -144,7 +144,7 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersiste
 		TimeUntilCanPickup = 1f;
 		Transmit = TransmitType.Always;
 
-		Tags.Add( "hover", "solid", "item" );
+		Tags.Add( "hover", "solid", "passplayers" );
 
 		base.Spawn();
 	}

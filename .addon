@@ -47,10 +47,7 @@
         "trigger": "Trigger",
         "ladder": "Ignore",
         "water": "Trigger",
-        "player": "Collide",
-        "item": "Collide",
-        "corpse": "Collide",
-        "pickup": "Ignore"
+        "player": "Collide"
       },
       "Pairs": [
         {
@@ -77,16 +74,6 @@
           "a": "playerclip",
           "b": "solid",
           "r": "Collide"
-        },
-        {
-          "a": "player",
-          "b": "item",
-          "r": "Ignore"
-        },
-        {
-          "a": "player",
-          "b": "corpse",
-          "r": "Ignore"
         }
       ]
     },
