@@ -60,6 +60,7 @@ public class Cursor : Panel
 	private IContextActionProvider ActionProvider { get; set; }
 	private CursorAction PrimaryAction { get; set; }
 	private TimeSince TimeSincePressed { get; set; }
+	private bool DisableSecondaryActions { get; set; }
 	private Panel ActionContainer { get; set; }
 	private bool IsSecondaryOpen { get; set; }
 	private Vector2 ActionCursorPosition { get; set; }
@@ -187,24 +188,29 @@ public class Cursor : Panel
 		var hasSecondaries = ActionContainer.ChildrenCount > 0;
 		var secondaryHoldDelay = 0.25f;
 
-		if ( !ActionProvider.IsValid() )
+		if ( !ActionProvider.IsValid() || IsHidden() || LastActionTime < 0.5f )
 		{
+			DisableSecondaryActions = true;
 			IsSecondaryOpen = false;
 			return;
 		}
 
 		if ( Input.Pressed( InputButton.PrimaryAttack ) )
 		{
+			DisableSecondaryActions = false;
 			TimeSincePressed = 0f;
 			IsSecondaryOpen = false;
 		}
 
-		if ( Input.Down( InputButton.PrimaryAttack ) && hasSecondaries )
+		if ( !DisableSecondaryActions )
 		{
-			if ( TimeSincePressed > secondaryHoldDelay && !IsSecondaryOpen )
+			if ( Input.Down( InputButton.PrimaryAttack ) && hasSecondaries )
 			{
-				ActionCursorPosition = Vector2.Zero;
-				IsSecondaryOpen = true;
+				if ( TimeSincePressed > secondaryHoldDelay && !IsSecondaryOpen )
+				{
+					ActionCursorPosition = Vector2.Zero;
+					IsSecondaryOpen = true;
+				}
 			}
 		}
 
@@ -268,6 +274,7 @@ public class Cursor : Panel
 
 		if ( !Input.Down( InputButton.PrimaryAttack ) )
 		{
+			DisableSecondaryActions = true;
 			IsSecondaryOpen = false;
 		}
 

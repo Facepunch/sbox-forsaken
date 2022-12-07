@@ -9,7 +9,7 @@
   "AssetsPath": "",
   "ResourcePaths": [
     "fonts/*",
-    "code/shaders/*"
+    "shaders/*"
   ],
   "HasCode": true,
   "CodePath": "/code/",

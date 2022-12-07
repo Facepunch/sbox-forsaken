@@ -467,6 +467,8 @@ public partial class ForsakenPlayer : Player, IPersistent
 	[Event.Tick.Server]
 	protected virtual void ServerTick()
 	{
+		HeatEmitters.RemoveAll( e => !e.IsValid() );
+
 		if ( NextCalculateTemperature )
 		{
 			CalculatedTemperature = TimeSystem.Temperature;
