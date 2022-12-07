@@ -12,7 +12,7 @@
 					{
 						_class = "RenderMeshFile"
 						name = "chainlink_fence_door_LOD0"
-						filename = "models/rust_structures/fences_walls/chainlink_fence_door.fbx"
+						filename = "models/structures/single_door.fbx"
 						import_translation = [ 0.0, 0.0, -15.0 ]
 						import_rotation = [ 0.0, 90.0, 0.0 ]
 						import_scale = 0.4

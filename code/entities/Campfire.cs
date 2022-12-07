@@ -7,7 +7,7 @@ namespace Facepunch.Forsaken;
 public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter, ICookerEntity
 {
 	public float InteractionRange => 150f;
-	public Color GlowColor => Color.White;
+	public Color GlowColor => Color.Orange;
 	public float GlowWidth => 0.4f;
 
 	[Net] public CookingProcessor Processor { get; private set; }
