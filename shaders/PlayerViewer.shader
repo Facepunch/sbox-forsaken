@@ -79,7 +79,7 @@ PS
         float2 vCenter = CursorUvs;//(CursorUvs + 500.0f) / g_vRenderTargetSize.xy;//0.5f;
         float2 vUvs = i.uv;
 
-        float flRadius = 0.2f;
+        float flRadius = 0.5f;
 
         float flPlayerMask = GetCircleSDF( vUvs, vCorrection, flRadius, 0.5f );// saturate(smoothstep(0.0f, flRadius, length((vUvs - vCenter) / vCorrection)));
         flPlayerMask = min( flPlayerMask, GetCircleSDF( vUvs, vCorrection, CursorScale, CursorUvs ) );

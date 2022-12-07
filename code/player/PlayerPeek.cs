@@ -19,6 +19,8 @@ public class PlayerPeek : RenderHook
 	[Event.Frame]
 	private static void OnFrame()
 	{
+		if ( !ForsakenPlayer.Me.IsValid() ) return;
+
 		PlayerView = Texture.CreateRenderTarget( "Player Viewer", ImageFormat.RGBA8888, Screen.Size, PlayerView );
 
 		PeekCamera.World = Map.Scene;
@@ -33,16 +35,6 @@ public class PlayerPeek : RenderHook
 		PeekCamera.FieldOfView = MathF.Atan( MathF.Tan( fov.DegreeToRadian() * 0.5f ) * (Screen.Aspect * 0.75f) ).RadianToDegree() * 2f;
 		PeekCamera.EnablePostProcessing = true;
 		PeekCamera.AmbientLightColor = Color.Black;
-
-		/*
-		Plane clipPlane = new();
-		clipPlane.Normal = Vector3.Down;
-		clipPlane.Distance = Local.Pawn.Position.z + 360.0f;
-
-		PeekCamera.Attributes.SetCombo("D_ENABLE_USER_CLIP_PLANE", true);
-		PeekCamera.Attributes.Set("EnableClipPlane", true);
-		PeekCamera.Attributes.Set("ClipPlane0", new Vector4(clipPlane.Normal, clipPlane.Distance));
-		*/
 
 		IsRenderingToTexture = true;
 		Graphics.RenderToTexture( PeekCamera, PlayerView );
@@ -73,6 +65,8 @@ public class PlayerPeek : RenderHook
 				CurrentCursorRadius = CurrentCursorRadius.LerpTo( MaxCursorRadius, 0.005f, true );
 
 			LastCursorDistance = cursor;
+
+			CurrentCursorRadius = 0f;
 
 			RenderAttributes attributes = new();
 
