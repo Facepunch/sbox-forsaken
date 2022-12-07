@@ -26,7 +26,7 @@
 		<label class="title">Crafting</label>
 		<div class="horizontal">
 			<div class="left">
-                <TextEntry @ref="TextEntry" OnTextEdited=@OnSearchQueryChanged class="search" placeholder="Search recipes..." icon="search"></TextEntry>
+                <TextEntry @ref="TextEntry" text=@SearchQuery OnTextEdited=@OnSearchQueryChanged class="search" placeholder="Search recipes..." icon="search"></TextEntry>
 				<div class="categories">
                     <CraftingCategory
                         OnSelected=@OnCategorySelected
@@ -162,6 +162,7 @@
     {
         if ( !IsOpen ) return;
         Dialog.Deactivate( this );
+        SearchQuery = "";
         IsOpen = false;
     }
 

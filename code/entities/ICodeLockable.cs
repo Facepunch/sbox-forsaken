@@ -20,6 +20,7 @@ public interface ICodeLockable : IValid
 		if ( lockable.IsValid() && !lockable.IsLocked && lockable.IsAuthorized( player ) )
 		{
 			lockable.ApplyLock( player, code );
+			player.PlaySound( "authorize.success" );
 		}
 	}
 
@@ -36,7 +37,12 @@ public interface ICodeLockable : IValid
 			if ( !lockable.IsAuthorized( player ) )
 			{
 				lockable.Authorize( player );
+				player.PlaySound( "authorize.success" );
 			}
+		}
+		else
+		{
+			player.PlaySound( "authorize.fail" );
 		}
 	}
 

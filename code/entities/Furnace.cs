@@ -80,6 +80,12 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 		{
 			if ( IsServer )
 			{
+				if ( Processor.Fuel.IsEmpty )
+				{
+					UI.Thoughts.Show( To.Single( player ), "fuel_empty", "It can't be ignited without something to burn." );
+					return;
+				}
+
 				Processor.Start();
 			}
 		}

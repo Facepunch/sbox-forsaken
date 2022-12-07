@@ -16,6 +16,7 @@ public partial class Thoughts
 		}
 
 		Instance?.AddEntry( thought );
+		Sound.FromScreen( "thought" );
 
 		LastThoughtTime = 0f;
 		LastThoughtId = id;
@@ -30,6 +31,7 @@ public partial class Thoughts
 		}
 
 		Instance?.AddEntry( thought );
+		Sound.FromScreen( "thought" );
 
 		LastThoughtId = thought;
 		LastThoughtTime = 0f;

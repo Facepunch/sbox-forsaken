@@ -35,6 +35,20 @@ public partial class ForsakenPlayer : Player, IPersistent
 		"I don't have enough to do that."
 	};
 
+	private static string[] OutOfSightThoughts = new string[]
+	{
+		"That's too far out of my sight.",
+		"I can't see over there.",
+		"That's just out of my view."
+	};
+
+	private static string[] OutOfRangeThoughts = new string[]
+	{
+		"I can't reach that location.",
+		"That's too far away.",
+		"I should try getting closer."
+	};
+
 	[Net] public string DisplayName { get; private set; }
 	[Net] public float Temperature { get; private set; }
 	[Net] public float Calories { get; private set; }
@@ -245,6 +259,11 @@ public partial class ForsakenPlayer : Player, IPersistent
 		NextCalculateTemperature = 0f;
 
 		base.Spawn();
+	}
+
+	public override float FootstepVolume()
+	{
+		return Velocity.WithZ( 0 ).Length.LerpInverse( 0f, 200f ) * 0.5f;
 	}
 
 	public override void BuildInput()
@@ -670,22 +689,26 @@ public partial class ForsakenPlayer : Player, IPersistent
 		var model = Model.Load( deployable.Model );
 		var collision = Trace.Box( model.PhysicsBounds, trace.EndPosition, trace.EndPosition ).Run();
 		var isPositionValid = !collision.Hit && deployable.CanPlaceOn( trace.Entity );
+		var isWithinSight = CanSeePosition( trace.EndPosition );
+		var isWithinRange = IsPlacementRange( trace.EndPosition );
 
 		if ( IsClient )
 		{
 			var ghost = Deployable.GetOrCreateGhost( model );
-			ghost.RenderColor = isPositionValid ? Color.Cyan.WithAlpha( 0.5f ) : Color.Red.WithAlpha( 0.5f );
+			
 
-			if ( !isPositionValid )
+			if ( !isPositionValid || !isWithinSight || !isWithinRange )
 			{
 				var cursor = Trace.Ray( startPosition, endPosition )
 					.WorldOnly()
 					.Run();
 
+				ghost.RenderColor = Color.Red.WithAlpha( 0.5f );
 				ghost.Position = cursor.EndPosition;
 			}
 			else
 			{
+				ghost.RenderColor = Color.Cyan.WithAlpha( 0.5f );
 				ghost.Position = trace.EndPosition;
 			}
 
@@ -696,12 +719,25 @@ public partial class ForsakenPlayer : Player, IPersistent
 		{
 			if ( IsServer )
 			{
-				if ( isPositionValid )
+				if ( isPositionValid && isWithinRange && isWithinSight )
 				{
 					var entity = TypeLibrary.Create<Deployable>( deployable.Deployable );
 					entity.Position = trace.EndPosition;
 					entity.ResetInterpolation();
-					deployable.Remove();
+					deployable.StackSize--;
+
+					if ( !string.IsNullOrEmpty( deployable.PlaceSoundName ) )
+					{
+						Sound.FromWorld( To.Everyone, deployable.PlaceSoundName, trace.EndPosition );
+					}
+				}
+				else if ( !isWithinRange)
+				{
+					Thoughts.Show( To.Single( this ), Rand.FromArray( OutOfRangeThoughts ) );
+				}
+				else if ( !isWithinSight )
+				{
+					Thoughts.Show( To.Single( this ), Rand.FromArray( OutOfSightThoughts ) );
 				}
 				else
 				{
@@ -709,6 +745,20 @@ public partial class ForsakenPlayer : Player, IPersistent
 				}
 			}
 		}
+	}
+
+	private bool CanSeePosition( Vector3 position )
+	{
+		var trace = Trace.Ray( EyePosition, position )
+			.WithAnyTags( "solid" )
+			.Run();
+
+		return trace.Fraction >= 0.9f;
+	}
+
+	private bool IsPlacementRange( Vector3 position )
+	{
+		return position.Distance( Position ) < 150f;
 	}
 
 	private void SimulateConstruction()
@@ -748,9 +798,8 @@ public partial class ForsakenPlayer : Player, IPersistent
 		if ( IsClient )
 		{
 			var ghost = Structure.GetOrCreateGhost( structureType );
-			var renderColor = Color.Cyan.WithAlpha( 0.5f );
-
 			var match = ghost.LocateSocket( trace.EndPosition );
+			var isValid = Structure.CanAfford( this, structureType ) && IsPlacementRange( trace.EndPosition ) && CanSeePosition( trace.EndPosition );
 
 			if ( match.IsValid )
 			{
@@ -762,72 +811,90 @@ public partial class ForsakenPlayer : Player, IPersistent
 				ghost.ResetInterpolation();
 
 				if ( ghost.RequiresSocket || !ghost.IsValidPlacement( ghost.Position, trace.Normal ) )
-					renderColor = Color.Red.WithAlpha( 0.5f );
+					isValid = false;
 			}
 
-			if ( !Structure.CanAfford( this, structureType ) )
-			{
-				renderColor = Color.Red.WithAlpha( 0.5f );
-			}
-
-			ghost.RenderColor = renderColor;
+			if ( isValid )
+				ghost.RenderColor = Color.Cyan.WithAlpha( 0.5f );
+			else
+				ghost.RenderColor = Color.Red.WithAlpha( 0.5f );
 		}
 
 		if ( Prediction.FirstTime && Input.Released( InputButton.PrimaryAttack ) )
 		{
-			if ( IsServer )
+			Structure.ClearGhost();
+
+			if ( !IsServer ) return;
+
+			if ( !Structure.CanAfford( this, structureType ) )
 			{
-				if ( Structure.CanAfford( this, structureType ) )
+				Thoughts.Show( To.Single( this ), "missing_items", Rand.FromArray( MissingItemsThoughts ) );
+				return;
+			}
+
+			if ( !IsPlacementRange( trace.EndPosition ) )
+			{
+				Thoughts.Show( To.Single( this ), "out_of_range", Rand.FromArray( OutOfRangeThoughts ) );
+				return;
+			}
+
+			if ( !CanSeePosition( trace.EndPosition ) )
+			{
+				Thoughts.Show( To.Single( this ), "out_of_sight", Rand.FromArray( OutOfSightThoughts ) );
+				return;
+			}
+
+			var structure = structureType.Create<Structure>();
+
+			if ( structure.IsValid() )
+			{
+				var isValid = false;
+				var match = structure.LocateSocket( trace.EndPosition );
+
+				if ( match.IsValid )
 				{
-					var structure = structureType.Create<Structure>();
+					match.Ours.Connect( match.Theirs );
+					structure.SnapToSocket( match );
+					structure.OnConnected( match.Ours, match.Theirs );
+					structure.OnPlacedByPlayer( this );
+					isValid = true;
 
-					if ( structure.IsValid() )
+					var soundName = structure.PlaceSoundName;
+
+					if ( deployable.IsValid() && !string.IsNullOrEmpty( deployable.PlaceSoundName ) )
+						soundName = deployable.PlaceSoundName;
+
+					if ( !string.IsNullOrEmpty( soundName ) )
 					{
-						var isValid = false;
-						var match = structure.LocateSocket( trace.EndPosition );
-
-						if ( match.IsValid )
-						{
-							match.Ours.Connect( match.Theirs );
-							structure.SnapToSocket( match );
-							structure.OnConnected( match.Ours, match.Theirs );
-							structure.OnPlacedByPlayer( this );
-							isValid = true;
-						}
-						else if ( !structure.RequiresSocket )
-						{
-							structure.Position = trace.EndPosition;
-							isValid = structure.IsValidPlacement( structure.Position, trace.Normal );
-						}
-
-						if ( !isValid )
-						{
-							Thoughts.Show( To.Single( this ), "invalid_placement", Rand.FromArray( InvalidPlacementThoughts ) );
-							structure.Delete();
-						}
-						else
-						{
-							var costs = Structure.GetCostsFor( structureType );
-
-							foreach ( var kv in costs )
-							{
-								TakeItems( kv.Key, kv.Value );
-							}
-
-							if ( deployable.IsValid() )
-							{
-								deployable.StackSize--;
-							}
-						}
+						Sound.FromWorld( To.Everyone, soundName, trace.EndPosition );
 					}
+				}
+				else if ( !structure.RequiresSocket )
+				{
+					structure.Position = trace.EndPosition;
+					isValid = structure.IsValidPlacement( structure.Position, trace.Normal );
+				}
+
+				if ( !isValid )
+				{
+					Thoughts.Show( To.Single( this ), "invalid_placement", Rand.FromArray( InvalidPlacementThoughts ) );
+					structure.Delete();
 				}
 				else
 				{
-					Thoughts.Show( To.Single( this ), "missing_items", Rand.FromArray( MissingItemsThoughts ) );
+					var costs = Structure.GetCostsFor( structureType );
+
+					foreach ( var kv in costs )
+					{
+						TakeItems( kv.Key, kv.Value );
+					}
+
+					if ( deployable.IsValid() )
+					{
+						deployable.StackSize--;
+					}
 				}
 			}
-
-			Structure.ClearGhost();
 		}
 	}
 }

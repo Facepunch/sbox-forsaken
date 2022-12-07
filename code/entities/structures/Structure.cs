@@ -53,6 +53,7 @@ public abstract partial class Structure : ModelEntity, IPersistent
 
 	[Net] public IList<Socket> Sockets { get; set; } = new List<Socket>();
 
+	public virtual string PlaceSoundName => "building.place";
 	public virtual bool RequiresSocket => true;
 	public virtual bool ShouldRotate => true;
 

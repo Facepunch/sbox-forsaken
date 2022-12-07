@@ -15,6 +15,8 @@ public partial class TopDownCamera : CameraMode
 		{
 			var target = pawn.Position.WithZ( pawn.Position.z + Height );
 
+			Sound.Listener = new Transform( pawn.EyePosition, pawn.Rotation );
+
 			Position = Position.LerpTo( target, Time.Delta * MoveSpeed );
 			Rotation = Rotation.LookAt( Vector3.Down );
 			FieldOfView = 70f;

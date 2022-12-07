@@ -59,6 +59,7 @@
                     padding: 12px;
                     font-size: 24px;
                     font-family: Vollkorn;
+                    transition: all 0.15s ease-in;
                     color: white;
 
                     .placeholder {
@@ -91,8 +92,14 @@
                         }
                     }
 
+                    &:active {
+                        sound-in: "ui.click";
+                    }
+
                     &:hover {
                         background-color: rgba( 0 0 0 0.7 );
+                        transform: scale( 1.05, 1.05 );
+                        sound-in: "ui.hover";
                     }
                 }
 
@@ -149,12 +156,27 @@
                     align-items: center;
                     margin-top: 32px;
 
+                    > .more-button, .less-button, .craft-button {
+                        background-color: rgba( 0 0 0 0.4 );
+                        justify-content: center;
+                        transition: transform 0.15s ease-in;
+                        align-items: center;
+
+                        &:active {
+                            sound-in: "ui.click";
+                        }
+
+                        &:hover {
+                            background-color: rgba( 0 0 0 0.6 );
+                            transform: scale( 1.05 1.05 );
+                            sound-in: "ui.hover";
+                        }
+                    }
+
                     > .less-button {
                         background-color: rgba( 0 0 0 0.4 );
                         border-top-left-radius: 4px;
                         border-bottom-left-radius: 4px;
-                        justify-content: center;
-                        align-items: center;
                         width: 64px;
                         height: 64px;
 
@@ -162,21 +184,14 @@
                             font-family: Roboto;
                             font-size: 32px;
                             color: white;
-                        }
-
-                        &:hover {
-                            background-color: rgba( 0 0 0 0.6 );
                         }
                     }
 
                     > .more-button {
-                        background-color: rgba( 0 0 0 0.4 );
                         margin-right: 32px;
                         margin-right: 32px;
                         border-top-right-radius: 4px;
                         border-bottom-right-radius: 4px;
-                        justify-content: center;
-                        align-items: center;
                         width: 64px;
                         height: 64px;
 
@@ -184,10 +199,6 @@
                             font-family: Roboto;
                             font-size: 32px;
                             color: white;
-                        }
-
-                        &:hover {
-                            background-color: rgba( 0 0 0 0.6 );
                         }
                     }
 
@@ -206,10 +217,7 @@
                     }
 
                     > .craft-button {
-                        background-color: rgba( 0 0 0 0.4 );
                         margin-right: 32px;
-                        justify-content: center;
-                        align-items: center;
                         border-radius: 4px;
                         height: 64px;
                         padding-right: 48px;
@@ -219,10 +227,6 @@
                             font-family: Vollkorn;
                             font-size: 24px;
                             color: white;
-                        }
-
-                        &:hover {
-                            background-color: rgba( 0 0 0 0.6 );
                         }
                     }
                 }

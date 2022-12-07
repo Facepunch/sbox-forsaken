@@ -108,10 +108,12 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 
 		if ( action == OpenAction && IsAuthorized( player ) )
 		{
+			PlaySound( "door.single.open" );
 			IsOpen = true;
 		}
 		else if ( action == CloseAction && IsAuthorized( player ) )
 		{
+			PlaySound( "door.single.close" );
 			IsOpen = false;
 		}
 		else if ( action == LockAction && IsAuthorized( player ) )
@@ -120,7 +122,7 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 		}
 		else if ( action == AuthorizeAction )
 		{
-
+			UI.LockScreen.OpenToUnlock( player, this );
 		}
 	}
 

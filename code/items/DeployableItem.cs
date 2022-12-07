@@ -8,6 +8,7 @@ public class DeployableItem : InventoryItem
 {
 	public override Color Color => ItemColors.Deployable;
 	public virtual Type Deployable => null;
+	public virtual string PlaceSoundName => "deployable.place";
 	public virtual string Model => "models/citizen_props/crate01.vmdl";
 	public virtual string[] ValidTags => new string[] { "world" };
 	public virtual bool IsStructure => false;

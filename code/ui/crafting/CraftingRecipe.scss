@@ -31,8 +31,17 @@
         opacity: 1;
     }
 
+    &:active {
+        sound-in: "ui.click";
+    }
+
     &:hover {
         background-color: rgba( 0 0 0 0.6 );
+        sound-in: "ui.hover";
         border: 2px solid rgba( #FFF, 0.4 );
+
+        &:not( .selected ) {
+            transform: scale( 1.05 1.05 );
+        }
     }
 }

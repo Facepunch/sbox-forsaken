@@ -6,6 +6,7 @@
     align-items: center;
     font-family: Vollkorn;
     color: rgba( white 0.8 );
+    transition: all 0.15s ease-in;
     font-size: 24px;
     height: 60px;
     width: 100%;
@@ -15,9 +16,16 @@
         color: rgba( white 1 );
     }
 
+    &:active {
+        sound-in: "ui.click";
+    }
+
     &:hover {
         &:not( .selected ) {
             background-color: rgba( 0 0 0 0.3 );
         }
+
+        transform: scale( 1.05, 1.05 );
+        sound-in: "ui.hover";
     }
 }

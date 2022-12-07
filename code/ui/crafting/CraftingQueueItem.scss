@@ -3,13 +3,14 @@
     background: linear-gradient(rgba(#000000, 0.8), rgba(#444, 0.8));
     transition: box-shadow 0.15s ease-in;
     transition: border 0.15s ease-in;
+    transition: transform 0.15s ease-in;
     border-radius: 2px;
-    height: 80px;
-    width: 80px;
+    height: 100px;
+    width: 100px;
 
     > .icon {
-        width: 70px;
-        height: 70px;
+        width: 90%;
+        height: 90%;
         background-position: center;
         background-size: cover;
         pointer-events: none;
@@ -20,7 +21,7 @@
         pointer-events: none;
         font-family: Vollkorn;
         text-shadow: 0 2px 0 rgba(0, 0, 0, 0.8);
-        font-size: 20px;
+        font-size: 24px;
         color: white;
         bottom: -2px;
         left: 4px;
@@ -31,7 +32,7 @@
         pointer-events: none;
         font-family: Vollkorn;
         text-shadow: 0 2px 0 rgba(0, 0, 0, 0.8);
-        font-size: 20px;
+        font-size: 24px;
         color: white;
         bottom: -2px;
         right: 4px;
@@ -40,18 +41,26 @@
     > .glow {
         position: absolute;
         border-radius: 4px;
-        width: 80px;
-        height: 80px;
+        width: 0%;
+        height: 0%;
     }
 
     &:not( :last-child ) {
         margin-right: 8px;
     }
 
+    &:active {
+        &:not( .is-empty ) {
+            sound-in: "ui.click";
+        }
+    }
+
     &:hover {
         &:not( .is-empty ) {
             box-shadow: 0 0 16px 2px rgba( red 0.2 );
             border-color: rgba( red 0.2 );
+            transform: scale( 1.05 1.05 );
+            sound-in: "ui.hover";
         }
     }
 
