@@ -19,8 +19,6 @@ public abstract partial class ResourcePickup : ModelEntity, IContextActionProvid
 	public ResourcePickup()
 	{
 		HarvestAction = new( "harvest", "Harvest", "textures/ui/actions/harvest.png" );
-
-		Tags.Add( "hover" );
 	}
 
 	public IEnumerable<ContextAction> GetSecondaryActions( ForsakenPlayer player )
@@ -65,7 +63,9 @@ public abstract partial class ResourcePickup : ModelEntity, IContextActionProvid
 	public override void Spawn()
 	{
 		SetModel( ModelPath );
-		Tags.Add( "pickup" );
+
+		Tags.Add( "hover", "solid", "pickup" );
+
 		base.Spawn();
 	}
 

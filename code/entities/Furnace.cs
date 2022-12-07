@@ -31,8 +31,6 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 
 		IgniteAction = new( "ignore", "Ignite", "textures/ui/actions/ignite.png" );
 		ExtinguishAction = new( "extinguish", "Extinguish", "textures/ui/actions/disable.png" );
-
-		Tags.Add( "hover" );
 	}
 
 	public string GetContextName()
@@ -107,6 +105,8 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 		Processor.Input.Whitelist.Add( "ore" );
 
 		SphereTrigger.Attach( this, EmissionRadius );
+
+		Tags.Add( "hover", "solid" );
 
 		base.Spawn();
 	}

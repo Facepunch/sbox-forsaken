@@ -36,8 +36,6 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 		LockAction.SetCondition( CanBeLockedBy );
 
 		AuthorizeAction = new( "authorize", "Authorize", "textures/ui/actions/authorize.png" );
-
-		Tags.Add( "hover" );
 	}
 
 	public IEnumerable<ContextAction> GetSecondaryActions( ForsakenPlayer player )
@@ -133,7 +131,7 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 		SetModel( "models/structures/single_door.vmdl" );
 		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
 
-		Tags.Add( "solid", "door" );
+		Tags.Add( "hover", "solid", "door" );
 	}
 
 	public override void OnPlacedByPlayer( ForsakenPlayer player )

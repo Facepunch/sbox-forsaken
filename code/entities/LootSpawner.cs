@@ -26,8 +26,6 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider
 	public LootSpawner()
 	{
 		OpenAction = new( "open", "Open", "textures/ui/actions/open.png" );
-
-		Tags.Add( "hover" );
 	}
 
 	public string GetContextName()
@@ -80,6 +78,8 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider
 
 		NextRestockTime = 0f;
 		Hide();
+
+		Tags.Add( "hover", "solid" );
 
 		base.Spawn();
 	}
