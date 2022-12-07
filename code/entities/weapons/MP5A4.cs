@@ -20,7 +20,7 @@ public partial class MP5A4 : ProjectileWeapon<CrossbowBoltProjectile>
 	public override string ProjectileModel => null;
 	public override float ReloadTime => 2f;
 	public override float ProjectileLifeTime => 4f;
-	public override int HoldType => 2;
+	public override CitizenAnimationHelper.HoldTypes HoldType => CitizenAnimationHelper.HoldTypes.Rifle;
 
 	public override void AttackPrimary()
 	{

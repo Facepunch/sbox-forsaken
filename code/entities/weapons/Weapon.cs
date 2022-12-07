@@ -22,7 +22,7 @@ public abstract partial class Weapon : BaseWeapon
 	public virtual float ChargeAttackDuration => 2f;
 	public virtual DamageFlags DamageType => DamageFlags.Bullet;
 	public virtual string ReloadSoundName => string.Empty;
-	public virtual int HoldType => 1;
+	public virtual CitizenAnimationHelper.HoldTypes HoldType => CitizenAnimationHelper.HoldTypes.Pistol;
 	public virtual int ViewModelMaterialGroup => 0;
 
 	[Net, Change( nameof( OnWeaponItemChanged ) )]
@@ -168,10 +168,10 @@ public abstract partial class Weapon : BaseWeapon
 		IsReloading = false;
 	}
 
-	public override void SimulateAnimator( PawnAnimator anim )
+	public override void SimulateAnimator( CitizenAnimationHelper anim )
 	{
-		anim.SetAnimParameter( "holdtype", HoldType );
-		anim.SetAnimParameter( "aim_body_weight", 1f );
+		anim.AimBodyWeight = 1f;
+		anim.HoldType = HoldType;
 	}
 
 	public override void Spawn()
@@ -241,7 +241,9 @@ public abstract partial class Weapon : BaseWeapon
 			TimeSincePrimaryHeld = 0f;
 		}
 
-		if ( owner.Pawn.LifeState == LifeState.Alive )
+		var pawn = owner.Pawn as ForsakenPlayer;
+
+		if ( pawn.LifeState == LifeState.Alive )
 		{
 			if ( ChargeAttackEndTime > 0f && Time.Now >= ChargeAttackEndTime )
 			{
@@ -326,10 +328,7 @@ public abstract partial class Weapon : BaseWeapon
 
 	public virtual void MeleeStrike( float damage, float force )
 	{
-		var forward = Owner.EyeRotation.Forward;
-		forward = forward.Normal;
-
-		foreach ( var trace in TraceBullet( Owner.EyePosition, Owner.EyePosition + forward * MeleeRange, 16f ) )
+		foreach ( var trace in TraceBullet( Owner.AimRay.Position, Owner.AimRay.Project( MeleeRange ), 16f ) )
 		{
 			if ( !trace.Entity.IsValid() || trace.Entity.IsWorld )
 			{
@@ -344,7 +343,7 @@ public abstract partial class Weapon : BaseWeapon
 					var damageInfo = new DamageInfo()
 						.WithPosition( trace.EndPosition )
 						.WithFlag( DamageFlags.Blunt )
-						.WithForce( forward * 100f * force )
+						.WithForce( Owner.AimRay.Forward * 100f * force )
 						.UsingTraceResult( trace )
 						.WithAttacker( Owner )
 						.WithWeapon( this );
@@ -361,11 +360,11 @@ public abstract partial class Weapon : BaseWeapon
 
 	public virtual void ShootBullet( float spread, float force, float damage, float bulletSize )
 	{
-		var forward = Owner.EyeRotation.Forward;
+		var forward = Owner.AimRay.Forward;
 		forward += (Vector3.Random + Vector3.Random + Vector3.Random + Vector3.Random) * spread * 0.25f;
 		forward = forward.Normal;
 
-		foreach ( var trace in TraceBullet( Owner.EyePosition, Owner.EyePosition + forward * BulletRange, bulletSize ) )
+		foreach ( var trace in TraceBullet( Owner.AimRay.Position, Owner.AimRay.Position + forward * BulletRange, bulletSize ) )
 		{
 			if ( string.IsNullOrEmpty( ImpactEffect ) )
 			{

@@ -73,7 +73,7 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 	public void Authorize( ForsakenPlayer player )
 	{
 		if ( IsAuthorized( player ) ) return;
-		Authorized.Add( player.PlayerId );
+		Authorized.Add( player.SteamId );
 	}
 
 	public bool CanBeLockedBy( ForsakenPlayer player )
@@ -83,18 +83,18 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 
 	public void Deauthorize( ForsakenPlayer player )
 	{
-		Authorized.Remove( player.PlayerId );
+		Authorized.Remove( player.SteamId );
 	}
 
 	public bool IsAuthorized( ForsakenPlayer player )
 	{
-		return Authorized.Contains( player.PlayerId );
+		return Authorized.Contains( player.SteamId );
 	}
 
 	public bool IsAuthorized()
 	{
 		Host.AssertClient();
-		return Authorized.Contains( Local.Client.PlayerId );
+		return Authorized.Contains( Local.Client.SteamId );
 	}
 
 	public string GetContextName()

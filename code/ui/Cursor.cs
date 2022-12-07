@@ -182,7 +182,7 @@ public class Cursor : Panel
 		ActionProvider = null;
 	}
 
-	[Event.BuildInput]
+	[Event.Client.BuildInput]
 	private void BuildInput()
 	{
 		var hasSecondaries = ActionContainer.ChildrenCount > 0;

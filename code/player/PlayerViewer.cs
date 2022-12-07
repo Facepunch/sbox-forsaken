@@ -3,6 +3,7 @@ using System;
 
 namespace Facepunch.Forsaken;
 
+/*
 [SceneCamera.AutomaticRenderHook]
 public class PlayerViewer : RenderHook
 {
@@ -17,7 +18,7 @@ public class PlayerViewer : RenderHook
 	private static float MinCursorRadius => 0.05f;
 	private static bool IsEnabled => false;
 
-	[Event.Frame]
+	[Event.Client.Frame]
 	private static void OnFrame()
 	{
 		if ( !ForsakenPlayer.Me.IsValid() ) return;
@@ -82,3 +83,4 @@ public class PlayerViewer : RenderHook
 		}
 	}
 }
+*/

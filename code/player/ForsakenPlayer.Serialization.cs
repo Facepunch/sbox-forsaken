@@ -12,7 +12,7 @@ public partial class ForsakenPlayer
 
 	public virtual void Serialize( BinaryWriter writer )
 	{
-		writer.Write( PlayerId );
+		writer.Write( SteamId );
 		writer.Write( (byte)LifeState );
 		writer.Write( Transform );
 
@@ -30,7 +30,7 @@ public partial class ForsakenPlayer
 
 	public virtual void Deserialize( BinaryReader reader )
 	{
-		PlayerId = reader.ReadInt64();
+		SteamId = reader.ReadInt64();
 		LifeState = (LifeState)reader.ReadByte();
 		Transform = reader.ReadTransform();
 

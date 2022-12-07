@@ -48,13 +48,13 @@ public static class PersistenceSystem
 				player.Serialize( writer );
 			}
 
-			PlayerData[player.PlayerId] = stream.ToArray();
+			PlayerData[player.SteamId] = stream.ToArray();
 		}
 	}
 
 	public static void Load( ForsakenPlayer player )
 	{
-		if ( PlayerData.TryGetValue( player.PlayerId, out var data ) )
+		if ( PlayerData.TryGetValue( player.SteamId, out var data ) )
 		{
 			using ( var stream = new MemoryStream( data ) )
 			{
@@ -192,7 +192,7 @@ public static class PersistenceSystem
 			PlayerData[playerId] = playerData;
 
 			var pawn = Entity.All.OfType<ForsakenPlayer>()
-				.Where( p => p.PlayerId == playerId )
+				.Where( p => p.SteamId == playerId )
 				.FirstOrDefault();
 
 			if ( !pawn.IsValid() )

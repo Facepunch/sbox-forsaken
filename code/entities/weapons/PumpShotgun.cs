@@ -14,7 +14,7 @@ public partial class PumpShotgun : ProjectileWeapon<CrossbowBoltProjectile>
 	public override float PrimaryRate => 1f;
 	public override float SecondaryRate => 1f;
 	public override float Speed => 1500f;
-	public override int HoldType => 3;
+	public override CitizenAnimationHelper.HoldTypes HoldType => CitizenAnimationHelper.HoldTypes.Shotgun;
 	public override float Gravity => 6f;
 	public override float InheritVelocity => 0f;
 	public override string ReloadSoundName => "shotgun_load";

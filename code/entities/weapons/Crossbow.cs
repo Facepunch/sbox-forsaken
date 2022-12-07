@@ -18,6 +18,7 @@ public partial class Crossbow : ProjectileWeapon<CrossbowBoltProjectile>
 	public override float InheritVelocity => 0f;
 	public override string ReloadSoundName => "crossbow.reload";
 	public override string ProjectileModel => null;
+	public override CitizenAnimationHelper.HoldTypes HoldType => CitizenAnimationHelper.HoldTypes.Rifle;
 	public override int ClipSize => 1;
 	public override float ReloadTime => 2.3f;
 	public override float ProjectileLifeTime => 4f;
@@ -35,11 +36,6 @@ public partial class Crossbow : ProjectileWeapon<CrossbowBoltProjectile>
 		PlaySound( $"crossbow.fire" );
 
 		base.AttackPrimary();
-	}
-
-	public override void SimulateAnimator( PawnAnimator anim )
-	{
-		anim.SetAnimParameter( "holdtype", 2 );
 	}
 
 	protected override void OnProjectileHit( CrossbowBoltProjectile projectile, TraceResult trace )

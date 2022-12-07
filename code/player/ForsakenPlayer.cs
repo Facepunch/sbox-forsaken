@@ -88,7 +88,7 @@ public partial class ForsakenPlayer : Player, IPersistent
 	public bool IsSleeping => !Client.IsValid();
 
 	[Net] private int StructureType { get; set; }
-	[Net] public long PlayerId { get; private set; }
+	[Net] public long SteamId { get; private set; }
 
 	private TimeUntil NextCalculateTemperature { get; set; }
 	private float CalculatedTemperature { get; set; }
@@ -148,7 +148,7 @@ public partial class ForsakenPlayer : Player, IPersistent
 
 	public void MakePawnOf( long playerId )
 	{
-		PlayerId = playerId;
+		SteamId = playerId;
 	}
 
 	public void MakePawnOf( Client client )
@@ -162,7 +162,7 @@ public partial class ForsakenPlayer : Player, IPersistent
 		Hotbar.AddConnection( client );
 
 		DisplayName = client.Name;
-		PlayerId = client.PlayerId;
+		SteamId = client.SteamId;
 	}
 
 	public void SetAmmoType( string uniqueId )
@@ -295,7 +295,7 @@ public partial class ForsakenPlayer : Player, IPersistent
 		ActiveChild?.BuildInput();
 
 		CursorDirection = Screen.GetDirection( Screen.Size * Cursor );
-		CameraPosition = CurrentView.Position;
+		CameraPosition = Camera.Position;
 
 		var plane = new Plane( Position, Vector3.Up );
 		var trace = plane.Trace( new Ray( EyePosition, CursorDirection ), true );
@@ -340,9 +340,6 @@ public partial class ForsakenPlayer : Player, IPersistent
 			SprintSpeed = 200f,
 			WalkSpeed = 100f
 		};
-
-		CameraMode = new TopDownCamera();
-		Animator = new PlayerAnimator();
 
 		EnableAllCollisions = true;
 		EnableDrawing = true;
@@ -445,8 +442,6 @@ public partial class ForsakenPlayer : Player, IPersistent
 	{
 		SimulateConstruction();
 		SimulateDeployable();
-
-		base.FrameSimulate( cl );
 	}
 
 	public override void Simulate( Client client )
@@ -459,6 +454,8 @@ public partial class ForsakenPlayer : Player, IPersistent
 			IsOutOfBreath = false;
 
 		Projectiles.Simulate();
+
+		SimulateAnimation();
 
 		if ( IsServer )
 		{

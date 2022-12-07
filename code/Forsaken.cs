@@ -4,8 +4,10 @@ using System.Linq;
 
 namespace Facepunch.Forsaken;
 
-public partial class Forsaken : Game
+public partial class Forsaken : GameManager
 {
+	private TopDownCamera Camera { get; set; }
+
 	public override void Spawn()
 	{
 		InventorySystem.Initialize();
@@ -23,6 +25,8 @@ public partial class Forsaken : Game
 		Local.Hud?.Delete( true );
 		Local.Hud = new UI.Hud();
 
+		Camera = new();
+
 		base.ClientSpawn();
 	}
 
@@ -31,7 +35,7 @@ public partial class Forsaken : Game
 		InventorySystem.ClientJoined( client );
 
 		var pawn = All.OfType<ForsakenPlayer>()
-			.Where( p => p.PlayerId == client.PlayerId )
+			.Where( p => p.SteamId == client.SteamId )
 			.FirstOrDefault();
 
 		if ( !pawn.IsValid() )
@@ -105,5 +109,11 @@ public partial class Forsaken : Game
 			tx.Position = tx.Position + Vector3.Up * 50f;
 			pawn.Transform = tx;
 		}
+	}
+
+	[Event.Client.Frame]
+	private void OnFrame()
+	{
+		Camera?.Update();
 	}
 }

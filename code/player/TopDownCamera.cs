@@ -2,12 +2,12 @@
 
 namespace Facepunch.Forsaken;
 
-public partial class TopDownCamera : CameraMode
+public partial class TopDownCamera
 {
 	public float Height { get; set; } = 450f;
 	public float MoveSpeed { get; set; } = 20f;
 
-	public override void Update()
+	public void Update()
 	{
 		var pawn = ForsakenPlayer.Me;
 
@@ -17,10 +17,10 @@ public partial class TopDownCamera : CameraMode
 
 			Sound.Listener = new Transform( pawn.EyePosition, pawn.Rotation );
 
-			Position = Position.LerpTo( target, Time.Delta * MoveSpeed );
-			Rotation = Rotation.LookAt( Vector3.Down );
-			FieldOfView = 70f;
-			Viewer = null;
+			Camera.Position = Camera.Position.LerpTo( target, Time.Delta * MoveSpeed );
+			Camera.Rotation = Rotation.LookAt( Vector3.Down );
+			Camera.FieldOfView = Screen.CreateVerticalFieldOfView( 60f );
+			Camera.FirstPersonViewer = null;
 		}
 	}
 }

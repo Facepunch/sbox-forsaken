@@ -3,16 +3,14 @@
 	data = 
 	{
 		UI = true
-		Volume = 0.15
-		VolumeRandom = 0.05
-		Pitch = 1
-		PitchRandom = 0.15
+		Volume = "0.15,0.15,0"
+		Pitch = "1.00,1.00,0"
 		Decibels = 65
+		SelectionMode = "Random"
 		Sounds = 
 		[
-			resource:"sound/ui/inventory.move.vsnd",
+			resource:"sounds/ui/inventory.move.vsnd",
 		]
-		SelectionMode = 3
 		MaximumDistance = 990.75903
 		MinimumDistance = 49.537952
 	}
