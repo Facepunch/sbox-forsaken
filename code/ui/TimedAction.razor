@@ -14,7 +14,7 @@
 <root>
     <div @ref="Container" class="container">
         <div class="circle">
-            <img class="icon" src=@Info.Icon</img>
+            <img class="icon" src=@Info.Icon />
             <div @ref="Fill" class="fill"></div>
         </div>
         <label class="title">@Info.Title</label>
@@ -50,12 +50,13 @@
         if ( Info is not null )
         {
             var fraction = Info.EndTime / Info.Duration;
-            var size = 100f - (fraction * 100f);
 
             UpdatePosition();
 
-            Fill.Style.Width = Length.Percent( size );
-            Fill.Style.Height = Length.Percent( size );
+            var tx = new PanelTransform();
+            tx.AddScale( Easing.EaseOut( 1f - fraction ) );
+
+            Fill.Style.Transform = tx;
         }
 
         base.Tick();

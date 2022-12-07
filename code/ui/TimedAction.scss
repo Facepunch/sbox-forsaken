@@ -29,8 +29,12 @@
             height: 64px;
 
             .fill {
-                background-color: rgba( lightgreen 0.2 );
+                background-image: url( textures/ui/white_circle.png );
+                background-tint: rgba( lightgreen 0.2 );
+                background-size: 100%;
                 border-radius: 50%;
+                width: 100%;
+                height: 100%;
             }
 
             .icon {
