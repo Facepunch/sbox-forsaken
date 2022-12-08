@@ -1,13 +1,12 @@
 ﻿using Sandbox;
-using System;
+using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
-public partial class MoveController : BasePlayerController
+public partial class MoveController
 {
-	[Net] public float WalkSpeed { get; set; }
-	[Net] public float SprintSpeed { get; set; }
-
+	public float WalkSpeed { get; set; }
+	public float SprintSpeed { get; set; }
 	public float MoveSpeedScale { get; set; } = 1f;
 	public float Acceleration { get; set; } = 8f;
 	public float AirAcceleration { get; set; } = 24f;
@@ -23,39 +22,178 @@ public partial class MoveController : BasePlayerController
 	public float Gravity { get; set; } = 800f;
 	public float AirControl { get; set; } = 48f;
 
-	protected Unstuck Unstuck { get; private set; }
-
 	protected float SurfaceFriction { get; set; }
+	protected Vector3 TraceOffset { get; set; }
 	protected Vector3 PreVelocity { get; set; }
 	protected Vector3 Mins { get; set; }
 	protected Vector3 Maxs { get; set; }
 
-	public MoveDuck Duck { get; private set; }
+	protected HashSet<string> Events { get; set; } = new();
+	protected HashSet<string> Tags { get; set; } = new();
+
+	public Vector3 GroundNormal { get; set; }
+	public Vector3 WishVelocity { get; set; }
+
+	public ForsakenPlayer Player { get; private set; }
+	public DuckController Duck { get; private set; }
 
 	public bool IsServer => Host.IsServer;
 	public bool IsClient => Host.IsClient;
 
-	public MoveController()
+	private int StuckTries { get; set; } = 0;
+
+	public MoveController( ForsakenPlayer player )
 	{
-		Duck = new MoveDuck( this );
-		Unstuck = new Unstuck( this );
+		Duck = new DuckController( this );
+		Player = player;
 	}
 
 	public void ClearGroundEntity()
 	{
-		if ( GroundEntity == null ) return;
+		if ( Player.GroundEntity == null )
+			return;
 
-		GroundEntity = null;
+		Player.GroundEntity = null;
 		GroundNormal = Vector3.Up;
 		SurfaceFriction = 1f;
 	}
 
-	public override BBox GetHull()
+	public bool HasEvent( string eventName )
+	{
+		if ( Events == null ) return false;
+		return Events.Contains( eventName );
+	}
+
+	public bool HasTag( string tagName )
+	{
+		if ( Tags == null ) return false;
+		return Tags.Contains( tagName );
+	}
+
+	public void AddEvent( string eventName )
+	{
+		if ( Events == null )
+			Events = new HashSet<string>();
+
+		if ( Events.Contains( eventName ) )
+			return;
+
+		Events.Add( eventName );
+	}
+
+	public void SetTag( string tagName )
+	{
+		Tags ??= new HashSet<string>();
+
+		if ( Tags.Contains( tagName ) )
+			return;
+
+		Tags.Add( tagName );
+	}
+
+	public virtual TraceResult TraceBBox( Vector3 start, Vector3 end, Vector3 mins, Vector3 maxs, float liftFeet = 0.0f )
+	{
+		if ( liftFeet > 0 )
+		{
+			start += Vector3.Up * liftFeet;
+			maxs = maxs.WithZ( maxs.z - liftFeet );
+		}
+
+		var tr = Trace.Ray( start + TraceOffset, end + TraceOffset )
+			.Size( mins, maxs )
+			.WithAnyTags( "solid", "playerclip", "passbullets", "player" )
+			.Ignore( Player )
+			.Run();
+
+		tr.EndPosition -= TraceOffset;
+		return tr;
+	}
+
+	public virtual TraceResult TraceBBox( Vector3 start, Vector3 end, float liftFeet = 0f )
+	{
+		return TraceBBox( start, end, Mins, Maxs, liftFeet );
+	}
+
+	public virtual BBox GetHull()
 	{
 		var girth = BodyGirth * 0.5f;
 		var mins = new Vector3( -girth, -girth, 0 );
 		var maxs = new Vector3( +girth, +girth, BodyHeight );
 		return new BBox( mins, maxs );
+	}
+
+
+	public virtual void FrameSimulate()
+	{
+		Player.EyeRotation = Player.ViewAngles.ToRotation();
+	}
+
+	public virtual void Simulate()
+	{
+		Player.EyeLocalPosition = Vector3.Up * Scale( EyeHeight );
+		UpdateBBox();
+
+		Player.EyeLocalPosition += TraceOffset;
+
+		if ( Input.Down( InputButton.Run ) )
+			Player.EyeRotation = Player.Rotation;
+		else
+			Player.EyeRotation = Player.ViewAngles.ToRotation();
+
+		if ( CheckStuckAndFix() )
+		{
+			// I hope this never really happens.
+			return;
+		}
+
+		PreVelocity = Player.Velocity;
+
+		Player.Velocity -= new Vector3( 0, 0, Gravity * 0.5f ) * Time.Delta;
+		Player.Velocity += new Vector3( 0, 0, Player.BaseVelocity.z ) * Time.Delta;
+		Player.BaseVelocity = Player.BaseVelocity.WithZ( 0 );
+
+		var startOnGround = Player.GroundEntity != null;
+
+		if ( startOnGround )
+		{
+			Player.Velocity = Player.Velocity.WithZ( 0 );
+			ApplyFriction( GroundFriction * SurfaceFriction );
+		}
+
+		WishVelocity = new Vector3( Player.InputDirection.x, Player.InputDirection.y, 0 );
+		var inSpeed = WishVelocity.Length.Clamp( 0, 1 );
+
+		WishVelocity = WishVelocity.WithZ( 0 );
+		WishVelocity = WishVelocity.Normal * inSpeed;
+		WishVelocity *= GetWishSpeed();
+
+		Duck.PreTick();
+
+		if ( Input.Down( InputButton.Run ) && !Input.Down( InputButton.Duck ) && WishVelocity.Length > 1f )
+			Player.ReduceStamina( 10f * Time.Delta );
+		else
+			Player.GainStamina( 15f * Time.Delta );
+
+		var stayOnGround = false;
+
+		if ( Player.GroundEntity.IsValid() )
+		{
+			stayOnGround = true;
+			WalkMove();
+		}
+		else
+		{
+			AirMove();
+		}
+
+		CategorizePosition( stayOnGround );
+
+		Player.Velocity -= new Vector3( 0, 0, Gravity * 0.5f ) * Time.Delta;
+
+		if ( Player.GroundEntity.IsValid() )
+		{
+			Player.Velocity = Player.Velocity.WithZ( 0 );
+		}
 	}
 
 	private void SetBBox( Vector3 mins, Vector3 maxs )
@@ -75,80 +213,6 @@ public partial class MoveController : BasePlayerController
 		SetBBox( mins, maxs );
 	}
 
-	public override void Simulate()
-	{
-		if ( Pawn is not ForsakenPlayer player )
-			return;
-
-		EyeLocalPosition = Vector3.Up * Scale( EyeHeight );
-		UpdateBBox();
-
-		EyeLocalPosition += TraceOffset;
-
-		if ( Input.Down( InputButton.Run ) )
-			EyeRotation = Rotation;
-		else
-			EyeRotation = player.ViewAngles.ToRotation();
-
-		if ( Unstuck.TestAndFix() )
-		{
-			// I hope this never really happens.
-			return;
-		}
-
-		PreVelocity = Velocity;
-
-		Velocity -= new Vector3( 0, 0, Gravity * 0.5f ) * Time.Delta;
-		Velocity += new Vector3( 0, 0, BaseVelocity.z ) * Time.Delta;
-		BaseVelocity = BaseVelocity.WithZ( 0 );
-
-		var startOnGround = GroundEntity != null;
-
-		if ( startOnGround )
-		{
-			Velocity = Velocity.WithZ( 0 );
-			ApplyFriction( GroundFriction * SurfaceFriction );
-		}
-
-		WishVelocity = new Vector3( player.InputDirection.x, player.InputDirection.y, 0 );
-		var inSpeed = WishVelocity.Length.Clamp( 0, 1 );
-
-		WishVelocity = WishVelocity.WithZ( 0 );
-		WishVelocity = WishVelocity.Normal * inSpeed;
-		WishVelocity *= GetWishSpeed();
-
-		Duck.PreTick();
-
-		if ( player.IsValid() )
-		{
-			if ( Input.Down( InputButton.Run ) && !Input.Down( InputButton.Duck ) && WishVelocity.Length > 1f )
-				player.ReduceStamina( 10f * Time.Delta );
-			else
-				player.GainStamina( 15f * Time.Delta );
-		}
-
-		var stayOnGround = false;
-
-		if ( GroundEntity != null )
-		{
-			stayOnGround = true;
-			WalkMove();
-		}
-		else
-		{
-			AirMove();
-		}
-
-		CategorizePosition( stayOnGround );
-
-		Velocity -= new Vector3( 0, 0, Gravity * 0.5f ) * Time.Delta;
-
-		if ( GroundEntity != null )
-		{
-			Velocity = Velocity.WithZ( 0 );
-		}
-	}
-
 	private float GetWishSpeed()
 	{
 		var wishSpeed = Duck.GetWishSpeed();
@@ -156,12 +220,9 @@ public partial class MoveController : BasePlayerController
 
 		var isSprinting = Input.Down( InputButton.Run );
 
-		if ( Client.Pawn is ForsakenPlayer player )
+		if ( Player.IsOutOfBreath )
 		{
-			if ( player.IsOutOfBreath )
-			{
-				isSprinting = false;
-			}
+			isSprinting = false;
 		}
 
 		if ( isSprinting )
@@ -178,27 +239,27 @@ public partial class MoveController : BasePlayerController
 		WishVelocity = WishVelocity.WithZ( 0 );
 		WishVelocity = WishVelocity.Normal * wishSpeed;
 
-		Velocity = Velocity.WithZ( 0 );
+		Player.Velocity = Player.Velocity.WithZ( 0 );
 
 		Accelerate( wishDir, wishSpeed, 0f, Acceleration );
 
-		Velocity = Velocity.WithZ( 0 );
-		Velocity += BaseVelocity;
+		Player.Velocity = Player.Velocity.WithZ( 0 );
+		Player.Velocity += Player.BaseVelocity;
 
 		try
 		{
-			if ( Velocity.Length < 1f )
+			if ( Player.Velocity.Length < 1f )
 			{
-				Velocity = Vector3.Zero;
+				Player.Velocity = Vector3.Zero;
 				return;
 			}
 
-			var dest = (Position + Velocity * Time.Delta).WithZ( Position.z );
-			var pm = TraceBBox( Position, dest );
+			var dest = (Player.Position + Player.Velocity * Time.Delta).WithZ( Player.Position.z );
+			var pm = TraceBBox( Player.Position, dest );
 
 			if ( pm.Fraction == 1 )
 			{
-				Position = pm.EndPosition;
+				Player.Position = pm.EndPosition;
 				StayOnGround();
 				return;
 			}
@@ -207,7 +268,7 @@ public partial class MoveController : BasePlayerController
 		}
 		finally
 		{
-			Velocity -= BaseVelocity;
+			Player.Velocity -= Player.BaseVelocity;
 		}
 
 		StayOnGround();
@@ -215,24 +276,24 @@ public partial class MoveController : BasePlayerController
 
 	private void StepMove()
 	{
-		var mover = new MoveHelper( Position, Velocity );
-		mover.Trace = mover.Trace.Size( Mins, Maxs ).Ignore( Pawn );
+		var mover = new MoveHelper( Player.Position, Player.Velocity );
+		mover.Trace = mover.Trace.Size( Mins, Maxs ).Ignore( Player );
 		mover.MaxStandableAngle = GroundAngle;
 		mover.TryMoveWithStep( Time.Delta, StepSize );
 
-		Position = mover.Position;
-		Velocity = mover.Velocity;
+		Player.Position = mover.Position;
+		Player.Velocity = mover.Velocity;
 	}
 
 	private void Move()
 	{
-		var mover = new MoveHelper( Position, Velocity );
-		mover.Trace = mover.Trace.Size( Mins, Maxs ).Ignore( Pawn );
+		var mover = new MoveHelper( Player.Position, Player.Velocity );
+		mover.Trace = mover.Trace.Size( Mins, Maxs ).Ignore( Player );
 		mover.MaxStandableAngle = GroundAngle;
 		mover.TryMove( Time.Delta );
 
-		Position = mover.Position;
-		Velocity = mover.Velocity;
+		Player.Position = mover.Position;
+		Player.Velocity = mover.Velocity;
 	}
 
 	private void Accelerate( Vector3 wishDir, float wishSpeed, float speedLimit, float acceleration )
@@ -240,7 +301,7 @@ public partial class MoveController : BasePlayerController
 		if ( speedLimit > 0 && wishSpeed > speedLimit )
 			wishSpeed = speedLimit;
 
-		var currentSpeed = Velocity.Dot( wishDir );
+		var currentSpeed = Player.Velocity.Dot( wishDir );
 		var addSpeed = wishSpeed - currentSpeed;
 
 		if ( addSpeed <= 0 )
@@ -251,12 +312,48 @@ public partial class MoveController : BasePlayerController
 		if ( accelSpeed > addSpeed )
 			accelSpeed = addSpeed;
 
-		Velocity += wishDir * accelSpeed;
+		Player.Velocity += wishDir * accelSpeed;
+	}
+
+	private bool CheckStuckAndFix()
+	{
+		var result = TraceBBox( Player.Position, Player.Position );
+
+		if ( !result.StartedSolid )
+		{
+			StuckTries = 0;
+			return false;
+		}
+
+		if ( IsClient ) return true;
+
+		var attemptsPerTick = 20;
+
+		for ( int i = 0; i < attemptsPerTick; i++ )
+		{
+			var pos = Player.Position + Vector3.Random.Normal * (StuckTries / 2.0f);
+
+			if ( i == 0 )
+			{
+				pos = Player.Position + Vector3.Up * 5;
+			}
+
+			result = TraceBBox( pos, pos );
+
+			if ( !result.StartedSolid )
+			{
+				Player.Position = pos;
+				return false;
+			}
+		}
+
+		StuckTries++;
+		return true;
 	}
 
 	private void ApplyFriction( float frictionAmount = 1f )
 	{
-		var speed = Velocity.Length;
+		var speed = Player.Velocity.Length;
 		if ( speed < 0.1f ) return;
 
 		var control = (speed < StopSpeed) ? StopSpeed : speed;
@@ -268,18 +365,18 @@ public partial class MoveController : BasePlayerController
 		if ( newSpeed != speed )
 		{
 			newSpeed /= speed;
-			Velocity *= newSpeed;
+			Player.Velocity *= newSpeed;
 		}
 	}
 
 	private float Scale( float speed )
 	{
-		return speed * Pawn.Scale;
+		return speed * Player.Scale;
 	}
 
 	private Vector3 Scale( Vector3 velocity )
 	{
-		return velocity * Pawn.Scale;
+		return velocity * Player.Scale;
 	}
 
 	private void AirMove()
@@ -289,11 +386,11 @@ public partial class MoveController : BasePlayerController
 
 		Accelerate( wishDir, wishSpeed, AirControl, AirAcceleration );
 
-		Velocity += BaseVelocity;
+		Player.Velocity += Player.BaseVelocity;
 
 		Move();
 
-		Velocity -= BaseVelocity;
+		Player.Velocity -= Player.BaseVelocity;
 	}
 
 	private void WaterMove()
@@ -305,22 +402,22 @@ public partial class MoveController : BasePlayerController
 
 		Accelerate( wishDir, wishSpeed, 100f, Acceleration );
 
-		Velocity += BaseVelocity;
+		Player.Velocity += Player.BaseVelocity;
 
 		Move();
 
-		Velocity -= BaseVelocity;
+		Player.Velocity -= Player.BaseVelocity;
 	}
 
 	private void CategorizePosition( bool stayOnGround )
 	{
 		SurfaceFriction = 1f;
 
-		var point = Position - Vector3.Up * 2f;
-		var bumpOrigin = Position;
+		var point = Player.Position - Vector3.Up * 2f;
+		var bumpOrigin = Player.Position;
 		var moveToEndPos = false;
 
-		if ( GroundEntity != null )
+		if ( Player.GroundEntity.IsValid() )
 		{
 			moveToEndPos = true;
 			point.z -= StepSize;
@@ -331,7 +428,7 @@ public partial class MoveController : BasePlayerController
 			point.z -= StepSize;
 		}
 
-		if ( Velocity.z > MaxNonJumpVelocity )
+		if ( Player.Velocity.z > MaxNonJumpVelocity )
 		{
 			ClearGroundEntity();
 			return;
@@ -344,7 +441,7 @@ public partial class MoveController : BasePlayerController
 			ClearGroundEntity();
 			moveToEndPos = false;
 
-			if ( Velocity.z > 0 )
+			if ( Player.Velocity.z > 0 )
 				SurfaceFriction = 0.25f;
 		}
 		else
@@ -354,38 +451,33 @@ public partial class MoveController : BasePlayerController
 
 		if ( moveToEndPos && !pm.StartedSolid && pm.Fraction > 0f && pm.Fraction < 1f )
 		{
-			Position = pm.EndPosition;
+			Player.Position = pm.EndPosition;
 		}
 	}
 
 	private void UpdateGroundEntity( TraceResult trace )
 	{
-		var wasOnGround = (GroundEntity != null);
+		var wasOnGround = Player.GroundEntity.IsValid();
 
-		GroundNormal = trace.Normal;
-		GroundEntity = trace.Entity;
+		Player.GroundEntity = trace.Entity;
 		SurfaceFriction = trace.Surface.Friction * 1.25f;
+		GroundNormal = trace.Normal;
 
 		if ( SurfaceFriction > 1f )
 			SurfaceFriction = 1f;
 
-		if ( GroundEntity != null )
+		if ( Player.GroundEntity.IsValid() )
 		{
-			BaseVelocity = GroundEntity.Velocity;
+			Player.BaseVelocity = Player.GroundEntity.Velocity;
 		}
-	}
-
-	public override TraceResult TraceBBox( Vector3 start, Vector3 end, float liftFeet = 0f )
-	{
-		return TraceBBox( start, end, Mins, Maxs, liftFeet );
 	}
 
 	private void StayOnGround()
 	{
-		var start = Position + Vector3.Up * 2;
-		var end = Position + Vector3.Down * StepSize;
+		var start = Player.Position + Vector3.Up * 2;
+		var end = Player.Position + Vector3.Down * StepSize;
 
-		var trace = TraceBBox( Position, start );
+		var trace = TraceBBox( Player.Position, start );
 		start = trace.EndPosition;
 
 		trace = TraceBBox( start, end );
@@ -395,6 +487,6 @@ public partial class MoveController : BasePlayerController
 		if ( trace.StartedSolid ) return;
 		if ( Vector3.GetAngle( Vector3.Up, trace.Normal ) > StayOnGroundAngle ) return;
 
-		Position = trace.EndPosition;
+		Player.Position = trace.EndPosition;
 	}
 }

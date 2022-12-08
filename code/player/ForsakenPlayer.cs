@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Facepunch.Forsaken.UI;
 using Sandbox;
@@ -8,7 +7,7 @@ using Sandbox.Component;
 
 namespace Facepunch.Forsaken;
 
-public partial class ForsakenPlayer : Player, IPersistent
+public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 {
 	private class ActiveEffect
 	{
@@ -18,36 +17,6 @@ public partial class ForsakenPlayer : Player, IPersistent
 	}
 
 	public static ForsakenPlayer Me => Local.Pawn as ForsakenPlayer;
-
-	private static string[] InvalidPlacementThoughts = new string[]
-	{
-		"It won't fit here, I should try elsewhere.",
-		"Hmm... this doesn't go there.",
-		"I can't place that here.",
-		"It doesn't seem to go there.",
-		"I should try to place it somewhere else."
-	};
-
-	private static string[] MissingItemsThoughts = new string[]
-	{
-		"I don't have the required items to do that.",
-		"I seem to be missing some items for that.",
-		"I don't have enough to do that."
-	};
-
-	private static string[] OutOfSightThoughts = new string[]
-	{
-		"That's too far out of my sight.",
-		"I can't see over there.",
-		"That's just out of my view."
-	};
-
-	private static string[] OutOfRangeThoughts = new string[]
-	{
-		"I can't reach that location.",
-		"That's too far away.",
-		"I should try getting closer."
-	};
 
 	[Net] public string DisplayName { get; private set; }
 	[Net] public float Temperature { get; private set; }
@@ -75,6 +44,11 @@ public partial class ForsakenPlayer : Player, IPersistent
 	[ClientInput] public string ChangeAmmoType { get; private set; }
 	[ClientInput] public bool HasDialogOpen { get; private set; }
 
+	[Net, Predicted] public Entity ActiveChild { get; set; }
+	[ClientInput] public Vector3 InputDirection { get; protected set; }
+	[ClientInput] public Angles ViewAngles { get; set; }
+	public Angles OriginalViewAngles { get; private set; }
+
 	public int MaxHealth => 100;
 	public int MaxStamina => 100;
 	public int MaxCalories => 300;
@@ -82,11 +56,13 @@ public partial class ForsakenPlayer : Player, IPersistent
 
 	public Dictionary<ArmorSlot, List<ArmorEntity>> Armor { get; private set; }
 	public ProjectileSimulator Projectiles { get; private set; }
+	public MoveController Controller { get; private set; }
 	public Vector2 Cursor { get; set; }
 	public DamageInfo LastDamageTaken { get; private set; }
 	public bool HasTimedAction => TimedAction is not null;
 	public bool IsSleeping => !Client.IsValid();
 
+	[Net, Predicted] private Entity LastActiveChild { get; set; }
 	[Net] private int StructureType { get; set; }
 	[Net] public long SteamId { get; private set; }
 
@@ -97,6 +73,27 @@ public partial class ForsakenPlayer : Player, IPersistent
 	private bool IsBackpackToggleMode { get; set; }
 	private Entity LastHoveredEntity { get; set; }
 	private List<ActiveEffect> ActiveEffects { get; set; } = new();
+	private TimeSince TimeSinceLastKilled { get; set; }
+
+	public Vector3 EyePosition
+	{
+		get => Transform.PointToWorld( EyeLocalPosition );
+		set => EyeLocalPosition = Transform.PointToLocal( value );
+	}
+
+	[Net, Predicted]
+	public Vector3 EyeLocalPosition { get; set; }
+
+	public Rotation EyeRotation
+	{
+		get => Transform.RotationToWorld( EyeLocalRotation );
+		set => EyeLocalRotation = Transform.RotationToLocal( value );
+	}
+
+	[Net, Predicted]
+	public Rotation EyeLocalRotation { get; set; }
+
+	public override Ray AimRay => new Ray( EyePosition, EyeRotation.Forward );
 
 	[ConCmd.Server( "fsk.player.structuretype" )]
 	private static void SetStructureTypeCmd( int identity )
@@ -144,6 +141,12 @@ public partial class ForsakenPlayer : Player, IPersistent
 			HotbarIndex = 0;
 			Armor = new();
 		}
+
+		Controller = new MoveController( this )
+		{
+			SprintSpeed = 200f,
+			WalkSpeed = 100f
+		};
 	}
 
 	public void MakePawnOf( long playerId )
@@ -252,23 +255,69 @@ public partial class ForsakenPlayer : Player, IPersistent
 		}
 	}
 
+	public virtual void Respawn()
+	{
+		EnableAllCollisions = true;
+		EnableDrawing = true;
+		LifeState = LifeState.Alive;
+		Calories = 100f;
+		Hydration = 30f;
+		Stamina = 100f;
+		Health = 100f;
+		Velocity = Vector3.Zero;
+		WaterLevel = 0f;
+
+		CreateHull();
+		GiveInitialItems();
+		InitializeWeapons();
+		ResetCursor();
+
+		GameManager.Current?.MoveToSpawnpoint( this );
+		ResetInterpolation();
+	}
+
 	public override void Spawn()
 	{
 		SetModel( "models/citizen/citizen.vmdl" );
 
 		NextCalculateTemperature = 0f;
+		EnableLagCompensation = true;
+
+		Tags.Add( "player" );
 
 		base.Spawn();
 	}
 
-	public override float FootstepVolume()
+	private TimeSince TimeSinceLastFootstep { get; set; }
+	public override void OnAnimEventFootstep( Vector3 position, int foot, float volume )
 	{
-		return Velocity.WithZ( 0 ).Length.LerpInverse( 0f, 200f ) * 0.5f;
+		if ( LifeState != LifeState.Alive )
+			return;
+
+		if ( !IsClient )
+			return;
+
+		if ( TimeSinceLastFootstep < 0.2f )
+			return;
+
+		volume *= GetFootstepVolume();
+
+		TimeSinceLastFootstep = 0f;
+
+		var tr = Trace.Ray( position, position + Vector3.Down * 20f )
+			.Radius( 1 )
+			.Ignore( this )
+			.Run();
+
+		if ( !tr.Hit ) return;
+
+		tr.Surface.DoFootstep( this, tr, foot, volume );
 	}
 
 	public override void BuildInput()
 	{
-		base.BuildInput();
+		OriginalViewAngles = ViewAngles;
+		InputDirection = Input.AnalogMove;
 
 		var storage = UI.Storage.Current;
 		var cooking = UI.Cooking.Current;
@@ -282,7 +331,21 @@ public partial class ForsakenPlayer : Player, IPersistent
 
 		HasDialogOpen = UI.Dialog.IsActive();
 
-		if ( Input.StopProcessing ) return;
+		if ( Input.StopProcessing )
+			return;
+
+		var look = Input.AnalogLook;
+
+		if ( ViewAngles.pitch > 90f || ViewAngles.pitch < -90f )
+		{
+			look = look.WithYaw( look.yaw * -1f );
+		}
+
+		var viewAngles = ViewAngles;
+		viewAngles += look;
+		viewAngles.pitch = viewAngles.pitch.Clamp( -89f, 89f );
+		viewAngles.roll = 0f;
+		ViewAngles = viewAngles.Normal;
 
 		var mouseDelta = Input.MouseDelta / new Vector2( Screen.Width, Screen.Height );
 
@@ -333,32 +396,6 @@ public partial class ForsakenPlayer : Player, IPersistent
 		}
 	}
 
-	public override void Respawn()
-	{
-		Controller = new MoveController
-		{
-			SprintSpeed = 200f,
-			WalkSpeed = 100f
-		};
-
-		EnableAllCollisions = true;
-		EnableDrawing = true;
-		LifeState = LifeState.Alive;
-		Calories = 100f;
-		Hydration = 30f;
-		Stamina = 100f;
-		Health = 100f;
-		Velocity = Vector3.Zero;
-		WaterLevel = 0f;
-
-		CreateHull();
-		GiveInitialItems();
-		InitializeWeapons();
-		ResetCursor();
-
-		base.Respawn();
-	}
-
 	public override void StartTouch( Entity other )
 	{
 		var emitter = other.FindParentOfType<IHeatEmitter>();
@@ -405,16 +442,24 @@ public partial class ForsakenPlayer : Player, IPersistent
 		}
 
 		LastDamageTaken = info;
+
+		if ( LifeState == LifeState.Dead )
+			return;
+
 		base.TakeDamage( info );
+
+		this.ProceduralHitReaction( info );
 	}
 
 	public override void OnKilled()
 	{
 		BecomeRagdollOnServer( LastDamageTaken.Force, LastDamageTaken.BoneIndex );
 
+		GameManager.Current?.OnKilled( this );
+
 		EnableAllCollisions = false;
 		EnableDrawing = false;
-		Controller = null;
+		LifeState = LifeState.Dead;
 
 		ClearCraftingQueue();
 
@@ -440,44 +485,101 @@ public partial class ForsakenPlayer : Player, IPersistent
 
 	public override void FrameSimulate( Client cl )
 	{
+		if ( LifeState == LifeState.Alive )
+		{
+			Controller?.FrameSimulate();
+		}
+
 		SimulateConstruction();
 		SimulateDeployable();
 	}
 
 	public override void Simulate( Client client )
 	{
-		base.Simulate( client );
-
-		if ( Stamina <= 10f )
-			IsOutOfBreath = true;
-		else if ( IsOutOfBreath && Stamina >= 25f )
-			IsOutOfBreath = false;
-
-		Projectiles.Simulate();
-
-		SimulateAnimation();
-
-		if ( IsServer )
+		if ( LifeState == LifeState.Dead )
 		{
-			SimulateNeeds();
-			SimulateTimedAction();
-		}
-		
-		SimulateCrafting();
-		SimulateOpenContainers();
-
-		if ( !HasDialogOpen )
-		{
-			if ( SimulateContextActions() )
-				return;
+			if ( TimeSinceLastKilled > 3f && IsServer )
+			{
+				Respawn();
+			}
 		}
 
-		SimulateAmmoType();
-		SimulateHotbar();
-		SimulateInventory();
-		SimulateConstruction();
-		SimulateDeployable();
-		SimulateActiveChild( client, ActiveChild );
+		if ( LifeState == LifeState.Alive )
+		{
+			Controller?.Simulate();
+
+			if ( Stamina <= 10f )
+				IsOutOfBreath = true;
+			else if ( IsOutOfBreath && Stamina >= 25f )
+				IsOutOfBreath = false;
+
+			Projectiles.Simulate();
+
+			SimulateAnimation();
+
+			if ( IsServer )
+			{
+				SimulateNeeds();
+				SimulateTimedAction();
+			}
+
+			SimulateCrafting();
+			SimulateOpenContainers();
+
+			if ( !HasDialogOpen )
+			{
+				if ( SimulateContextActions() )
+					return;
+			}
+
+			SimulateAmmoType();
+			SimulateHotbar();
+			SimulateInventory();
+			SimulateConstruction();
+			SimulateDeployable();
+			SimulateActiveChild( ActiveChild );
+		}
+	}
+
+	protected virtual float GetFootstepVolume()
+	{
+		return Velocity.WithZ( 0 ).Length.LerpInverse( 0f, 200f ) * 0.5f;
+	}
+
+	protected virtual void CreateHull()
+	{
+		SetupPhysicsFromAABB( PhysicsMotionType.Keyframed, new Vector3( -16f, -16f, 0f ), new Vector3( 16f, 16f, 72f ) );
+		EnableHitboxes = true;
+	}
+
+	protected virtual void SimulateActiveChild( Entity child )
+	{
+		if ( LastActiveChild != child )
+		{
+			OnActiveChildChanged( LastActiveChild, child );
+			LastActiveChild = child;
+		}
+
+		if ( !LastActiveChild.IsValid() )
+			return;
+
+		if ( LastActiveChild.IsAuthority )
+		{
+			LastActiveChild.Simulate( Client );
+		}
+	}
+
+	protected virtual void OnActiveChildChanged( Entity previous, Entity next )
+	{
+		if ( previous is Weapon previousWeapon )
+		{
+			previousWeapon?.ActiveEnd( this, previousWeapon.Owner != this );
+		}
+
+		if ( next is Weapon nextWeapon )
+		{
+			nextWeapon?.ActiveStart( this );
+		}
 	}
 
 	[Event.Tick.Server]

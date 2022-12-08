@@ -2,20 +2,20 @@
 
 namespace Facepunch.Forsaken;
 
-public class MoveDuck : BaseNetworkable
+public class DuckController
 {
-	public BasePlayerController Controller;
-	public bool IsActive { get; set; }
+	public MoveController Controller { get; private set; }
+	public bool IsActive { get; private set; }
 
 	private Vector3 OriginalMins { get; set; }
 	private Vector3 OriginalMaxs { get; set; }
 
-	public MoveDuck( BasePlayerController controller )
+	public DuckController( MoveController controller )
 	{
 		Controller = controller;
 	}
 
-	public virtual void PreTick() 
+	public void PreTick() 
 	{
 		var doesWantToDuck = Input.Down( InputButton.Duck );
 
@@ -30,24 +30,23 @@ public class MoveDuck : BaseNetworkable
 		if ( IsActive )
 		{
 			Controller.SetTag( "ducked" );
-			Controller.EyeLocalPosition *= 0.8f;
+			Controller.Player.EyeLocalPosition *= 0.8f;
 		}
 	}
 
-	protected virtual void TryDuck()
+	protected void TryDuck()
 	{
 		IsActive = true;
 	}
 
-	protected virtual void TryUnDuck()
+	protected void TryUnDuck()
 	{
-		var pm = Controller.TraceBBox( Controller.Position, Controller.Position, OriginalMins, OriginalMaxs );
+		var pm = Controller.TraceBBox( Controller.Player.Position, Controller.Player.Position, OriginalMins, OriginalMaxs );
 		if ( pm.StartedSolid ) return;
-
 		IsActive = false;
 	}
 
-	public virtual void UpdateBBox( ref Vector3 mins, ref Vector3 maxs, float scale )
+	public void UpdateBBox( ref Vector3 mins, ref Vector3 maxs, float scale )
 	{
 		OriginalMins = mins;
 		OriginalMaxs = maxs;
@@ -56,7 +55,7 @@ public class MoveDuck : BaseNetworkable
 			maxs = maxs.WithZ( 36 * scale );
 	}
 
-	public virtual float GetWishSpeed()
+	public float GetWishSpeed()
 	{
 		if ( !IsActive ) return -1f;
 		return 97f;
