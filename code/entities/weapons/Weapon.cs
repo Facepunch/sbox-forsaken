@@ -423,11 +423,6 @@ public abstract partial class Weapon : BaseWeapon
 		Host.AssertClient();
 	}
 
-	public override void CreateHudElements()
-	{
-		if ( Local.Hud == null ) return;
-	}
-
 	public bool IsUsable()
 	{
 		if ( IsMelee || ClipSize == 0 || AmmoClip > 0 )
