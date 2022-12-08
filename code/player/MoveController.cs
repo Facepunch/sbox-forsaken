@@ -130,6 +130,9 @@ public partial class MoveController
 
 	public virtual void Simulate()
 	{
+		Events?.Clear();
+		Tags?.Clear();
+
 		Player.EyeLocalPosition = Vector3.Up * Scale( EyeHeight );
 		UpdateBBox();
 
