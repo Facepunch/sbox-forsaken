@@ -62,7 +62,6 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 	public bool HasTimedAction => TimedAction is not null;
 	public bool IsSleeping => !Client.IsValid();
 
-	[Net, Predicted] private Entity LastActiveChild { get; set; }
 	[Net] private int StructureType { get; set; }
 	[Net] public long SteamId { get; private set; }
 
@@ -74,6 +73,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 	private Entity LastHoveredEntity { get; set; }
 	private List<ActiveEffect> ActiveEffects { get; set; } = new();
 	private TimeSince TimeSinceLastKilled { get; set; }
+	private Entity LastActiveChild { get; set; }
 
 	public Vector3 EyePosition
 	{
@@ -554,10 +554,13 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 
 	protected virtual void SimulateActiveChild( Entity child )
 	{
-		if ( LastActiveChild != child )
+		if ( Prediction.FirstTime )
 		{
-			OnActiveChildChanged( LastActiveChild, child );
-			LastActiveChild = child;
+			if ( LastActiveChild != child )
+			{
+				OnActiveChildChanged( LastActiveChild, child );
+				LastActiveChild = child;
+			}
 		}
 
 		if ( !LastActiveChild.IsValid() )
