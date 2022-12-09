@@ -68,7 +68,7 @@ public partial class ReloadMenu : RadialMenu
 
 	private void Select( string uniqueId )
 	{
-		var type = TypeLibrary.GetDescription( uniqueId );
+		var type = TypeLibrary.GetType( uniqueId );
 		ForsakenPlayer.Me.SetAmmoType( uniqueId );
 	}
 }

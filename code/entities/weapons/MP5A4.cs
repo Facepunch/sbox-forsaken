@@ -10,7 +10,7 @@ public partial class MP5A4 : ProjectileWeapon<CrossbowBoltProjectile>
 	public override int ViewModelMaterialGroup => 1;
 	public override string MuzzleFlashEffect => "particles/pistol_muzzleflash.vpcf";
 	public override string HitSound => null;
-	public override DamageFlags DamageType => DamageFlags.Bullet;
+	public override string DamageType => "bullet";
 	public override float PrimaryRate => 10f;
 	public override float SecondaryRate => 1f;
 	public override float Speed => 1500f;
@@ -57,7 +57,7 @@ public partial class MP5A4 : ProjectileWeapon<CrossbowBoltProjectile>
 				.WithWeapon( this )
 				.WithPosition( trace.EndPosition )
 				.WithForce( projectile.Velocity * 0.1f )
-				.WithFlag( DamageType )
+				.WithTag( DamageType )
 				.UsingTraceResult( trace );
 
 			info.Damage = GetDamageFalloff( projectile.StartPosition.Distance( victim.Position ), WeaponItem.Damage );

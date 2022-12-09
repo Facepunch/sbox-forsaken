@@ -20,7 +20,7 @@ public abstract partial class Weapon : BaseWeapon
 	public virtual bool UnlimitedAmmo => false;
 	public virtual bool IsPassive => false;
 	public virtual float ChargeAttackDuration => 2f;
-	public virtual DamageFlags DamageType => DamageFlags.Bullet;
+	public virtual string DamageType => "bullet";
 	public virtual string ReloadSoundName => string.Empty;
 	public virtual CitizenAnimationHelper.HoldTypes HoldType => CitizenAnimationHelper.HoldTypes.Pistol;
 	public virtual int ViewModelMaterialGroup => 0;
@@ -342,7 +342,7 @@ public abstract partial class Weapon : BaseWeapon
 				{
 					var damageInfo = new DamageInfo()
 						.WithPosition( trace.EndPosition )
-						.WithFlag( DamageFlags.Blunt )
+						.WithTag( "blunt" )
 						.WithForce( Owner.AimRay.Forward * 100f * force )
 						.UsingTraceResult( trace )
 						.WithAttacker( Owner )
@@ -395,7 +395,7 @@ public abstract partial class Weapon : BaseWeapon
 				{
 					var damageInfo = new DamageInfo()
 						.WithPosition( trace.EndPosition )
-						.WithFlag( DamageType )
+						.WithTag( DamageType )
 						.WithForce( forward * 100f * force )
 						.UsingTraceResult( trace )
 						.WithAttacker( Owner )
@@ -543,7 +543,7 @@ public abstract partial class Weapon : BaseWeapon
 			.WithWeapon( this )
 			.WithPosition( position )
 			.WithForce( force )
-			.WithFlag( DamageType );
+			.WithTag( DamageType );
 
 		damageInfo.Damage = damage;
 

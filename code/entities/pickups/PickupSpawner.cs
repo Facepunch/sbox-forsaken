@@ -57,7 +57,7 @@ public class PickupSpawner
 
 				if ( trace.Hit && trace.Entity.IsWorld )
 				{
-					var description = TypeLibrary.GetDescription( Type );
+					var description = TypeLibrary.GetType( Type );
 					var pickup = description.Create<ResourcePickup>();
 					pickup.Position = trace.EndPosition;
 					pickup.Rotation = Rotation.Identity.RotateAroundAxis( Vector3.Up, Rand.Float() * 360f );

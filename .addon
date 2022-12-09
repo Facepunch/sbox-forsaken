@@ -14,7 +14,6 @@
   ],
   "HasCode": true,
   "CodePath": "/code/",
-  "RootNamespace": null,
   "Metadata": {
     "MaxPlayers": 32,
     "MinPlayers": 1,

@@ -66,7 +66,7 @@ public static partial class BinaryReaderExtension
 
 		if ( container == null )
 		{
-			var type = TypeLibrary.GetDescription( typeName );
+			var type = TypeLibrary.GetType( typeName );
 
 			if ( type == null )
 			{

@@ -265,7 +265,6 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 		Stamina = 100f;
 		Health = 100f;
 		Velocity = Vector3.Zero;
-		WaterLevel = 0f;
 
 		CreateHull();
 		GiveInitialItems();
@@ -435,7 +434,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 				particles.SetForward( 0, info.Force.Normal );
 			}
 
-			if ( info.Flags.HasFlag( DamageFlags.Blunt ) )
+			if ( info.HasTag( "blunt" ) )
 			{
 				ApplyAbsoluteImpulse( info.Force );
 			}
@@ -874,11 +873,11 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 			return;
 		}
 
-		var structureType = TypeLibrary.GetDescriptionByIdent( StructureType );
+		var structureType = TypeLibrary.GetTypeByIdent( StructureType );
 
 		if ( deployable.IsValid() )
 		{
-			structureType = TypeLibrary.GetDescription( deployable.Deployable );
+			structureType = TypeLibrary.GetType( deployable.Deployable );
 		}
 
 		if ( structureType == null )

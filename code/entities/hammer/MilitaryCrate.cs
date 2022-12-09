@@ -1,4 +1,4 @@
-﻿using SandboxEditor;
+﻿using Editor;
 
 namespace Facepunch.Forsaken;
 

@@ -127,7 +127,7 @@ public static class PersistenceSystem
 
 		foreach ( var entity in entities )
 		{
-			var description = TypeLibrary.GetDescription( entity.GetType() );
+			var description = TypeLibrary.GetType( entity.GetType() );
 			writer.Write( description.Name );
 			writer.Write( entity.Serialize );
 		}
@@ -141,7 +141,7 @@ public static class PersistenceSystem
 		for ( var i = 0; i < count; i++ )
 		{
 			var typeName = reader.ReadString();
-			var type = TypeLibrary.GetDescription( typeName );
+			var type = TypeLibrary.GetType( typeName );
 			var length = reader.ReadInt32();
 			var data = reader.ReadBytes( length );
 

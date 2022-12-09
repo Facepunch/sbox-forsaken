@@ -574,7 +574,7 @@ public static partial class InventorySystem
 
 		foreach ( var resource in resources )
 		{
-			var type = TypeLibrary.GetDescription( resource.GetType() );
+			var type = TypeLibrary.GetType( resource.GetType() );
 
 			if ( type == null )
 			{
@@ -585,7 +585,7 @@ public static partial class InventorySystem
 			var attribute = type.GetAttribute<ItemClassAttribute>();
 			if ( attribute == null ) continue;
 
-			var itemType = TypeLibrary.GetDescription( attribute.Type );
+			var itemType = TypeLibrary.GetType( attribute.Type );
 			var instance = itemType.Create<InventoryItem>();
 
 			if ( instance is IResourceItem a )
@@ -596,7 +596,7 @@ public static partial class InventorySystem
 			AddDefinition( resource.UniqueId, instance );
 		}
 
-		var types = TypeLibrary.GetDescriptions<InventoryItem>();
+		var types = TypeLibrary.GetTypes<InventoryItem>();
 
 		foreach ( var type in types )
 		{

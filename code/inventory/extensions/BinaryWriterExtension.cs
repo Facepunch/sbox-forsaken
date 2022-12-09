@@ -41,7 +41,7 @@ public static partial class BinaryWriterExtension
 
 	public static void Write( this BinaryWriter self, InventoryContainer container )
 	{
-		var typeDesc = TypeLibrary.GetDescription( container.GetType() );
+		var typeDesc = TypeLibrary.GetType( container.GetType() );
 
 		self.Write( typeDesc.Name );
 		self.Write( container.ParentId );

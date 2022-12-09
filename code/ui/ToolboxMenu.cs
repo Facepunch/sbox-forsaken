@@ -21,9 +21,9 @@ public partial class ToolboxMenu : RadialMenu
 	{
 		var descriptions = new List<TypeDescription>();
 
-		descriptions.Add( TypeLibrary.GetDescription<Foundation>() );
-		descriptions.Add( TypeLibrary.GetDescription<Doorway>() );
-		descriptions.Add( TypeLibrary.GetDescription<Wall>() );
+		descriptions.Add( TypeLibrary.GetType<Foundation>() );
+		descriptions.Add( TypeLibrary.GetType<Doorway>() );
+		descriptions.Add( TypeLibrary.GetType<Wall>() );
 
 		var player = ForsakenPlayer.Me;
 
@@ -72,7 +72,7 @@ public partial class ToolboxMenu : RadialMenu
 
 	private void Select( string typeName )
 	{
-		var type = TypeLibrary.GetDescription( typeName );
+		var type = TypeLibrary.GetType( typeName );
 		ForsakenPlayer.Me.SetStructureType( type );
 	}
 }
