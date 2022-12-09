@@ -19,7 +19,7 @@ public partial class TopDownCamera
 
 			Camera.Position = Camera.Position.LerpTo( target, Time.Delta * MoveSpeed );
 			Camera.Rotation = Rotation.LookAt( Vector3.Down );
-			Camera.FieldOfView = Screen.CreateVerticalFieldOfView( 60f );
+			Camera.FieldOfView = Screen.CreateVerticalFieldOfView( 50f );
 			Camera.FirstPersonViewer = null;
 		}
 	}
