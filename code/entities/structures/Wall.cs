@@ -30,7 +30,7 @@ public partial class Wall : Structure
 
 	public override void OnNewModel( Model model )
 	{
-		if ( IsServer || IsClientOnly )
+		if ( Game.IsServer || IsClientOnly )
 		{
 			var socket = AddSocket( "center" );
 			socket.ConnectAny.Add( "wall" );

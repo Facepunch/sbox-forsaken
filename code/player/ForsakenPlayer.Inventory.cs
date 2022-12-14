@@ -415,7 +415,7 @@ public partial class ForsakenPlayer
 			.WorldOnly()
 			.Run();
 
-		if ( IsServer )
+		if ( Game.IsServer )
 		{
 			if ( Input.Released( InputButton.Drop ) )
 			{
@@ -515,7 +515,7 @@ public partial class ForsakenPlayer
 
 		if ( item is IConsumableItem consumable )
 		{
-			if ( IsServer )
+			if ( Game.IsServer )
 			{
 				consumable.Consume( this );
 			}

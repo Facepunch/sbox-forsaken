@@ -27,9 +27,6 @@ public static partial class InventorySystem
 	private static ulong NextContainerId { get; set; }
 	private static ulong NextItemId { get; set; }
 
-	public static bool IsServer => Host.IsServer;
-	public static bool IsClient => Host.IsClient;
-
 	public static void Initialize()
 	{
 		ReloadDefinitions();
@@ -62,7 +59,7 @@ public static partial class InventorySystem
 
 	public static ulong Register( InventoryContainer container, ulong inventoryId = 0 )
 	{
-		if ( inventoryId == 0 && IsClient )
+		if ( inventoryId == 0 && Game.IsClient )
 		{
 			throw new Exception( "Cannot register a new InventoryContainer client-side without an explicit inventory id!" );
 		}
@@ -258,12 +255,12 @@ public static partial class InventorySystem
 		return (CreateItem( uniqueId ) as T);
 	}
 
-	public static void ClientJoined( Client client )
+	public static void ClientJoined( IClient client )
 	{
 		client.Components.Create<InventoryViewer>();
 	}
 
-	public static void ClientDisconnected( Client client )
+	public static void ClientDisconnected( IClient client )
 	{
 		foreach ( var container in Containers.Values )
 		{
@@ -416,7 +413,7 @@ public static partial class InventorySystem
 			return;
 		}
 
-		if ( IsServer )
+		if ( Game.IsServer )
 		{
 			var item = fromInventory.GetFromSlot( fromSlot );
 
@@ -454,7 +451,7 @@ public static partial class InventorySystem
 			return;
 		}
 
-		if ( IsServer )
+		if ( Game.IsServer )
 		{
 			fromInventory.Split( toInventory, fromSlot, toSlot );
 		}
@@ -479,7 +476,7 @@ public static partial class InventorySystem
 			return;
 		}
 
-		if ( IsServer )
+		if ( Game.IsServer )
 		{
 			fromInventory.Move( toInventory, fromSlot, toSlot );
 		}

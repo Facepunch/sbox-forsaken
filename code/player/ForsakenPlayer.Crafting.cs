@@ -41,7 +41,7 @@ public partial class ForsakenPlayer
 	/// </summary>
 	public void ClearCraftingQueue()
 	{
-		Host.AssertServer();
+		Game.AssertServer();
 
 		for ( var i = CraftingQueue.Count - 1; i >= 0; i-- )
 		{
@@ -72,7 +72,7 @@ public partial class ForsakenPlayer
 	/// <returns></returns>
 	public bool CancelCrafting( CraftingQueueEntry entry )
 	{
-		Host.AssertServer();
+		Game.AssertServer();
 
 		var index = CraftingQueue.IndexOf( entry );
 		if ( index < 0 ) return false;
@@ -117,7 +117,7 @@ public partial class ForsakenPlayer
 	/// </summary>
 	public bool AddToCraftingQueue( RecipeResource recipe, int quantity = 1 )
 	{
-		Host.AssertServer();
+		Game.AssertServer();
 
 		if ( !CanCraftRecipe( recipe, quantity ) )
 			return false;
@@ -154,7 +154,7 @@ public partial class ForsakenPlayer
 
 	private void SimulateCrafting()
 	{
-		if ( IsServer && CraftingQueue.Count > 0 )
+		if ( Game.IsServer && CraftingQueue.Count > 0 )
 		{
 			var entry = CraftingQueue.First();
 

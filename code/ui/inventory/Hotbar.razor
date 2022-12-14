@@ -42,7 +42,7 @@
 
     private bool IsHidden()
     {
-        if ( Local.Pawn.LifeState == LifeState.Dead )
+        if ( Game.LocalPawn.LifeState == LifeState.Dead )
             return true;
 
         if ( Dialog.IsActive() )

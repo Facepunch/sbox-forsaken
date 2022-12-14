@@ -52,7 +52,7 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider
 	{
 		if ( action == OpenAction )
 		{
-			if ( IsServer )
+			if ( Game.IsServer )
 			{
 				Open( player );
 			}
@@ -93,12 +93,12 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider
 
 		if ( !possibleItems.Any() ) return;
 
-		var itemsToSpawn = Rand.Int( 1, SlotLimit );
+		var itemsToSpawn = Game.Random.Int( 1, SlotLimit );
 
 		for ( var i = 0; i < itemsToSpawn; i++ )
 		{
 			var u = possibleItems.Sum( p => p.SpawnChance );
-			var r = Rand.Float() * u;
+			var r = Game.Random.Float() * u;
 			var s = 0f;
 
 			foreach ( var item in possibleItems )

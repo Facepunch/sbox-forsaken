@@ -51,9 +51,9 @@ public class WeaponFlashlightItem : AttachmentItem
 		DestroyEntity();
 	}
 
-	public override void Simulate( Client client )
+	public override void Simulate( IClient client )
 	{
-		if ( IsServer && Input.Released( InputButton.Flashlight ) )
+		if ( Game.IsServer && Input.Released( InputButton.Flashlight ) )
 		{
 			IsEnabled = !IsEnabled;
 			IsDirty = true;
@@ -85,7 +85,7 @@ public class WeaponFlashlightItem : AttachmentItem
 
 	private void DestroyEntity()
 	{
-		if ( IsClient ) return;
+		if ( Game.IsClient ) return;
 
 		if ( AttachmentEntity.IsValid() )
 		{
@@ -102,7 +102,7 @@ public class WeaponFlashlightItem : AttachmentItem
 
 	private void CreateEntity( Weapon weapon )
 	{
-		if ( IsClient ) return;
+		if ( Game.IsClient ) return;
 
 		DestroyEntity();
 

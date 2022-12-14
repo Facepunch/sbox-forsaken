@@ -97,14 +97,14 @@ public static partial class BinaryReaderExtension
 				item.IsValid = true;
 				item.Parent = container;
 
-				if ( Host.IsServer )
+				if ( Game.IsServer )
 					container.Replace( (ushort)i, item );
 				else
 					container.ItemList[i] = item;
 			}
 			else
 			{
-				if ( Host.IsServer )
+				if ( Game.IsServer )
 					container.ClearSlot( (ushort)i );
 				else
 					container.ItemList[i] = null;

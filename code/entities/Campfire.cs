@@ -62,14 +62,14 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 	{
 		if ( action == OpenAction )
 		{
-			if ( IsServer )
+			if ( Game.IsServer )
 			{
 				Open( player );
 			}
 		}
 		else if ( action == PickupAction )
 		{
-			if ( IsServer )
+			if ( Game.IsServer )
 			{
 				var item = InventorySystem.CreateItem<CampfireItem>();
 				player.TryGiveItem( item );
@@ -79,7 +79,7 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 		}
 		else if ( action == IgniteAction )
 		{
-			if ( IsServer )
+			if ( Game.IsServer )
 			{
 				if ( Processor.Fuel.IsEmpty )
 				{
@@ -92,7 +92,7 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 		}
 		else if ( action == ExtinguishAction )
 		{
-			if ( IsServer )
+			if ( Game.IsServer )
 			{
 				Processor.Stop();
 			}
@@ -161,7 +161,7 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 
 	private void OnStarted()
 	{
-		if ( Host.IsServer ) return;
+		if ( Game.IsServer ) return;
 
 		if ( !DynamicLight.IsValid() )
 		{
@@ -182,7 +182,7 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 
 	private void OnStopped()
 	{
-		if ( Host.IsServer ) return;
+		if ( Game.IsServer ) return;
 
 		ParticleEffect?.Destroy();
 		ParticleEffect = null;

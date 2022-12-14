@@ -17,13 +17,10 @@ public class InventoryContainer : IValid
 	public event SlotChangedCallback DataChanged;
 	public event ItemGivenCallback ItemGiven;
 	public event ItemTakenCallback ItemTaken;
-	public event Action<Client> ConnectionRemoved;
-	public event Action<Client> ConnectionAdded;
+	public event Action<IClient> ConnectionRemoved;
+	public event Action<IClient> ConnectionAdded;
 
 	private bool InternalIsDirty;
-
-	public bool IsServer => Host.IsServer;
-	public bool IsClient => Host.IsClient;
 
 	public bool IsDirty
 	{
@@ -31,7 +28,7 @@ public class InventoryContainer : IValid
 
 		set
 		{
-			if ( IsClient ) return;
+			if ( Game.IsClient ) return;
 			if ( InternalIsDirty == value ) return;
 
 			InternalIsDirty = value;
@@ -50,7 +47,7 @@ public class InventoryContainer : IValid
 	public ulong InventoryId { get; private set; }
 	public bool IsTakeOnly { get; set; }
 	public Entity Entity { get; private set; }
-	public List<Client> Connections { get; }
+	public List<IClient> Connections { get; }
 	public List<InventoryItem> ItemList { get; }
 	public ushort SlotLimit { get; private set; }
 	public bool IsEmpty => !ItemList.Any( i => i.IsValid() );
@@ -72,7 +69,7 @@ public class InventoryContainer : IValid
 	public InventoryContainer()
 	{
 		ItemList = new List<InventoryItem>();
-		Connections = new List<Client>();
+		Connections = new List<IClient>();
 	}
 
 	public void SetEntity( Entity entity )
@@ -163,7 +160,7 @@ public class InventoryContainer : IValid
 		return null;
 	}
 
-	public void AddConnection( Client connection )
+	public void AddConnection( IClient connection )
 	{
 		if ( !Connections.Contains( connection ) )
 		{
@@ -172,7 +169,7 @@ public class InventoryContainer : IValid
 		}
 	}
 
-	public void RemoveConnection( Client connection )
+	public void RemoveConnection( IClient connection )
 	{
 		if ( Connections.Contains( connection ) )
 		{
@@ -181,7 +178,7 @@ public class InventoryContainer : IValid
 		}
 	}
 
-	public bool IsConnected( Client connection )
+	public bool IsConnected( IClient connection )
 	{
 		return Connections.Contains( connection );
 	}
@@ -196,9 +193,9 @@ public class InventoryContainer : IValid
 		InventoryId = inventoryId;
 	}
 
-	public IEnumerable<Client> GetRecipients()
+	public IEnumerable<IClient> GetRecipients()
 	{
-		var recipients = Client.All
+		var recipients = Game.Clients
 			.Where( c => c.Components.TryGet<InventoryViewer>( out var viewer )
 			&& viewer.ContainerIds.Contains( InventoryId ) )
 			.Concat( Connections );
@@ -262,7 +259,7 @@ public class InventoryContainer : IValid
 		if ( !target.CanGiveItem( toSlot, item ) )
 			return false;
 
-		if ( IsClient )
+		if ( Game.IsClient )
 		{
 			InventorySystem.SendSplitEvent( this, target, fromSlot, toSlot );
 			return true;
@@ -318,7 +315,7 @@ public class InventoryContainer : IValid
 		if ( !target.CanGiveItem( toSlot, fromInstance ) )
 			return false;
 
-		if ( IsClient )
+		if ( Game.IsClient )
 		{
 			InventorySystem.SendMoveEvent( this, target, fromSlot, toSlot );
 			return true;
@@ -427,7 +424,7 @@ public class InventoryContainer : IValid
 
 	public InventoryItem ClearSlot( ushort slot, bool clearItemContainer = true )
 	{
-		if ( IsClient )
+		if ( Game.IsClient )
 		{
 			return null;
 		}
@@ -504,7 +501,7 @@ public class InventoryContainer : IValid
 
 	public InventoryItem Replace( ushort slot, InventoryItem instance )
 	{
-		if ( IsClient )
+		if ( Game.IsClient )
 		{
 			return null;
 		}
@@ -539,7 +536,7 @@ public class InventoryContainer : IValid
 
 	public bool Give( InventoryItem instance, ushort slot )
 	{
-		if ( IsClient )
+		if ( Game.IsClient )
 		{
 			return false;
 		}
@@ -838,7 +835,7 @@ public class InventoryContainer : IValid
 
 	private void SendGiveEvent( ushort slot, InventoryItem instance )
 	{
-		if ( IsClient )
+		if ( Game.IsClient )
 		{
 			return;
 		}
@@ -858,7 +855,7 @@ public class InventoryContainer : IValid
 
 	private void SendTakeEvent( ushort slot, InventoryItem instance )
 	{
-		if ( IsClient )
+		if ( Game.IsClient )
 		{
 			return;
 		}

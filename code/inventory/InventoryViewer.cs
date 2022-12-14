@@ -7,7 +7,7 @@ public partial class InventoryViewer : EntityComponent, IValid
 {
 	public bool IsValid => Entity.IsValid();
 
-	[Net] public List<ulong> ContainerIds { get; private set; } = new List<ulong>();
+	[Net] public IList<ulong> ContainerIds { get; private set; } = new List<ulong>();
 
 	/// <summary>
 	/// The container that this viewer is currently viewing.

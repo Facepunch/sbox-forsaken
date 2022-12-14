@@ -19,7 +19,7 @@ public partial class Cooking
     [ClientRpc]
     public static void OpenForClient( string name, Entity entity, byte[] fuel, byte[] input, byte[] output )
     {
-        if ( Local.Pawn is not ForsakenPlayer ) return;
+        if ( Game.LocalPawn is not ForsakenPlayer ) return;
 		if ( entity is not ICookerEntity cooker ) return;
 
         var storage = Current;

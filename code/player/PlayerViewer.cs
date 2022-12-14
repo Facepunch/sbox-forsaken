@@ -26,7 +26,7 @@ public class PlayerViewer : RenderHook
 
 		RenderTexture = Texture.CreateRenderTarget( "Player Viewer", ImageFormat.RGBA8888, Screen.Size, RenderTexture );
 
-		PeekCamera.World = Map.Scene;
+		PeekCamera.World = Game.SceneWorld;
 		PeekCamera.Name = "PlayerViewer";
 
 		float znear = PeekCamera.ZNear;

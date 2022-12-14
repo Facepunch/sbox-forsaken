@@ -46,12 +46,12 @@ public class PickupSpawner
 
 		if ( availablePickupsToSpawn > 0 )
 		{
-			var pickupsToSpawn = Rand.Int( Math.Min( MinPickupsPerSpawn, availablePickupsToSpawn ), Math.Min( MaxPickupsPerSpawn, availablePickupsToSpawn ) );
+			var pickupsToSpawn = Game.Random.Int( Math.Min( MinPickupsPerSpawn, availablePickupsToSpawn ), Math.Min( MaxPickupsPerSpawn, availablePickupsToSpawn ) );
 			var attemptsRemaining = 10000;
 
 			while ( pickupsToSpawn > 0 && attemptsRemaining > 0 )
 			{
-				var position = Origin + new Vector3( Rand.Float( -1f, 1f ) * Range, Rand.Float( -1f, 1f ) * Range );
+				var position = Origin + new Vector3( Game.Random.Float( -1f, 1f ) * Range, Game.Random.Float( -1f, 1f ) * Range );
 				var trace = Trace.Ray( position + Vector3.Up * 5000f, position + Vector3.Down * 5000f )
 					.Run();
 
@@ -60,7 +60,7 @@ public class PickupSpawner
 					var description = TypeLibrary.GetType( Type );
 					var pickup = description.Create<ResourcePickup>();
 					pickup.Position = trace.EndPosition;
-					pickup.Rotation = Rotation.Identity.RotateAroundAxis( Vector3.Up, Rand.Float() * 360f );
+					pickup.Rotation = Rotation.Identity.RotateAroundAxis( Vector3.Up, Game.Random.Float() * 360f );
 					pickupsToSpawn--;
 				}
 				else

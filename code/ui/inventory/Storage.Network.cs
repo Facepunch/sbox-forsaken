@@ -15,7 +15,7 @@ public partial class Storage
     [ClientRpc]
     public static void OpenForClient( string name, Entity entity, byte[] data )
     {
-        if ( Local.Pawn is not ForsakenPlayer ) return;
+        if ( Game.LocalPawn is not ForsakenPlayer ) return;
 
         var container = InventoryContainer.Deserialize( data );
         var storage = Current;

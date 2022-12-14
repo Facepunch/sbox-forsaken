@@ -11,7 +11,7 @@ public partial class Draggable : Panel
 
 	public static void Start( IDraggable draggable, DraggableMode mode )
 	{
-		var active = Local.Hud.AddChild<Draggable>();
+		var active = Game.RootPanel.AddChild<Draggable>();
 		active.SetMode( mode );
 		active.SetDraggable( draggable );
 		active.UpdatePosition();
@@ -132,7 +132,7 @@ public partial class Draggable : Panel
 
 	private IDroppable FindDroppable( Panel root = null )
 	{
-		root ??= Local.Hud;
+		root ??= Game.RootPanel;
 
 		foreach ( var child in root.Children.Reverse() )
 		{

@@ -90,7 +90,7 @@ public partial class PlayerCorpse : ModelEntity, IContextActionProvider
 	{
 		if ( action == SearchAction )
 		{
-			if ( IsServer )
+			if ( Game.IsServer )
 			{
 				Search( player );
 			}

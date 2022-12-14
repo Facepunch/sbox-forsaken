@@ -37,9 +37,6 @@ public partial class MoveController
 	public ForsakenPlayer Player { get; private set; }
 	public DuckController Duck { get; private set; }
 
-	public bool IsServer => Host.IsServer;
-	public bool IsClient => Host.IsClient;
-
 	private int StuckTries { get; set; } = 0;
 
 	public MoveController( ForsakenPlayer player )
@@ -328,7 +325,7 @@ public partial class MoveController
 			return false;
 		}
 
-		if ( IsClient ) return true;
+		if ( Game.IsClient ) return true;
 
 		var attemptsPerTick = 20;
 

@@ -61,14 +61,14 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 	{
 		if ( action == OpenAction )
 		{
-			if ( IsServer )
+			if ( Game.IsServer )
 			{
 				Open( player );
 			}
 		}
 		else if ( action == PickupAction )
 		{
-			if ( IsServer )
+			if ( Game.IsServer )
 			{
 				var item = InventorySystem.CreateItem<CampfireItem>();
 				player.TryGiveItem( item );
@@ -78,7 +78,7 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 		}
 		else if ( action == IgniteAction )
 		{
-			if ( IsServer )
+			if ( Game.IsServer )
 			{
 				if ( Processor.Fuel.IsEmpty )
 				{
@@ -91,7 +91,7 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 		}
 		else if ( action == ExtinguishAction )
 		{
-			if ( IsServer )
+			if ( Game.IsServer )
 			{
 				Processor.Stop();
 			}
@@ -169,7 +169,7 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 
 	private void OnStarted()
 	{
-		if ( Host.IsServer ) return;
+		if ( Game.IsServer ) return;
 
 		if ( !DynamicLight.IsValid() )
 		{
@@ -185,7 +185,7 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 
 	private void OnStopped()
 	{
-		if ( Host.IsServer ) return;
+		if ( Game.IsServer ) return;
 
 		DynamicLight?.Delete();
 		DynamicLight = null;

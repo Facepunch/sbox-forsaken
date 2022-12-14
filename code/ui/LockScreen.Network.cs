@@ -17,7 +17,7 @@ public partial class LockScreen
 	[ClientRpc]
     public static void OpenForClient( Entity entity, bool isLockMode )
     {
-        if ( Local.Pawn is not ForsakenPlayer ) return;
+        if ( Game.LocalPawn is not ForsakenPlayer ) return;
 		if ( entity is not ICodeLockable lockable ) return;
 
         var lockScreen = Current;

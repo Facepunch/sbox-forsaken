@@ -40,7 +40,7 @@ public class AttachmentItem : InventoryItem
 
 	}
 
-	public virtual void Simulate( Client client )
+	public virtual void Simulate( IClient client )
 	{
 
 	}

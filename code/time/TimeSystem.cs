@@ -47,7 +47,7 @@ public partial class TimeSystem : Entity
 	[Event.Entity.PostSpawn]
 	private static void Initialize()
 	{
-		Host.AssertServer();
+		Game.AssertServer();
 		Instance = new TimeSystem();
 	}
 

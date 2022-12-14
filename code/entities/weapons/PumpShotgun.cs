@@ -42,7 +42,7 @@ public partial class PumpShotgun : ProjectileWeapon<CrossbowBoltProjectile>
 
 	protected override void OnReloadFinish()
 	{
-		Host.AssertServer();
+		Game.AssertServer();
 
 		IsReloading = false;
 		TimeSinceReload = 0f;
@@ -87,7 +87,7 @@ public partial class PumpShotgun : ProjectileWeapon<CrossbowBoltProjectile>
 
 	protected override void OnProjectileHit( CrossbowBoltProjectile projectile, TraceResult trace )
 	{
-		if ( IsServer && trace.Entity is ForsakenPlayer victim )
+		if ( Game.IsServer && trace.Entity is ForsakenPlayer victim )
 		{
 			var info = new DamageInfo()
 				.WithAttacker( Owner )

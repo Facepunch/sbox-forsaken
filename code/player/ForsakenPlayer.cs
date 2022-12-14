@@ -4,6 +4,7 @@ using System.Linq;
 using Facepunch.Forsaken.UI;
 using Sandbox;
 using Sandbox.Component;
+using Sandbox.Diagnostics;
 
 namespace Facepunch.Forsaken;
 
@@ -16,7 +17,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 		public float AmountGiven { get; set; }
 	}
 
-	public static ForsakenPlayer Me => Local.Pawn as ForsakenPlayer;
+	public static ForsakenPlayer Me => Game.LocalPawn as ForsakenPlayer;
 
 	[Net] public string DisplayName { get; private set; }
 	[Net] public float Temperature { get; private set; }
@@ -134,7 +135,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 	{
 		Projectiles = new( this );
 
-		if ( IsServer )
+		if ( Game.IsServer )
 		{
 			CreateInventories();
 			CraftingQueue = new List<CraftingQueueEntry>();
@@ -154,9 +155,9 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 		SteamId = playerId;
 	}
 
-	public void MakePawnOf( Client client )
+	public void MakePawnOf( IClient client )
 	{
-		Host.AssertServer();
+		Game.AssertServer();
 
 		client.Pawn = this;
 
@@ -176,7 +177,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 
 	public void SetStructureType( TypeDescription type )
 	{
-		Host.AssertClient();
+		Game.AssertClient();
 		Assert.NotNull( type );
 		SetStructureTypeCmd( type.Identity );
 	}
@@ -187,7 +188,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 		Cursor = new Vector2( 0.5f, 0.5f );
 	}
 
-	public IEnumerable<Client> GetChatRecipients()
+	public IEnumerable<IClient> GetChatRecipients()
 	{
 		var clientsNearby = FindInSphere( Position, 4000f )
 			.OfType<ForsakenPlayer>()
@@ -293,7 +294,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 		if ( LifeState != LifeState.Alive )
 			return;
 
-		if ( !IsClient )
+		if ( !Game.IsClient )
 			return;
 
 		if ( TimeSinceLastFootstep < 0.2f )
@@ -482,7 +483,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 		base.OnKilled();
 	}
 
-	public override void FrameSimulate( Client cl )
+	public override void FrameSimulate( IClient cl )
 	{
 		if ( LifeState == LifeState.Alive )
 		{
@@ -493,11 +494,11 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 		SimulateDeployable();
 	}
 
-	public override void Simulate( Client client )
+	public override void Simulate( IClient client )
 	{
 		if ( LifeState == LifeState.Dead )
 		{
-			if ( TimeSinceLastKilled > 3f && IsServer )
+			if ( TimeSinceLastKilled > 3f && Game.IsServer )
 			{
 				Respawn();
 			}
@@ -516,7 +517,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 
 			SimulateAnimation();
 
-			if ( IsServer )
+			if ( Game.IsServer )
 			{
 				SimulateNeeds();
 				SimulateTimedAction();
@@ -628,7 +629,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 
 	protected override void OnDestroy()
 	{
-		if ( IsServer )
+		if ( Game.IsServer )
 		{
 			InventorySystem.Remove( Hotbar, true );
 			InventorySystem.Remove( Backpack, true );
@@ -677,7 +678,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 
 	private void SimulateAmmoType()
 	{
-		if ( IsServer )
+		if ( Game.IsServer )
 		{
 			if ( string.IsNullOrEmpty( ChangeAmmoType ) )
 				return;
@@ -701,7 +702,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 
 	private void SimulateOpenContainers()
 	{
-		if ( IsClient ) return;
+		if ( Game.IsClient ) return;
 
 		var viewer = Client.Components.Get<InventoryViewer>();
 		viewer.ClearContainers();
@@ -727,7 +728,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 		var actions = HoveredEntity as IContextActionProvider;
 		var actionId = ContextActionId;
 
-		if ( IsClient )
+		if ( Game.IsClient )
 		{
 			if ( actions.IsValid() )
 			{
@@ -793,7 +794,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 		var isWithinSight = CanSeePosition( trace.EndPosition );
 		var isWithinRange = IsPlacementRange( trace.EndPosition );
 
-		if ( IsClient )
+		if ( Game.IsClient )
 		{
 			var ghost = Deployable.GetOrCreateGhost( model );
 			
@@ -818,7 +819,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 
 		if ( Input.Released( InputButton.PrimaryAttack ) )
 		{
-			if ( IsServer )
+			if ( Game.IsServer )
 			{
 				if ( isPositionValid && isWithinRange && isWithinSight )
 				{
@@ -834,15 +835,15 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 				}
 				else if ( !isWithinRange)
 				{
-					Thoughts.Show( To.Single( this ), Rand.FromArray( OutOfRangeThoughts ) );
+					Thoughts.Show( To.Single( this ), Game.Random.FromArray( OutOfRangeThoughts ) );
 				}
 				else if ( !isWithinSight )
 				{
-					Thoughts.Show( To.Single( this ), Rand.FromArray( OutOfSightThoughts ) );
+					Thoughts.Show( To.Single( this ), Game.Random.FromArray( OutOfSightThoughts ) );
 				}
 				else
 				{
-					Thoughts.Show( To.Single( this ), Rand.FromArray( InvalidPlacementThoughts ) );
+					Thoughts.Show( To.Single( this ), Game.Random.FromArray( InvalidPlacementThoughts ) );
 				}
 			}
 		}
@@ -896,7 +897,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 			return;
 		}
 
-		if ( IsClient )
+		if ( Game.IsClient )
 		{
 			var ghost = Structure.GetOrCreateGhost( structureType );
 			var match = ghost.LocateSocket( trace.EndPosition );
@@ -925,23 +926,23 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 		{
 			Structure.ClearGhost();
 
-			if ( !IsServer ) return;
+			if ( !Game.IsServer ) return;
 
 			if ( !Structure.CanAfford( this, structureType ) )
 			{
-				Thoughts.Show( To.Single( this ), "missing_items", Rand.FromArray( MissingItemsThoughts ) );
+				Thoughts.Show( To.Single( this ), "missing_items", Game.Random.FromArray( MissingItemsThoughts ) );
 				return;
 			}
 
 			if ( !IsPlacementRange( trace.EndPosition ) )
 			{
-				Thoughts.Show( To.Single( this ), "out_of_range", Rand.FromArray( OutOfRangeThoughts ) );
+				Thoughts.Show( To.Single( this ), "out_of_range", Game.Random.FromArray( OutOfRangeThoughts ) );
 				return;
 			}
 
 			if ( !CanSeePosition( trace.EndPosition ) )
 			{
-				Thoughts.Show( To.Single( this ), "out_of_sight", Rand.FromArray( OutOfSightThoughts ) );
+				Thoughts.Show( To.Single( this ), "out_of_sight", Game.Random.FromArray( OutOfSightThoughts ) );
 				return;
 			}
 
@@ -978,7 +979,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 
 				if ( !isValid )
 				{
-					Thoughts.Show( To.Single( this ), "invalid_placement", Rand.FromArray( InvalidPlacementThoughts ) );
+					Thoughts.Show( To.Single( this ), "invalid_placement", Game.Random.FromArray( InvalidPlacementThoughts ) );
 					structure.Delete();
 				}
 				else

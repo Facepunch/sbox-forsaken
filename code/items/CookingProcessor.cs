@@ -27,7 +27,7 @@ public partial class CookingProcessor : BaseNetworkable
 
 	public CookingProcessor()
 	{
-		if ( Host.IsServer )
+		if ( Game.IsServer )
 		{
 			var fuel = new InventoryContainer();
 			fuel.SetSlotLimit( 2 );
@@ -56,7 +56,7 @@ public partial class CookingProcessor : BaseNetworkable
 
 	public void Start()
 	{
-		Host.AssertServer();
+		Game.AssertServer();
 
 		if ( IsActive || Fuel.IsEmpty )
 			return;
@@ -67,7 +67,7 @@ public partial class CookingProcessor : BaseNetworkable
 
 	public void Stop()
 	{
-		Host.AssertServer();
+		Game.AssertServer();
 
 		if ( !IsActive ) return;
 
@@ -77,7 +77,7 @@ public partial class CookingProcessor : BaseNetworkable
 
 	public void Process()
 	{
-		Host.AssertServer();
+		Game.AssertServer();
 
 		IsEmpty = Fuel.IsEmpty && Input.IsEmpty && Output.IsEmpty;
 

@@ -24,7 +24,7 @@
             await Task.DelaySeconds( 10f );
             HasFaded = true;
         }
-        catch ( TaskCanceledException e )
+        catch ( TaskCanceledException )
         {
         }
         catch ( Exception e )

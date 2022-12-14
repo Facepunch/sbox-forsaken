@@ -91,7 +91,7 @@ public abstract partial class Weapon : BaseWeapon
 
 	public bool SetAmmoItem( AmmoItem item )
 	{
-		Host.AssertServer();
+		Game.AssertServer();
 
 		if ( AmmoItem == item ) return false;
 		if ( Owner is not ForsakenPlayer player ) return false;
@@ -138,7 +138,7 @@ public abstract partial class Weapon : BaseWeapon
 
 	public override bool CanReload()
 	{
-		if ( IsClient ) return false;
+		if ( Game.IsClient ) return false;
 
 		if ( !Owner.IsValid() )
 			return false;
@@ -155,7 +155,7 @@ public abstract partial class Weapon : BaseWeapon
 	public override void ActiveStart( Entity owner )
 	{
 		base.ActiveStart( owner );
-		PlaySound( $"weapon.pickup{Rand.Int( 1, 4 )}" );
+		PlaySound( $"weapon.pickup{Game.Random.Int( 1, 4 )}" );
 		TimeSinceDeployed = 0f;
 	}
 
@@ -197,7 +197,7 @@ public abstract partial class Weapon : BaseWeapon
 
 	public override void Reload()
 	{
-		Host.AssertServer();
+		Game.AssertServer();
 
 		if ( IsMelee || IsReloading )
 			return;
@@ -229,9 +229,9 @@ public abstract partial class Weapon : BaseWeapon
 		}
 	}
 
-	public override void Simulate( Client owner )
+	public override void Simulate( IClient owner )
 	{
-		if ( IsServer && Input.Pressed( InputButton.Reload ) )
+		if ( Game.IsServer && Input.Pressed( InputButton.Reload ) )
 		{
 			TimeSinceReloadPressed = 0f;
 		}
@@ -270,7 +270,7 @@ public abstract partial class Weapon : BaseWeapon
 
 		WasReloading = IsReloading;
 
-		if ( IsServer && IsReloading && TimeSinceReload > ReloadTime )
+		if ( Game.IsServer && IsReloading && TimeSinceReload > ReloadTime )
 		{
 			using ( Prediction.Off() )
 			{
@@ -320,7 +320,7 @@ public abstract partial class Weapon : BaseWeapon
 		TimeSincePrimaryAttack = 0;
 		TimeSinceSecondaryAttack = 0;
 
-		Rand.SetSeed( Time.Tick );
+		Game.SetRandomSeed( Time.Tick );
 
 		ShootEffects();
 		ShootBullet( 0.05f, 1.5f, WeaponItem.Damage, 3.0f );
@@ -336,7 +336,7 @@ public abstract partial class Weapon : BaseWeapon
 				continue;
 			}
 
-			if ( IsServer )
+			if ( Game.IsServer )
 			{
 				using ( Prediction.Off() )
 				{
@@ -386,7 +386,7 @@ public abstract partial class Weapon : BaseWeapon
 				impact?.SetForward( 0, trace.Normal );
 			}
 
-			if ( !IsServer )
+			if ( !Game.IsServer )
 				continue;
 
 			if ( trace.Entity.IsValid() )
@@ -420,7 +420,7 @@ public abstract partial class Weapon : BaseWeapon
 
 	public override void CreateViewModel()
 	{
-		Host.AssertClient();
+		Game.AssertClient();
 	}
 
 	public bool IsUsable()
@@ -446,7 +446,7 @@ public abstract partial class Weapon : BaseWeapon
 
 	protected void ApplyRecoil()
 	{
-		if ( IsClient && Prediction.FirstTime )
+		if ( Game.IsClient && Prediction.FirstTime )
 		{
 			var time = TimeSincePrimaryHeld.Relative.Remap( 0f, 3f, 0f, 1f ) % 1f;
 			var recoil = WeaponItem.RecoilCurve.Evaluate( time );
@@ -456,7 +456,7 @@ public abstract partial class Weapon : BaseWeapon
 
 	protected virtual void OnReloadFinish()
 	{
-		Host.AssertServer();
+		Game.AssertServer();
 
 		IsReloading = false;
 
@@ -503,7 +503,7 @@ public abstract partial class Weapon : BaseWeapon
 
 	protected virtual void OnWeaponItemChanged()
 	{
-		if ( IsServer && WeaponItem.IsValid() && !string.IsNullOrEmpty( WeaponItem.WorldModel ) )
+		if ( Game.IsServer && WeaponItem.IsValid() && !string.IsNullOrEmpty( WeaponItem.WorldModel ) )
 		{
 			SetModel( WeaponItem.WorldModel );
 			SetMaterialGroup( WeaponItem.WorldModelMaterialGroup );

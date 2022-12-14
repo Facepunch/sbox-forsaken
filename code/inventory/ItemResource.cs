@@ -25,7 +25,7 @@ public class ItemResource : GameResource
 
 	protected override void PostLoad()
 	{
-		if ( Host.IsServer || Host.IsClient )
+		if ( Game.IsServer || Game.IsClient )
 		{
 			InventorySystem.ReloadDefinitions();
 		}
@@ -35,7 +35,7 @@ public class ItemResource : GameResource
 
 	protected override void PostReload()
 	{
-		if ( Host.IsServer || Host.IsClient )
+		if ( Game.IsServer || Game.IsClient )
 		{
 			InventorySystem.ReloadDefinitions();
 		}

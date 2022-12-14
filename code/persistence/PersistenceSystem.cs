@@ -82,17 +82,17 @@ public static class PersistenceSystem
 				SaveEntities( writer );
 			}
 
-			FileSystem.Data.WriteAllText( $"{Map.Name.ToLower()}.save", Encoding.Unicode.GetString( stream.ToArray() ) );
+			FileSystem.Data.WriteAllText( $"{Game.Server.MapIdent.ToLower()}.save", Encoding.Unicode.GetString( stream.ToArray() ) );
 		}
 	}
 
 	[ConCmd.Admin( "fsk.load" )]
 	public static void LoadAll()
 	{
-		if ( !FileSystem.Data.FileExists( $"{Map.Name.ToLower()}.save" ) )
+		if ( !FileSystem.Data.FileExists( $"{Game.Server.MapIdent.ToLower()}.save" ) )
 			return;
 
-		var data = Encoding.Unicode.GetBytes( FileSystem.Data.ReadAllText( $"{Map.Name.ToLower()}.save" ) );
+		var data = Encoding.Unicode.GetBytes( FileSystem.Data.ReadAllText( $"{Game.Server.MapIdent.ToLower()}.save" ) );
 
 		using ( var stream = new MemoryStream( data ) )
 		{
@@ -206,7 +206,7 @@ public static class PersistenceSystem
 
 	private static void SavePlayers( BinaryWriter writer )
 	{
-		var players = Client.All
+		var players = Game.Clients
 			.Select( c => c.Pawn )
 			.OfType<ForsakenPlayer>();
 

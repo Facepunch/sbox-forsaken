@@ -119,7 +119,7 @@ public partial class Projectile : ModelEntity
 
 		if ( Debug )
         {
-			DebugOverlay.Sphere( Position, Radius, IsClient ? Color.Blue : Color.Red );
+			DebugOverlay.Sphere( Position, Radius, Game.IsClient ? Color.Blue : Color.Red );
         }
 
 		var newPosition = GetTargetPosition();

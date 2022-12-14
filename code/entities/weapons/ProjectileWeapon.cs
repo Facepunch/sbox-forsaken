@@ -20,7 +20,7 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 	{
 		if ( Prediction.FirstTime )
         {
-			Rand.SetSeed( Time.Tick );
+			Game.SetRandomSeed( Time.Tick );
 			FireProjectile();
         }
 	}
@@ -120,7 +120,7 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 
 	protected virtual void OnProjectileHit( T projectile, TraceResult trace )
 	{
-		if ( IsServer && trace.Entity.IsValid() )
+		if ( Game.IsServer && trace.Entity.IsValid() )
 		{
 			var distance = trace.Entity.Position.Distance( projectile.StartPosition );
 			var damage = GetDamageFalloff( distance, WeaponItem.Damage );

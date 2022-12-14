@@ -93,8 +93,8 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 
 	public bool IsAuthorized()
 	{
-		Host.AssertClient();
-		return Authorized.Contains( Local.Client.SteamId );
+		Game.AssertClient();
+		return Authorized.Contains( Game.LocalClient.SteamId );
 	}
 
 	public string GetContextName()
@@ -104,7 +104,7 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 
 	public void OnContextAction( ForsakenPlayer player, ContextAction action )
 	{
-		if ( IsClient ) return;
+		if ( Game.IsClient ) return;
 
 		if ( action == OpenAction && IsAuthorized( player ) )
 		{
@@ -153,7 +153,7 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 
 	public override void OnNewModel( Model model )
 	{
-		if ( IsServer || IsClientOnly )
+		if ( Game.IsServer || IsClientOnly )
 		{
 			Socket = AddSocket( "center" );
 			Socket.ConnectAny.Add( "doorway" );

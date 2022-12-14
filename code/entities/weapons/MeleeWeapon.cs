@@ -48,7 +48,7 @@ public abstract partial class MeleeWeapon : Weapon
 
 	public override void CreateViewModel()
 	{
-		Host.AssertClient();
+		Game.AssertClient();
 		base.CreateViewModel();
 	}
 

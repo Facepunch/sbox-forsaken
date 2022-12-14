@@ -4,9 +4,16 @@ using System.Linq;
 
 namespace Facepunch.Forsaken;
 
-public partial class Forsaken : GameManager
+public partial class ForsakenGame : GameManager
 {
+	public ForsakenGame Entity => Current as ForsakenGame;
+
 	private TopDownCamera Camera { get; set; }
+
+	public ForsakenGame() : base()
+	{
+
+	}
 
 	public override void Spawn()
 	{
@@ -22,15 +29,15 @@ public partial class Forsaken : GameManager
 		ItemTag.Register( "consumable", "Consumable", ItemColors.Consumable );
 		ItemTag.Register( "tool", "Tool", ItemColors.Tool );
 
-		Local.Hud?.Delete( true );
-		Local.Hud = new UI.Hud();
+		Game.RootPanel?.Delete( true );
+		Game.RootPanel = new UI.Hud();
 
 		Camera = new();
 
 		base.ClientSpawn();
 	}
 
-	public override void ClientJoined( Client client )
+	public override void ClientJoined( IClient client )
 	{
 		InventorySystem.ClientJoined( client );
 
@@ -50,7 +57,7 @@ public partial class Forsaken : GameManager
 		base.ClientJoined( client );
 	}
 
-	public override void ClientDisconnect( Client client, NetworkDisconnectionReason reason )
+	public override void ClientDisconnect( IClient client, NetworkDisconnectionReason reason )
 	{
 		if ( client.Pawn is ForsakenPlayer player )
 		{
@@ -64,7 +71,7 @@ public partial class Forsaken : GameManager
 
 	public override void PostLevelLoaded()
 	{
-		Map.Entity.Tags.Add( "world" );
+		Game.WorldEntity.Tags.Add( "world" );
 
 		{
 			var spawner = new PickupSpawner();

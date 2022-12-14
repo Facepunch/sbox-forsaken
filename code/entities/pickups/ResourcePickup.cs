@@ -40,7 +40,7 @@ public abstract partial class ResourcePickup : ModelEntity, IContextActionProvid
 	{
 		if ( action == HarvestAction )
 		{
-			if ( IsServer )
+			if ( Game.IsServer )
 			{
 				var timedAction = new TimedActionInfo( OnHarvested );
 

@@ -116,7 +116,7 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersiste
 	{
 		if ( action == PickupAction )
 		{
-			if ( IsServer && IsValid && Item.IsValid() )
+			if ( Game.IsServer && IsValid && Item.IsValid() )
 			{
 				var initialAmount = Item.StackSize;
 				var remaining = player.TryGiveItem( Item );

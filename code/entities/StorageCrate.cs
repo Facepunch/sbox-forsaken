@@ -50,14 +50,14 @@ public partial class StorageCrate : Deployable, IContextActionProvider
 	{
 		if ( action == OpenAction )
 		{
-			if ( IsServer )
+			if ( Game.IsServer )
 			{
 				Open( player );
 			}
 		}
 		else if ( action == PickupAction )
 		{
-			if ( IsServer )
+			if ( Game.IsServer )
 			{
 				var item = InventorySystem.CreateItem<StorageCrateItem>();
 				player.TryGiveItem( item );
@@ -88,7 +88,7 @@ public partial class StorageCrate : Deployable, IContextActionProvider
 
 	private void OnSlotChanged( ushort slot )
 	{
-		if ( IsServer )
+		if ( Game.IsServer )
 		{
 			IsEmpty = Inventory.IsEmpty;
 		}

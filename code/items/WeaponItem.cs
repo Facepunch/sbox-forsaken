@@ -71,7 +71,7 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerIt
 
 	public override void OnCreated()
 	{
-		if ( IsServer )
+		if ( Game.IsServer )
 		{
 			Attachments = new AttachmentContainer();
 			Attachments.SetParent( this );
@@ -83,12 +83,12 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerIt
 
 	public override void OnRemoved()
 	{
-		if ( IsServer && Attachments.IsValid() )
+		if ( Game.IsServer && Attachments.IsValid() )
 		{
 			InventorySystem.Remove( Attachments, true );
 		}
 
-		if ( IsServer && Weapon.IsValid() )
+		if ( Game.IsServer && Weapon.IsValid() )
 		{
 			Weapon.Delete();
 		}

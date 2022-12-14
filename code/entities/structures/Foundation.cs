@@ -36,7 +36,7 @@ public partial class Foundation : Structure
 
 	public override void OnNewModel( Model model )
 	{
-		if ( IsServer || IsClientOnly )
+		if ( Game.IsServer || IsClientOnly )
 		{
 			AddFoundationSocket( "forward", "backward" );
 			AddFoundationSocket( "backward", "forward" );
