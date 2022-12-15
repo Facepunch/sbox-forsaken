@@ -44,7 +44,7 @@ public abstract partial class ResourcePickup : ModelEntity, IContextActionProvid
 			{
 				var timedAction = new TimedActionInfo( OnHarvested );
 
-				timedAction.Title = "Harvesting..";
+				timedAction.Title = "Harvesting";
 				timedAction.Origin = Position;
 				timedAction.Duration = 2f;
 				timedAction.Icon = "textures/ui/actions/pickup.png";

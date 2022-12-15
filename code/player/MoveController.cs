@@ -98,6 +98,7 @@ public partial class MoveController
 
 		var tr = Trace.Ray( start + TraceOffset, end + TraceOffset )
 			.Size( mins, maxs )
+			.WithoutTags( "passplayers" )
 			.WithAnyTags( "solid", "playerclip", "passbullets", "player" )
 			.Ignore( Player )
 			.Run();

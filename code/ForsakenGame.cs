@@ -100,6 +100,15 @@ public partial class ForsakenGame : GameManager
 			spawner.Interval = 180f;
 		}
 
+		{
+			var spawner = new PickupSpawner();
+			spawner.SetType<PlantFiberPickup>();
+			spawner.MaxPickups = 40;
+			spawner.MaxPickupsPerSpawn = 20;
+			spawner.MaxPickupsPerSpawn = 60;
+			spawner.Interval = 90f;
+		}
+
 		PersistenceSystem.LoadAll();
 
 		base.PostLevelLoaded();
