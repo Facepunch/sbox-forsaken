@@ -10,28 +10,35 @@ public class DuckController
 	private Vector3 OriginalMins { get; set; }
 	private Vector3 OriginalMaxs { get; set; }
 
+	private float Scale { get; set; } = 1f;
+
 	public DuckController( MoveController controller )
 	{
 		Controller = controller;
 	}
 
-	public void PreTick() 
+	public void PreTick()
 	{
-		var doesWantToDuck = Input.Down( InputButton.Duck );
+		bool wants = Input.Down( InputButton.Duck );
 
-		if ( doesWantToDuck != IsActive ) 
+		if ( wants != IsActive )
 		{
-			if ( doesWantToDuck )
+			if ( wants )
 				TryDuck();
 			else
 				TryUnDuck();
 		}
 
+		var targetScale = 1f;
+
 		if ( IsActive )
 		{
 			Controller.SetTag( "ducked" );
-			Controller.Player.EyeLocalPosition *= 0.8f;
+			targetScale = 0.5f;
 		}
+
+		Scale = Scale.LerpTo( targetScale, Time.Delta * 8f );
+		Controller.Player.EyeLocalPosition *= Scale;
 	}
 
 	protected void TryDuck()
