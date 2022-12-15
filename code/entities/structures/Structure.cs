@@ -87,6 +87,14 @@ public abstract partial class Structure : ModelEntity, IPersistent
 		return true;
 	}
 
+	public virtual void PostLoaded()
+	{
+		foreach ( var socket in Sockets )
+		{
+			socket.PostLoaded();
+		}
+	}
+
 	public virtual void Serialize( BinaryWriter writer )
 	{
 		writer.Write( Transform );

@@ -30,7 +30,7 @@
 
     protected override int BuildHash()
     {
-        var player = ForsakenPlayer.Me;
-        return HashCode.Combine( player, Health, Stamina, Temperature, Calories, Hydration );
+        if ( !ForsakenPlayer.Me.IsValid() ) return 0;
+        return HashCode.Combine( ForsakenPlayer.Me, Health, Stamina, Temperature, Calories, Hydration );
     }
 }

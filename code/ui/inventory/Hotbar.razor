@@ -32,6 +32,7 @@
 
     protected override int BuildHash()
     {
+        if ( !ForsakenPlayer.Me.IsValid() ) return 0;
         return HashCode.Combine( ForsakenPlayer.Me, ForsakenPlayer.Me?.Hotbar, GetHotbarIndex() );
     }
 

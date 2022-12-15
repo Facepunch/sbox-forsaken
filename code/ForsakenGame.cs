@@ -6,7 +6,7 @@ namespace Facepunch.Forsaken;
 
 public partial class ForsakenGame : GameManager
 {
-	public ForsakenGame Entity => Current as ForsakenGame;
+	public static ForsakenGame Entity => Current as ForsakenGame;
 
 	private TopDownCamera Camera { get; set; }
 
@@ -51,10 +51,25 @@ public partial class ForsakenGame : GameManager
 			pawn.MakePawnOf( client );
 			pawn.Respawn();
 		}
+		else
+		{
+			pawn.MakePawnOf( client );
+		}
 
 		PersistenceSystem.Load( pawn );
 
 		base.ClientJoined( client );
+	}
+
+	public override void MoveToSpawnpoint( Entity pawn )
+	{
+		if ( pawn is ForsakenPlayer player && player.TryGetBedroll( out var bedroll ) )
+		{
+			player.Position = bedroll.Position + Vector3.Up * 10f;
+			return;
+		}
+
+		base.MoveToSpawnpoint( pawn );
 	}
 
 	public override void ClientDisconnect( IClient client, NetworkDisconnectionReason reason )
@@ -112,19 +127,6 @@ public partial class ForsakenGame : GameManager
 		PersistenceSystem.LoadAll();
 
 		base.PostLevelLoaded();
-	}
-
-	public override void MoveToSpawnpoint( Entity pawn )
-	{
-		var spawnpoints = All.OfType<SpawnPoint>();
-		var randomSpawnPoint = spawnpoints.OrderBy( x => Guid.NewGuid() ).FirstOrDefault();
-
-		if ( randomSpawnPoint != null )
-		{
-			var tx = randomSpawnPoint.Transform;
-			tx.Position = tx.Position + Vector3.Up * 50f;
-			pawn.Transform = tx;
-		}
 	}
 
 	[Event.Client.Frame]

@@ -19,6 +19,15 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 
 	public static ForsakenPlayer Me => Game.LocalPawn as ForsakenPlayer;
 
+	[ConCmd.Server]
+	public static void KillMe()
+	{
+		if ( ConsoleSystem.Caller.Pawn is ForsakenPlayer pl )
+		{
+			pl.TakeDamage( DamageInfo.FromBullet( pl.Position, Vector3.Zero, 1000f ) );
+		}
+	}
+
 	[Net] public string DisplayName { get; private set; }
 	[Net] public float Temperature { get; private set; }
 	[Net] public float Calories { get; private set; }
@@ -75,6 +84,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 	private List<ActiveEffect> ActiveEffects { get; set; } = new();
 	private TimeSince TimeSinceLastKilled { get; set; }
 	private Entity LastActiveChild { get; set; }
+	private PersistenceHandle BedrollHandle { get; set; }
 
 	public Vector3 EyePosition
 	{
@@ -153,6 +163,21 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 	public void MakePawnOf( long playerId )
 	{
 		SteamId = playerId;
+	}
+
+	public void SetBedroll( Bedroll bedroll )
+	{
+		BedrollHandle = bedroll.Handle.Generate();
+	}
+
+	public bool TryGetBedroll( out Bedroll bedroll )
+	{
+		if ( BedrollHandle.IsValid() )
+			bedroll = All.OfType<Bedroll>().FirstOrDefault( e => e.Handle == BedrollHandle );
+		else
+			bedroll = null;
+
+		return bedroll.IsValid();
 	}
 
 	public void MakePawnOf( IClient client )
@@ -272,7 +297,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 		InitializeWeapons();
 		ResetCursor();
 
-		GameManager.Current?.MoveToSpawnpoint( this );
+		ForsakenGame.Entity?.MoveToSpawnpoint( this );
 		ResetInterpolation();
 	}
 
@@ -797,7 +822,6 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 		if ( Game.IsClient )
 		{
 			var ghost = Deployable.GetOrCreateGhost( model );
-			
 
 			if ( !isPositionValid || !isWithinSight || !isWithinRange )
 			{
@@ -806,7 +830,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 					.Run();
 
 				ghost.RenderColor = Color.Red.WithAlpha( 0.5f );
-				ghost.Position = cursor.EndPosition;
+				ghost.Position = cursor.EndPosition + Vector3.Up * 5f;
 			}
 			else
 			{
@@ -826,6 +850,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistent
 					var entity = TypeLibrary.Create<Deployable>( deployable.Deployable );
 					entity.Position = trace.EndPosition;
 					entity.ResetInterpolation();
+					entity.OnPlacedByPlayer( this );
 					deployable.StackSize--;
 
 					if ( !string.IsNullOrEmpty( deployable.PlaceSoundName ) )

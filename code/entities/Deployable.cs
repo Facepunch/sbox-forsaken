@@ -32,4 +32,9 @@ public partial class Deployable : ModelEntity
 		Ghost?.Delete();
 		Ghost = null;
 	}
+
+	public virtual void OnPlacedByPlayer( ForsakenPlayer player )
+	{
+
+	}
 }

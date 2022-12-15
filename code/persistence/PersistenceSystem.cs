@@ -1,7 +1,6 @@
 ﻿using Sandbox;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,11 +9,10 @@ namespace Facepunch.Forsaken;
 
 public static class PersistenceSystem
 {
-	public static int Version => 6;
+	public static int Version => 9;
 
 	private static Dictionary<long, byte[]> PlayerData { get; set; } = new();
-
-	private static ulong PersistentId { get; set; } = 0;
+	private static ulong PersistentId { get; set; }
 
 	[ConCmd.Admin( "fsk.save.me" )]
 	private static void SaveMe()
@@ -74,12 +72,13 @@ public static class PersistenceSystem
 			using ( var writer = new BinaryWriter( stream ) )
 			{
 				writer.Write( Version );
-				writer.Write( PersistentId );
 
 				InventorySystem.Serialize( writer );
 
 				SavePlayers( writer );
 				SaveEntities( writer );
+
+				writer.Write( PersistentId );
 			}
 
 			FileSystem.Data.WriteAllText( $"{Game.Server.MapIdent.ToLower()}.save", Encoding.Unicode.GetString( stream.ToArray() ) );
@@ -94,6 +93,11 @@ public static class PersistenceSystem
 
 		var data = Encoding.Unicode.GetBytes( FileSystem.Data.ReadAllText( $"{Game.Server.MapIdent.ToLower()}.save" ) );
 
+		foreach ( var p in Entity.All.OfType<IPersistent>() )
+		{
+			p.Delete();
+		}
+
 		using ( var stream = new MemoryStream( data ) )
 		{
 			using ( var reader = new BinaryReader( stream ) )
@@ -106,12 +110,17 @@ public static class PersistenceSystem
 					return;
 				}
 
-				PersistentId = reader.ReadUInt64();
-
 				InventorySystem.Deserialize( reader );
 
 				LoadPlayers( reader );
 				LoadEntities( reader );
+
+				PersistentId = reader.ReadUInt64();
+
+				foreach ( var p in Entity.All.OfType<IPersistent>() )
+				{
+					p.PostLoaded();
+				}
 			}
 		}
 	}
@@ -198,9 +207,16 @@ public static class PersistenceSystem
 			if ( !pawn.IsValid() )
 			{
 				pawn = new ForsakenPlayer();
-				pawn.MakePawnOf( playerId );
-				Load( pawn );
+
+				var client = Game.Clients.FirstOrDefault( c => c.SteamId == playerId );
+
+				if ( client.IsValid() )
+					pawn.MakePawnOf( client );
+				else
+					pawn.MakePawnOf( playerId );
 			}
+
+			Load( pawn );
 		}
 	}
 

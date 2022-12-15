@@ -1,10 +1,11 @@
 ﻿using Sandbox;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Facepunch.Forsaken;
 
-public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity, IHeatEmitter
+public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity, IHeatEmitter, IPersistent
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.Orange;
@@ -31,6 +32,28 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 
 		IgniteAction = new( "ignore", "Ignite", "textures/ui/actions/ignite.png" );
 		ExtinguishAction = new( "extinguish", "Extinguish", "textures/ui/actions/disable.png" );
+	}
+
+	public bool ShouldPersist()
+	{
+		return true;
+	}
+
+	public void PostLoaded()
+	{
+
+	}
+
+	public void Serialize( BinaryWriter writer )
+	{
+		writer.Write( Transform );
+		Processor.Serialize( writer );
+	}
+
+	public void Deserialize( BinaryReader reader )
+	{
+		Transform = reader.ReadTransform();
+		Processor.Deserialize( reader );
 	}
 
 	public string GetContextName()

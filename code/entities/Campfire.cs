@@ -1,10 +1,11 @@
 ﻿using Sandbox;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Facepunch.Forsaken;
 
-public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter, ICookerEntity
+public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter, ICookerEntity, IPersistent
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.Orange;
@@ -37,6 +38,28 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 	public string GetContextName()
 	{
 		return "Campfire";
+	}
+
+	public bool ShouldPersist()
+	{
+		return true;
+	}
+
+	public void PostLoaded()
+	{
+
+	}
+
+	public void Serialize( BinaryWriter writer )
+	{
+		writer.Write( Transform );
+		Processor.Serialize( writer );
+	}
+
+	public void Deserialize( BinaryReader reader )
+	{
+		Transform = reader.ReadTransform();
+		Processor.Deserialize( reader );
 	}
 
 	public void Open( ForsakenPlayer player )

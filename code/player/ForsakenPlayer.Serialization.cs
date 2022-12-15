@@ -10,6 +10,11 @@ public partial class ForsakenPlayer
 		return true;
 	}
 
+	public virtual void PostLoaded()
+	{
+
+	}
+
 	public virtual void Serialize( BinaryWriter writer )
 	{
 		writer.Write( SteamId );
@@ -26,6 +31,16 @@ public partial class ForsakenPlayer
 		writer.Write( Hotbar );
 		writer.Write( Backpack );
 		writer.Write( Equipment );
+
+		if ( BedrollHandle.IsValid() )
+		{
+			writer.Write( true );
+			writer.Write( BedrollHandle );
+		}
+		else
+		{
+			writer.Write( false );
+		}
 	}
 
 	public virtual void Deserialize( BinaryReader reader )
@@ -55,6 +70,11 @@ public partial class ForsakenPlayer
 		equipment.SetEntity( this );
 		equipment.AddConnection( Client );
 		InternalEquipment = new NetInventoryContainer( equipment );
+
+		if ( reader.ReadBoolean() )
+		{
+			BedrollHandle = reader.ReadPersistenceHandle();
+		}
 	}
 
 	private void SerializeCraftingQueue( BinaryWriter writer )

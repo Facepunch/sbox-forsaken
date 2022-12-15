@@ -39,6 +39,11 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersiste
 		return true;
 	}
 
+	public void PostLoaded()
+	{
+
+	}
+
 	public IEnumerable<ContextAction> GetSecondaryActions( ForsakenPlayer player )
 	{
 		yield break;

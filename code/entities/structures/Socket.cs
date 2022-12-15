@@ -33,10 +33,13 @@ public partial class Socket : Entity
 	[Net] public IList<string> ConnectAll { get; set; } = new List<string>();
 
 	public PersistenceHandle Handle { get; private set; }
+	private PersistenceHandle ConnectionHandle { get; set; }
 
 	public override void Spawn()
 	{
 		Transmit = TransmitType.Always;
+		Handle = new();
+
 		base.Spawn();
 	}
 
@@ -97,8 +100,15 @@ public partial class Socket : Entity
 
 		if ( hasConnection )
 		{
-			var connectionHandle = reader.ReadPersistenceHandle();
-			var socket = All.OfType<Socket>().FirstOrDefault( s => s.Handle.Equals( connectionHandle ) );
+			ConnectionHandle = reader.ReadPersistenceHandle();
+		}
+	}
+
+	public void PostLoaded()
+	{
+		if ( ConnectionHandle.IsValid() )
+		{
+			var socket = All.OfType<Socket>().FirstOrDefault( s => s.Handle.Equals( ConnectionHandle ) );
 
 			if ( socket.IsValid() )
 			{

@@ -1,9 +1,10 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Facepunch.Forsaken;
 
-public partial class StorageCrate : Deployable, IContextActionProvider
+public partial class StorageCrate : Deployable, IContextActionProvider, IPersistent
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.Green;
@@ -23,6 +24,31 @@ public partial class StorageCrate : Deployable, IContextActionProvider
 		PickupAction.SetCondition( p => IsEmpty );
 
 		OpenAction = new( "open", "Open", "textures/ui/actions/open.png" );
+	}
+
+	public bool ShouldPersist()
+	{
+		return true;
+	}
+
+	public void PostLoaded()
+	{
+
+	}
+
+	public void Serialize( BinaryWriter writer )
+	{
+		writer.Write( Transform );
+		writer.Write( Inventory );
+	}
+
+	public void Deserialize( BinaryReader reader )
+	{
+		Transform = reader.ReadTransform();
+
+		var container = reader.ReadInventoryContainer();
+		InternalInventory = new( container );
+		IsEmpty = container.IsEmpty;
 	}
 
 	public string GetContextName()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using Sandbox;
 
@@ -47,6 +48,25 @@ public partial class CookingProcessor : BaseNetworkable
 
 			InternalOutputInventory = new( output );
 		}
+	}
+
+	public void Serialize( BinaryWriter writer )
+	{
+		writer.Write( Fuel );
+		writer.Write( Input );
+		writer.Write( Output );
+	}
+
+	public void Deserialize( BinaryReader reader )
+	{
+		var fuel = reader.ReadInventoryContainer();
+		InternalFuelInventory = new( fuel );
+
+		var input = reader.ReadInventoryContainer();
+		InternalInputInventory = new( input );
+
+		var output = reader.ReadInventoryContainer();
+		InternalOutputInventory = new( output );
 	}
 
 	public void SetCooker( ICookerEntity cooker )

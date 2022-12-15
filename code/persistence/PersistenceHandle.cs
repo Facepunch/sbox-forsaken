@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using Sandbox;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Facepunch.Forsaken;
 
-public struct PersistenceHandle : IEqualityComparer<PersistenceHandle>
+public class PersistenceHandle : IEqualityComparer<PersistenceHandle>, IValid
 {
+	public bool IsValid => InternalId.HasValue;
+
 	private ulong? InternalId { get; set; }
 
 	public ulong Id
@@ -20,6 +23,40 @@ public struct PersistenceHandle : IEqualityComparer<PersistenceHandle>
 		}
 	}
 
+	public PersistenceHandle( ulong id )
+	{
+		InternalId = id;
+	}
+
+	public PersistenceHandle()
+	{
+
+	}
+
+	public PersistenceHandle Generate()
+	{
+		if ( !InternalId.HasValue )
+		{
+			InternalId = PersistenceSystem.GenerateId();
+		}
+
+		return this;
+	}
+
+	#region Equality
+	public static bool operator ==( PersistenceHandle a, PersistenceHandle b )
+	{
+		if ( (object)a == null )
+			return (object)b == null;
+		else
+			return a.Equals( b );
+	}
+
+	public static bool operator !=( PersistenceHandle a, PersistenceHandle b )
+	{
+		return !(a == b);
+	}
+
 	public bool Equals( PersistenceHandle x, PersistenceHandle y )
 	{
 		return x.InternalId == y.InternalId;
@@ -30,13 +67,29 @@ public struct PersistenceHandle : IEqualityComparer<PersistenceHandle>
 		return obj.InternalId.GetHashCode();
 	}
 
-	public PersistenceHandle( ulong id )
+	public override int GetHashCode()
 	{
-		InternalId = id;
+		return InternalId.GetHashCode();
 	}
 
-	public PersistenceHandle()
+	public override bool Equals( object obj )
 	{
+		if ( ReferenceEquals( this, obj ) )
+		{
+			return true;
+		}
 
+		if ( ReferenceEquals( obj, null ) )
+		{
+			return false;
+		}
+
+		if ( obj is PersistenceHandle b )
+		{
+			return InternalId == b.InternalId;
+		}
+
+		return false;
 	}
+	#endregion
 }

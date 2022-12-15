@@ -169,6 +169,7 @@
 
     protected override int BuildHash()
     {
+        if ( !ForsakenPlayer.Me.IsValid() ) return 0;
         return HashCode.Combine( ForsakenPlayer.Me, SelectedRecipe, SelectedCategory, SearchQuery, Quantity, ForsakenPlayer.Me.CraftingQueue.Count );
     }
 
