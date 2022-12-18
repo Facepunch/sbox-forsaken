@@ -63,9 +63,9 @@ public partial class ForsakenGame : GameManager
 
 	public override void MoveToSpawnpoint( Entity pawn )
 	{
-		if ( pawn is ForsakenPlayer player && player.TryGetBedroll( out var bedroll ) )
+		if ( pawn is ForsakenPlayer player && player.Bedroll.IsValid() )
 		{
-			player.Position = bedroll.Position + Vector3.Up * 10f;
+			player.Position = player.Bedroll.Position + Vector3.Up * 10f;
 			return;
 		}
 

@@ -74,6 +74,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 
 	[Net] private int StructureType { get; set; }
 	[Net] public long SteamId { get; private set; }
+	[Net] public Bedroll Bedroll { get; private set; }
 
 	private TimeUntil NextCalculateTemperature { get; set; }
 	private float CalculatedTemperature { get; set; }
@@ -84,7 +85,6 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 	private List<ActiveEffect> ActiveEffects { get; set; } = new();
 	private TimeSince TimeSinceLastKilled { get; set; }
 	private Entity LastActiveChild { get; set; }
-	private PersistenceHandle BedrollHandle { get; set; }
 
 	public Vector3 EyePosition
 	{
@@ -167,17 +167,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 
 	public void SetBedroll( Bedroll bedroll )
 	{
-		BedrollHandle = bedroll.Handle.Generate();
-	}
-
-	public bool TryGetBedroll( out Bedroll bedroll )
-	{
-		if ( BedrollHandle.IsValid() )
-			bedroll = All.OfType<Bedroll>().FirstOrDefault( e => e.Handle == BedrollHandle );
-		else
-			bedroll = null;
-
-		return bedroll.IsValid();
+		Bedroll = bedroll;
 	}
 
 	public void MakePawnOf( IClient client )

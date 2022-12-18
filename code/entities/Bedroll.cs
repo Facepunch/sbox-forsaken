@@ -26,7 +26,7 @@ public partial class Bedroll : Deployable, IContextActionProvider, IHeatEmitter,
 		PickupAction.SetCondition( p => p.Client.SteamId == OwnerId );
 
 		MakeHomeAction = new( "home", "Make Home", "textures/ui/actions/make_home.png" );
-		MakeHomeAction.SetCondition( p => p.Client.SteamId == OwnerId );
+		MakeHomeAction.SetCondition( p => p.Client.SteamId == OwnerId && !p.Bedroll.Equals( this ) );
 	}
 
 	public bool ShouldSave()

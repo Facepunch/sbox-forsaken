@@ -1,10 +1,13 @@
 ﻿using Sandbox;
 using System.IO;
+using System.Linq;
 
 namespace Facepunch.Forsaken;
 
 public partial class ForsakenPlayer
 {
+	private PersistenceHandle BedrollHandle { get; set; }
+
 	public virtual bool ShouldSave()
 	{
 		return true;
@@ -12,7 +15,11 @@ public partial class ForsakenPlayer
 
 	public virtual void OnLoaded()
 	{
-
+		if ( BedrollHandle.IsValid() )
+		{
+			Bedroll = All.OfType<Bedroll>().FirstOrDefault( e => e.Handle == BedrollHandle );
+			Log.Info( "Found Our Bedroll" );
+		}
 	}
 
 	public virtual void Serialize( BinaryWriter writer )
@@ -32,10 +39,10 @@ public partial class ForsakenPlayer
 		writer.Write( Backpack );
 		writer.Write( Equipment );
 
-		if ( BedrollHandle.IsValid() )
+		if ( Bedroll.IsValid() )
 		{
 			writer.Write( true );
-			writer.Write( BedrollHandle );
+			writer.Write( Bedroll.Handle );
 		}
 		else
 		{
