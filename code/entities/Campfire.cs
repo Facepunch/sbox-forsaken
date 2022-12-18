@@ -142,6 +142,15 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 		base.Spawn();
 	}
 
+	public override void OnPlacedByPlayer( ForsakenPlayer player )
+	{
+		var fuel = InventorySystem.CreateItem<WoodItem>();
+		fuel.StackSize = 40;
+		Processor.Fuel.Give( fuel );
+
+		base.OnPlacedByPlayer( player );
+	}
+
 	public override void ClientSpawn()
 	{
 		Processor.SetCooker( this );

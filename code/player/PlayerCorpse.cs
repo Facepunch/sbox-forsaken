@@ -128,6 +128,15 @@ public partial class PlayerCorpse : ModelEntity, IContextActionProvider
 		}
 	}
 
+	[Event.Tick.Server]
+	private void ServerTick()
+	{
+		if ( TimeSinceSpawned > 600f )
+		{
+			Delete();
+		}
+	}
+
 	private void OnItemTaken( ushort slot, InventoryItem instance )
 	{
 		var armor = Children.OfType<ArmorEntity>().Where( c => c.Item == instance ).ToList();
@@ -138,6 +147,11 @@ public partial class PlayerCorpse : ModelEntity, IContextActionProvider
 			{
 				entity.Delete();
 			}
+		}
+
+		if ( Inventory.IsEmpty )
+		{
+			Delete();
 		}
 	}
 }
