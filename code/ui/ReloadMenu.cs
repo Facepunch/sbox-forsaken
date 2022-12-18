@@ -10,7 +10,7 @@ public partial class ReloadMenu : RadialMenu
 	public static ReloadMenu Current { get; private set; }
 
 	public override InputButton Button => InputButton.Reload;
-	public override float OpenDelay => 0.5f;
+	public override float OpenDelay => 0.3f;
 
 	public ReloadMenu()
 	{

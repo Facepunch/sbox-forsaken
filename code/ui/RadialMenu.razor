@@ -191,14 +191,13 @@
         {
             child.IsSelected = (HoveredItem == child.Item);
 
-            var fItemCount = (float)ItemContainer.ChildrenCount;
-            var maxItemScale = 1.2f;
-            var minItemScale = 1f;
+            var maxItemScale = 1.5f;
+            var minItemScale = 0.8f;
             var distanceToMouse = child.Box.Rect.Center.Distance( VirtualMouse );
-            var distanceToScale = distanceToMouse.Remap( 0f, child.Box.Rect.Size.Length * 2f, maxItemScale, minItemScale ).Clamp( minItemScale, maxItemScale );
+            var distanceToScale = distanceToMouse.Remap( 0f, child.Box.Rect.Size.Length * 4, maxItemScale, minItemScale ).Clamp( minItemScale, maxItemScale );
 
             var tx = new PanelTransform();
-            tx.AddScale( Easing.EaseIn( distanceToScale ) );
+            tx.AddScale( distanceToScale );
 
             child.Style.Transform = tx;
             child.Style.ZIndex = child.IsSelected ? 2 : 0;

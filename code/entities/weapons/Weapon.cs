@@ -146,7 +146,7 @@ public abstract partial class Weapon : BaseWeapon
 		if ( !Input.Released( InputButton.Reload ) )
 			return false;
 
-		if ( TimeSinceReloadPressed > 0.1f )
+		if ( TimeSinceReloadPressed > 0.2f )
 			return false;
 
 		return true;
