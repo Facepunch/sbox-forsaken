@@ -197,13 +197,15 @@ public partial class ForsakenPlayer
 		return Equipment.Give( item, (ushort)slotToIndex );
 	}
 
-	public ushort TryGiveItem( InventoryItem item )
+	public ushort TryGiveItem( InventoryItem item, bool preferBackpackOverHotbar = false )
 	{
-		var remaining = Hotbar.Stack( item );
+		var primaryContainer = preferBackpackOverHotbar ? Backpack : Hotbar;
+		var secondaryContainer = preferBackpackOverHotbar ? Hotbar : Backpack;
+		var remaining = primaryContainer.Stack( item );
 
 		if ( remaining > 0 )
 		{
-			remaining = Backpack.Stack( item );
+			remaining = secondaryContainer.Stack( item );
 		}
 
 		return remaining;

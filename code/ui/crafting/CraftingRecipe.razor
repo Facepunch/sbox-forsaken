@@ -33,6 +33,7 @@
     {
         AddEventListener( "onclick", () => OnSelected?.Invoke( Recipe ) );
         BindClass( "selected", () => IsSelected );
+        BindClass( "unaffordable", IsUnaffordable );
     }
 
     protected override void OnMouseOver( MousePanelEvent e )
@@ -74,5 +75,10 @@
         Glow.Style.SetRadialGradientBackground( Output.Color, 0.6f, Color.Black, 0f );
 
         base.OnAfterTreeRender( firstTime );
+    }
+
+    private bool IsUnaffordable()
+    {
+        return !ForsakenPlayer.Me.CanCraftRecipe( Recipe, 1 );
     }
 }
