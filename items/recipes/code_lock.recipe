@@ -7,7 +7,7 @@
 		StackSize = 1
 		Inputs = 
 		{
-			metal_fragments = 10
+			metal_fragments = 30
 		}
 		CraftingTime = 5
 	}

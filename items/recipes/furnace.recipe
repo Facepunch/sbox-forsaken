@@ -8,7 +8,7 @@
 		Inputs = 
 		{
 			stone = 200
-			wood = 50
+			wood = 100
 		}
 		CraftingTime = 5
 	}

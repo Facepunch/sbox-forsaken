@@ -2,6 +2,7 @@
 
 namespace Facepunch.Forsaken;
 
+[AttributeUsage( AttributeTargets.Class, AllowMultiple = true )]
 public class ItemCostAttribute : Attribute
 {
 	public string UniqueId { get; set; }

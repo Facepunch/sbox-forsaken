@@ -7,8 +7,8 @@
 		StackSize = 1
 		Inputs = 
 		{
-			wood = 100
-			metal_fragments = 20
+			wood = 200
+			metal_fragments = 30
 		}
 		CraftingTime = 15
 	}

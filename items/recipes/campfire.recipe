@@ -7,7 +7,7 @@
 		StackSize = 1
 		Inputs = 
 		{
-			wood = 80
+			wood = 100
 		}
 		CraftingTime = 5
 	}
