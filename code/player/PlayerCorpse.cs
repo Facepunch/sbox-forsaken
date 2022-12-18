@@ -114,7 +114,7 @@ public partial class PlayerCorpse : ModelEntity, IContextActionProvider
 
 	public override void Spawn()
 	{
-		Tags.Add( "passplayers" );
+		Tags.Add( "hover", "passplayers" );
 
 		base.Spawn();
 	}

@@ -5,7 +5,7 @@ using System.IO;
 
 namespace Facepunch.Forsaken;
 
-public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter, ICookerEntity, IPersistent
+public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter, ICookerEntity, IPersistence
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.Orange;
@@ -40,12 +40,12 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 		return "Campfire";
 	}
 
-	public bool ShouldPersist()
+	public bool ShouldSave()
 	{
 		return true;
 	}
 
-	public void PostLoaded()
+	public void OnLoaded()
 	{
 
 	}

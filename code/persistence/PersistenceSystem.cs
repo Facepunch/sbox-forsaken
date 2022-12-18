@@ -13,6 +13,7 @@ public static class PersistenceSystem
 
 	private static Dictionary<long, byte[]> PlayerData { get; set; } = new();
 	private static ulong PersistentId { get; set; }
+	private static string FileName => $"{Game.Server.MapIdent.ToLower()}.save";
 
 	[ConCmd.Admin( "fsk.save.me" )]
 	private static void SaveMe()
@@ -67,7 +68,7 @@ public static class PersistenceSystem
 	[ConCmd.Admin( "fsk.save" )]
 	public static void SaveAll()
 	{
-		using ( var stream = new MemoryStream() )
+		using ( var stream = FileSystem.Data.OpenWrite( FileName ) )
 		{
 			using ( var writer = new BinaryWriter( stream ) )
 			{
@@ -80,25 +81,21 @@ public static class PersistenceSystem
 
 				writer.Write( PersistentId );
 			}
-
-			FileSystem.Data.WriteAllText( $"{Game.Server.MapIdent.ToLower()}.save", Encoding.Unicode.GetString( stream.ToArray() ) );
 		}
 	}
 
 	[ConCmd.Admin( "fsk.load" )]
 	public static void LoadAll()
 	{
-		if ( !FileSystem.Data.FileExists( $"{Game.Server.MapIdent.ToLower()}.save" ) )
+		if ( !FileSystem.Data.FileExists( FileName ) )
 			return;
 
-		var data = Encoding.Unicode.GetBytes( FileSystem.Data.ReadAllText( $"{Game.Server.MapIdent.ToLower()}.save" ) );
-
-		foreach ( var p in Entity.All.OfType<IPersistent>() )
+		foreach ( var p in Entity.All.OfType<IPersistence>() )
 		{
 			p.Delete();
 		}
 
-		using ( var stream = new MemoryStream( data ) )
+		using ( var stream = FileSystem.Data.OpenRead( FileName ) )
 		{
 			using ( var reader = new BinaryReader( stream ) )
 			{
@@ -117,9 +114,9 @@ public static class PersistenceSystem
 
 				PersistentId = reader.ReadUInt64();
 
-				foreach ( var p in Entity.All.OfType<IPersistent>() )
+				foreach ( var p in Entity.All.OfType<IPersistence>() )
 				{
-					p.PostLoaded();
+					p.OnLoaded();
 				}
 			}
 		}
@@ -128,8 +125,8 @@ public static class PersistenceSystem
 	private static void SaveEntities( BinaryWriter writer )
 	{
 		var entities = Entity.All
-			.OfType<IPersistent>()
-			.Where( e => e.ShouldPersist() )
+			.OfType<IPersistence>()
+			.Where( e => e.ShouldSave() )
 			.Where( e => e is not ForsakenPlayer );
 
 		writer.Write( entities.Count() );
@@ -145,7 +142,7 @@ public static class PersistenceSystem
 	private static void LoadEntities( BinaryReader reader )
 	{
 		var count = reader.ReadInt32();
-		var entitiesAndData = new Dictionary<IPersistent, byte[]>();
+		var entitiesAndData = new Dictionary<IPersistence, byte[]>();
 
 		for ( var i = 0; i < count; i++ )
 		{
@@ -156,11 +153,11 @@ public static class PersistenceSystem
 
 			try
 			{
-				var entity = type.Create<Entity>();
+				var entity = type.Create<IPersistence>();
 
-				if ( entity is IPersistent p )
+				if ( entity.IsValid() )
 				{
-					entitiesAndData.Add( p, data );
+					entitiesAndData.Add( entity, data );
 				}
 			}
 			catch ( Exception e )
@@ -181,7 +178,7 @@ public static class PersistenceSystem
 					}
 				}
 			}
-			catch( Exception e )
+			catch ( Exception e )
 			{
 				Log.Error( e );
 			}

@@ -5,12 +5,12 @@ namespace Facepunch.Forsaken;
 
 public partial class ForsakenPlayer
 {
-	public virtual bool ShouldPersist()
+	public virtual bool ShouldSave()
 	{
 		return true;
 	}
 
-	public virtual void PostLoaded()
+	public virtual void OnLoaded()
 	{
 
 	}
@@ -59,16 +59,22 @@ public partial class ForsakenPlayer
 		var hotbar = reader.ReadInventoryContainer();
 		hotbar.SetEntity( this );
 		hotbar.AddConnection( Client );
+		hotbar.ItemTaken += OnHotbarItemTaken;
+		hotbar.ItemGiven += OnHotbarItemGiven;
 		InternalHotbar = new NetInventoryContainer( hotbar );
 
 		var backpack = reader.ReadInventoryContainer();
 		backpack.SetEntity( this );
 		backpack.AddConnection( Client );
+		backpack.ItemTaken += OnBackpackItemTaken;
+		backpack.ItemGiven += OnBackpackItemGiven;
 		InternalBackpack = new NetInventoryContainer( backpack );
 
 		var equipment = reader.ReadInventoryContainer();
 		equipment.SetEntity( this );
 		equipment.AddConnection( Client );
+		equipment.ItemTaken += OnEquipmentItemTaken;
+		equipment.ItemGiven += OnEquipmentItemGiven;
 		InternalEquipment = new NetInventoryContainer( equipment );
 
 		if ( reader.ReadBoolean() )

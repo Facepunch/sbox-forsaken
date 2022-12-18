@@ -1,12 +1,13 @@
-﻿using System.IO;
+﻿using Sandbox;
+using System.IO;
 
 namespace Facepunch.Forsaken;
 
-public interface IPersistent
+public interface IPersistence : IValid
 {
-	public bool ShouldPersist();
+	public bool ShouldSave();
 	public void Serialize( BinaryWriter writer );
 	public void Deserialize( BinaryReader reader );
-	public void PostLoaded();
+	public void OnLoaded();
 	public void Delete();
 }

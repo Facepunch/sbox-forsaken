@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Facepunch.Forsaken;
 
-public partial class Bedroll : Deployable, IContextActionProvider, IHeatEmitter, IPersistent
+public partial class Bedroll : Deployable, IContextActionProvider, IHeatEmitter, IPersistence
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.White;
@@ -29,12 +29,12 @@ public partial class Bedroll : Deployable, IContextActionProvider, IHeatEmitter,
 		MakeHomeAction.SetCondition( p => p.Client.SteamId == OwnerId );
 	}
 
-	public bool ShouldPersist()
+	public bool ShouldSave()
 	{
 		return true;
 	}
 
-	public void PostLoaded()
+	public void OnLoaded()
 	{
 
 	}

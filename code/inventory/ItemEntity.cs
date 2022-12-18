@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Facepunch.Forsaken;
 
-public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersistent
+public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersistence
 {
 	[Net] private NetInventoryItem InternalItem { get; set; }
 	public InventoryItem Item => InternalItem.Value;
@@ -34,12 +34,12 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersiste
 			return item.Name;
 	}
 
-	public bool ShouldPersist()
+	public bool ShouldSave()
 	{
 		return true;
 	}
 
-	public void PostLoaded()
+	public void OnLoaded()
 	{
 
 	}

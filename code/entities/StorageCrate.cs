@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Facepunch.Forsaken;
 
-public partial class StorageCrate : Deployable, IContextActionProvider, IPersistent
+public partial class StorageCrate : Deployable, IContextActionProvider, IPersistence
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.Green;
@@ -26,12 +26,12 @@ public partial class StorageCrate : Deployable, IContextActionProvider, IPersist
 		OpenAction = new( "open", "Open", "textures/ui/actions/open.png" );
 	}
 
-	public bool ShouldPersist()
+	public bool ShouldSave()
 	{
 		return true;
 	}
 
-	public void PostLoaded()
+	public void OnLoaded()
 	{
 
 	}

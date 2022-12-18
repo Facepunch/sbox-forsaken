@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Facepunch.Forsaken;
 
-public abstract partial class Structure : ModelEntity, IPersistent
+public abstract partial class Structure : ModelEntity, IPersistence
 {
 	public static Structure Ghost { get; private set; }
 
@@ -82,12 +82,12 @@ public abstract partial class Structure : ModelEntity, IPersistent
 		ResetInterpolation();
 	}
 
-	public bool ShouldPersist()
+	public bool ShouldSave()
 	{
 		return true;
 	}
 
-	public virtual void PostLoaded()
+	public virtual void OnLoaded()
 	{
 		foreach ( var socket in Sockets )
 		{

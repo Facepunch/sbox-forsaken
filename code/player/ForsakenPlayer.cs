@@ -8,7 +8,7 @@ using Sandbox.Diagnostics;
 
 namespace Facepunch.Forsaken;
 
-public partial class ForsakenPlayer : AnimatedEntity, IPersistent
+public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 {
 	private class ActiveEffect
 	{

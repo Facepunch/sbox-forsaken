@@ -5,7 +5,7 @@ using System.IO;
 
 namespace Facepunch.Forsaken;
 
-public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity, IHeatEmitter, IPersistent
+public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity, IHeatEmitter, IPersistence
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.Orange;
@@ -34,12 +34,12 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 		ExtinguishAction = new( "extinguish", "Extinguish", "textures/ui/actions/disable.png" );
 	}
 
-	public bool ShouldPersist()
+	public bool ShouldSave()
 	{
 		return true;
 	}
 
-	public void PostLoaded()
+	public void OnLoaded()
 	{
 
 	}
@@ -53,6 +53,7 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 	public void Deserialize( BinaryReader reader )
 	{
 		Transform = reader.ReadTransform();
+		Log.Info( "Furnace Deserialized: " + Transform.Position );
 		Processor.Deserialize( reader );
 	}
 
@@ -123,6 +124,8 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 
 	public override void Spawn()
 	{
+		Log.Info( "Furnace Spawned" );
+
 		SetModel( "models/furnace/furnace.vmdl" );
 		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
 
