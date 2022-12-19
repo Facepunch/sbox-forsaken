@@ -139,9 +139,12 @@ public partial class TimeController : ModelEntity
 	}
 
 	private EnvironmentLightEntity InternalEnvironment;
+	private FloatGradient BrightnessGradient;
 	private FloatGradient TemperatureGradient;
 	private ColorGradient SkyColorGradient;
 	private ColorGradient ColorGradient;
+	private float DefaultSkyIntensity = 1f;
+	private float DefaultBrightness = 2.5f;
 
 	public override void Spawn()
 	{
@@ -154,7 +157,16 @@ public partial class TimeController : ModelEntity
 		TemperatureGradient = new FloatGradient();
 		TemperatureGradient.SetValues( DawnTemperature, DayTemperature, DuskTemperature, NightTemperature );
 
+		BrightnessGradient = new FloatGradient();
+		BrightnessGradient.SetValues( 0.75f, 1f, 0.75f, 0.6f );
+
 		TimeSystem.OnSectionChanged += HandleTimeSectionChanged;
+
+		if ( Environment.IsValid() )
+		{
+			DefaultSkyIntensity = Environment.SkyIntensity;
+			DefaultBrightness = Environment.Brightness;
+		}
 
 		base.Spawn();
 	}
@@ -184,6 +196,8 @@ public partial class TimeController : ModelEntity
 
 		environment.Color = ColorGradient.Evaluate( fraction );
 		environment.SkyColor = SkyColorGradient.Evaluate( fraction );
+		environment.Brightness = DefaultBrightness * BrightnessGradient.Evaluate( fraction );
+		environment.SkyIntensity = DefaultSkyIntensity * BrightnessGradient.Evaluate( fraction );
 
 		environment.Position = Vector3.Zero + Rotation.From( 0, 0, sunAngle + 60f ) * ( radius * Vector3.Right );
 		environment.Position += Rotation.From( 0, sunAngle, 0 ) * ( radius * Vector3.Forward );

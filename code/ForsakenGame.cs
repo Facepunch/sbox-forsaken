@@ -8,6 +8,7 @@ public partial class ForsakenGame : GameManager
 {
 	public static ForsakenGame Entity => Current as ForsakenGame;
 
+	private TimeUntil NextAutoSave { get; set; }
 	private TopDownCamera Camera { get; set; }
 
 	public ForsakenGame() : base()
@@ -18,6 +19,7 @@ public partial class ForsakenGame : GameManager
 	public override void Spawn()
 	{
 		InventorySystem.Initialize();
+		NextAutoSave = 60f;
 		base.Spawn();
 	}
 
@@ -35,6 +37,13 @@ public partial class ForsakenGame : GameManager
 		Camera = new();
 
 		base.ClientSpawn();
+	}
+
+	public override void Shutdown()
+	{
+		Log.Info( "[Forsaken] Saving world..." );
+		PersistenceSystem.SaveAll();
+		base.Shutdown();
 	}
 
 	public override void ClientJoined( IClient client )
@@ -127,6 +136,17 @@ public partial class ForsakenGame : GameManager
 		PersistenceSystem.LoadAll();
 
 		base.PostLevelLoaded();
+	}
+
+	[Event.Tick.Server]
+	private void ServerTick()
+	{
+		if ( NextAutoSave )
+		{
+			Log.Info( "[Forsaken] Saving world..." );
+			PersistenceSystem.SaveAll();
+			NextAutoSave = 60f;
+		}
 	}
 
 	[Event.Client.Frame]
