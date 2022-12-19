@@ -109,7 +109,7 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider
 				{
 					var instance = InventorySystem.CreateItem( item.UniqueId );
 					instance.StackSize = (ushort)item.AmountToSpawn;
-					Inventory.Give( instance );
+					Inventory.Stack( instance );
 					break;
 				}
 			}
