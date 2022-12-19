@@ -15,7 +15,7 @@ public partial class TopDownCamera
 		{
 			var target = pawn.Position.WithZ( pawn.Position.z + Height );
 
-			Sound.Listener = new Transform( pawn.EyePosition, pawn.Rotation );
+			Sound.Listener = new Transform( pawn.EyePosition, Camera.Rotation );
 
 			Camera.Position = Camera.Position.LerpTo( target, Time.Delta * MoveSpeed );
 			Camera.Rotation = Rotation.LookAt( Vector3.Down );
