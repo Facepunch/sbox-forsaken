@@ -55,12 +55,15 @@ public partial class PumpShotgun : ProjectileWeapon<CrossbowBoltProjectile>
 		if ( Owner is not ForsakenPlayer player )
 			return;
 
-		if ( !AmmoItem.IsValid() )
+		if ( !WeaponItem.IsValid() )
+			return;
+
+		if ( !WeaponItem.AmmoDefinition.IsValid() )
 			return;
 
 		if ( !UnlimitedAmmo )
 		{
-			var ammo = player.TakeAmmo( AmmoItem.UniqueId, 1 );
+			var ammo = player.TakeAmmo( WeaponItem.AmmoDefinition.UniqueId, 1 );
 			if ( ammo == 0 ) return;
 			AmmoClip += 1;
 		}
@@ -110,7 +113,13 @@ public partial class PumpShotgun : ProjectileWeapon<CrossbowBoltProjectile>
 
 	private bool IsSlugAmmo()
 	{
-		return AmmoItem.IsValid() && AmmoItem.Tags.Contains( "slug" );
+		if ( !WeaponItem.IsValid() )
+			return false;
+
+		if ( !WeaponItem.AmmoDefinition.IsValid() )
+			return false;
+
+		return WeaponItem.AmmoDefinition.Tags.Contains( "slug" );
 	}
 
 	private string GetTrailEffect()

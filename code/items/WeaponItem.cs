@@ -37,9 +37,35 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerIt
 		}
 	}
 
-	public int Ammo { get; set; }
+	public AmmoItem AmmoDefinition
+	{
+		get => InternalAmmoDefinition;
+		set
+		{
+			if ( InternalAmmoDefinition != value )
+			{
+				InternalAmmoDefinition = value;
+				IsDirty = true;
+			}
+		}
+	}
 
+	public int AmmoCount
+	{
+		get => InternalAmmoCount;
+		set
+		{
+			if ( InternalAmmoCount != value )
+			{
+				InternalAmmoCount = value;
+				IsDirty = true;
+			}
+		}
+	}
+
+	private AmmoItem InternalAmmoDefinition;
 	private Weapon InternalWeapon;
+	private int InternalAmmoCount;
 
 	public override bool CanStackWith( InventoryItem other )
 	{
@@ -55,7 +81,17 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerIt
 		else
 			writer.Write( 0 );
 
-		writer.Write( Ammo );
+		writer.Write( InternalAmmoCount );
+
+		if ( AmmoDefinition.IsValid() )
+		{
+			writer.Write( true );
+			writer.Write( AmmoDefinition.UniqueId );
+		}
+		else
+		{
+			writer.Write( false );
+		}
 
 		base.Write( writer );
 	}
@@ -64,7 +100,12 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerIt
 	{
 		Attachments = reader.ReadInventoryContainer() as AttachmentContainer;
 		Weapon = (Entity.FindByIndex( reader.ReadInt32() ) as Weapon);
-		Ammo = reader.ReadInt32();
+		InternalAmmoCount = reader.ReadInt32();
+
+		if ( reader.ReadBoolean() )
+			InternalAmmoDefinition = InventorySystem.GetDefinition( reader.ReadString() ) as AmmoItem;
+		else
+			InternalAmmoDefinition = null;
 
 		base.Read( reader );
 	}

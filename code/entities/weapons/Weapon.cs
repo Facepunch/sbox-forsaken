@@ -60,7 +60,7 @@ public abstract partial class Weapon : BaseWeapon
 		{
 			if ( WeaponItem.IsValid() )
 			{
-				return WeaponItem.Ammo;
+				return WeaponItem.AmmoCount;
 			}
 
 			return 0;
@@ -69,13 +69,11 @@ public abstract partial class Weapon : BaseWeapon
 		{
 			if ( WeaponItem.IsValid() )
 			{
-				WeaponItem.Ammo = value;
-				WeaponItem.IsDirty = true;
+				WeaponItem.AmmoCount = value;
 			}
 		}
 	}
 
-	public AmmoItem AmmoItem => InventorySystem.GetDefinition( AmmoItemId ) as AmmoItem;
 	public WeaponItem WeaponItem => InternalWeaponItem.IsValid() ? InternalWeaponItem.Value as WeaponItem : null;
 
 	public int AvailableAmmo()
@@ -83,22 +81,26 @@ public abstract partial class Weapon : BaseWeapon
 		if ( Owner is not ForsakenPlayer owner )
 			return 0;
 
-		if ( !AmmoItem.IsValid() )
+		if ( !WeaponItem.IsValid() )
 			return 0;
 
-		return owner.GetAmmoCount( AmmoItem.UniqueId );
+		if ( !WeaponItem.AmmoDefinition.IsValid() )
+			return 0;
+
+		return owner.GetAmmoCount( WeaponItem.AmmoDefinition.UniqueId );
 	}
 
-	public bool SetAmmoItem( AmmoItem item )
+	public bool SetAmmoDefinition( AmmoItem item )
 	{
 		Game.AssertServer();
 
-		if ( AmmoItem == item ) return false;
+		if ( !WeaponItem.IsValid() ) return false;
+		if ( WeaponItem.AmmoDefinition == item ) return false;
 		if ( Owner is not ForsakenPlayer player ) return false;
 
-		if ( AmmoItem.IsValid() && AmmoClip > 0 )
+		if ( WeaponItem.AmmoDefinition.IsValid() && AmmoClip > 0 )
 		{
-			var oldAmmoItem = InventorySystem.DuplicateItem( AmmoItem );
+			var oldAmmoItem = InventorySystem.DuplicateItem( WeaponItem.AmmoDefinition );
 			oldAmmoItem.StackSize = (ushort)AmmoClip;
 
 			var remaining = player.TryGiveItem( oldAmmoItem );
@@ -109,7 +111,9 @@ public abstract partial class Weapon : BaseWeapon
 			}
 		}
 
-		AmmoItemId = item.UniqueId;
+		WeaponItem.AmmoDefinition = item;
+		WeaponItem.IsDirty = true;
+
 		AmmoClip = 0;
 
 		return true;
@@ -207,14 +211,17 @@ public abstract partial class Weapon : BaseWeapon
 
 		UpdateAmmoItem();
 
-		if ( !AmmoItem.IsValid() )
+		if ( !WeaponItem.IsValid() )
+			return;
+
+		if ( !WeaponItem.AmmoDefinition.IsValid() )
 			return;
 
 		if ( Owner is ForsakenPlayer player )
 		{
 			if ( !UnlimitedAmmo )
 			{
-				if ( player.GetAmmoCount( AmmoItem.UniqueId ) <= 0 )
+				if ( player.GetAmmoCount( WeaponItem.AmmoDefinition.UniqueId ) <= 0 )
 					return;
 			}
 		}
@@ -463,12 +470,15 @@ public abstract partial class Weapon : BaseWeapon
 		if ( Owner is not ForsakenPlayer player )
 			return;
 
-		if ( !AmmoItem.IsValid() )
+		if ( !WeaponItem.IsValid() )
+			return;
+
+		if ( !WeaponItem.AmmoDefinition.IsValid() )
 			return;
 
 		if ( !UnlimitedAmmo )
 		{
-			var ammo = player.TakeAmmo( AmmoItem.UniqueId, (ushort)(ClipSize - AmmoClip) );
+			var ammo = player.TakeAmmo( WeaponItem.AmmoDefinition.UniqueId, (ushort)(ClipSize - AmmoClip) );
 			if ( ammo == 0 ) return;
 			AmmoClip += ammo;
 		}
@@ -555,7 +565,10 @@ public abstract partial class Weapon : BaseWeapon
 		if ( Owner is not ForsakenPlayer player )
 			return;
 
-		if ( AmmoItem.IsValid() )
+		if ( !WeaponItem.IsValid() )
+			return;
+
+		if ( WeaponItem.AmmoDefinition.IsValid() )
 			return;
 
 		var availableId = player.FindItems<AmmoItem>()
@@ -570,7 +583,7 @@ public abstract partial class Weapon : BaseWeapon
 
 			if ( definition is AmmoItem ammo )
 			{
-				SetAmmoItem( ammo );
+				SetAmmoDefinition( ammo );
 			}
 		}
 	}

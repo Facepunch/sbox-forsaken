@@ -706,7 +706,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 
 				if ( definition.IsValid() )
 				{
-					weapon.SetAmmoItem( definition );
+					weapon.SetAmmoDefinition( definition );
 					weapon.Reload();
 				}
 			}
