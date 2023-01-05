@@ -17,6 +17,7 @@ public partial class Deployable : ModelEntity
 				EnableShadowCasting = false,
 				EnableShadowReceive = false,
 				EnableAllCollisions = false,
+				Transmit = TransmitType.Never,
 				Model = model
 			};
 
