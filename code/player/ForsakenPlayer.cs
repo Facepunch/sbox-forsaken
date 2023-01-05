@@ -664,6 +664,23 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 		base.OnDestroy();
 	}
 
+	private bool IsAuthorizedToPlaceAt( Vector3 position )
+	{
+		var foundationsInRange = FindInSphere( position, 512f ).OfType<Foundation>();
+
+		foreach ( var foundation in foundationsInRange )
+		{
+			var stockpile = foundation.FindStockpile();
+
+			if ( stockpile.IsValid() && !stockpile.IsAuthorized( this ) )
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	private void SimulateTimedAction()
 	{
 		if ( TimedAction is null ) return;
@@ -817,6 +834,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 		var hitPosition = trace.EndPosition + Vector3.Up * 4f;
 		var isWithinSight = CanSeePosition( hitPosition );
 		var isWithinRange = IsPlacementRange( hitPosition );
+		var isAuthorized = IsAuthorizedToPlaceAt( hitPosition );
 
 		if ( Game.IsClient )
 		{
@@ -827,7 +845,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 			var collision = Trace.Body( ghost.PhysicsBody, ghost.Position ).Run();
 			var isPositionValid = !collision.Hit && deployable.CanPlaceOn( trace.Entity );
 
-			if ( !isPositionValid || !isWithinSight || !isWithinRange )
+			if ( !isAuthorized || !isPositionValid || !isWithinSight || !isWithinRange )
 			{
 				var cursor = Trace.Ray( startPosition, endPosition )
 					.WorldOnly()
@@ -848,7 +866,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 		{
 			if ( Game.IsServer )
 			{
-				if ( isWithinRange && isWithinSight )
+				if ( isAuthorized && isWithinRange && isWithinSight )
 				{
 					var ghost = Deployable.GetOrCreateGhost( model );
 					ghost.Position = hitPosition;
@@ -888,6 +906,10 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 				else if ( !isWithinSight )
 				{
 					Thoughts.Show( To.Single( this ), "out_of_sight", Game.Random.FromArray( OutOfSightThoughts ) );
+				}
+				else
+				{
+					Thoughts.Show( To.Single( this ), "unauthorized", Game.Random.FromArray( UnauthorizedThoughts ) );
 				}
 			}
 		}
@@ -941,11 +963,13 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 			return;
 		}
 
+		var isAuthorized = IsAuthorizedToPlaceAt( trace.EndPosition );
+
 		if ( Game.IsClient )
 		{
 			var ghost = Structure.GetOrCreateGhost( structureType );
 			var match = ghost.LocateSocket( trace.EndPosition );
-			var isValid = Structure.CanAfford( this, structureType ) && IsPlacementRange( trace.EndPosition ) && CanSeePosition( trace.EndPosition );
+			var isValid = isAuthorized && Structure.CanAfford( this, structureType ) && IsPlacementRange( trace.EndPosition ) && CanSeePosition( trace.EndPosition );
 
 			if ( match.IsValid )
 			{
@@ -971,6 +995,12 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 			Structure.ClearGhost();
 
 			if ( !Game.IsServer ) return;
+
+			if ( !isAuthorized )
+			{
+				Thoughts.Show( To.Single( this ), "unauthorized", Game.Random.FromArray( UnauthorizedThoughts ) );
+				return;
+			}
 
 			if ( !Structure.CanAfford( this, structureType ) )
 			{
