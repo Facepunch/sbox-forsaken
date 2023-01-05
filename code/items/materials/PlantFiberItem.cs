@@ -1,4 +1,6 @@
-﻿namespace Facepunch.Forsaken;
+﻿using System.Collections.Generic;
+
+namespace Facepunch.Forsaken;
 
 public class PlantFiberItem : InventoryItem
 {
@@ -8,4 +10,11 @@ public class PlantFiberItem : InventoryItem
 	public override string Description => "Fiber harvested from a plant.";
 	public override ushort MaxStackSize => 100;
 	public override string Icon => "textures/items/plant_fiber.png";
+
+	protected override void BuildTags( HashSet<string> tags )
+	{
+		tags.Add( "material" );
+
+		base.BuildTags( tags );
+	}
 }

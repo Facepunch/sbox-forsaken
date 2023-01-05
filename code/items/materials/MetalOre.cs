@@ -17,6 +17,7 @@ public class MetalOre : InventoryItem, ICookableItem
 	protected override void BuildTags( HashSet<string> tags )
 	{
 		tags.Add( "ore" );
+		tags.Add( "material" );
 
 		base.BuildTags( tags );
 	}

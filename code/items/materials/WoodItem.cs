@@ -14,6 +14,7 @@ public class WoodItem : InventoryItem
 	protected override void BuildTags( HashSet<string> tags )
 	{
 		tags.Add( "fuel" );
+		tags.Add( "material" );
 
 		base.BuildTags( tags );
 	}
