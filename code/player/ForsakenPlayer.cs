@@ -851,8 +851,11 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 				if ( isWithinRange && isWithinSight )
 				{
 					var ghost = Deployable.GetOrCreateGhost( model );
-					ghost.Rotation = Rotation.FromYaw( DeployableYaw );
 					ghost.Position = hitPosition;
+					ghost.Rotation = Rotation.FromYaw( DeployableYaw );
+					ghost.PhysicsBody.Position = ghost.Position;
+					ghost.PhysicsBody.Rotation = ghost.Rotation;
+					ghost.ResetInterpolation();
 
 					var collision = Trace.Body( ghost.PhysicsBody, ghost.Position ).Run();
 					var isPositionValid = !collision.Hit && deployable.CanPlaceOn( trace.Entity );
@@ -860,8 +863,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 					if ( isPositionValid )
 					{
 						var entity = TypeLibrary.Create<Deployable>( deployable.Deployable );
-						entity.Position = ghost.Position;
-						entity.Rotation = ghost.Rotation;
+						entity.Transform = ghost.Transform;
 
 						entity.ResetInterpolation();
 						entity.OnPlacedByPlayer( this );
