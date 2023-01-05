@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Facepunch.Forsaken;
@@ -12,6 +13,67 @@ public partial class Foundation : Structure
 {
 	public override bool RequiresSocket => false;
 	public override bool ShouldRotate => false;
+
+	private Stockpile CachedStockpile { get; set; }
+
+	public void AddFoundationsToSet( HashSet<Foundation> foundations )
+	{
+		if ( !foundations.Contains( this ) )
+		{
+			foundations.Add( this );
+
+			foreach ( var socket in Sockets )
+			{
+				if ( socket.Connection.IsValid() )
+				{
+					var connected = socket.Connection.Parent as Foundation;
+
+					if ( connected.IsValid() )
+					{
+						connected.AddFoundationsToSet( foundations );
+					}
+				}
+			}
+		}
+	}
+
+	public Stockpile FindStockpile()
+	{
+		if ( CachedStockpile.IsValid() )
+		{
+			return CachedStockpile;
+		}
+
+		var foundations = new HashSet<Foundation>();
+		AddFoundationsToSet( foundations );
+
+		foreach ( var socket in Sockets )
+		{
+			if ( socket.Connection.IsValid() )
+			{
+				var connected = socket.Connection.Parent as Foundation;
+
+				if ( connected.IsValid() )
+				{
+					connected.AddFoundationsToSet( foundations );
+				}
+			}
+		}
+
+		foreach ( var foundation in foundations )
+		{
+			var found = FindInSphere( foundation.Position, 128f ).OfType<Stockpile>().FirstOrDefault();
+
+			if ( found.IsValid() )
+			{
+				CachedStockpile = found;
+				return found;
+			}
+		}
+
+		CachedStockpile = null;
+		return null;
+	}
 
 	public override void Spawn()
 	{
