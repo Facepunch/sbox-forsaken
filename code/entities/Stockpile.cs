@@ -159,6 +159,12 @@ public partial class Stockpile : Deployable, IContextActionProvider, IPersistenc
 		}
 	}
 
+	public override void OnPlacedByPlayer( ForsakenPlayer player )
+	{
+		Authorize( player );
+		base.OnPlacedByPlayer( player );
+	}
+
 	public override void Spawn()
 	{
 		SetModel( "models/stockpile/stockpile.vmdl" );
