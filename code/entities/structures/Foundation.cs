@@ -23,18 +23,6 @@ public partial class Foundation : Structure
 		Tags.Add( "solid", "foundation" );
 	}
 
-	public override bool IsValidPlacement( Vector3 target, Vector3 normal )
-	{
-		var nerarbyFoundations = FindInSphere( target, 512f )
-			.OfType<Foundation>()
-			.Where( s => !s.Equals( this ) );
-
-		if ( nerarbyFoundations.Any() )
-			return false;
-
-		return base.IsValidPlacement( target, normal );
-	}
-
 	public override void OnNewModel( Model model )
 	{
 		if ( Game.IsServer || IsClientOnly )
