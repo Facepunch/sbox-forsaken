@@ -171,6 +171,11 @@ public partial class ForsakenPlayer
 		return TakeItems( items, count );
 	}
 
+	public bool IsHotbarSelected()
+	{
+		return HotbarIndex >= 0;
+	}
+
 	public int GetItemCount<T>() where T : InventoryItem
 	{
 		var totalItems = 0;
@@ -388,21 +393,30 @@ public partial class ForsakenPlayer
 
 	private void SimulateHotbar()
 	{
-		var currentSlotIndex = (int)HotbarIndex;
-
-		if ( Input.MouseWheel > 0 )
-			currentSlotIndex++;
-		else if ( Input.MouseWheel < 0 )
-			currentSlotIndex--;
-
+		var currentSlotIndex = HotbarIndex;
 		var maxSlotIndex = Hotbar.SlotLimit - 1;
 
-		if ( currentSlotIndex < 0 )
-			currentSlotIndex = maxSlotIndex;
-		else if ( currentSlotIndex > maxSlotIndex )
-			currentSlotIndex = 0;
+		if ( IsHotbarSelected() )
+		{
+			if ( Input.MouseWheel > 0 )
+				currentSlotIndex++;
+			else if ( Input.MouseWheel < 0 )
+				currentSlotIndex--;
 
-		HotbarIndex = (ushort)currentSlotIndex;
+			if ( currentSlotIndex < 0 )
+				currentSlotIndex = maxSlotIndex;
+			else if ( currentSlotIndex > maxSlotIndex )
+				currentSlotIndex = 0;
+		}
+		else
+		{
+			if ( Input.MouseWheel > 0 )
+				currentSlotIndex = 0;
+			else if ( Input.MouseWheel < 0 )
+				currentSlotIndex = maxSlotIndex;
+		}
+
+		HotbarIndex = currentSlotIndex;
 		UpdateHotbarSlotKeys();
 
 		if ( GetActiveHotbarItem() is WeaponItem weapon )
@@ -419,10 +433,10 @@ public partial class ForsakenPlayer
 
 		if ( Game.IsServer )
 		{
-			if ( Input.Released( InputButton.Drop ) )
+			if ( Input.Released( InputButton.Drop ) && IsHotbarSelected() )
 			{
 				var container = Hotbar;
-				var item = container.GetFromSlot( HotbarIndex );
+				var item = container.GetFromSlot( (ushort)HotbarIndex );
 
 				if ( item.IsValid() )
 				{
@@ -526,8 +540,8 @@ public partial class ForsakenPlayer
 		}
 
 		if ( pressedIndex != HotbarIndex )
-		{
-			HotbarIndex = (ushort)pressedIndex;
-		}
+			HotbarIndex = pressedIndex;
+		else
+			HotbarIndex = -1;
 	}
 }

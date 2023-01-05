@@ -34,7 +34,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 	[Net] public float Hydration { get; private set; }
 	[Net, Predicted] public float Stamina { get; private set; }
 	[Net, Predicted] public bool IsOutOfBreath { get; private set; }
-	[Net, Predicted] public ushort HotbarIndex { get; private set; }
+	[Net, Predicted] public int HotbarIndex { get; private set; }
 	[Net] public TimedAction TimedAction { get; private set; }
 
 	[Net] private NetInventoryContainer InternalBackpack { get; set; }
@@ -228,7 +228,8 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 
 	public InventoryItem GetActiveHotbarItem()
 	{
-		return Hotbar.GetFromSlot( HotbarIndex );
+		if ( !IsHotbarSelected() ) return null;
+		return Hotbar.GetFromSlot( (ushort)HotbarIndex );
 	}
 
 	public void GainStamina( float amount )
