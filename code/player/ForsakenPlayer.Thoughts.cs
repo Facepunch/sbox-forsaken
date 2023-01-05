@@ -18,6 +18,12 @@ public partial class ForsakenPlayer
 		"I don't have enough to do that."
 	};
 
+	private static string[] UnauthorizedThoughts = new string[]
+	{
+		"I don't have permission to do that here.",
+		"I'm not authorized to do that here."
+	};
+
 	private static string[] OutOfSightThoughts = new string[]
 	{
 		"That's too far out of my sight.",
