@@ -57,6 +57,8 @@ public abstract partial class Structure : ModelEntity, IPersistence
 	public virtual bool RequiresSocket => true;
 	public virtual bool ShouldRotate => true;
 
+	private Stockpile CachedStockpile { get; set; }
+
 	public void SnapToSocket( Socket.Match match )
 	{
 		// TODO: Speak to the Rust team. I brute forced all of this until it kind of worked.
@@ -85,6 +87,69 @@ public abstract partial class Structure : ModelEntity, IPersistence
 	public bool ShouldSave()
 	{
 		return true;
+	}
+
+	public void AddFoundationsToSet( HashSet<Foundation> foundations )
+	{
+		if ( this is Foundation foundation && !foundations.Contains( this ) )
+		{
+			foundations.Add( foundation );
+
+			foreach ( var socket in Sockets )
+			{
+				if ( socket.Connection.IsValid() )
+				{
+					var connected = socket.Connection.Parent as Foundation;
+
+					if ( connected.IsValid() )
+					{
+						connected.AddFoundationsToSet( foundations );
+					}
+				}
+			}
+		}
+	}
+
+	public Stockpile FindStockpile()
+	{
+		if ( CachedStockpile.IsValid() )
+		{
+			return CachedStockpile;
+		}
+
+		var foundations = new HashSet<Foundation>();
+
+		if ( this is Foundation )
+		{
+			AddFoundationsToSet( foundations );
+		}
+
+		foreach ( var socket in Sockets )
+		{
+			if ( socket.Connection.IsValid() )
+			{
+				var connected = socket.Connection.Parent as Structure;
+
+				if ( connected.IsValid() )
+				{
+					connected.AddFoundationsToSet( foundations );
+				}
+			}
+		}
+
+		foreach ( var foundation in foundations )
+		{
+			var found = FindInSphere( foundation.Position, 128f ).OfType<Stockpile>().FirstOrDefault();
+
+			if ( found.IsValid() )
+			{
+				CachedStockpile = found;
+				return found;
+			}
+		}
+
+		CachedStockpile = null;
+		return null;
 	}
 
 	public virtual void OnLoaded()
