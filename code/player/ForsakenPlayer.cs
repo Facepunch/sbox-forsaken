@@ -57,6 +57,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 	[Net, Predicted] public Entity ActiveChild { get; set; }
 	[ClientInput] public Vector3 InputDirection { get; protected set; }
 	[ClientInput] public Angles ViewAngles { get; set; }
+	[ClientInput] public int DeployableYaw { get; set; }
 	public Angles OriginalViewAngles { get; private set; }
 
 	public int MaxHealth => 100;
@@ -354,6 +355,14 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 		if ( ViewAngles.pitch > 90f || ViewAngles.pitch < -90f )
 		{
 			look = look.WithYaw( look.yaw * -1f );
+		}
+
+		if ( Input.Released( InputButton.Reload ) )
+		{
+			DeployableYaw += 90;
+
+			if ( DeployableYaw >= 360 )
+				DeployableYaw = 0;
 		}
 
 		var viewAngles = ViewAngles;
@@ -804,14 +813,18 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 			.Run();
 
 		var model = Model.Load( deployable.Model );
-		var collision = Trace.Box( model.PhysicsBounds, trace.EndPosition, trace.EndPosition ).Run();
-		var isPositionValid = !collision.Hit && deployable.CanPlaceOn( trace.Entity );
-		var isWithinSight = CanSeePosition( trace.EndPosition );
-		var isWithinRange = IsPlacementRange( trace.EndPosition );
+		var hitPosition = trace.EndPosition + Vector3.Up * 4f;
+		var isWithinSight = CanSeePosition( hitPosition );
+		var isWithinRange = IsPlacementRange( hitPosition );
 
 		if ( Game.IsClient )
 		{
 			var ghost = Deployable.GetOrCreateGhost( model );
+			ghost.Rotation = Rotation.FromYaw( DeployableYaw );
+			ghost.Position = hitPosition;
+
+			var collision = Trace.Body( ghost.PhysicsBody, ghost.Position ).Run();
+			var isPositionValid = !collision.Hit && deployable.CanPlaceOn( trace.Entity );
 
 			if ( !isPositionValid || !isWithinSight || !isWithinRange )
 			{
@@ -820,12 +833,11 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 					.Run();
 
 				ghost.RenderColor = Color.Red.WithAlpha( 0.5f );
-				ghost.Position = cursor.EndPosition + Vector3.Up * 5f;
+				ghost.Position = cursor.EndPosition + Vector3.Up * 4f;
 			}
 			else
 			{
 				ghost.RenderColor = Color.Cyan.WithAlpha( 0.5f );
-				ghost.Position = trace.EndPosition;
 			}
 
 			ghost.ResetInterpolation();
@@ -835,30 +847,44 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 		{
 			if ( Game.IsServer )
 			{
-				if ( isPositionValid && isWithinRange && isWithinSight )
+				if ( isWithinRange && isWithinSight )
 				{
-					var entity = TypeLibrary.Create<Deployable>( deployable.Deployable );
-					entity.Position = trace.EndPosition;
-					entity.ResetInterpolation();
-					entity.OnPlacedByPlayer( this );
-					deployable.StackSize--;
+					var ghost = Deployable.GetOrCreateGhost( model );
+					ghost.Rotation = Rotation.FromYaw( DeployableYaw );
+					ghost.Position = hitPosition;
 
-					if ( !string.IsNullOrEmpty( deployable.PlaceSoundName ) )
+					var collision = Trace.Body( ghost.PhysicsBody, ghost.Position ).Run();
+					var isPositionValid = !collision.Hit && deployable.CanPlaceOn( trace.Entity );
+
+					if ( isPositionValid )
 					{
-						Sound.FromWorld( To.Everyone, deployable.PlaceSoundName, trace.EndPosition );
+						var entity = TypeLibrary.Create<Deployable>( deployable.Deployable );
+						entity.Position = ghost.Position;
+						entity.Rotation = ghost.Rotation;
+
+						entity.ResetInterpolation();
+						entity.OnPlacedByPlayer( this );
+						deployable.StackSize--;
+
+						if ( !string.IsNullOrEmpty( deployable.PlaceSoundName ) )
+						{
+							Sound.FromWorld( To.Everyone, deployable.PlaceSoundName, trace.EndPosition );
+						}
 					}
+					else
+					{
+						Thoughts.Show( To.Single( this ), "invalid_placement", Game.Random.FromArray( InvalidPlacementThoughts ) );
+					}
+
+					Deployable.ClearGhost();
 				}
 				else if ( !isWithinRange)
 				{
-					Thoughts.Show( To.Single( this ), Game.Random.FromArray( OutOfRangeThoughts ) );
+					Thoughts.Show( To.Single( this ), "out_of_range", Game.Random.FromArray( OutOfRangeThoughts ) );
 				}
 				else if ( !isWithinSight )
 				{
-					Thoughts.Show( To.Single( this ), Game.Random.FromArray( OutOfSightThoughts ) );
-				}
-				else
-				{
-					Thoughts.Show( To.Single( this ), Game.Random.FromArray( InvalidPlacementThoughts ) );
+					Thoughts.Show( To.Single( this ), "out_of_sight", Game.Random.FromArray( OutOfSightThoughts ) );
 				}
 			}
 		}
