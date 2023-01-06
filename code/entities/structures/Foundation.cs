@@ -14,65 +14,27 @@ public partial class Foundation : Structure
 	public override bool RequiresSocket => false;
 	public override bool ShouldRotate => false;
 
-	private Stockpile CachedStockpile { get; set; }
+	public Stockpile Stockpile { get; private set; }
 
-	public void AddFoundationsToSet( HashSet<Foundation> foundations )
+	public void PropagateStockpile( Stockpile stockpile )
 	{
-		if ( !foundations.Contains( this ) )
-		{
-			foundations.Add( this );
+		if ( Stockpile == stockpile )
+			return;
 
-			foreach ( var socket in Sockets )
-			{
-				if ( socket.Connection.IsValid() )
-				{
-					var connected = socket.Connection.Parent as Foundation;
-
-					if ( connected.IsValid() )
-					{
-						connected.AddFoundationsToSet( foundations );
-					}
-				}
-			}
-		}
-	}
-
-	public Stockpile FindStockpile()
-	{
-		if ( CachedStockpile.IsValid() )
-		{
-			return CachedStockpile;
-		}
-
-		var foundations = new HashSet<Foundation>();
-		AddFoundationsToSet( foundations );
+		Stockpile = stockpile;
 
 		foreach ( var socket in Sockets )
 		{
 			if ( socket.Connection.IsValid() )
 			{
-				var connected = socket.Connection.Parent as Foundation;
+				var other = socket.Connection.Parent as Foundation;
 
-				if ( connected.IsValid() )
+				if ( other.IsValid() )
 				{
-					connected.AddFoundationsToSet( foundations );
+					other.PropagateStockpile( stockpile );
 				}
 			}
 		}
-
-		foreach ( var foundation in foundations )
-		{
-			var found = FindInSphere( foundation.Position, 128f ).OfType<Stockpile>().FirstOrDefault();
-
-			if ( found.IsValid() )
-			{
-				CachedStockpile = found;
-				return found;
-			}
-		}
-
-		CachedStockpile = null;
-		return null;
 	}
 
 	public override void Spawn()
@@ -83,6 +45,14 @@ public partial class Foundation : Structure
 		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
 
 		Tags.Add( "solid", "foundation" );
+	}
+
+	public override void OnConnected( Socket ours, Socket theirs )
+	{
+		if ( theirs.Parent is Foundation other )
+		{
+			Stockpile = other.Stockpile;
+		}
 	}
 
 	public override bool IsValidPlacement( Vector3 target, Vector3 normal )
