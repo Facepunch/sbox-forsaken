@@ -5,9 +5,10 @@ namespace Facepunch.Forsaken;
 
 public interface IPersistence : IValid
 {
-	public bool ShouldSave();
-	public void Serialize( BinaryWriter writer );
-	public void Deserialize( BinaryReader reader );
-	public void OnLoaded();
+	public bool ShouldSaveState();
+	public void SerializeState( BinaryWriter writer );
+	public void DeserializeState( BinaryReader reader );
+	public void BeforeStateLoaded();
+	public void AfterStateLoaded();
 	public void Delete();
 }
