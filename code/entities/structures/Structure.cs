@@ -85,20 +85,25 @@ public abstract partial class Structure : ModelEntity, IPersistence
 		ResetInterpolation();
 	}
 
-	public bool ShouldSave()
+	public bool ShouldSaveState()
 	{
 		return true;
 	}
 
-	public virtual void OnLoaded()
+	public virtual void BeforeStateLoaded()
 	{
 		foreach ( var socket in Sockets )
 		{
-			socket.PostLoaded();
+			socket.RestoreConnection();
 		}
 	}
 
-	public virtual void Serialize( BinaryWriter writer )
+	public void AfterStateLoaded()
+	{
+
+	}
+
+	public virtual void SerializeState( BinaryWriter writer )
 	{
 		writer.Write( Transform );
 		writer.Write( Sockets.Count );
@@ -109,7 +114,7 @@ public abstract partial class Structure : ModelEntity, IPersistence
 		}
 	}
 
-	public virtual void Deserialize( BinaryReader reader )
+	public virtual void DeserializeState( BinaryReader reader )
 	{
 		Transform = reader.ReadTransform();
 

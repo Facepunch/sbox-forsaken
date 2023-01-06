@@ -104,7 +104,7 @@ public partial class Socket : Entity
 		}
 	}
 
-	public void PostLoaded()
+	public void RestoreConnection()
 	{
 		if ( ConnectionHandle.IsValid() )
 		{
