@@ -664,9 +664,9 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 		base.OnDestroy();
 	}
 
-	private bool IsAuthorizedToPlaceAt( Vector3 position )
+	private bool HasPrivilegeAt( Vector3 position )
 	{
-		var foundationsInRange = FindInSphere( position, Structure.AuthorizationRange ).OfType<Foundation>();
+		var foundationsInRange = FindInSphere( position, Structure.PrivilegeRange ).OfType<Foundation>();
 
 		foreach ( var foundation in foundationsInRange )
 		{
@@ -834,7 +834,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 		var hitPosition = trace.EndPosition + Vector3.Up * 4f;
 		var isWithinSight = CanSeePosition( hitPosition );
 		var isWithinRange = IsPlacementRange( hitPosition );
-		var isAuthorized = IsAuthorizedToPlaceAt( hitPosition );
+		var isAuthorized = HasPrivilegeAt( hitPosition );
 
 		if ( Game.IsClient )
 		{
@@ -963,7 +963,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 			return;
 		}
 
-		var isAuthorized = IsAuthorizedToPlaceAt( trace.EndPosition );
+		var isAuthorized = HasPrivilegeAt( trace.EndPosition );
 
 		if ( Game.IsClient )
 		{

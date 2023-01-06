@@ -8,8 +8,8 @@ namespace Facepunch.Forsaken;
 
 public abstract partial class Structure : ModelEntity, IPersistence
 {
-	[ConVar.Replicated( "fsk.structure.range" )]
-	public static float AuthorizationRange { get; set; } = 512f;
+	[ConVar.Replicated( "fsk.privilege.range" )]
+	public static float PrivilegeRange { get; set; } = 512f;
 
 	public static Structure Ghost { get; private set; }
 

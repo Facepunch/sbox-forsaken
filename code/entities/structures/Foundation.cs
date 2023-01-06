@@ -87,7 +87,7 @@ public partial class Foundation : Structure
 
 	public override bool IsValidPlacement( Vector3 target, Vector3 normal )
 	{
-		var nerarbyFoundations = FindInSphere( target, Structure.AuthorizationRange )
+		var nerarbyFoundations = FindInSphere( target, PrivilegeRange )
 			.OfType<Foundation>()
 			.Where( s => !s.Equals( this ) );
 
