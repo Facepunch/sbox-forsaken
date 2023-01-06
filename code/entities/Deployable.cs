@@ -34,7 +34,7 @@ public partial class Deployable : ModelEntity
 		Ghost = null;
 	}
 
-	public virtual void OnPlacedByPlayer( ForsakenPlayer player )
+	public virtual void OnPlacedByPlayer( ForsakenPlayer player, TraceResult trace )
 	{
 
 	}

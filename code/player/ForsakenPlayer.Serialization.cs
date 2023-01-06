@@ -8,21 +8,25 @@ public partial class ForsakenPlayer
 {
 	private PersistenceHandle BedrollHandle { get; set; }
 
-	public virtual bool ShouldSave()
+	public virtual bool ShouldSaveState()
 	{
 		return true;
 	}
 
-	public virtual void OnLoaded()
+	public virtual void BeforeStateLoaded()
+	{
+
+	}
+
+	public virtual void AfterStateLoaded()
 	{
 		if ( BedrollHandle.IsValid() )
 		{
 			Bedroll = All.OfType<Bedroll>().FirstOrDefault( e => e.Handle == BedrollHandle );
-			Log.Info( "Found Our Bedroll" );
 		}
 	}
 
-	public virtual void Serialize( BinaryWriter writer )
+	public virtual void SerializeState( BinaryWriter writer )
 	{
 		writer.Write( SteamId );
 		writer.Write( (byte)LifeState );
@@ -50,7 +54,7 @@ public partial class ForsakenPlayer
 		}
 	}
 
-	public virtual void Deserialize( BinaryReader reader )
+	public virtual void DeserializeState( BinaryReader reader )
 	{
 		SteamId = reader.ReadInt64();
 		LifeState = (LifeState)reader.ReadByte();

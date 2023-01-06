@@ -34,12 +34,17 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersiste
 			return item.Name;
 	}
 
-	public bool ShouldSave()
+	public bool ShouldSaveState()
 	{
 		return true;
 	}
 
-	public void OnLoaded()
+	public void BeforeStateLoaded()
+	{
+
+	}
+
+	public void AfterStateLoaded()
 	{
 
 	}
@@ -54,7 +59,7 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersiste
 		return PickupAction;
 	}
 
-	public void Serialize( BinaryWriter writer )
+	public void SerializeState( BinaryWriter writer )
 	{
 		writer.Write( Transform );
 
@@ -69,7 +74,7 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersiste
 		}
 	}
 
-	public void Deserialize( BinaryReader reader )
+	public void DeserializeState( BinaryReader reader )
 	{
 		Transform = reader.ReadTransform();
 

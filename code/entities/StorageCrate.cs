@@ -26,23 +26,28 @@ public partial class StorageCrate : Deployable, IContextActionProvider, IPersist
 		OpenAction = new( "open", "Open", "textures/ui/actions/open.png" );
 	}
 
-	public bool ShouldSave()
+	public bool ShouldSaveState()
 	{
 		return true;
 	}
 
-	public void OnLoaded()
+	public void BeforeStateLoaded()
 	{
 
 	}
 
-	public void Serialize( BinaryWriter writer )
+	public void AfterStateLoaded()
+	{
+
+	}
+
+	public void SerializeState( BinaryWriter writer )
 	{
 		writer.Write( Transform );
 		writer.Write( Inventory );
 	}
 
-	public void Deserialize( BinaryReader reader )
+	public void DeserializeState( BinaryReader reader )
 	{
 		Transform = reader.ReadTransform();
 

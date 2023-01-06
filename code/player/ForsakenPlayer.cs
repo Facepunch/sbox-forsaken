@@ -670,9 +670,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 
 		foreach ( var foundation in foundationsInRange )
 		{
-			var stockpile = foundation.FindStockpile();
-
-			if ( stockpile.IsValid() && !stockpile.IsAuthorized( this ) )
+			if ( foundation.Stockpile.IsValid() && !foundation.Stockpile.IsAuthorized( this ) )
 			{
 				return false;
 			}
@@ -884,7 +882,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 						entity.Transform = ghost.Transform;
 
 						entity.ResetInterpolation();
-						entity.OnPlacedByPlayer( this );
+						entity.OnPlacedByPlayer( this, trace );
 						deployable.StackSize--;
 
 						if ( !string.IsNullOrEmpty( deployable.PlaceSoundName ) )

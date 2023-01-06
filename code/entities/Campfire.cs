@@ -40,23 +40,28 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 		return "Campfire";
 	}
 
-	public bool ShouldSave()
+	public bool ShouldSaveState()
 	{
 		return true;
 	}
 
-	public void OnLoaded()
+	public void BeforeStateLoaded()
 	{
 
 	}
 
-	public void Serialize( BinaryWriter writer )
+	public void AfterStateLoaded()
+	{
+
+	}
+
+	public void SerializeState( BinaryWriter writer )
 	{
 		writer.Write( Transform );
 		Processor.Serialize( writer );
 	}
 
-	public void Deserialize( BinaryReader reader )
+	public void DeserializeState( BinaryReader reader )
 	{
 		Transform = reader.ReadTransform();
 		Processor.Deserialize( reader );
@@ -142,13 +147,13 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 		base.Spawn();
 	}
 
-	public override void OnPlacedByPlayer( ForsakenPlayer player )
+	public override void OnPlacedByPlayer( ForsakenPlayer player, TraceResult trace )
 	{
 		var fuel = InventorySystem.CreateItem<WoodItem>();
 		fuel.StackSize = 40;
 		Processor.Fuel.Give( fuel );
 
-		base.OnPlacedByPlayer( player );
+		base.OnPlacedByPlayer( player, trace );
 	}
 
 	public override void ClientSpawn()

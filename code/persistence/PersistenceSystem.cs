@@ -9,7 +9,7 @@ namespace Facepunch.Forsaken;
 
 public static class PersistenceSystem
 {
-	public static int Version => 10;
+	public static int Version => 11;
 
 	private static Dictionary<long, byte[]> PlayerData { get; set; } = new();
 	private static ulong PersistentId { get; set; }
@@ -44,7 +44,7 @@ public static class PersistenceSystem
 		{
 			using ( var writer = new BinaryWriter( stream ) )
 			{
-				player.Serialize( writer );
+				player.SerializeState( writer );
 			}
 
 			PlayerData[player.SteamId] = stream.ToArray();
@@ -59,7 +59,7 @@ public static class PersistenceSystem
 			{
 				using ( var reader = new BinaryReader( stream ) )
 				{
-					player.Deserialize( reader );
+					player.DeserializeState( reader );
 				}
 			}
 		}
@@ -116,7 +116,12 @@ public static class PersistenceSystem
 
 				foreach ( var p in Entity.All.OfType<IPersistence>() )
 				{
-					p.OnLoaded();
+					p.BeforeStateLoaded();
+				}
+
+				foreach ( var p in Entity.All.OfType<IPersistence>() )
+				{
+					p.AfterStateLoaded();
 				}
 			}
 		}
@@ -126,7 +131,7 @@ public static class PersistenceSystem
 	{
 		var entities = Entity.All
 			.OfType<IPersistence>()
-			.Where( e => e.ShouldSave() )
+			.Where( e => e.ShouldSaveState() )
 			.Where( e => e is not ForsakenPlayer );
 
 		writer.Write( entities.Count() );
@@ -135,7 +140,7 @@ public static class PersistenceSystem
 		{
 			var description = TypeLibrary.GetType( entity.GetType() );
 			writer.Write( description.Name );
-			writer.Write( entity.Serialize );
+			writer.Write( entity.SerializeState );
 		}
 	}
 
@@ -174,7 +179,7 @@ public static class PersistenceSystem
 				{
 					using ( reader = new BinaryReader( stream ) )
 					{
-						kv.Key.Deserialize( reader );
+						kv.Key.DeserializeState( reader );
 					}
 				}
 			}

@@ -1,6 +1,7 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Facepunch.Forsaken;
 
@@ -32,17 +33,29 @@ public partial class Stockpile : Deployable, IContextActionProvider, IPersistenc
 		AuthorizeAction = new( "authorize", "Authorize", "textures/ui/actions/authorize.png" );
 	}
 
-	public bool ShouldSave()
+	public bool ShouldSaveState()
 	{
 		return true;
 	}
 
-	public void OnLoaded()
+	public void BeforeStateLoaded()
 	{
 
 	}
 
-	public void Serialize( BinaryWriter writer )
+	public void AfterStateLoaded()
+	{
+		var foundation = FindInSphere( Position, 64f )
+			.OfType<Foundation>()
+			.FirstOrDefault();
+
+		if ( foundation.IsValid() )
+		{
+			foundation.PropagateStockpile( this );
+		}
+	}
+
+	public void SerializeState( BinaryWriter writer )
 	{
 		writer.Write( Transform );
 		writer.Write( Inventory );
@@ -56,7 +69,7 @@ public partial class Stockpile : Deployable, IContextActionProvider, IPersistenc
 		}
 	}
 
-	public void Deserialize( BinaryReader reader )
+	public void DeserializeState( BinaryReader reader )
 	{
 		Transform = reader.ReadTransform();
 
@@ -159,10 +172,17 @@ public partial class Stockpile : Deployable, IContextActionProvider, IPersistenc
 		}
 	}
 
-	public override void OnPlacedByPlayer( ForsakenPlayer player )
+	public override void OnPlacedByPlayer( ForsakenPlayer player, TraceResult trace )
 	{
 		Authorize( player );
-		base.OnPlacedByPlayer( player );
+
+		if ( trace.Entity is Foundation foundation )
+		{
+			Log.Info( "Placed Stockpile on Foundation" );
+			foundation.PropagateStockpile( this );
+		}
+
+		base.OnPlacedByPlayer( player, trace );
 	}
 
 	public override void Spawn()

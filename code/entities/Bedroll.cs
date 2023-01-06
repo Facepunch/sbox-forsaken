@@ -29,24 +29,29 @@ public partial class Bedroll : Deployable, IContextActionProvider, IHeatEmitter,
 		MakeHomeAction.SetCondition( p => p.Client.SteamId == OwnerId && p.Bedroll != this );
 	}
 
-	public bool ShouldSave()
+	public bool ShouldSaveState()
 	{
 		return true;
 	}
 
-	public void OnLoaded()
+	public void BeforeStateLoaded()
 	{
 
 	}
 
-	public void Serialize( BinaryWriter writer )
+	public void AfterStateLoaded()
+	{
+
+	}
+
+	public void SerializeState( BinaryWriter writer )
 	{
 		writer.Write( Handle );
 		writer.Write( Transform );
 		writer.Write( OwnerId );
 	}
 
-	public void Deserialize( BinaryReader reader )
+	public void DeserializeState( BinaryReader reader )
 	{
 		Handle = reader.ReadPersistenceHandle();
 		Transform = reader.ReadTransform();
@@ -89,10 +94,10 @@ public partial class Bedroll : Deployable, IContextActionProvider, IHeatEmitter,
 		}
 	}
 
-	public override void OnPlacedByPlayer( ForsakenPlayer player )
+	public override void OnPlacedByPlayer( ForsakenPlayer player, TraceResult trace )
 	{
 		OwnerId = player.Client.SteamId;
-		base.OnPlacedByPlayer( player );
+		base.OnPlacedByPlayer( player, trace );
 	}
 
 	public override void Spawn()

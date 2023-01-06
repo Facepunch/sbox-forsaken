@@ -16,7 +16,15 @@ public class StockpileItem : DeployableItem
 
 	public override bool CanPlaceOn( Entity entity )
 	{
-		return entity is Foundation;
+		if ( entity is Foundation foundation )
+		{
+			if ( foundation.Stockpile.IsValid() )
+				return false;
+
+			return true;
+		}
+
+		return false;
 	}
 
 	public override bool CanStackWith( InventoryItem other )

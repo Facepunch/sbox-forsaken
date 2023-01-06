@@ -34,23 +34,28 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 		ExtinguishAction = new( "extinguish", "Extinguish", "textures/ui/actions/disable.png" );
 	}
 
-	public bool ShouldSave()
+	public bool ShouldSaveState()
 	{
 		return true;
 	}
 
-	public void OnLoaded()
+	public void BeforeStateLoaded()
 	{
 
 	}
 
-	public void Serialize( BinaryWriter writer )
+	public void AfterStateLoaded()
+	{
+
+	}
+
+	public void SerializeState( BinaryWriter writer )
 	{
 		writer.Write( Transform );
 		Processor.Serialize( writer );
 	}
 
-	public void Deserialize( BinaryReader reader )
+	public void DeserializeState( BinaryReader reader )
 	{
 		Transform = reader.ReadTransform();
 		Log.Info( "Furnace Deserialized: " + Transform.Position );

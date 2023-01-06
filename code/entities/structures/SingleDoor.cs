@@ -163,7 +163,7 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 		base.OnNewModel( model );
 	}
 
-	public override void Serialize( BinaryWriter writer )
+	public override void SerializeState( BinaryWriter writer )
 	{
 		writer.Write( IsOpen );
 		writer.Write( IsLocked );
@@ -175,10 +175,10 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 			writer.Write( id );
 		}
 
-		base.Serialize( writer );
+		base.SerializeState( writer );
 	}
 
-	public override void Deserialize( BinaryReader reader )
+	public override void DeserializeState( BinaryReader reader )
 	{
 		IsOpen = reader.ReadBoolean();
 		IsLocked = reader.ReadBoolean();
@@ -192,7 +192,7 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 			Authorized.Add( id );
 		}
 
-		base.Deserialize( reader );
+		base.DeserializeState( reader );
 	}
 
 	[Event.Tick.Server]
