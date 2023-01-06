@@ -666,7 +666,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 
 	private bool IsAuthorizedToPlaceAt( Vector3 position )
 	{
-		var foundationsInRange = FindInSphere( position, 512f ).OfType<Foundation>();
+		var foundationsInRange = FindInSphere( position, Structure.AuthorizationRange ).OfType<Foundation>();
 
 		foreach ( var foundation in foundationsInRange )
 		{

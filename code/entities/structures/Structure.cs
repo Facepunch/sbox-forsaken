@@ -8,6 +8,9 @@ namespace Facepunch.Forsaken;
 
 public abstract partial class Structure : ModelEntity, IPersistence
 {
+	[ConVar.Replicated( "fsk.structure.range" )]
+	public static float AuthorizationRange { get; set; } = 512f;
+
 	public static Structure Ghost { get; private set; }
 
 	public static Dictionary<string,int> GetCostsFor( TypeDescription type )
