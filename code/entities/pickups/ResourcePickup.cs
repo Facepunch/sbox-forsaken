@@ -82,7 +82,7 @@ public abstract partial class ResourcePickup : ModelEntity, IContextActionProvid
 
 			if ( remaining < StackSize )
 			{
-				player.PlaySound( "inventory.move" );
+				Sound.FromScreen( To.Single( player ), "inventory.move" );
 			}
 
 			if ( remaining == StackSize ) return;

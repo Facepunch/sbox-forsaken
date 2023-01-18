@@ -3,17 +3,15 @@
 	data = 
 	{
 		UI = false
-		Volume = 1
-		VolumeRandom = 0
-		Pitch = 1
-		PitchRandom = 0.1
-		Decibels = 70
+		Volume = "1.00,1.00,0"
+		Pitch = "1.00,1.00,0"
+		Decibels = 50
+		SelectionMode = "Random"
 		Sounds = 
 		[
 			resource:"sounds/building/deployable.place.vsnd",
 		]
-		SelectionMode = "Random"
-		MaximumDistance = 1143.9335
-		MinimumDistance = 57.196674
+		MaximumDistance = 599.31305
+		MinimumDistance = 29.965652
 	}
 }

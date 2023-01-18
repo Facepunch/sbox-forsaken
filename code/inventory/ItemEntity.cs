@@ -133,7 +133,7 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersiste
 
 				if ( remaining < initialAmount )
 				{
-					player.PlaySound( "inventory.move" );
+					Sound.FromScreen( To.Single( player ), "inventory.move" );
 				}
 
 				if ( remaining == 0 )

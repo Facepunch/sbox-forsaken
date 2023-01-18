@@ -5,13 +5,13 @@
 		UI = false
 		Volume = "0.80,0.80,0"
 		Pitch = "1.00,1.00,0"
-		Decibels = 70
+		Decibels = 40
 		SelectionMode = "Random"
 		Sounds = 
 		[
 			resource:"sounds/weapons/crossbow.fire.vsnd",
 		]
-		MaximumDistance = 1143.9335
-		MinimumDistance = 57.196674
+		MaximumDistance = 395.08035
+		MinimumDistance = 19.754019
 	}
 }

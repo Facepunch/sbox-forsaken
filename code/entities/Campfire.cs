@@ -99,9 +99,10 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 		{
 			if ( Game.IsServer )
 			{
+				Sound.FromScreen( To.Single( player ), "inventory.move" );
+
 				var item = InventorySystem.CreateItem<CampfireItem>();
 				player.TryGiveItem( item );
-				player.PlaySound( "inventory.move" );
 				Delete();
 			}
 		}

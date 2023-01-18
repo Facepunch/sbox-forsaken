@@ -8,7 +8,7 @@ public partial class Cooking
     {
 		var processor = entity.Processor;
 
-        OpenForClient( To.Single(player), name, (Entity)entity, processor.Fuel.Serialize(), processor.Input.Serialize(), processor.Output.Serialize() );
+        OpenForClient( To.Single( player ), name, (Entity)entity, processor.Fuel.Serialize(), processor.Input.Serialize(), processor.Output.Serialize() );
 
 		var viewer = player.Client.Components.Get<InventoryViewer>();
 		viewer?.AddContainer( processor.Fuel );

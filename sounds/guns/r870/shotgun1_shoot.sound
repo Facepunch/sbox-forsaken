@@ -3,18 +3,16 @@
 	data = 
 	{
 		UI = false
-		Volume = 1
-		VolumeRandom = 0
-		Pitch = 1
-		PitchRandom = 0
-		Decibels = 155
+		Volume = "1.00,1.00,0"
+		Pitch = "1.00,1.00,0"
+		Decibels = 100
+		SelectionMode = "Random"
 		Sounds = 
 		[
 			resource:"sounds/guns/r870/shotgun1_shoot1.vsnd",
 			resource:"sounds/guns/r870/shotgun1_shoot2.vsnd",
 		]
-		SelectionMode = "Random"
-		MaximumDistance = 5483.878
-		MinimumDistance = 274.1939
+		MaximumDistance = 2301.2522
+		MinimumDistance = 115.062614
 	}
 }

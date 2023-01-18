@@ -3,15 +3,15 @@
 	data = 
 	{
 		UI = false
-		Volume = "1.00,1.00,0"
+		Volume = "0.60,0.60,0"
 		Pitch = "1.00,1.00,0"
-		Decibels = 60
+		Decibels = 40
 		SelectionMode = "Random"
 		Sounds = 
 		[
 			resource:"sounds/rummage/rummage.wood.vsnd",
 		]
-		MaximumDistance = 848.93066
-		MinimumDistance = 42.446533
+		MaximumDistance = 395.08035
+		MinimumDistance = 19.754019
 	}
 }

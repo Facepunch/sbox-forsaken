@@ -3,19 +3,17 @@
 	data = 
 	{
 		UI = false
-		Volume = 1
-		VolumeRandom = 0
-		Pitch = 1
-		PitchRandom = 0
-		Decibels = 140
+		Volume = "1.00,1.00,0"
+		Pitch = "1.00,1.00,0"
+		Decibels = 100
+		SelectionMode = "Random"
 		Sounds = 
 		[
 			resource:"sounds/guns/mp5/smg1_shoot1.vsnd",
 			resource:"sounds/guns/mp5/smg1_shoot2.vsnd",
 			resource:"sounds/guns/mp5/smg1_shoot3.vsnd",
 		]
-		SelectionMode = "Random"
-		MaximumDistance = 4479.734
-		MinimumDistance = 223.9867
+		MaximumDistance = 2301.2522
+		MinimumDistance = 115.062614
 	}
 }

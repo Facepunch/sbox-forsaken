@@ -86,9 +86,10 @@ public partial class Bedroll : Deployable, IContextActionProvider, IHeatEmitter,
 		{
 			if ( Game.IsServer )
 			{
+				Sound.FromScreen( To.Single( player ), "inventory.move" );
+
 				var item = InventorySystem.CreateItem<BedrollItem>();
 				player.TryGiveItem( item );
-				player.PlaySound( "inventory.move" );
 				Delete();
 			}
 		}

@@ -90,9 +90,10 @@ public partial class StorageCrate : Deployable, IContextActionProvider, IPersist
 		{
 			if ( Game.IsServer )
 			{
+				Sound.FromScreen( To.Single( player ), "inventory.move" );
+
 				var item = InventorySystem.CreateItem<StorageCrateItem>();
 				player.TryGiveItem( item );
-				player.PlaySound( "inventory.move" );
 				Delete();
 			}
 		}
