@@ -23,16 +23,23 @@
     {
         var isHidden = true;
         var position = (Player.EyePosition - Player.Rotation.Forward * 20f).ToScreen();
+        var distance = Camera.Main.Position.Distance( Player.EyePosition );
+        var maxDistance = 1024f;
 
-        if ( position.z >= 0f )
+        if ( distance < maxDistance && position.z >= 0f )
         {
             position.x *= Screen.Size.x * ScaleFromScreen;
             position.y *= Screen.Size.y * ScaleFromScreen;
 
+            Style.Opacity = 1f;
             Style.Left = Length.Pixels( position.x );
             Style.Top = Length.Pixels( position.y );
 
             isHidden = false;
+        }
+        else
+        {
+            Style.Opacity = distance.Remap( 0f, maxDistance, 1f, 0f );
         }
 
         SetClass( "hidden", isHidden );
