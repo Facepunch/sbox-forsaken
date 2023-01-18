@@ -12,6 +12,7 @@ public abstract partial class ResourcePickup : ModelEntity, IContextActionProvid
 
 	private ContextAction HarvestAction { get; set; }
 
+	public abstract string GatherSound { get; }
 	public abstract string ModelPath { get; }
 	public abstract Type ItemType { get; }
 	public abstract int StackSize { get; }
@@ -44,6 +45,7 @@ public abstract partial class ResourcePickup : ModelEntity, IContextActionProvid
 			{
 				var timedAction = new TimedActionInfo( OnHarvested );
 
+				timedAction.SoundName = GatherSound;
 				timedAction.Title = "Harvesting";
 				timedAction.Origin = Position;
 				timedAction.Duration = 2f;
