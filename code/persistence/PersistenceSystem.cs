@@ -83,6 +83,8 @@ public static class PersistenceSystem
 
 		w.Write( PersistentId );
 
+		save.Data = s.ToArray();
+
 		Game.Save( save );
 	}
 
