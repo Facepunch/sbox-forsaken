@@ -1056,16 +1056,6 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 					structure.OnConnected( match.Ours, match.Theirs );
 					structure.OnPlacedByPlayer( this );
 					isValid = true;
-
-					var soundName = structure.PlaceSoundName;
-
-					if ( deployable.IsValid() && !string.IsNullOrEmpty( deployable.PlaceSoundName ) )
-						soundName = deployable.PlaceSoundName;
-
-					if ( !string.IsNullOrEmpty( soundName ) )
-					{
-						Sound.FromWorld( To.Everyone, soundName, trace.EndPosition );
-					}
 				}
 				else if ( !structure.RequiresSocket )
 				{
@@ -1080,6 +1070,16 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 				}
 				else
 				{
+					var soundName = structure.PlaceSoundName;
+
+					if ( deployable.IsValid() && !string.IsNullOrEmpty( deployable.PlaceSoundName ) )
+						soundName = deployable.PlaceSoundName;
+
+					if ( !string.IsNullOrEmpty( soundName ) )
+					{
+						Sound.FromWorld( To.Everyone, soundName, trace.EndPosition );
+					}
+
 					var costs = Structure.GetCostsFor( structureType );
 
 					foreach ( var kv in costs )
