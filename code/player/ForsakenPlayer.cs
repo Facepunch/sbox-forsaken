@@ -827,10 +827,12 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 				if ( action.IsValid() )
 				{
 					actions.OnContextAction( this, action );
+					return true;
 				}
 			}
 
-			return true;
+			if ( Input.Down( InputButton.PrimaryAttack ) )
+				return true;
 		}
 
 		return false;

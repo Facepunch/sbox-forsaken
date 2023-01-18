@@ -6,7 +6,7 @@ public partial class LockScreen
 {
     public static void OpenToLock( ForsakenPlayer player, ICodeLockable entity )
     {
-        OpenForClient( To.Single(player), (Entity)entity, true );
+        OpenForClient( To.Single( player ), (Entity)entity, true );
     }
 
 	public static void OpenToUnlock( ForsakenPlayer player, ICodeLockable entity )
