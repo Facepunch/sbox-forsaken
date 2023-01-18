@@ -239,11 +239,19 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 
 	public void StartTimedAction( TimedActionInfo info )
 	{
+		Game.AssertServer();
+
+		CancelTimedAction();
+
 		TimedAction = new( info );
+		TimedAction.StartSound();
 	}
 
 	public void CancelTimedAction()
 	{
+		Game.AssertServer();
+
+		TimedAction?.StopSound();
 		TimedAction = null;
 	}
 
@@ -692,6 +700,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 		if ( TimedAction.EndTime )
 		{
 			TimedAction.OnFinished?.Invoke( this );
+			TimedAction.StopSound();
 			TimedAction = null;
 		}
 	}
