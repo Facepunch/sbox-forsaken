@@ -19,6 +19,16 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 
 	public static ForsakenPlayer Me => Game.LocalPawn as ForsakenPlayer;
 
+	public static Glow AddObscuredGlow( ModelEntity entity )
+	{
+		var glow = entity.Components.Create<Glow>();
+		glow.Width = 0.25f;
+		glow.Color = Color.Transparent;
+		glow.InsideObscuredColor = Color.White.WithAlpha( 0.8f );
+		glow.ObscuredColor = Color.Black.WithAlpha( 0.5f );
+		return glow;
+	}
+
 	[ConCmd.Server]
 	public static void KillMe()
 	{
@@ -318,11 +328,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 	{
 		if ( IsLocalPawn )
 		{
-			GlowComponent = Components.Create<Glow>();
-			GlowComponent.Width = 0.25f;
-			GlowComponent.Color = Color.Transparent;
-			GlowComponent.InsideObscuredColor = Color.White.WithAlpha( 0.8f );
-			GlowComponent.ObscuredColor = Color.Black.WithAlpha( 0.5f );
+			GlowComponent = AddObscuredGlow( this );
 		}
 
 		base.ClientSpawn();
