@@ -30,12 +30,12 @@
     .input {
         opacity: 0;
         min-height: 50px;
-        max-height: 50px;
         margin-top: 10px;
         text-shadow: 0px 0px 2px black;
         font-family: Vollkorn;
         font-size: 24px;
         color: white;
+        flex-wrap: wrap;
 
         TextEntry {
             flex-grow: 1;
@@ -54,7 +54,6 @@ ChatboxEntry {
     transition: opacity 0.15s ease-in;
     flex-direction: row;
     margin-bottom: 16px;
-    align-items: center;
     width: 100%;
 
     &.faded {
@@ -62,10 +61,10 @@ ChatboxEntry {
     }
 
     .name {
-        color: green;
         font-family: Vollkorn;
         text-shadow: 0px 0px 2px black;
         font-size: 24px;
+        flex-shrink: 0;
         color: lightgoldenrodyellow;
     }
 
@@ -73,6 +72,7 @@ ChatboxEntry {
         text-shadow: 0px 0px 2px black;
         font-family: Vollkorn;
         font-size: 24px;
+        margin-left: 8px;
         color: white;
     }
 
