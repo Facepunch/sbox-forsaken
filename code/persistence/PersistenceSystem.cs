@@ -68,62 +68,54 @@ public static class PersistenceSystem
 	[ConCmd.Admin( "fsk.save" )]
 	public static void SaveAll()
 	{
-		using ( var stream = FileSystem.Data.OpenWrite( FileName ) )
-		{
-			using ( var writer = new BinaryWriter( stream ) )
-			{
-				writer.Write( Version );
+		var save = new SavedGame();
+		save.Name = Game.CurrentSavedGame?.Name ?? "Untitled";
 
-				InventorySystem.Serialize( writer );
+		using var s = new MemoryStream();
+		using var w = new BinaryWriter( s );
 
-				SavePlayers( writer );
-				SaveEntities( writer );
+		w.Write( Version );
 
-				writer.Write( PersistentId );
-			}
-		}
+		InventorySystem.Serialize( w );
+
+		SavePlayers( w );
+		SaveEntities( w );
+
+		w.Write( PersistentId );
+
+		Game.Save( save );
 	}
 
-	[ConCmd.Admin( "fsk.load" )]
-	public static void LoadAll()
+	public static void LoadAll( BinaryReader reader )
 	{
-		if ( !FileSystem.Data.FileExists( FileName ) )
-			return;
-
 		foreach ( var p in Entity.All.OfType<IPersistence>() )
 		{
 			p.Delete();
 		}
 
-		using ( var stream = FileSystem.Data.OpenRead( FileName ) )
+		var version = reader.ReadInt32();
+
+		if ( Version != version )
 		{
-			using ( var reader = new BinaryReader( stream ) )
-			{
-				var version = reader.ReadInt32();
+			Log.Warning( "Unable to load a save from a different version!" );
+			return;
+		}
 
-				if ( Version != version )
-				{
-					Log.Warning( "Unable to load a save from a different version!" );
-					return;
-				}
+		InventorySystem.Deserialize( reader );
 
-				InventorySystem.Deserialize( reader );
+		LoadPlayers( reader );
+		LoadEntities( reader );
 
-				LoadPlayers( reader );
-				LoadEntities( reader );
+		PersistentId = reader.ReadUInt64();
 
-				PersistentId = reader.ReadUInt64();
+		foreach ( var p in Entity.All.OfType<IPersistence>() )
+		{
+			p.BeforeStateLoaded();
+		}
 
-				foreach ( var p in Entity.All.OfType<IPersistence>() )
-				{
-					p.BeforeStateLoaded();
-				}
-
-				foreach ( var p in Entity.All.OfType<IPersistence>() )
-				{
-					p.AfterStateLoaded();
-				}
-			}
+		foreach ( var p in Entity.All.OfType<IPersistence>() )
+		{
+			p.AfterStateLoaded();
 		}
 	}
 

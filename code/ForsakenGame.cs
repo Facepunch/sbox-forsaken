@@ -1,5 +1,7 @@
 ﻿using Sandbox;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Facepunch.Forsaken;
@@ -18,6 +20,19 @@ public partial class ForsakenGame : GameManager
 	public ForsakenGame() : base()
 	{
 
+	}
+
+	public override void LoadSavedGame( SavedGame save )
+	{
+		Log.Info( "[Forsaken] Loading world..." );
+
+		using var s = new MemoryStream( save.Data );
+		using var r = new BinaryReader( s );
+
+		PersistenceSystem.LoadAll( r );
+
+		HasLoadedWorld = true;
+		NextAutoSave = 60f;
 	}
 
 	public override void Spawn()
@@ -128,12 +143,6 @@ public partial class ForsakenGame : GameManager
 			spawner.MaxPickupsPerSpawn = 60;
 			spawner.Interval = 90f;
 		}
-
-		Log.Info( "[Forsaken] Loading world..." );
-		PersistenceSystem.LoadAll();
-
-		HasLoadedWorld = true;
-		NextAutoSave = 60f;
 
 		base.PostLevelLoaded();
 	}
