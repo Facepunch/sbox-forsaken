@@ -85,6 +85,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 	private Entity LastHoveredEntity { get; set; }
 	private List<ActiveEffect> ActiveEffects { get; set; } = new();
 	private TimeSince TimeSinceLastKilled { get; set; }
+	private Glow GlowComponent { get; set; }
 	private Entity LastActiveChild { get; set; }
 
 	public Vector3 EyePosition
@@ -311,6 +312,20 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 		Tags.Add( "player" );
 
 		base.Spawn();
+	}
+
+	public override void ClientSpawn()
+	{
+		if ( IsLocalPawn )
+		{
+			GlowComponent = Components.Create<Glow>();
+			GlowComponent.Width = 0.25f;
+			GlowComponent.Color = Color.Transparent;
+			GlowComponent.InsideObscuredColor = Color.White.WithAlpha( 0.8f );
+			GlowComponent.ObscuredColor = Color.Black.WithAlpha( 0.5f );
+		}
+
+		base.ClientSpawn();
 	}
 
 	private TimeSince TimeSinceLastFootstep { get; set; }
