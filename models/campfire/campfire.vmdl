@@ -32,9 +32,9 @@
 						parent_bone = ""
 						surface_prop = "default"
 						collision_tags = "solid"
-						radius = 20.06694
-						point0 = [ 0.381304, -1.288937, 0.220126 ]
-						point1 = [ 0.35282, -1.332222, 6.634494 ]
+						radius = 16.666161
+						point0 = [ 0.380208, -1.290602, 0.466929 ]
+						point1 = [ 0.353982, -1.330456, 6.372859 ]
 					},
 				]
 			},
@@ -47,7 +47,7 @@
 						filename = "models/campfire/campfire.fbx"
 						import_translation = [ 0.0, 0.0, 0.0 ]
 						import_rotation = [ 0.0, 0.0, 0.0 ]
-						import_scale = 0.5
+						import_scale = 0.4
 						align_origin_x_type = "None"
 						align_origin_y_type = "None"
 						align_origin_z_type = "None"
