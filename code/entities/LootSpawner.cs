@@ -8,7 +8,7 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.Green;
-	public float GlowWidth => 0.4f;
+	public float GlowWidth => 0.2f;
 
 	[Net] public TimeUntil NextRestockTime { get; private set; }
 

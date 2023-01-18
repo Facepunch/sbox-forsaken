@@ -13,7 +13,7 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersiste
 
 	public float InteractionRange => 150f;
 	public Color GlowColor => Item?.Color ?? Color.White;
-	public float GlowWidth => 0.4f;
+	public float GlowWidth => 0.2f;
 
 	private ContextAction PickupAction { get; set; }
 

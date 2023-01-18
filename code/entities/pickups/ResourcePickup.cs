@@ -8,7 +8,7 @@ public abstract partial class ResourcePickup : ModelEntity, IContextActionProvid
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.White;
-	public float GlowWidth => 0.4f;
+	public float GlowWidth => 0.2f;
 
 	private ContextAction HarvestAction { get; set; }
 

@@ -9,7 +9,7 @@ public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockab
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => IsAuthorized() ? Color.Green : Color.Red;
-	public float GlowWidth => 0.4f;
+	public float GlowWidth => 0.2f;
 
 	private ContextAction OpenAction { get; set; }
 	private ContextAction CloseAction { get; set; }

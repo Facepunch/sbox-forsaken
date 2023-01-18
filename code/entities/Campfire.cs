@@ -9,7 +9,7 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.Orange;
-	public float GlowWidth => 0.4f;
+	public float GlowWidth => 0.2f;
 
 	[Net] public CookingProcessor Processor { get; private set; }
 
@@ -193,7 +193,7 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 	{
 		DynamicLight.Brightness = 0.1f + MathF.Sin( Time.Now * 4f ) * 0.02f;
 		DynamicLight.Position = Position + Vector3.Up * 40f;
-		DynamicLight.Position += new Vector3( MathF.Sin( Time.Now * 2f ) * 4f, MathF.Cos( Time.Now * 2f ) * 4f );
+		DynamicLight.Position += new Vector3( MathF.Sin( Time.Now * 1f ) * 4f, MathF.Cos( Time.Now * 1f ) * 4f );
 		DynamicLight.Range = 700f + MathF.Sin( Time.Now ) * 50f;
 	}
 

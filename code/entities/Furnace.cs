@@ -9,7 +9,7 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.Orange;
-	public float GlowWidth => 0.4f;
+	public float GlowWidth => 0.2f;
 
 	[Net] public CookingProcessor Processor { get; private set; }
 
@@ -58,7 +58,6 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 	public void DeserializeState( BinaryReader reader )
 	{
 		Transform = reader.ReadTransform();
-		Log.Info( "Furnace Deserialized: " + Transform.Position );
 		Processor.Deserialize( reader );
 	}
 
@@ -130,8 +129,6 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 
 	public override void Spawn()
 	{
-		Log.Info( "Furnace Spawned" );
-
 		SetModel( "models/furnace/furnace.vmdl" );
 		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
 
@@ -195,7 +192,7 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 			position = attachment.Value.Position;
 
 		DynamicLight.Brightness = 0.1f + MathF.Sin( Time.Now * 4f ) * 0.02f;
-		DynamicLight.Position = position;
+		DynamicLight.Position = position + new Vector3( MathF.Sin( Time.Now ) * 0.5f, MathF.Cos( Time.Now ) * 0.5f, MathF.Sin( Time.Now ) * 2f );
 		DynamicLight.Range = 200f + MathF.Sin( Time.Now ) * 50f;
 	}
 

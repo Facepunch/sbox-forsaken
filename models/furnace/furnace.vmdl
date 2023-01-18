@@ -46,7 +46,7 @@
 						_class = "Attachment"
 						name = "fire"
 						parent_bone = ""
-						relative_origin = [ 28.906397, 1.471706, 39.389 ]
+						relative_origin = [ 14.952036, 1.471706, 27.234062 ]
 						relative_angles = [ -0.0, 0.0, 0.0 ]
 						weight = 1.0
 						ignore_rotation = false
