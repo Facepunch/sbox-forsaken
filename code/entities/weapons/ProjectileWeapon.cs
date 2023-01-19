@@ -69,17 +69,13 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 				position = trace.EndPosition - trace.Direction * 4f;
 			}
 
-			trace = Trace.Ray( eyePosition, eyePosition + forward * BulletRange )
-				.Ignore( player )
-				.Ignore( this )
-				.Run();
-
-			var direction = (trace.EndPosition - position).Normal;
-			direction += (Vector3.Random + Vector3.Random + Vector3.Random + Vector3.Random) * Spread * 0.25f;
+			var direction = forward;
+			direction += (Vector3.Random + Vector3.Random + Vector3.Random + Vector3.Random).WithZ( 0f ) * Spread * 0.25f;
 			direction = direction.Normal;
 
 			var velocity = (direction * Speed) + (player.Velocity * InheritVelocity);
 			velocity = AdjustProjectileVelocity( velocity );
+
 			position -= direction * Speed * Time.Delta;
 			projectile.Initialize( position, velocity, ProjectileRadius, ( p, t ) => OnProjectileHit( (T)p, t ) );
 
