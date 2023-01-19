@@ -82,7 +82,7 @@ public partial class PlayerCorpse : ModelEntity, IContextActionProvider
 			inventory.Give( item );
 		}
 
-		PlayerName = player.Client.Name;
+		PlayerName = player.DisplayName;
 		Inventory = inventory;
 	}
 
