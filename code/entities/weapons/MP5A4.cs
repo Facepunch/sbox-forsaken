@@ -56,7 +56,7 @@ public partial class MP5A4 : ProjectileWeapon<CrossbowBoltProjectile>
 				.WithAttacker( Owner )
 				.WithWeapon( this )
 				.WithPosition( trace.EndPosition )
-				.WithForce( projectile.Velocity * 0.1f )
+				.WithForce( projectile.Velocity * 0.02f )
 				.WithTag( DamageType )
 				.UsingTraceResult( trace );
 
