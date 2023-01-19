@@ -1,7 +1,6 @@
 ﻿Nametag {
     position: absolute;
     transform: translate( -50% );
-    transition: opacity 0.2s ease-in;
     align-items: center;
     flex-direction: row;
     opacity: 1;
@@ -33,6 +32,6 @@
     }
 
     &.hidden {
-        opacity: 0;
+        display: none;
     }
 }
