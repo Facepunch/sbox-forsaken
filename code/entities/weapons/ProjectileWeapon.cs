@@ -48,8 +48,9 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 
 			OnCreateProjectile( projectile );
 
+			var eyePosition = player.EyePosition;
 			var forward = player.EyeRotation.Forward;
-			var position = player.EyePosition + forward * 40f;
+			var position = eyePosition + forward * 40f;
 			var muzzle = GetMuzzlePosition();
 
 			if ( muzzle.HasValue )
@@ -57,8 +58,18 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 				position = muzzle.Value;
 			}
 
-			var endPosition = player.EyePosition + forward * BulletRange;
-			var trace = Trace.Ray( player.EyePosition, endPosition )
+			var trace = Trace.Ray( eyePosition, position )
+				.Ignore( player )
+				.Ignore( this )
+				.Run();
+
+			if ( trace.Hit )
+			{
+				// Let's roll it back a bit because we may be poking through a wall.
+				position = trace.EndPosition - trace.Direction * 4f;
+			}
+
+			trace = Trace.Ray( eyePosition, eyePosition + forward * BulletRange )
 				.Ignore( player )
 				.Ignore( this )
 				.Run();
