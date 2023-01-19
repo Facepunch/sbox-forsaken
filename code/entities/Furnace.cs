@@ -19,6 +19,7 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 	private ContextAction OpenAction { get; set; }
 
 	private PointLightEntity DynamicLight { get; set; }
+	private Sound? ActiveSound { get; set; }
 
 	public float EmissionRadius => 200f;
 	public float HeatToEmit => Processor.IsActive ? 10f : 0f;
@@ -115,6 +116,7 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 					return;
 				}
 
+				Sound.FromWorld( To.Everyone, "fire.light", Position );
 				Processor.Start();
 			}
 		}
@@ -122,6 +124,7 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 		{
 			if ( Game.IsServer )
 			{
+				Sound.FromWorld( To.Everyone, "fire.extinguish", Position );
 				Processor.Stop();
 			}
 		}
@@ -180,6 +183,17 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 	[Event.Tick.Server]
 	private void ServerTick()
 	{
+		if ( Processor.IsActive )
+		{
+			if ( !ActiveSound.HasValue )
+				ActiveSound = PlaySound( "fire.loop" );
+		}
+		else
+		{
+			ActiveSound?.Stop();
+			ActiveSound = null;
+		}
+
 		Processor.Process();
 	}
 

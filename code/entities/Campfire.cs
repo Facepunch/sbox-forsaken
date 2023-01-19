@@ -23,6 +23,7 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 
 	private PointLightEntity DynamicLight { get; set; }
 	private Particles ParticleEffect { get; set; }
+	private Sound? ActiveSound { get; set; }
 
 	public Campfire()
 	{
@@ -116,6 +117,7 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 					return;
 				}
 
+				Sound.FromWorld( To.Everyone, "fire.light", Position );
 				Processor.Start();
 			}
 		}
@@ -123,6 +125,7 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 		{
 			if ( Game.IsServer )
 			{
+				Sound.FromWorld( To.Everyone, "fire.extinguish", Position );
 				Processor.Stop();
 			}
 		}
@@ -186,6 +189,17 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 	[Event.Tick.Server]
 	private void ServerTick()
 	{
+		if ( Processor.IsActive )
+		{
+			if ( !ActiveSound.HasValue )
+				ActiveSound = PlaySound( "fire.loop" );
+		}
+		else
+		{
+			ActiveSound?.Stop();
+			ActiveSound = null;
+		}
+
 		Processor.Process();
 	}
 
