@@ -759,7 +759,7 @@ public class InventoryContainer : IValid
 				hash = hash * 31 + 0;
 		}
 
-		return HashCode.Combine( hash, SlotLimit );
+		return HashCode.Combine( hash, InventoryId, SlotLimit );
 	}
 
 	public virtual InventoryContainer GetTransferTarget( InventoryItem item )
