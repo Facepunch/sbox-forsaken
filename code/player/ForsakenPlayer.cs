@@ -679,6 +679,11 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 				ActiveEffects.RemoveAt( i );
 			}
 		}
+
+		if ( IsSleeping )
+		{
+			SimulateSleeping();
+		}
 	}
 
 	protected override void OnDestroy()
@@ -706,6 +711,18 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 		}
 
 		return true;
+	}
+
+	private void SimulateSleeping()
+	{
+		var trace = Trace.Ray( Position + Vector3.Up * 8f, Position + Vector3.Down * 100f )
+			.Ignore( this )
+			.Run();
+
+		EyeLocalPosition = Vector3.Up * 72f;
+		GroundEntity = trace.Entity;
+
+		SimulateAnimation();
 	}
 
 	private void SimulateTimedAction()

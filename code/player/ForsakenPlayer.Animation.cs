@@ -11,12 +11,14 @@ public partial class ForsakenPlayer
 		Rotation rotation;
 
 		// If we're a bot, spin us around 180 degrees.
-		if ( Client.IsBot )
+		if ( Client.IsValid() && Client.IsBot )
 			rotation = ViewAngles.WithYaw( ViewAngles.yaw + 180f ).ToRotation();
 		else
 			rotation = ViewAngles.ToRotation();
 
-		if ( Input.Down( InputButton.Run ) )
+		var isSimulating = Prediction.CurrentHost.IsValid();
+
+		if ( isSimulating && Input.Down( InputButton.Run ) )
 		{
 			rotation = Rotation.LookAt( InputDirection, Vector3.Up );
 		}
