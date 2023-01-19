@@ -29,6 +29,7 @@ public partial class ForsakenPlayer
 	public virtual void SerializeState( BinaryWriter writer )
 	{
 		writer.Write( SteamId );
+		writer.Write( DisplayName );
 		writer.Write( (byte)LifeState );
 		writer.Write( Transform );
 
@@ -57,6 +58,7 @@ public partial class ForsakenPlayer
 	public virtual void DeserializeState( BinaryReader reader )
 	{
 		SteamId = reader.ReadInt64();
+		DisplayName = reader.ReadString();
 		LifeState = (LifeState)reader.ReadByte();
 		Transform = reader.ReadTransform();
 
@@ -92,6 +94,11 @@ public partial class ForsakenPlayer
 		{
 			BedrollHandle = reader.ReadPersistenceHandle();
 		}
+
+		if ( LifeState == LifeState.Alive )
+			CreateHull();
+		else
+			Respawn();
 	}
 
 	private void SerializeCraftingQueue( BinaryWriter writer )
