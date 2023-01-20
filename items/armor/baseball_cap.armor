@@ -2,14 +2,20 @@
 {
 	data = 
 	{
-		DamageMultiplier = 1
-		ArmorSlot = "Head"
+		DamageMultiplier = 0
+		ArmorSlot = "None"
 		SecondaryModel = null
-		PrimaryModel = resource:"models/citizen_clothes/hat/baseball_cap/model/baseball_cap.vmdl"
-		TemperatureModifier = 1
+		PrimaryModel = null
+		TemperatureModifier = 0
+		IsRecyclable = false
+		RecycleOutput = null
+		IsPurchasable = false
+		SalvageCost = 0
+		StockStackSize = "1.00,1.00,0"
+		StockChance = 0.05
 		IsLootable = true
-		SpawnChance = 0.3
-		AmountToSpawn = "1.00,0.00,0"
+		LootChance = 0.06
+		LootStackSize = "1.00,0.00,0"
 		ItemName = "Baseball Cap"
 		UniqueId = "baseball_cap"
 		Description = "A simple baseball cap. It\'ll keep your head a bit warm."

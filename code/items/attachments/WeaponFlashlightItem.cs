@@ -12,6 +12,14 @@ public class WeaponFlashlightItem : AttachmentItem
 	public override string Icon => "textures/items/weapon_flashlight.png";
 	public override string Name => "Weapon Flashlight";
 
+	public override int StockStackSize => 1;
+	public override int LootStackSize => 1;
+	public override float StockChance => 0.1f;
+	public override float LootChance => 0.03f;
+	public override int SalvageCost => 50;
+	public override bool IsPurchasable => true;
+	public override bool IsLootable => true;
+
 	protected ModelEntity AttachmentEntity { get; set; }
 	protected Flashlight LightEntity { get; set; }
 	protected bool IsEnabled { get; set; }

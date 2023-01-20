@@ -120,9 +120,8 @@ public partial class Trader : NPC, IContextActionProvider, IPersistence, INameta
 				if ( r < s )
 				{
 					var instance = InventorySystem.CreateItem( item.UniqueId );
-					instance.StackSize = (ushort)item.AmountToStock;
+					instance.StackSize = (ushort)item.StockStackSize;
 					Inventory.Give( instance );
-					Log.Info( "Gave Trader: " + instance.StackSize + " / " + instance.Name );
 					break;
 				}
 			}

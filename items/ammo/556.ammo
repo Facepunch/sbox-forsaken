@@ -2,12 +2,18 @@
 {
 	data = 
 	{
-		AmmoType = "Rifle"
-		MaxStackSize = 128
-		DefaultStackSize = 1
+		AmmoType = "None"
+		MaxStackSize = 0
+		DefaultStackSize = 0
+		IsRecyclable = false
+		RecycleOutput = null
+		IsPurchasable = false
+		SalvageCost = 0
+		StockStackSize = "1.00,1.00,0"
+		StockChance = 0.1
 		IsLootable = true
-		SpawnChance = 0.1
-		AmountToSpawn = "4.00,12.00,1"
+		LootChance = 0.07
+		LootStackSize = "4.00,30.00,1"
 		ItemName = "5.56 Ammo"
 		UniqueId = "ammo_rifle"
 		Description = "Ammunition typically used for rifles."

@@ -24,9 +24,14 @@
 		IsCookable = true
 		CookedItemId = "cooked_meat"
 		CookedQuantity = 1
-		IsLootable = true
-		SpawnChance = 0.3
-		AmountToSpawn = "1.00,4.00,1"
+		IsLootableOrPurchasable = true
+		IsRecyclable = false
+		RecycleOutput = null
+		IsLootable = false
+		IsPurchasable = true
+		SalvageCost = 10
+		StockChance = 0.5
+		AmountToStock = "1.00,4.00,1"
 		ItemName = "Raw Meat"
 		UniqueId = "raw_meat"
 		Description = "A disgusting slab of uncooked meat. I wouldn\'t eat this..."

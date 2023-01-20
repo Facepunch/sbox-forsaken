@@ -18,8 +18,8 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider,
 	public virtual string Title { get; set; } = "Loot Spawner";
 	public virtual float RestockTime { get; set; } = 30f;
 	public virtual int SlotLimit { get; set; } = 6;
-	public virtual float MinStockChance { get; set; } = 0f;
-	public virtual float MaxStockChance { get; set; } = 1f;
+	public virtual float MinLootChance { get; set; } = 0f;
+	public virtual float MaxLootChance { get; set; } = 1f;
 
 	private ContextAction OpenAction { get; set; }
 	private bool IsHidden { get; set; }
@@ -126,7 +126,7 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider,
 		var possibleItems = InventorySystem.GetDefinitions()
 			.OfType<ILootSpawnerItem>()
 			.Where( i => i.IsLootable )
-			.Where( i => i.StockChance > 0f && i.StockChance > MinStockChance && i.StockChance < MaxStockChance );
+			.Where( i => i.LootChance > 0f && i.LootChance > MinLootChance && i.LootChance < MaxLootChance );
 
 		if ( !possibleItems.Any() ) return;
 
@@ -134,18 +134,18 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider,
 
 		for ( var i = 0; i < itemsToSpawn; i++ )
 		{
-			var u = possibleItems.Sum( p => p.StockChance );
+			var u = possibleItems.Sum( p => p.LootChance );
 			var r = Game.Random.Float() * u;
 			var s = 0f;
 
 			foreach ( var item in possibleItems )
 			{
-				s += item.StockChance;
+				s += item.LootChance;
 
 				if ( r < s )
 				{
 					var instance = InventorySystem.CreateItem( item.UniqueId );
-					instance.StackSize = (ushort)item.AmountToStock;
+					instance.StackSize = (ushort)item.LootStackSize;
 					Inventory.Stack( instance );
 					break;
 				}

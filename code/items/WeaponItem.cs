@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Facepunch.Forsaken;
 
-public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerItem, ILootSpawnerItem
+public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerItem, ILootSpawnerItem, IPurchasableItem
 {
 	public override Color Color => ItemColors.Weapon;
 
@@ -16,8 +16,12 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerIt
 	public virtual AmmoType AmmoType => Resource?.AmmoType ?? AmmoType.None;
 	public virtual Curve DamageFalloff => Resource?.DamageFalloff ?? default;
 	public virtual Curve RecoilCurve => Resource?.RecoilCurve ?? default;
+	public virtual int StockStackSize => Resource?.StockStackSize.GetValue().CeilToInt() ?? default;
+	public virtual int LootStackSize => Resource?.LootStackSize.GetValue().CeilToInt() ?? default;
 	public virtual float StockChance => Resource?.StockChance ?? default;
-	public virtual int AmountToStock => Resource?.AmountToStock.GetValue().CeilToInt() ?? default;
+	public virtual float LootChance => Resource?.LootChance ?? default;
+	public virtual int SalvageCost => Resource?.SalvageCost ?? default;
+	public virtual bool IsPurchasable => Resource?.IsPurchasable ?? default;
 	public virtual bool IsLootable => Resource?.IsLootable ?? default;
 
 	public AttachmentContainer Attachments { get; private set; }

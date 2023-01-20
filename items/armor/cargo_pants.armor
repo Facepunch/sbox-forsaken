@@ -2,14 +2,20 @@
 {
 	data = 
 	{
-		DamageMultiplier = 0.9
-		ArmorSlot = "Legs"
+		DamageMultiplier = 0
+		ArmorSlot = "None"
 		SecondaryModel = null
-		PrimaryModel = resource:"models/citizen_clothes/trousers/cargopants/models/cargo_pants.vmdl"
-		TemperatureModifier = 2
+		PrimaryModel = null
+		TemperatureModifier = 0
+		IsRecyclable = false
+		RecycleOutput = null
+		IsPurchasable = false
+		SalvageCost = 0
+		StockStackSize = "1.00,1.00,0"
+		StockChance = 0.05
 		IsLootable = true
-		SpawnChance = 0.15
-		AmountToSpawn = "1.00,0.00,0"
+		LootChance = 0.06
+		LootStackSize = "1.00,0.00,0"
 		ItemName = "Cargo Pants"
 		UniqueId = "cargo_pants"
 		Description = "A pair of cargo pants. They come in a sneaky camouflage color."

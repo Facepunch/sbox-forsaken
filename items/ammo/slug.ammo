@@ -2,12 +2,18 @@
 {
 	data = 
 	{
-		AmmoType = "Shotgun"
-		MaxStackSize = 32
+		AmmoType = "None"
+		MaxStackSize = 0
 		DefaultStackSize = 0
+		IsRecyclable = false
+		RecycleOutput = null
+		IsPurchasable = false
+		SalvageCost = 0
+		StockStackSize = "1.00,1.00,0"
+		StockChance = 0.12
 		IsLootable = true
-		SpawnChance = 0.1
-		AmountToSpawn = "1.00,4.00,1"
+		LootChance = 0.09
+		LootStackSize = "2.00,8.00,1"
 		ItemName = "Slug"
 		UniqueId = "ammo_slug"
 		Description = "A longer range shotgun ammo. Hits hard at range with far less falloff."

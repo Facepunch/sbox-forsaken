@@ -2,14 +2,20 @@
 {
 	data = 
 	{
-		DamageMultiplier = 0.9
-		ArmorSlot = "Feet"
+		DamageMultiplier = 0
+		ArmorSlot = "None"
 		SecondaryModel = null
-		PrimaryModel = resource:"models/citizen_clothes/shoes/boots/models/army_boots.vmdl"
-		TemperatureModifier = -1
+		PrimaryModel = null
+		TemperatureModifier = 0
+		IsRecyclable = false
+		RecycleOutput = null
+		IsPurchasable = false
+		SalvageCost = 0
+		StockStackSize = "1.00,1.00,0"
+		StockChance = 0.05
 		IsLootable = true
-		SpawnChance = 0.05
-		AmountToSpawn = "1.00,0.00,0"
+		LootChance = 0.07
+		LootStackSize = "1.00,0.00,0"
 		ItemName = "Army Boots"
 		UniqueId = "army_boots"
 		Description = "Some army boots. Good protection for your feet, but they feel cold."

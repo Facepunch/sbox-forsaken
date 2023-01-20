@@ -2,21 +2,25 @@
 {
 	data = 
 	{
-		MaxStackSize = 5
-		DefaultStackSize = 1
+		MaxStackSize = 0
+		DefaultStackSize = 0
 		ConsumeSound = null
 		ConsumeEffect = null
 		ActivateSound = null
 		ActivateDelay = 0
-		Effects = 
-		[
-			{
-				Amount = 20
-			},
-		]
+		Effects = null
+		IsCookable = false
+		CookedItemId = ""
+		CookedQuantity = 0
+		IsRecyclable = false
+		RecycleOutput = null
+		IsPurchasable = true
+		SalvageCost = 25
+		StockStackSize = "1.00,1.00,0"
+		StockChance = 0.5
 		IsLootable = true
-		SpawnChance = 0.2
-		AmountToSpawn = "1.00,2.00,1"
+		LootChance = 0.06
+		LootStackSize = "1.00,0.00,0"
 		ItemName = "Tuna Can"
 		UniqueId = "tuna_can"
 		Description = "A can of tuna. Who knows when it expired."

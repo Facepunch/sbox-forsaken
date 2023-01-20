@@ -5,40 +5,34 @@
 		WorldModelMaterialGroup = 0
 		ViewModelMaterialGroup = 0
 		WorldModelPath = null
-		AmmoType = "Shotgun"
+		AmmoType = "None"
 		DefaultAmmo = 0
-		ClipSize = 6
+		ClipSize = 0
 		DamageFalloff = 
-		{
-			rangex = "0,4000"
-			frames = 
-			[
-				{
-					y = 1
-				},
-				{
-					x = 1
-				},
-			]
-		}
+		[
+			{
+				x = 0.5
+				y = 0.5
+			},
+		]
 		RecoilCurve = 
 		[
 			{
-				y = 1
-			},
-			{
 				x = 0.5
-			},
-			{
-				x = 1
-				y = 1
+				y = 0.5
 			},
 		]
-		Damage = 10
-		ClassName = "weapon_pump_shotgun"
+		Damage = 0
+		ClassName = ""
+		IsRecyclable = false
+		RecycleOutput = null
+		IsPurchasable = true
+		SalvageCost = 200
+		StockStackSize = "1.00,1.00,0"
+		StockChance = 0.03
 		IsLootable = true
-		SpawnChance = 0.02
-		AmountToSpawn = "1.00,0.00,0"
+		LootChance = 0.02
+		LootStackSize = "1.00,0.00,0"
 		ItemName = "Pump Shotgun"
 		UniqueId = "pump_shotgun"
 		Description = "The kind of weapon that\'ll blast your entire face off."

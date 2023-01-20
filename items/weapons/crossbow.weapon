@@ -4,23 +4,17 @@
 	{
 		WorldModelMaterialGroup = 0
 		ViewModelMaterialGroup = 0
-		WorldModelPath = resource:"weapons/rust_crossbow/rust_crossbow.vmdl"
-		AmmoType = "Bolt"
+		WorldModelPath = null
+		AmmoType = "None"
 		DefaultAmmo = 0
-		ClipSize = 10
+		ClipSize = 0
 		DamageFalloff = 
-		{
-			rangex = "0,4000"
-			frames = 
-			[
-				{
-					y = 1
-				},
-				{
-					x = 1
-				},
-			]
-		}
+		[
+			{
+				x = 0.5
+				y = 0.5
+			},
+		]
 		RecoilCurve = 
 		[
 			{
@@ -28,11 +22,17 @@
 				y = 0.5
 			},
 		]
-		Damage = 40
-		ClassName = "weapon_crossbow"
+		Damage = 0
+		ClassName = ""
+		IsRecyclable = false
+		RecycleOutput = null
+		IsPurchasable = true
+		SalvageCost = 40
+		StockStackSize = "1.00,1.00,0"
+		StockChance = 0.05
 		IsLootable = true
-		SpawnChance = 0.05
-		AmountToSpawn = "1.00,0.00,0"
+		LootChance = 0.06
+		LootStackSize = "1.00,0.00,0"
 		ItemName = "Crossbow"
 		UniqueId = "crossbow"
 		Description = "A light damage crossbow for dealing ranged damage."
