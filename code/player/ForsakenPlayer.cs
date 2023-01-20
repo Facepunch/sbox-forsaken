@@ -209,6 +209,25 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 		SetStructureTypeCmd( type.Identity );
 	}
 
+	public bool IsHeadshotTarget( ForsakenPlayer other )
+	{
+		var startPosition = CameraPosition;
+		var endPosition = CameraPosition + CursorDirection * 1000f;
+		var cursor = Trace.Ray( startPosition, endPosition )
+			.EntitiesOnly()
+			.UseHitboxes()
+			.WithTag( "player" )
+			.Size( 4f )
+			.Run();
+
+		if ( cursor.Entity == other && cursor.Hitbox.HasTag( "head" ) )
+		{
+			return true;
+		}
+
+		return false;
+	}
+
 	[ClientRpc]
 	public void ResetCursor()
 	{
@@ -476,11 +495,19 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 
 	public override void TakeDamage( DamageInfo info )
 	{
-		if ( info.Attacker is ForsakenPlayer )
+		if ( info.Attacker is ForsakenPlayer attacker )
 		{
-			if ( info.Hitbox.HasTag( "head" ) )
+			if ( info.HasTag( "bullet" ) )
 			{
-				info.Damage *= 2f;
+				if ( attacker.IsHeadshotTarget( this ) )
+				{
+					Sound.FromScreen( To.Single( attacker ), "hitmarker.headshot" );
+					info.Damage *= 2f;
+				}
+				else
+				{
+					Sound.FromScreen( To.Single( attacker ), "hitmarker.hit" );
+				}
 			}
 
 			using ( Prediction.Off() )
@@ -501,7 +528,6 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 			return;
 
 		base.TakeDamage( info );
-
 		this.ProceduralHitReaction( info );
 	}
 
