@@ -8,7 +8,7 @@ using Sandbox.Diagnostics;
 
 namespace Facepunch.Forsaken;
 
-public partial class ForsakenPlayer : AnimatedEntity, IPersistence
+public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProvider
 {
 	private class ActiveEffect
 	{
@@ -86,6 +86,10 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 	[Net] private int StructureType { get; set; }
 	[Net] public long SteamId { get; private set; }
 	[Net] public Bedroll Bedroll { get; private set; }
+
+	public Color? NametagColor => null;
+	public bool ShowNametag => LifeState == LifeState.Alive && ( Nametags.ShowOwnNametag || !IsLocalPawn );
+	public bool IsInactive => IsSleeping;
 
 	private TimeUntil NextCalculateTemperature { get; set; }
 	private float CalculatedTemperature { get; set; }

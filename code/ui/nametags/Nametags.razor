@@ -14,15 +14,12 @@
 
 <root>
     @{
-        var players = Entity.All.OfType<ForsakenPlayer>();
+        var players = Entity.All.OfType<INametagProvider>();
     }
 
     @foreach ( var p in players )
     {
-        if ( !ShowOwnNametag && Game.LocalPawn == p )
-            continue;
-
-        <Nametag Player=@p></Nametag>
+        <Nametag Provider=@p></Nametag>
     }
 </root>
 
@@ -30,7 +27,7 @@
 {
     protected override int BuildHash()
     {
-        var players = Entity.All.OfType<ForsakenPlayer>();
-        return HashCode.Combine( players.Count(), ShowOwnNametag );
+        var players = Entity.All.OfType<INametagProvider>();
+        return HashCode.Combine( players.Count() );
     }
 }

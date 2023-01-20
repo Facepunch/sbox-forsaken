@@ -9,7 +9,7 @@ namespace Facepunch.Forsaken;
 [HammerEntity]
 [Title( "Trader" )]
 [Model( Model = "models/citizen/citizen.vmdl" )]
-public partial class Trader : NPC, IContextActionProvider, IPersistence
+public partial class Trader : NPC, IContextActionProvider, IPersistence, INametagProvider
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.Cyan;
@@ -30,6 +30,11 @@ public partial class Trader : NPC, IContextActionProvider, IPersistence
 	[Property] public int MaxItemsForSale { get; set; } = 10;
 
 	private ContextAction TalkAction { get; set; }
+
+	public Vector3 EyePosition => Position + Vector3.Up * 72f;
+	public Color? NametagColor => Color.Cyan;
+	public bool ShowNametag => true;
+	public bool IsInactive => false;
 
 	public Trader()
 	{

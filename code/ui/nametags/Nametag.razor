@@ -7,26 +7,29 @@
 @attribute [StyleSheet( "/ui/nametags/Nametag.scss" )]
 @inherits Panel
 
-@if ( !Player.IsValid() ) return;
-@if ( Player.LifeState != LifeState.Alive ) return;
+@if ( !Provider.IsValid() ) return;
+@if ( !Provider.ShowNametag ) return;
 
-<root class="@(Player.IsSleeping ? "sleeping" : "")">
-    <div class="dot"></div>
-    <label class="name">@Player.DisplayName</label>
+<root class="@(Provider.IsInactive ? "inactive" : "")">
+    <div @ref="Dot" class="dot"></div>
+    <label @ref="Name" class="name">@Provider.DisplayName</label>
 </root>
 
 @code
 {
-    public ForsakenPlayer Player { get; set; }
+    public INametagProvider Provider { get; set; }
+
+    private Label Name { get; set; }
+    private Panel Dot { get; set; }
 
     public override void Tick()
     {
         var isHidden = true;
-        var position = (Player.EyePosition - Player.Rotation.Forward * 20f).ToScreen();
+        var position = (Provider.EyePosition - Provider.Rotation.Forward * 20f).ToScreen();
 
         if ( position.z >= 0f )
         {
-            var distance = Camera.Main.Position.Distance( Player.EyePosition );
+            var distance = Camera.Main.Position.Distance( Provider.EyePosition );
             var maxDistance = 1024f;
 
             if ( distance <= maxDistance )
@@ -47,8 +50,19 @@
         base.Tick();
     }
 
+    protected override void OnAfterTreeRender( bool firstTime )
+    {
+        if ( Provider.IsValid() && Provider.ShowNametag )
+        {
+            Name.Style.FontColor = Provider.NametagColor;
+            Dot.Style.BackgroundColor = Provider.NametagColor;
+        }
+
+        base.OnAfterTreeRender( firstTime );
+    }
+
     protected override int BuildHash()
     {
-        return HashCode.Combine( Player, Player.DisplayName, Player.LifeState, Player.IsSleeping );
+        return HashCode.Combine( Provider, Provider.DisplayName, Provider.ShowNametag, Provider.IsInactive );
     }
 }
