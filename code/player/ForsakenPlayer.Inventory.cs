@@ -379,9 +379,12 @@ public partial class ForsakenPlayer
 		{
 			try
 			{
-				item.Weapon = TypeLibrary.Create<Weapon>( item.WeaponName );
-				item.Weapon.SetWeaponItem( item );
-				item.Weapon.OnCarryStart( this );
+				var weapon = TypeLibrary.Create<Weapon>( item.WeaponName );
+				weapon.SetWeaponItem( item );
+				weapon.SetWeaponItem( item );
+				weapon.OnCarryStart( this );
+
+				item.Weapon = weapon;
 				item.IsDirty = true;
 			}
 			catch ( Exception e )

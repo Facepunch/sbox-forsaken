@@ -30,7 +30,7 @@
 			},
 		]
 		Damage = 10
-		ClassName = ""
+		ClassName = "weapon_pump_shotgun"
 		IsRecyclable = false
 		RecycleOutput = null
 		IsPurchasable = true
