@@ -4,7 +4,7 @@ namespace Facepunch.Forsaken;
 
 [GameResource( "Weapon", "weapon", "A weapon for use with Forsaken.", Icon = "crisis_alert" )]
 [ItemClass( typeof( WeaponItem ) )]
-public class WeaponResource : LootTableResource
+public class WeaponResource : ForsakenItemResource
 {
 	[Property]
 	public int WorldModelMaterialGroup { get; set; }

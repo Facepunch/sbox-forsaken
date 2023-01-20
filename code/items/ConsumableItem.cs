@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
-public class ConsumableItem : ResourceItem<ConsumableResource, ConsumableItem>, ILootTableItem, IConsumableItem, ICookableItem
+public class ConsumableItem : ResourceItem<ConsumableResource, ConsumableItem>, ILootSpawnerItem, IConsumableItem, ICookableItem
 {
 	public override Color Color => ItemColors.Consumable;
 	public override ushort DefaultStackSize => (ushort)(Resource?.DefaultStackSize ?? 1);
 	public override ushort MaxStackSize => (ushort)(Resource?.MaxStackSize ?? 1);
-	public virtual int AmountToSpawn => Resource?.AmountToSpawn.GetValue().CeilToInt() ?? default;
-	public virtual float SpawnChance => Resource?.SpawnChance ?? default;
+	public virtual int AmountToStock => Resource?.AmountToStock.GetValue().CeilToInt() ?? default;
+	public virtual float StockChance => Resource?.StockChance ?? default;
 	public virtual bool IsLootable => Resource?.IsLootable ?? default;
 	public virtual string ConsumeSound => Resource?.ConsumeSound ?? default;
 	public virtual string ConsumeEffect => Resource?.ConsumeEffect ?? default;

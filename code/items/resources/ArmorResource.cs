@@ -4,7 +4,7 @@ namespace Facepunch.Forsaken;
 
 [GameResource( "Armor", "armor", "A piece of armor or clothing for use with Forsaken.", Icon = "checkroom" )]
 [ItemClass( typeof( ArmorItem ) )]
-public class ArmorResource : LootTableResource
+public class ArmorResource : ForsakenItemResource
 {
 	[Property]
 	public float DamageMultiplier { get; set; } = 1f;

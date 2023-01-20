@@ -1,10 +1,10 @@
 ﻿
 namespace Facepunch.Forsaken;
 
-public interface ILootTableItem
+public interface ILootSpawnerItem
 {
-	public int AmountToSpawn { get; }
-	public float SpawnChance { get; }
+	public int AmountToStock { get; }
+	public float StockChance { get; }
 	public bool IsLootable { get; }
 	public string UniqueId { get; }
 }
