@@ -30,6 +30,7 @@ public partial class ForsakenPlayer
 		};
 
 		ragdoll.CopyFrom( this );
+		ragdoll.ApplyAbsoluteImpulse( Velocity );
 		ragdoll.ApplyForceToBone( force, forceBone );
 
 		Ragdoll = ragdoll;

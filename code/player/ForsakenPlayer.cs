@@ -34,7 +34,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 	{
 		if ( ConsoleSystem.Caller.Pawn is ForsakenPlayer pl )
 		{
-			pl.TakeDamage( DamageInfo.FromBullet( pl.Position, Vector3.Zero, 1000f ) );
+			pl.TakeDamage( DamageInfo.FromBullet( pl.Position, Vector3.Random * 80f, 1000f ) );
 		}
 	}
 
@@ -511,6 +511,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence
 
 		GameManager.Current?.OnKilled( this );
 
+		TimeSinceLastKilled = 0f;
 		EnableAllCollisions = false;
 		EnableDrawing = false;
 		LifeState = LifeState.Dead;
