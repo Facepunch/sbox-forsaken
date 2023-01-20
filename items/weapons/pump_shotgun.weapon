@@ -4,17 +4,24 @@
 	{
 		WorldModelMaterialGroup = 0
 		ViewModelMaterialGroup = 0
-		WorldModelPath = null
-		AmmoType = "None"
+		WorldModelPath = resource:"models/r870/w_r870.vmdl"
+		AmmoType = "Shotgun"
 		DefaultAmmo = 0
-		ClipSize = 0
+		ClipSize = 6
 		DamageFalloff = 
-		[
-			{
-				x = 0.5
-				y = 0.5
-			},
-		]
+		{
+			rangex = "0,4000"
+			frames = 
+			[
+				{
+					y = 1
+				},
+				{
+					x = 1
+					y = 0.357143
+				},
+			]
+		}
 		RecoilCurve = 
 		[
 			{
@@ -22,7 +29,7 @@
 				y = 0.5
 			},
 		]
-		Damage = 0
+		Damage = 10
 		ClassName = ""
 		IsRecyclable = false
 		RecycleOutput = null

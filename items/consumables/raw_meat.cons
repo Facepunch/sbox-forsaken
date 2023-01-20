@@ -8,30 +8,19 @@
 		ConsumeEffect = null
 		ActivateSound = null
 		ActivateDelay = 0
-		Effects = 
-		[
-			{
-				Target = "Health"
-				Amount = -10
-				Duration = 5
-			},
-			{
-				Target = "Hydration"
-				Amount = -20
-				Duration = 5
-			},
-		]
-		IsCookable = true
-		CookedItemId = "cooked_meat"
-		CookedQuantity = 1
-		IsLootableOrPurchasable = true
+		Effects = null
+		IsCookable = false
+		CookedItemId = ""
+		CookedQuantity = 0
 		IsRecyclable = false
 		RecycleOutput = null
-		IsLootable = false
 		IsPurchasable = true
 		SalvageCost = 10
+		StockStackSize = "1.00,1.00,0"
 		StockChance = 0.5
-		AmountToStock = "1.00,4.00,1"
+		IsLootable = false
+		LootChance = 0
+		LootStackSize = "0.00,0.00,0"
 		ItemName = "Raw Meat"
 		UniqueId = "raw_meat"
 		Description = "A disgusting slab of uncooked meat. I wouldn\'t eat this..."

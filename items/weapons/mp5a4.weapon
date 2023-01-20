@@ -4,10 +4,10 @@
 	{
 		WorldModelMaterialGroup = 0
 		ViewModelMaterialGroup = 0
-		WorldModelPath = null
-		AmmoType = "None"
+		WorldModelPath = resource:"models/mp5/w_mp5.vmdl"
+		AmmoType = "Pistol"
 		DefaultAmmo = 0
-		ClipSize = 0
+		ClipSize = 30
 		DamageFalloff = 
 		[
 			{
@@ -22,8 +22,8 @@
 				y = 0.5
 			},
 		]
-		Damage = 0
-		ClassName = ""
+		Damage = 20
+		ClassName = "weapon_mp5a4"
 		IsRecyclable = false
 		RecycleOutput = null
 		IsPurchasable = true

@@ -2,9 +2,9 @@
 {
 	data = 
 	{
-		AmmoType = "None"
-		MaxStackSize = 0
-		DefaultStackSize = 0
+		AmmoType = "Rifle"
+		MaxStackSize = 128
+		DefaultStackSize = 1
 		IsRecyclable = false
 		RecycleOutput = null
 		IsPurchasable = false

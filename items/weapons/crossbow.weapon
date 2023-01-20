@@ -4,10 +4,10 @@
 	{
 		WorldModelMaterialGroup = 0
 		ViewModelMaterialGroup = 0
-		WorldModelPath = null
-		AmmoType = "None"
+		WorldModelPath = resource:"weapons/rust_crossbow/rust_crossbow.vmdl"
+		AmmoType = "Bolt"
 		DefaultAmmo = 0
-		ClipSize = 0
+		ClipSize = 10
 		DamageFalloff = 
 		[
 			{
@@ -22,8 +22,8 @@
 				y = 0.5
 			},
 		]
-		Damage = 0
-		ClassName = ""
+		Damage = 40
+		ClassName = "weapon_crossbow"
 		IsRecyclable = false
 		RecycleOutput = null
 		IsPurchasable = true

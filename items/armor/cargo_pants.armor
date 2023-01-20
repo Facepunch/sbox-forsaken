@@ -2,11 +2,11 @@
 {
 	data = 
 	{
-		DamageMultiplier = 0
-		ArmorSlot = "None"
+		DamageMultiplier = 0.9
+		ArmorSlot = "Legs"
 		SecondaryModel = null
-		PrimaryModel = null
-		TemperatureModifier = 0
+		PrimaryModel = resource:"models/citizen_clothes/trousers/cargopants/models/cargo_pants.vmdl"
+		TemperatureModifier = 2
 		IsRecyclable = false
 		RecycleOutput = null
 		IsPurchasable = false

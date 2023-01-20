@@ -2,11 +2,11 @@
 {
 	data = 
 	{
-		DamageMultiplier = 0
-		ArmorSlot = "None"
+		DamageMultiplier = 0.9
+		ArmorSlot = "Feet"
 		SecondaryModel = null
-		PrimaryModel = null
-		TemperatureModifier = 0
+		PrimaryModel = resource:"models/citizen_clothes/shoes/boots/models/army_boots.vmdl"
+		TemperatureModifier = 1
 		IsRecyclable = false
 		RecycleOutput = null
 		IsPurchasable = false
@@ -18,7 +18,7 @@
 		LootStackSize = "1.00,0.00,0"
 		ItemName = "Army Boots"
 		UniqueId = "army_boots"
-		Description = "Some army boots. Good protection for your feet, but they feel cold."
+		Description = "Some army boots. Good protection for your feet."
 		Icon = resource:"clothing_icons/army_boots.png"
 		WorldModel = resource:"models/sbox_props/burger_box/burger_box.vmdl"
 		Tags = [  ]

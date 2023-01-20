@@ -2,9 +2,9 @@
 {
 	data = 
 	{
-		AmmoType = "None"
-		MaxStackSize = 0
-		DefaultStackSize = 0
+		AmmoType = "Pistol"
+		MaxStackSize = 128
+		DefaultStackSize = 4
 		IsRecyclable = false
 		RecycleOutput = null
 		IsPurchasable = false

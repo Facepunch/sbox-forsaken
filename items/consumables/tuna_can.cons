@@ -2,8 +2,8 @@
 {
 	data = 
 	{
-		MaxStackSize = 0
-		DefaultStackSize = 0
+		MaxStackSize = 5
+		DefaultStackSize = 1
 		ConsumeSound = null
 		ConsumeEffect = null
 		ActivateSound = null

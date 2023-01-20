@@ -2,11 +2,11 @@
 {
 	data = 
 	{
-		DamageMultiplier = 0
-		ArmorSlot = "None"
+		DamageMultiplier = 0.95
+		ArmorSlot = "Head"
 		SecondaryModel = null
-		PrimaryModel = null
-		TemperatureModifier = 0
+		PrimaryModel = resource:"models/citizen_clothes/hat/baseball_cap/model/baseball_cap.vmdl"
+		TemperatureModifier = 1
 		IsRecyclable = false
 		RecycleOutput = null
 		IsPurchasable = false

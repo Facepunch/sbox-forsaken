@@ -2,11 +2,11 @@
 {
 	data = 
 	{
-		DamageMultiplier = 0
-		ArmorSlot = "None"
+		DamageMultiplier = 0.9
+		ArmorSlot = "Chest"
 		SecondaryModel = null
-		PrimaryModel = null
-		TemperatureModifier = 0
+		PrimaryModel = resource:"models/citizen_clothes/jacket/hoodie/models/hoodie_black.vmdl"
+		TemperatureModifier = 3
 		IsRecyclable = false
 		RecycleOutput = null
 		IsPurchasable = false
