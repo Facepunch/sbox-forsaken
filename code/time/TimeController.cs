@@ -112,17 +112,48 @@ public partial class TimeController : ModelEntity
 	[DefaultValue( "11 10 21" )]
 	public Color NightSkyColor { get; set; }
 
-	[Property( Title = "Dawn Temperature" )]
+	[Property( Title = "Dawn Temperature" ), Category( "Temperature" )]
 	public float DawnTemperature { get; set; } = 0f;
 
-	[Property( Title = "Day Temperature" )]
+	[Property( Title = "Day Temperature" ), Category( "Temperature" )]
 	public float DayTemperature { get; set; } = 10f;
 
-	[Property( Title = "Dusk Temperature" )]
+	[Property( Title = "Dusk Temperature" ), Category( "Temperature" )]
 	public float DuskTemperature { get; set; } = 0f;
 
-	[Property( Title = "Night Temperature" )]
+	[Property( Title = "Night Temperature" ), Category( "Temperature" )]
 	public float NightTemperature { get; set; } = -10f;
+
+	[Net, Property, Category( "Fog" )]
+	public bool EnableFog { get; set; }
+
+	[Net, Property( Title = "Dawn Fog Color" ), Category( "Fog" )]
+	[DefaultValue( "162 118 72" )]
+	public Color DawnFogColor { get; set; }
+
+	[Net, Property( Title = "Day Fog Color" ), Category( "Fog" )]
+	[DefaultValue( "255 255 255" )]
+	public Color DayFogColor { get; set; }
+
+	[Net, Property( Title = "Dusk Fog Color" ), Category( "Fog" )]
+	[DefaultValue( "162 118 72" )]
+	public Color DuskFogColor { get; set; }
+
+	[Net, Property( Title = "Night Fog Color" ), Category( "Fog" )]
+	[DefaultValue( "11 10 21" )]
+	public Color NightFogColor { get; set; }
+
+	[Net, Property( Title = "Dawn Fog Start Distance" ), Category( "Fog" )]
+	public float DawnFogStart { get; set; } = 30f;
+
+	[Net, Property( Title = "Day Fog Start Distance" ), Category( "Fog" )]
+	public float DayFogStart { get; set; }
+
+	[Net, Property( Title = "Dusk Fog Start Distance" ), Category( "Fog" )]
+	public float DuskFogStart { get; set; } = 30f;
+
+	[Net, Property( Title = "Night Fog Start Distance" ), Category( "Fog" )]
+	public float NightFogStart { get; set; } = 60f;
 
 	protected Output OnBecomeNight { get; set; }
 	protected Output OnBecomeDusk { get; set; }
@@ -139,12 +170,25 @@ public partial class TimeController : ModelEntity
 	}
 
 	private EnvironmentLightEntity InternalEnvironment;
+	private FloatGradient FogStartGradient;
 	private FloatGradient BrightnessGradient;
 	private FloatGradient TemperatureGradient;
+	private ColorGradient FogColorGradient;
 	private ColorGradient SkyColorGradient;
 	private ColorGradient ColorGradient;
 	private float DefaultSkyIntensity = 1f;
 	private float DefaultBrightness = 2.5f;
+
+	public override void ClientSpawn()
+	{
+		FogStartGradient = new FloatGradient();
+		FogStartGradient.SetValues( DawnFogStart, DayFogStart, DuskFogStart, NightFogStart );
+
+		FogColorGradient = new ColorGradient();
+		FogColorGradient.SetValues( DawnFogColor, DayFogColor, DuskFogColor, NightFogColor );
+
+		base.ClientSpawn();
+	}
 
 	public override void Spawn()
 	{
@@ -183,8 +227,21 @@ public partial class TimeController : ModelEntity
 			OnBecomeNight.Fire( this );
 	}
 
+	[Event.Tick.Client]
+	private void ClientTick()
+	{
+		if ( !EnableFog ) return;
+
+		var fraction = (1f / 24f) * TimeSystem.TimeOfDay;
+
+		var fog = Game.SceneWorld.GradientFog;
+		fog.StartDistance = FogStartGradient.Evaluate( fraction );
+		fog.Color = FogColorGradient.Evaluate( fraction );
+		Game.SceneWorld.GradientFog = fog;
+	}
+
 	[Event.Tick.Server]
-	private void Tick()
+	private void ServerTick()
 	{
 		var environment = Environment;
 		if ( !environment.IsValid() ) return;
