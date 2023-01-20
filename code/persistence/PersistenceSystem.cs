@@ -92,6 +92,7 @@ public static class PersistenceSystem
 	{
 		foreach ( var p in Entity.All.OfType<IPersistence>() )
 		{
+			if ( p.IsFromMap ) continue;
 			p.Delete();
 		}
 
@@ -135,6 +136,16 @@ public static class PersistenceSystem
 			var description = TypeLibrary.GetType( entity.GetType() );
 			writer.Write( description.Name );
 			writer.Write( entity.SerializeState );
+
+			if ( entity.IsFromMap )
+			{
+				writer.Write( true );
+				writer.Write( entity.HammerID );
+			}
+			else
+			{
+				writer.Write( false );
+			}
 		}
 	}
 
@@ -152,7 +163,19 @@ public static class PersistenceSystem
 
 			try
 			{
-				var entity = type.Create<IPersistence>();
+				IPersistence entity;
+
+				var isFromMap = reader.ReadBoolean();
+
+				if ( isFromMap )
+				{
+					var hammerId = reader.ReadString();
+					entity = Entity.All.FirstOrDefault( e => e.HammerID == hammerId ) as IPersistence;
+				}
+				else
+				{
+					entity = type.Create<IPersistence>();
+				}
 
 				if ( entity.IsValid() )
 				{

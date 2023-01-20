@@ -11,4 +11,7 @@ public interface IPersistence : IValid
 	public void BeforeStateLoaded();
 	public void AfterStateLoaded();
 	public void Delete();
+
+	public string HammerID { get; }
+	public bool IsFromMap { get; }
 }

@@ -1,10 +1,11 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Facepunch.Forsaken;
 
-public abstract partial class LootSpawner : ModelEntity, IContextActionProvider
+public abstract partial class LootSpawner : ModelEntity, IContextActionProvider, IPersistence
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.Green;
@@ -57,6 +58,42 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider
 				Open( player );
 			}
 		}
+	}
+
+	public virtual bool ShouldSaveState()
+	{
+		return true;
+	}
+
+	public virtual void SerializeState( BinaryWriter writer )
+	{
+		writer.Write( IsHidden );
+		writer.Write( NextRestockTime.Fraction );
+		writer.Write( Inventory );
+	}
+
+	public virtual void DeserializeState( BinaryReader reader )
+	{
+		IsHidden = reader.ReadBoolean();
+		NextRestockTime = RestockTime * reader.ReadSingle();
+
+		Inventory = reader.ReadInventoryContainer();
+		Inventory.IsTakeOnly = true;
+		Inventory.SlotChanged += OnSlotChanged;
+		Inventory.SetSlotLimit( (ushort)SlotLimit );
+	}
+
+	public virtual void BeforeStateLoaded()
+	{
+
+	}
+
+	public virtual void AfterStateLoaded()
+	{
+		if ( IsHidden )
+			Hide();
+		else
+			Show();
 	}
 
 	public override void OnNewModel( Model model )
@@ -134,7 +171,7 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider
 
 	private void OnSlotChanged( ushort slot )
 	{
-		if ( Inventory.IsEmpty )
+		if ( IsValid && Inventory.IsEmpty )
 		{
 			NextRestockTime = RestockTime;
 			Hide();
