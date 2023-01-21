@@ -7,9 +7,9 @@ namespace Facepunch.Forsaken;
 
 public partial class SingleDoor : Structure, IContextActionProvider, ICodeLockable
 {
-	public float InteractionRange => 150f;
+	public float InteractionRange => 100f;
 	public Color GlowColor => IsAuthorized() ? Color.Green : Color.Red;
-	public float GlowWidth => 0.2f;
+	public bool AlwaysGlow => false;
 
 	private ContextAction OpenAction { get; set; }
 	private ContextAction CloseAction { get; set; }

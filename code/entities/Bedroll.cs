@@ -6,9 +6,9 @@ namespace Facepunch.Forsaken;
 
 public partial class Bedroll : Deployable, IContextActionProvider, IHeatEmitter, IPersistence
 {
-	public float InteractionRange => 150f;
+	public float InteractionRange => 100f;
+	public bool AlwaysGlow => false;
 	public Color GlowColor => Color.White;
-	public float GlowWidth => 0.2f;
 
 	private ContextAction MakeHomeAction { get; set; }
 	private ContextAction PickupAction { get; set; }

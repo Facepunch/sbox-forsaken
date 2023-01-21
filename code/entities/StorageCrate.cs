@@ -6,9 +6,9 @@ namespace Facepunch.Forsaken;
 
 public partial class StorageCrate : Deployable, IContextActionProvider, IPersistence
 {
-	public float InteractionRange => 150f;
+	public float InteractionRange => 100f;
 	public Color GlowColor => Color.Green;
-	public float GlowWidth => 0.2f;
+	public bool AlwaysGlow => false;
 
 	[Net] private NetInventoryContainer InternalInventory { get; set; }
 	public InventoryContainer Inventory => InternalInventory.Value;

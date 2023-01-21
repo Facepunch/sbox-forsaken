@@ -11,9 +11,9 @@ namespace Facepunch.Forsaken;
 [Model( Model = "models/citizen/citizen.vmdl" )]
 public partial class Trader : NPC, IContextActionProvider, IPersistence, INametagProvider
 {
-	public float InteractionRange => 150f;
+	public float InteractionRange => 100f;
 	public Color GlowColor => Color.Cyan;
-	public float GlowWidth => 0.2f;
+	public bool AlwaysGlow => true;
 
 	[ResourceType( "armor" ), Property] public ArmorResource HeadArmor { get; set; }
 	[ResourceType( "armor" ), Property] public ArmorResource ChestArmor { get; set; }

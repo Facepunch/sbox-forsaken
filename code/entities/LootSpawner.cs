@@ -7,9 +7,9 @@ namespace Facepunch.Forsaken;
 
 public abstract partial class LootSpawner : ModelEntity, IContextActionProvider, IPersistence
 {
-	public float InteractionRange => 150f;
+	public float InteractionRange => 100f;
 	public Color GlowColor => Color.Green;
-	public float GlowWidth => 0.2f;
+	public bool AlwaysGlow => true;
 
 	[Net] public TimeUntil NextRestockTime { get; private set; }
 

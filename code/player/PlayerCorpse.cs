@@ -8,7 +8,7 @@ public partial class PlayerCorpse : ModelEntity, IContextActionProvider
 {
 	public float InteractionRange => 150f;
 	public Color GlowColor => Color.White;
-	public float GlowWidth => 0.2f;
+	public bool AlwaysGlow => true;
 
 	private InventoryContainer Inventory { get; set; }
 	private ContextAction SearchAction { get; set; }

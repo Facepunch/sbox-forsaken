@@ -11,9 +11,9 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersiste
 
 	public TimeUntil TimeUntilCanPickup { get; set; }
 
-	public float InteractionRange => 150f;
+	public float InteractionRange => 100f;
 	public Color GlowColor => Item?.Color ?? Color.White;
-	public float GlowWidth => 0.2f;
+	public bool AlwaysGlow => true;
 
 	private ContextAction PickupAction { get; set; }
 

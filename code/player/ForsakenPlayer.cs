@@ -96,7 +96,6 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 	private List<IHeatEmitter> HeatEmitters { get; set; } = new();
 	private TimeSince TimeSinceBackpackOpen { get; set; }
 	private bool IsBackpackToggleMode { get; set; }
-	private Entity LastHoveredEntity { get; set; }
 	private List<ActiveEffect> ActiveEffects { get; set; } = new();
 	private TimeSince TimeSinceLastKilled { get; set; }
 	private Glow GlowComponent { get; set; }
@@ -841,6 +840,8 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		}
 	}
 
+	private List<IContextActionProvider> LastEntitiesInRange { get; set; } = new();
+
 	private bool SimulateContextActions()
 	{
 		var actions = HoveredEntity as IContextActionProvider;
@@ -848,25 +849,43 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 
 		if ( Game.IsClient )
 		{
-			if ( actions.IsValid() )
-			{
-				var glow = HoveredEntity.Components.GetOrCreate<Glow>();
-				glow.Enabled = true;
-				glow.Width = actions.GlowWidth;
+			var entities = FindInSphere( Position, 500f ).OfType<IContextActionProvider>();
 
-				if ( Position.Distance( actions.Position ) <= actions.InteractionRange )
-					glow.Color = actions.GlowColor;
-				else
-					glow.Color = Color.Gray;
-			}
-
-			if ( LastHoveredEntity.IsValid() && LastHoveredEntity != HoveredEntity )
+			foreach ( var entity in LastEntitiesInRange )
 			{
-				var glow = LastHoveredEntity.Components.GetOrCreate<Glow>();
+				var glow = entity.Components.GetOrCreate<Glow>();
 				glow.Enabled = false;
 			}
 
-			LastHoveredEntity = HoveredEntity;
+			LastEntitiesInRange.Clear();
+
+			foreach ( var entity in entities )
+			{
+				if ( Position.Distance( entity.Position ) > entity.InteractionRange * 3f )
+					continue;
+
+				if ( !entity.AlwaysGlow )
+					continue;
+
+				var glow = entity.Components.GetOrCreate<Glow>();
+				glow.InsideObscuredColor = entity.GlowColor.WithAlpha( 0.05f );
+				glow.Color = entity.GlowColor.WithAlpha( 0.1f );
+				glow.Width = 0.15f;
+				glow.Enabled = true;
+
+				LastEntitiesInRange.Add( entity );
+			}
+
+			if ( actions.IsValid() && Position.Distance( actions.Position ) <= actions.InteractionRange )
+			{
+				var glow = HoveredEntity.Components.GetOrCreate<Glow>();
+				glow.InsideObscuredColor = actions.GlowColor.WithAlpha( 0.8f );
+				glow.Color = actions.GlowColor;
+				glow.Width = 0.2f;
+				glow.Enabled = true;
+
+				LastEntitiesInRange.Add( actions );
+			}
 
 			ContextActionId = 0;
 		}

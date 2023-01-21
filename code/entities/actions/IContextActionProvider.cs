@@ -23,9 +23,10 @@ public interface IContextActionProvider : IValid
 		}
 	}
 
+	public IComponentSystem Components { get; }
 	public float InteractionRange { get; }
+	public bool AlwaysGlow { get; }
 	public Color GlowColor { get; }
-	public float GlowWidth { get;}
 	public IEnumerable<ContextAction> GetSecondaryActions( ForsakenPlayer player );
 	public int NetworkIdent { get; }
 	public ContextAction GetPrimaryAction( ForsakenPlayer player );
