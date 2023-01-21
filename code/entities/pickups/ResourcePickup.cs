@@ -59,6 +59,12 @@ public abstract partial class ResourcePickup : ModelEntity, IContextActionProvid
 	public override void OnNewModel( Model model )
 	{
 		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
+
+		if ( !PhysicsBody.IsValid() )
+		{
+			SetupPhysicsFromSphere( PhysicsMotionType.Keyframed, WorldSpaceBounds.Center, 32f );
+		}
+
 		base.OnNewModel( model );
 	}
 

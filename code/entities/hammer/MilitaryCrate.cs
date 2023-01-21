@@ -4,12 +4,13 @@ namespace Facepunch.Forsaken;
 
 [HammerEntity]
 [Title( "Military Crate" )]
+[Description( "Spawns medium to high tier loot." )]
 [EditorModel( "models/military_crate/military_crate.vmdl" )]
 public partial class MilitaryCrate : LootSpawner
 {
 	public override string Title { get; set; } = "Military Crate";
 	public override float RestockTime { get; set; } = 180f;
-	public override int SlotLimit { get; set; } = 6;
+	public override int SlotLimit { get; set; } = 3;
 	public override float MinLootChance { get; set; } = 0f;
 	public override float MaxLootChance { get; set; } = 0.5f;
 
