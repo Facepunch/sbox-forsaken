@@ -5,10 +5,10 @@ namespace Facepunch.Forsaken;
 [HammerEntity]
 [Title( "Scrap Barrel" )]
 [Description( "Spawns low tier loot." )]
-[EditorModel( "models/sbox_props/wooden_crate/wooden_crate.vmdl_c" )]
+[EditorModel( "models/rust_props/barrels/fuel_barrel.vmdl" )]
 public partial class ScrapBarrel : LootSpawner
 {
-	public override string Title { get; set; } = "Crate";
+	public override string Title { get; set; } = "Barrel";
 	public override float RestockTime { get; set; } = 90f;
 	public override int SlotLimit { get; set; } = 6;
 	public override float MinLootChance { get; set; } = 0.5f;
@@ -16,7 +16,7 @@ public partial class ScrapBarrel : LootSpawner
 
 	public override void Spawn()
 	{
-		SetModel( "models/sbox_props/wooden_crate/wooden_crate.vmdl_c" );
+		SetModel( "models/rust_props/barrels/fuel_barrel.vmdl" );
 
 		base.Spawn();
 	}

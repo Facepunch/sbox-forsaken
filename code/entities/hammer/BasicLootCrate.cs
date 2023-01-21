@@ -5,7 +5,7 @@ namespace Facepunch.Forsaken;
 [HammerEntity]
 [Title( "Basic Loot Crate" )]
 [Description( "Spawns low to medium tier loot." )]
-[EditorModel( "models/sbox_props/wooden_crate/wooden_crate.vmdl_c" )]
+[EditorModel( "models/sbox_props/wooden_crate/wooden_crate.vmdl" )]
 public partial class BasicLootCrate : LootSpawner
 {
 	public override string Title { get; set; } = "Crate";
@@ -16,7 +16,7 @@ public partial class BasicLootCrate : LootSpawner
 
 	public override void Spawn()
 	{
-		SetModel( "models/sbox_props/wooden_crate/wooden_crate.vmdl_c" );
+		SetModel( "models/sbox_props/wooden_crate/wooden_crate.vmdl" );
 
 		base.Spawn();
 	}
