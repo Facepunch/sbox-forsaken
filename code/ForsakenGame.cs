@@ -111,37 +111,37 @@ public partial class ForsakenGame : GameManager
 		{
 			var spawner = new PickupSpawner();
 			spawner.SetType<WoodPickup>();
-			spawner.MaxPickups = 100;
-			spawner.MaxPickupsPerSpawn = 20;
-			spawner.MaxPickupsPerSpawn = 80;
-			spawner.Interval = 60f;
-		}
-
-		{
-			var spawner = new PickupSpawner();
-			spawner.SetType<StonePickup>();
-			spawner.MaxPickups = 70;
-			spawner.MaxPickupsPerSpawn = 20;
-			spawner.MaxPickupsPerSpawn = 60;
+			spawner.MaxPickups = 400;
+			spawner.MinPickupsPerSpawn = 200;
+			spawner.MaxPickupsPerSpawn = 300;
 			spawner.Interval = 120f;
 		}
 
 		{
 			var spawner = new PickupSpawner();
-			spawner.SetType<MetalOrePickup>();
-			spawner.MaxPickups = 50;
-			spawner.MaxPickupsPerSpawn = 20;
-			spawner.MaxPickupsPerSpawn = 60;
+			spawner.SetType<StonePickup>();
+			spawner.MaxPickups = 300;
+			spawner.MinPickupsPerSpawn = 100;
+			spawner.MaxPickupsPerSpawn = 200;
 			spawner.Interval = 180f;
 		}
 
 		{
 			var spawner = new PickupSpawner();
+			spawner.SetType<MetalOrePickup>();
+			spawner.MaxPickups = 200;
+			spawner.MinPickupsPerSpawn = 100;
+			spawner.MaxPickupsPerSpawn = 150;
+			spawner.Interval = 300f;
+		}
+
+		{
+			var spawner = new PickupSpawner();
 			spawner.SetType<PlantFiberPickup>();
-			spawner.MaxPickups = 40;
-			spawner.MaxPickupsPerSpawn = 20;
-			spawner.MaxPickupsPerSpawn = 60;
-			spawner.Interval = 90f;
+			spawner.MaxPickups = 250;
+			spawner.MinPickupsPerSpawn = 150;
+			spawner.MaxPickupsPerSpawn = 200;
+			spawner.Interval = 120f;
 		}
 
 		base.PostLevelLoaded();
