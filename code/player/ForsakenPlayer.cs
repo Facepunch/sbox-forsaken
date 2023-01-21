@@ -908,6 +908,12 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 			.WithAnyTags( deployable.ValidTags )
 			.Run();
 
+		if ( !trace.Hit )
+		{
+			Deployable.ClearGhost();
+			return;
+		}
+
 		var model = Model.Load( deployable.Model );
 		var hitPosition = trace.EndPosition + Vector3.Up * 4f;
 		var isWithinSight = CanSeePosition( hitPosition );
