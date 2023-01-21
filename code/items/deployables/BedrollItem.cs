@@ -15,7 +15,7 @@ public class BedrollItem : DeployableItem
 
 	public override bool CanPlaceOn( Entity entity )
 	{
-		return entity.IsWorld || entity is Foundation;
+		return entity.IsValid() && (entity.IsWorld || entity is Foundation);
 	}
 
 	public override bool CanStackWith( InventoryItem other )
