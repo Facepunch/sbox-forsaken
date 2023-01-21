@@ -180,7 +180,7 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider,
 
 	private bool IsAreaClear()
 	{
-		var entities = FindInSphere( Position, 32f ).Where( e => !e.Equals( this ) );
+		var entities = FindInSphere( Position, 32f ).Where( e => !e.IsFromMap && !e.Equals( this ) );
 		return !entities.Any();
 	}
 
