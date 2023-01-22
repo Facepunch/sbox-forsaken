@@ -30,9 +30,6 @@ public partial class ForsakenGame : GameManager
 		using var r = new BinaryReader( s );
 
 		PersistenceSystem.LoadAll( r );
-
-		HasLoadedWorld = true;
-		NextAutoSave = 60f;
 	}
 
 	public override void Spawn()
@@ -143,6 +140,9 @@ public partial class ForsakenGame : GameManager
 			spawner.MaxPickupsPerSpawn = 200;
 			spawner.Interval = 120f;
 		}
+
+		HasLoadedWorld = true;
+		NextAutoSave = 60f;
 
 		base.PostLevelLoaded();
 	}
