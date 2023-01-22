@@ -51,9 +51,17 @@ public class CursorAction : Panel
 
 		Name.Text = action.Name;
 		Action = action;
+
+		UpdateAvailability();
 	}
 
 	public override void Tick()
+	{
+		UpdateAvailability();
+		base.Tick();
+	}
+
+	private void UpdateAvailability()
 	{
 		if ( Action.IsValid() )
 		{
@@ -61,8 +69,6 @@ public class CursorAction : Panel
 			Condition.Text = availability.Message;
 			SetClass( "unavailable", !availability.IsAvailable );
 		}
-
-		base.Tick();
 	}
 }
 

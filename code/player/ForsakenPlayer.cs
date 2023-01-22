@@ -185,6 +185,21 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		Bedroll = bedroll;
 	}
 
+	public bool HasPrivilegeAt( Vector3 position )
+	{
+		var foundationsInRange = FindInSphere( position, Structure.PrivilegeRange ).OfType<Foundation>();
+
+		foreach ( var foundation in foundationsInRange )
+		{
+			if ( foundation.Stockpile.IsValid() && !foundation.Stockpile.IsAuthorized( this ) )
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	public void MakePawnOf( IClient client )
 	{
 		Game.AssertServer();
@@ -739,21 +754,6 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		}
 
 		base.OnDestroy();
-	}
-
-	private bool HasPrivilegeAt( Vector3 position )
-	{
-		var foundationsInRange = FindInSphere( position, Structure.PrivilegeRange ).OfType<Foundation>();
-
-		foreach ( var foundation in foundationsInRange )
-		{
-			if ( foundation.Stockpile.IsValid() && !foundation.Stockpile.IsAuthorized( this ) )
-			{
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	private void SimulateSleeping()

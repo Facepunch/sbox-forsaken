@@ -129,7 +129,7 @@
 						[
 							{
 								from = "models/rust_props/ladder_set/woodplanks_quarry.vmat"
-								to = "materials/6_stones.vmat"
+								to = "materials/gas_station_concrete_floor.vmat"
 							},
 						]
 					},

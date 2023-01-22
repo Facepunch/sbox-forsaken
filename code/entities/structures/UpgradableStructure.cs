@@ -5,6 +5,8 @@ namespace Facepunch.Forsaken;
 
 public abstract partial class UpgradableStructure : Structure
 {
+	public override float MaxHealth => GetMaxHealth();
+
 	protected virtual int StoneUpgradeCost => 200;
 	protected virtual int MetalUpgradeCost => 100;
 
@@ -61,7 +63,7 @@ public abstract partial class UpgradableStructure : Structure
 	{
 		var hotbarItem = player.GetActiveHotbarItem();
 
-		if ( hotbarItem is HammerItem )
+		if ( hotbarItem is HammerItem && player.HasPrivilegeAt( Position ) )
 		{
 			if ( Material == StructureMaterial.Wood )
 				return StoneUpgradeAction;
@@ -83,6 +85,7 @@ public abstract partial class UpgradableStructure : Structure
 				Sound.FromWorld( To.Everyone, PlaceSoundName, Position );
 				player.TakeItems<StoneItem>( StoneUpgradeCost );
 				Material = StructureMaterial.Stone;
+				Health = GetMaxHealth();
 				UpdateMaterial();
 			}
 		}
@@ -91,8 +94,19 @@ public abstract partial class UpgradableStructure : Structure
 			Sound.FromWorld( To.Everyone, PlaceSoundName, Position );
 			player.TakeItems<MetalFragments>( MetalUpgradeCost );
 			Material = StructureMaterial.Metal;
+			Health = GetMaxHealth();
 			UpdateMaterial();
 		}
+	}
+
+	protected virtual float GetMaxHealth()
+	{
+		if ( Material == StructureMaterial.Stone )
+			return 500f;
+		else if ( Material == StructureMaterial.Metal )
+			return 1000f;
+		else
+			return 250f;
 	}
 
 	protected virtual void UpdateMaterial()
