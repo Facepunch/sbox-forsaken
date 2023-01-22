@@ -616,6 +616,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 					return;
 			}
 
+			SimulateConsumable();
 			SimulateAmmoType();
 			SimulateHotbar();
 			SimulateInventory();
@@ -903,12 +904,19 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 					return true;
 				}
 			}
-
-			if ( Input.Down( InputButton.PrimaryAttack ) )
-				return true;
 		}
 
 		return false;
+	}
+
+	private void SimulateConsumable()
+	{
+		var consumable = GetActiveHotbarItem() as ConsumableItem;
+
+		if ( consumable.IsValid() && Input.Released( InputButton.PrimaryAttack ) )
+		{
+			consumable.Consume( this );
+		}
 	}
 
 	private void SimulateDeployable()

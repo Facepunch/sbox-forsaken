@@ -57,6 +57,8 @@ public class CursorAction : Panel
 [StyleSheet( "/ui/Cursor.scss" )]
 public class Cursor : Panel
 {
+	public static Cursor Current { get; private set; }
+
 	private IContextActionProvider ActionProvider { get; set; }
 	private CursorAction PrimaryAction { get; set; }
 	private TimeSince TimeSincePressed { get; set; }
@@ -70,6 +72,8 @@ public class Cursor : Panel
 	private Panel ActionCursor { get; set; }
 	private Label Title { get; set; }
 
+	public bool HasMoreOptions => ActionContainer.ChildrenCount > 0;
+
 	public Cursor()
 	{
 		LastActionTime = 0f;
@@ -78,6 +82,7 @@ public class Cursor : Panel
 		ActionContainer = Add.Panel( "actions" );
 		Title = Add.Label( "", "title" );
 		ActionCursor = Add.Panel( "action-cursor" );
+		Current = this;
 	}
 
 	public override void Tick()
@@ -195,7 +200,7 @@ public class Cursor : Panel
 			return;
 		}
 
-		if ( Input.Pressed( InputButton.PrimaryAttack ) )
+		if ( Input.Pressed( InputButton.Use ) )
 		{
 			DisableSecondaryActions = false;
 			TimeSincePressed = 0f;
@@ -204,7 +209,7 @@ public class Cursor : Panel
 
 		if ( !DisableSecondaryActions )
 		{
-			if ( Input.Down( InputButton.PrimaryAttack ) && hasSecondaries )
+			if ( Input.Down( InputButton.Use ) && hasSecondaries )
 			{
 				if ( TimeSincePressed > secondaryHoldDelay && !IsSecondaryOpen )
 				{
@@ -220,7 +225,7 @@ public class Cursor : Panel
 			return;
 		}
 
-		if ( Input.Released( InputButton.PrimaryAttack ) && ( !hasSecondaries || TimeSincePressed < secondaryHoldDelay ) )
+		if ( Input.Released( InputButton.Use ) && ( !hasSecondaries || TimeSincePressed < secondaryHoldDelay ) )
 		{
 			if ( PrimaryAction.Select() )
 			{
@@ -263,7 +268,7 @@ public class Cursor : Panel
 		{
 			closestItem.SetClass( "is-hovered", true );
 
-			if ( Input.Released( InputButton.PrimaryAttack ) )
+			if ( Input.Released( InputButton.Use ) )
 			{
 				if ( closestItem.Select() )
 				{
@@ -272,7 +277,7 @@ public class Cursor : Panel
 			}
 		}
 
-		if ( !Input.Down( InputButton.PrimaryAttack ) )
+		if ( !Input.Down( InputButton.Use ) )
 		{
 			DisableSecondaryActions = true;
 			IsSecondaryOpen = false;

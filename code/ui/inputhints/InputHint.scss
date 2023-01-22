@@ -1,0 +1,40 @@
+InputHint {
+    flex-direction: row;
+    align-items: center;
+
+    .glyph {
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
+    label {
+        margin-left: 4px;
+        font-size: 18px;
+        font-family: Vollkorn;
+        color: white;
+        text-shadow: 0px 0px 2px black;
+    }
+
+    &.small {
+        margin-right: 0px;
+        margin-left: 0px;
+
+        label {
+            //display: none;
+        }
+    }
+
+    &.invert {
+        label {
+            margin-right: 8px;
+        }
+
+        flex-direction: row-reverse;
+    }
+
+    &.noaction {
+        label {
+            //display: none;
+        }
+    }
+}
