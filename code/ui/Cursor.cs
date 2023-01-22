@@ -22,7 +22,6 @@ public class CursorAction : Panel
 		Condition = Add.Label( "", "condition" );
 
 		BindClass( "visible", () => Action.IsValid() );
-		BindClass( "unavailable", () => !Action.IsValid() || !Action.IsAvailable( ForsakenPlayer.Me ) );
 	}
 
 	public bool Select()
@@ -59,11 +58,8 @@ public class CursorAction : Panel
 		if ( Action.IsValid() )
 		{
 			var availability = Action.GetAvailability( ForsakenPlayer.Me );
-
-			if ( !availability.IsAvailable )
-				Condition.Text = availability.Message;
-			else
-				Condition.Text = string.Empty;
+			Condition.Text = availability.Message;
+			SetClass( "unavailable", !availability.IsAvailable );
 		}
 
 		base.Tick();

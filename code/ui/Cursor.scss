@@ -32,7 +32,7 @@
         font-family: Vollkorn;
         font-weight: bold;
         font-size: 16px;
-        color: red;
+        color: white;
         top: 0px;
     }
 
@@ -45,6 +45,10 @@
             .icon {
                 background-tint: lighten( indianred, 0.2 );
             }
+        }
+
+        .condition {
+            color: red;
         }
     }
 

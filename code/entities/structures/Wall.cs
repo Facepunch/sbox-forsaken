@@ -7,7 +7,7 @@ namespace Facepunch.Forsaken;
 [Description( "Prevents anything getting in or out. Must be attached to a foundation." )]
 [Icon( "textures/ui/wall.png" )]
 [ItemCost( "wood", 50 )]
-public partial class Wall : Structure
+public partial class Wall : UpgradableStructure
 {
 	public override float MaxHealth => 250f;
 

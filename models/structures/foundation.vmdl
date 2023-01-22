@@ -122,6 +122,28 @@
 						use_global_default = false
 						global_default_material = ""
 					},
+					{
+						_class = "MaterialGroup"
+						name = "stone"
+						remaps = 
+						[
+							{
+								from = "models/rust_props/ladder_set/woodplanks_quarry.vmat"
+								to = "materials/6_stones.vmat"
+							},
+						]
+					},
+					{
+						_class = "MaterialGroup"
+						name = "metal"
+						remaps = 
+						[
+							{
+								from = "models/rust_props/ladder_set/woodplanks_quarry.vmat"
+								to = "models/rust_props/remnant_container/metal_grate_b_cont.vmat"
+							},
+						]
+					},
 				]
 			},
 		]

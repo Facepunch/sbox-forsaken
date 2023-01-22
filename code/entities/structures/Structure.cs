@@ -65,20 +65,6 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 	public virtual bool AlwaysGlow => false;
 	public virtual Color GlowColor => Color.White;
 
-	private ContextAction UpgradeAction { get; set; }
-
-	public Structure()
-	{
-		UpgradeAction = new( "upgrade", "Upgrade", "textures/ui/actions/upgrade.png" );
-		UpgradeAction.SetCondition( p =>
-		{
-			return new ContextAction.Availability
-			{
-				IsAvailable = true
-			};
-		} );
-	}
-
 	public bool IsCollidingWithWorld()
 	{
 		var testPosition = Position + Vector3.Up * 4f;
@@ -172,23 +158,12 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 
 	public virtual ContextAction GetPrimaryAction( ForsakenPlayer player )
 	{
-		var hotbarItem = player.GetActiveHotbarItem();
-
-		if ( hotbarItem is HammerItem )
-			return UpgradeAction;
-		else
-			return default;
+		return default;
 	}
 
 	public virtual void OnContextAction( ForsakenPlayer player, ContextAction action )
 	{
-		if ( action == UpgradeAction )
-		{
-			if ( Game.IsServer )
-			{
-				
-			}
-		}
+
 	}
 
 	public virtual void OnPlacedByPlayer( ForsakenPlayer player )

@@ -8,8 +8,11 @@ namespace Facepunch.Forsaken;
 [Description( "The most fundamental building block. Walls, doors and windows can be attached to it." )]
 [Icon( "textures/ui/foundation.png" )]
 [ItemCost( "wood", 100 )]
-public partial class Foundation : Structure
+public partial class Foundation : UpgradableStructure
 {
+	protected override int StoneUpgradeCost => 100;
+	protected override int MetalUpgradeCost => 50;
+
 	public override bool RequiresSocket => false;
 	public override bool ShouldRotate => false;
 	public override float MaxHealth => 250f;

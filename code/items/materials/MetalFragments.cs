@@ -2,7 +2,7 @@
 
 namespace Facepunch.Forsaken;
 
-public class RefinedMetal : InventoryItem
+public class MetalFragments : InventoryItem
 {
 	public override Color Color => ItemColors.Material;
 	public override string Name => "Metal Fragments";

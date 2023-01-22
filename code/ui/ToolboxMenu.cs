@@ -19,11 +19,12 @@ public partial class ToolboxMenu : RadialMenu
 
 	public override void Populate()
 	{
-		var descriptions = new List<TypeDescription>();
-
-		descriptions.Add( TypeLibrary.GetType<Foundation>() );
-		descriptions.Add( TypeLibrary.GetType<Doorway>() );
-		descriptions.Add( TypeLibrary.GetType<Wall>() );
+		var descriptions = new List<TypeDescription>
+		{
+			TypeLibrary.GetType<Foundation>(),
+			TypeLibrary.GetType<Doorway>(),
+			TypeLibrary.GetType<Wall>()
+		};
 
 		var player = ForsakenPlayer.Me;
 
