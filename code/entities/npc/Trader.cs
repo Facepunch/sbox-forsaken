@@ -128,9 +128,10 @@ public partial class Trader : NPC, IContextActionProvider, IPersistence, INameta
 		}
 	}
 
-	[Event.Tick.Server]
-	protected virtual void ServerTick()
+	protected override void ServerTick()
 	{
+		base.ServerTick();
+
 		if ( NextRestockTime )
 		{
 			NextRestockTime = RestockTime;
