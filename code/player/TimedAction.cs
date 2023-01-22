@@ -25,7 +25,7 @@ public struct TimedActionInfo
 
 public partial class TimedAction : BaseNetworkable
 {
-	[Net] public RealTimeUntil EndTime { get; private set; }
+	[Net] public TimeUntil EndTime { get; private set; }
 	[Net] public float Duration { get; private set; }
 	[Net] public Vector3 Origin { get; private set; }
 	[Net] public string Title { get; private set; }
