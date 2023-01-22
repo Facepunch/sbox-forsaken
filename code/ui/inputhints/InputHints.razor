@@ -14,6 +14,11 @@
             <InputHint Button=@InputButton.PrimaryAttack>@GetPrimaryAttackText()</InputHint>
         }
 
+        @if ( HasSecondaryAttack() )
+        {
+            <InputHint Button=@InputButton.SecondaryAttack>@GetSecondaryAttackText()</InputHint>
+        }
+
         <InputHint Button=@InputButton.Menu>Open Crafting</InputHint>
         <InputHint Button=@InputButton.Score>Open Inventory</InputHint>
         <InputHint Button=@InputButton.Use>@GetUseText()</InputHint>
@@ -36,7 +41,25 @@
             return string.Empty;
 
         var hotbarItem = ForsakenPlayer.Me.GetActiveHotbarItem();
-        return hotbarItem?.UseText ?? string.Empty;
+        return hotbarItem?.PrimaryUseHint ?? string.Empty;
+    }
+
+    private string GetSecondaryAttackText()
+    {
+        if ( !ForsakenPlayer.Me.IsValid() )
+            return string.Empty;
+
+        var hotbarItem = ForsakenPlayer.Me.GetActiveHotbarItem();
+        return hotbarItem?.SecondaryUseHint ?? string.Empty;
+    }
+
+    private bool HasSecondaryAttack()
+    {
+        if ( !ForsakenPlayer.Me.IsValid() )
+            return false;
+
+        var hotbarItem = ForsakenPlayer.Me.GetActiveHotbarItem();
+        return !string.IsNullOrEmpty( hotbarItem?.SecondaryUseHint ?? string.Empty );
     }
 
     private bool HasPrimaryAttack()
@@ -45,7 +68,7 @@
             return false;
 
         var hotbarItem = ForsakenPlayer.Me.GetActiveHotbarItem();
-        return !string.IsNullOrEmpty( hotbarItem?.UseText ?? string.Empty );
+        return !string.IsNullOrEmpty( hotbarItem?.PrimaryUseHint ?? string.Empty );
     }
 
     private string GetUseText()

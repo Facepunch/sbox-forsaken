@@ -7,7 +7,7 @@ namespace Facepunch.Forsaken;
 public class DeployableItem : InventoryItem, ILootSpawnerItem, IPurchasableItem
 {
 	public override Color Color => ItemColors.Deployable;
-	public override string UseText => "Deploy";
+	public override string PrimaryUseHint => "Deploy";
 
 	public virtual Type Deployable => null;
 	public virtual string PlaceSoundName => "deployable.place";

@@ -8,7 +8,7 @@ public class ConsumableItem : ResourceItem<ConsumableResource, ConsumableItem>, 
 	public override Color Color => ItemColors.Consumable;
 	public override ushort DefaultStackSize => (ushort)(Resource?.DefaultStackSize ?? 1);
 	public override ushort MaxStackSize => (ushort)(Resource?.MaxStackSize ?? 1);
-	public override string UseText => "Consume";
+	public override string PrimaryUseHint => "Consume";
 
 	public virtual int StockStackSize => Resource?.StockStackSize.GetValue().CeilToInt() ?? default;
 	public virtual int LootStackSize => Resource?.LootStackSize.GetValue().CeilToInt() ?? default;
