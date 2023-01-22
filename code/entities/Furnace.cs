@@ -101,7 +101,7 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 			{
 				Sound.FromScreen( To.Single( player ), "inventory.move" );
 
-				var item = InventorySystem.CreateItem<CampfireItem>();
+				var item = InventorySystem.CreateItem<FurnaceItem>();
 				player.TryGiveItem( item );
 				Delete();
 			}
