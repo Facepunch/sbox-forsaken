@@ -53,6 +53,7 @@ public class PickupSpawner
 			{
 				var position = Origin + new Vector3( Game.Random.Float( -1f, 1f ) * Range, Game.Random.Float( -1f, 1f ) * Range );
 				var trace = Trace.Ray( position + Vector3.Up * 5000f, position + Vector3.Down * 5000f )
+					.WithoutTags( "trigger" )
 					.Run();
 
 				if ( trace.Hit && trace.Entity.IsWorld )

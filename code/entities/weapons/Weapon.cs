@@ -445,6 +445,7 @@ public abstract partial class Weapon : BaseWeapon
 		yield return Trace.Ray( start, end )
 			.UseHitboxes()
 			.WithAnyTags( "solid", "player" )
+			.WithoutTags( "trigger" )
 			.Ignore( Owner )
 			.Ignore( this )
 			.Size( radius )

@@ -84,7 +84,9 @@ public class WeaponFlashlightItem : AttachmentItem
 		{
 			var position = mountPoint.Value.Position;
 			var rotation = mountPoint.Value.Rotation;
-			var trace = Trace.Ray( position, position + rotation.Forward * 20f ).Run();
+			var trace = Trace.Ray( position, position + rotation.Forward * 20f )
+				.WithoutTags( "trigger" )
+				.Run();
 
 			LightEntity.Position = trace.EndPosition - trace.Direction * 15f;
 		}

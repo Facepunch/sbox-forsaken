@@ -59,6 +59,7 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 			}
 
 			var trace = Trace.Ray( eyePosition, position )
+				.WithoutTags( "trigger" )
 				.Ignore( player )
 				.Ignore( this )
 				.Run();

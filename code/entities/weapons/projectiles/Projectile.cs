@@ -126,6 +126,7 @@ public partial class Projectile : ModelEntity
 
 		var trace = Trace.Ray( Position, newPosition )
 			.UseHitboxes()
+			.WithoutTags( "trigger" )
 			.Size( Radius )
 			.Ignore( this )
 			.Ignore( IgnoreEntity )

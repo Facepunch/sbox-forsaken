@@ -60,6 +60,16 @@ public abstract partial class Structure : ModelEntity, IPersistence
 	public virtual bool RequiresSocket => true;
 	public virtual bool ShouldRotate => true;
 
+	public bool IsCollidingWithWorld()
+	{
+		var testPosition = Position + Vector3.Up * 4f;
+		var collision = Trace.Body( PhysicsBody, Transform.WithPosition( testPosition ), testPosition )
+			.WithAnyTags( "nobuild", "world" )
+			.Run();
+
+		return (collision.Hit || collision.StartedSolid);
+	}
+
 	public void SnapToSocket( Socket.Match match )
 	{
 		// TODO: Speak to the Rust team. I brute forced all of this until it kind of worked.

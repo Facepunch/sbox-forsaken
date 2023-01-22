@@ -100,6 +100,7 @@ public abstract partial class BaseWeapon : AnimatedEntity
 		var trace = Trace.Ray( start, end )
 			.UseHitboxes()
 			.WithAnyTags( "solid", "player", "npc" )
+			.WithoutTags( "trigger" )
 			.Ignore( this )
 			.Size( radius );
 

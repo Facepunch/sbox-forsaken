@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using System.Linq;
 
 namespace Facepunch.Forsaken;
 
@@ -33,6 +34,17 @@ public partial class Deployable : ModelEntity
 		Ghost?.Delete();
 		Ghost = null;
 	}
+
+	public static bool IsCollidingWithWorld( ModelEntity entity )
+	{
+		var testPosition = entity.Position + Vector3.Up * 4f;
+		var collision = Trace.Body( entity.PhysicsBody, entity.Transform.WithPosition( testPosition ), testPosition )
+			.WithAnyTags( "nobuild", "solid", "world" )
+			.Run();
+
+		return (collision.Hit || collision.StartedSolid);
+	}
+
 
 	public virtual void OnPlacedByPlayer( ForsakenPlayer player, TraceResult trace )
 	{
