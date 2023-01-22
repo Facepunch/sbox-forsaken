@@ -14,8 +14,8 @@
             <InputHint Button=@InputButton.PrimaryAttack>@GetPrimaryAttackText()</InputHint>
         }
 
-        <InputHint Button=@InputButton.Menu>Crafting</InputHint>
-        <InputHint Button=@InputButton.Score>Inventory</InputHint>
+        <InputHint Button=@InputButton.Menu>Open Crafting</InputHint>
+        <InputHint Button=@InputButton.Score>Open Inventory</InputHint>
         <InputHint Button=@InputButton.Use>@GetUseText()</InputHint>
     </div>
 </root>
@@ -54,7 +54,7 @@
             return string.Empty;
 
         if ( Cursor.Current.HasMoreOptions )
-            return "(Hold) More Options";
+            return "(Hold) Options";
         else
             return "Interact";
     }
