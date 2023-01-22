@@ -17,9 +17,9 @@ public struct MoveHelper
 	{
 		Velocity = velocity;
 		Position = position;
-		GroundBounce = 0.0f;
-		WallBounce = 0.0f;
-		MaxStandableAngle = 10.0f;
+		GroundBounce = 0f;
+		WallBounce = 0f;
+		MaxStandableAngle = 10f;
 		Trace = Trace.Ray( 0f, 0f )
 			.WorldAndEntities()
 			.WithoutTags( "passplayers" )
@@ -91,16 +91,16 @@ public struct MoveHelper
 		return tr;
 	}
 
-	public float TryMoveWithStep( float timeDelta, float stepsize )
+	public float TryMoveWithStep( float timeDelta, float stepSize )
 	{
 		var startPosition = Position;
 		var stepMove = this;
 		var fraction = TryMove( timeDelta );
 
-		stepMove.TraceMove( Vector3.Up * stepsize );
+		stepMove.TraceMove( Vector3.Up * stepSize );
 
 		var stepFraction = stepMove.TryMove( timeDelta );
-		var trace = stepMove.TraceMove( Vector3.Down * stepsize );
+		var trace = stepMove.TraceMove( Vector3.Down * stepSize );
 
 		if ( !trace.Hit ) return fraction;
 
