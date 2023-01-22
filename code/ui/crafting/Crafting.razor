@@ -36,7 +36,7 @@
 
                     @foreach ( var category in (RecipeCategory[])Enum.GetValues( typeof( RecipeCategory ) ) )
                     {
-                        if (category == RecipeCategory.None) continue;
+                        if ( category == RecipeCategory.None ) continue;
 
                         <CraftingCategory
                             Category=@category
@@ -208,7 +208,7 @@
             if ( recipe.Category == RecipeCategory.None )
                 continue;
 
-            if ( !SelectedCategory.HasValue || SelectedCategory.Value == recipe.Category )
+            if ( !SelectedCategory.HasValue || recipe.Category.HasFlag( SelectedCategory.Value ) )
             {
                 var definition = InventorySystem.GetDefinition( recipe.Output );
 
