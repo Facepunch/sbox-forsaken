@@ -45,10 +45,12 @@ public partial class SingleDoor : Structure, ICodeLockable
 		LockAction = new( "lock", "Lock", "textures/items/code_lock.png" );
 		LockAction.SetCondition( p =>
 		{
+			var isAvailable = p.HasItems<CodeLockItem>( 1 );
+
 			return new ContextAction.Availability
 			{
-				IsAvailable = p.HasItems<CodeLockItem>( 1 ),
-				Message = "Code Lock Required"
+				IsAvailable = isAvailable,
+				Message = isAvailable ? string.Empty : "Code Lock Required"
 			};
 		} );
 
