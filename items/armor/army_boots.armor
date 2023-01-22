@@ -9,10 +9,10 @@
 		TemperatureModifier = 1
 		IsRecyclable = false
 		RecycleOutput = null
-		IsPurchasable = false
-		SalvageCost = 0
+		IsPurchasable = true
+		SalvageCost = 50
 		StockStackSize = "1.00,1.00,0"
-		StockChance = 0.05
+		StockChance = 0.4
 		IsLootable = true
 		LootChance = 0.07
 		LootStackSize = "1.00,0.00,0"

@@ -23,7 +23,6 @@ public abstract partial class Weapon : BaseWeapon
 	public virtual string DamageType => "bullet";
 	public virtual string ReloadSoundName => string.Empty;
 	public virtual CitizenAnimationHelper.HoldTypes HoldType => CitizenAnimationHelper.HoldTypes.Pistol;
-	public virtual int ViewModelMaterialGroup => 0;
 
 	[Net, Change( nameof( OnWeaponItemChanged ) )]
 	private NetInventoryItem InternalWeaponItem { get; set; }

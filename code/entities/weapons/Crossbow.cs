@@ -7,7 +7,6 @@ public partial class Crossbow : ProjectileWeapon<CrossbowBoltProjectile>
 {
 	public override string ImpactEffect => GetImpactEffect();
 	public override string TrailEffect => GetTrailEffect();
-	public override int ViewModelMaterialGroup => 1;
 	public override string MuzzleFlashEffect => null;
 	public override string HitSound => null;
 	public override string DamageType => "bullet";

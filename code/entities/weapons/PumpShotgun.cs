@@ -7,7 +7,6 @@ public partial class PumpShotgun : ProjectileWeapon<CrossbowBoltProjectile>
 {
 	public override string ImpactEffect => GetImpactEffect();
 	public override string TrailEffect => GetTrailEffect();
-	public override int ViewModelMaterialGroup => 1;
 	public override string MuzzleFlashEffect => "particles/pistol_muzzleflash.vpcf";
 	public override string HitSound => null;
 	public override string DamageType => "bullet";
