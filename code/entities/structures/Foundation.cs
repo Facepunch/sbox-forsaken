@@ -12,6 +12,7 @@ public partial class Foundation : Structure
 {
 	public override bool RequiresSocket => false;
 	public override bool ShouldRotate => false;
+	public override float MaxHealth => 250f;
 
 	public Stockpile Stockpile { get; private set; }
 
@@ -43,7 +44,12 @@ public partial class Foundation : Structure
 		SetModel( "models/structures/foundation.vmdl" );
 		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
 
-		Tags.Add( "solid", "foundation" );
+		Tags.Add( "hammer", "solid", "foundation" );
+	}
+
+	public override string GetContextName()
+	{
+		return $"Foundation ({Health.CeilToInt()}HP)";
 	}
 
 	public override void OnConnected( Socket ours, Socket theirs )

@@ -9,6 +9,8 @@ namespace Facepunch.Forsaken;
 [ItemCost( "wood", 50 )]
 public partial class Doorway : Structure
 {
+	public override float MaxHealth => 250f;
+
 	public override void Spawn()
 	{
 		base.Spawn();
@@ -16,7 +18,12 @@ public partial class Doorway : Structure
 		SetModel( "models/structures/doorway.vmdl" );
 		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
 
-		Tags.Add( "solid", "wall", "doorway" );
+		Tags.Add( "hammer", "solid", "wall", "doorway" );
+	}
+
+	public override string GetContextName()
+	{
+		return $"Doorway ({Health.CeilToInt()}HP)";
 	}
 
 	public override bool CanConnectTo( Socket socket )

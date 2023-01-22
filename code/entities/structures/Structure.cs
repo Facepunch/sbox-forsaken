@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Facepunch.Forsaken;
 
-public abstract partial class Structure : ModelEntity, IPersistence
+public abstract partial class Structure : ModelEntity, IPersistence, IDamageable, IContextActionProvider
 {
 	[ConVar.Replicated( "fsk.privilege.range" )]
 	public static float PrivilegeRange { get; set; } = 512f;
@@ -59,6 +59,25 @@ public abstract partial class Structure : ModelEntity, IPersistence
 	public virtual string PlaceSoundName => "building.place";
 	public virtual bool RequiresSocket => true;
 	public virtual bool ShouldRotate => true;
+	public virtual float MaxHealth => 100f;
+
+	public virtual float InteractionRange => 100f;
+	public virtual bool AlwaysGlow => false;
+	public virtual Color GlowColor => Color.White;
+
+	private ContextAction UpgradeAction { get; set; }
+
+	public Structure()
+	{
+		UpgradeAction = new( "upgrade", "Upgrade", "textures/ui/actions/upgrade.png" );
+		UpgradeAction.SetCondition( p =>
+		{
+			return new ContextAction.Availability
+			{
+				IsAvailable = true
+			};
+		} );
+	}
 
 	public bool IsCollidingWithWorld()
 	{
@@ -95,7 +114,7 @@ public abstract partial class Structure : ModelEntity, IPersistence
 		ResetInterpolation();
 	}
 
-	public bool ShouldSaveState()
+	public virtual bool ShouldSaveState()
 	{
 		return true;
 	}
@@ -108,7 +127,7 @@ public abstract partial class Structure : ModelEntity, IPersistence
 		}
 	}
 
-	public void AfterStateLoaded()
+	public virtual void AfterStateLoaded()
 	{
 
 	}
@@ -137,6 +156,37 @@ public abstract partial class Structure : ModelEntity, IPersistence
 			if ( socket.IsValid() )
 			{
 				socket.Deserialize( reader );
+			}
+		}
+	}
+
+	public virtual string GetContextName()
+	{
+		return $"Structure ({Health.CeilToInt()}HP)";
+	}
+
+	public virtual IEnumerable<ContextAction> GetSecondaryActions( ForsakenPlayer player )
+	{
+		yield break;
+	}
+
+	public virtual ContextAction GetPrimaryAction( ForsakenPlayer player )
+	{
+		var hotbarItem = player.GetActiveHotbarItem();
+
+		if ( hotbarItem is HammerItem )
+			return UpgradeAction;
+		else
+			return default;
+	}
+
+	public virtual void OnContextAction( ForsakenPlayer player, ContextAction action )
+	{
+		if ( action == UpgradeAction )
+		{
+			if ( Game.IsServer )
+			{
+				
 			}
 		}
 	}
@@ -190,6 +240,15 @@ public abstract partial class Structure : ModelEntity, IPersistence
 		}
 
 		return default;
+	}
+
+	public override void Spawn()
+	{
+		Health = MaxHealth;
+
+		Tags.Add( "hover" );
+
+		base.Spawn();
 	}
 
 	protected Socket AddSocket( string attachmentName )

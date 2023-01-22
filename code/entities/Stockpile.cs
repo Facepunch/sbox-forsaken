@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Facepunch.Forsaken;
 
-public partial class Stockpile : Deployable, IContextActionProvider, IPersistence, ICodeLockable
+public partial class Stockpile : Deployable, IContextActionProvider, ICodeLockable
 {
 	public float InteractionRange => 100f;
 	public Color GlowColor => Color.Green;
@@ -28,64 +28,16 @@ public partial class Stockpile : Deployable, IContextActionProvider, IPersistenc
 		OpenAction = new( "open", "Open", "textures/ui/actions/open.png" );
 
 		LockAction = new( "lock", "Lock", "textures/items/code_lock.png" );
-		LockAction.SetCondition( CanBeLockedBy );
+		LockAction.SetCondition( p =>
+		{
+			return new ContextAction.Availability
+			{
+				IsAvailable = p.HasItems<CodeLockItem>( 1 ),
+				Message = "Code Lock Required"
+			};
+		} );
 
 		AuthorizeAction = new( "authorize", "Authorize", "textures/ui/actions/authorize.png" );
-	}
-
-	public bool ShouldSaveState()
-	{
-		return true;
-	}
-
-	public void BeforeStateLoaded()
-	{
-
-	}
-
-	public void AfterStateLoaded()
-	{
-		var foundation = FindInSphere( Position, 64f )
-			.OfType<Foundation>()
-			.FirstOrDefault();
-
-		if ( foundation.IsValid() )
-		{
-			foundation.PropagateStockpile( this );
-		}
-	}
-
-	public void SerializeState( BinaryWriter writer )
-	{
-		writer.Write( Transform );
-		writer.Write( Inventory );
-		writer.Write( IsLocked );
-		writer.Write( string.IsNullOrEmpty( Code ) ? "" : Code );
-		writer.Write( Authorized.Count );
-
-		foreach ( var id in Authorized )
-		{
-			writer.Write( id );
-		}
-	}
-
-	public void DeserializeState( BinaryReader reader )
-	{
-		Transform = reader.ReadTransform();
-
-		var container = reader.ReadInventoryContainer();
-		InternalInventory = new( container );
-
-		IsLocked = reader.ReadBoolean();
-		Code = reader.ReadString();
-
-		var count = reader.ReadInt32();
-
-		for ( var i = 0; i < count; i++ )
-		{
-			var id = reader.ReadInt64();
-			Authorized.Add( id );
-		}
 	}
 
 	public string GetContextName()
@@ -100,7 +52,7 @@ public partial class Stockpile : Deployable, IContextActionProvider, IPersistenc
 
 	public IEnumerable<ContextAction> GetSecondaryActions( ForsakenPlayer player )
 	{
-		if ( !IsLocked )
+		if ( !IsLocked && IsAuthorized( player ) )
 		{
 			yield return LockAction;
 		}
@@ -169,6 +121,52 @@ public partial class Stockpile : Deployable, IContextActionProvider, IPersistenc
 		else if ( action == AuthorizeAction )
 		{
 			UI.LockScreen.OpenToUnlock( player, this );
+		}
+	}
+
+	public override void SerializeState( BinaryWriter writer )
+	{
+		base.SerializeState( writer );
+
+		writer.Write( Inventory );
+		writer.Write( IsLocked );
+		writer.Write( string.IsNullOrEmpty( Code ) ? "" : Code );
+		writer.Write( Authorized.Count );
+
+		foreach ( var id in Authorized )
+		{
+			writer.Write( id );
+		}
+	}
+
+	public override void DeserializeState( BinaryReader reader )
+	{
+		base.DeserializeState( reader );
+
+		var container = reader.ReadInventoryContainer();
+		InternalInventory = new( container );
+
+		IsLocked = reader.ReadBoolean();
+		Code = reader.ReadString();
+
+		var count = reader.ReadInt32();
+
+		for ( var i = 0; i < count; i++ )
+		{
+			var id = reader.ReadInt64();
+			Authorized.Add( id );
+		}
+	}
+
+	public override void AfterStateLoaded()
+	{
+		var foundation = FindInSphere( Position, 64f )
+			.OfType<Foundation>()
+			.FirstOrDefault();
+
+		if ( foundation.IsValid() )
+		{
+			foundation.PropagateStockpile( this );
 		}
 	}
 

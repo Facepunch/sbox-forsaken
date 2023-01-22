@@ -13,11 +13,13 @@ public class CursorAction : Panel
 
 	private Image Icon { get; set; }
 	private Label Name { get; set; }
+	private Label Condition { get; set; }
 
 	public CursorAction()
 	{
 		Icon = Add.Image( "", "icon" );
 		Name = Add.Label( "", "name" );
+		Condition = Add.Label( "", "condition" );
 
 		BindClass( "visible", () => Action.IsValid() );
 		BindClass( "unavailable", () => !Action.IsValid() || !Action.IsAvailable( ForsakenPlayer.Me ) );
@@ -49,8 +51,22 @@ public class CursorAction : Panel
 		}
 
 		Name.Text = action.Name;
-
 		Action = action;
+	}
+
+	public override void Tick()
+	{
+		if ( Action.IsValid() )
+		{
+			var availability = Action.GetAvailability( ForsakenPlayer.Me );
+
+			if ( !availability.IsAvailable )
+				Condition.Text = availability.Message;
+			else
+				Condition.Text = string.Empty;
+		}
+
+		base.Tick();
 	}
 }
 
@@ -115,12 +131,14 @@ public class Cursor : Panel
 
 		if ( primary.IsValid() )
 		{
-			hash = HashCode.Combine( hash, primary, primary.IsAvailable( ForsakenPlayer.Me ) );
+			var availability = primary.GetAvailability( ForsakenPlayer.Me );
+			hash = HashCode.Combine( hash, primary, availability.IsAvailable );
 		}
 
 		foreach ( var action in secondaries )
 		{
-			hash = HashCode.Combine( hash, action, action.IsAvailable( ForsakenPlayer.Me ) );
+			var availability = primary.GetAvailability( ForsakenPlayer.Me );
+			hash = HashCode.Combine( hash, action, availability.IsAvailable );
 		}
 
 		return hash;
@@ -140,7 +158,7 @@ public class Cursor : Panel
 		ActionProvider = provider;
 		ActionHash = hash;
 
-		if ( !primary.IsValid() || !primary.IsAvailable( ForsakenPlayer.Me ) )
+		if ( !primary.IsValid() )
 		{
 			primary = secondaries.FirstOrDefault( s => s.IsAvailable( ForsakenPlayer.Me ) );
 

@@ -25,6 +25,17 @@
         top: 0px;
     }
 
+    .condition {
+        transition: all 0.2s ease-in;
+        text-shadow: 0px 0px 2px black;
+        position: absolute;
+        font-family: Vollkorn;
+        font-weight: bold;
+        font-size: 16px;
+        color: red;
+        top: 0px;
+    }
+
     &.unavailable {
         &.visible {
             opacity: 0.9;
@@ -33,10 +44,6 @@
 
             .icon {
                 background-tint: lighten( indianred, 0.2 );
-            }
-
-            .name {
-                color: indianred;
             }
         }
     }
@@ -58,8 +65,8 @@
             top: 72px;
         }
 
-        .title {
-            top: -32px;
+        .condition {
+            top: 90px;
         }
 
         width: 64px;

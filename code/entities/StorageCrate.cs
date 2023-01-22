@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Facepunch.Forsaken;
 
-public partial class StorageCrate : Deployable, IContextActionProvider, IPersistence
+public partial class StorageCrate : Deployable, IContextActionProvider
 {
 	public float InteractionRange => 100f;
 	public Color GlowColor => Color.Green;
@@ -21,39 +21,15 @@ public partial class StorageCrate : Deployable, IContextActionProvider, IPersist
 	public StorageCrate()
 	{
 		PickupAction = new( "pickup", "Pickup", "textures/ui/actions/pickup.png" );
-		PickupAction.SetCondition( p => IsEmpty );
+		PickupAction.SetCondition( p =>
+		{
+			return new ContextAction.Availability
+			{
+				IsAvailable = IsEmpty
+			};
+		} );
 
 		OpenAction = new( "open", "Open", "textures/ui/actions/open.png" );
-	}
-
-	public bool ShouldSaveState()
-	{
-		return true;
-	}
-
-	public void BeforeStateLoaded()
-	{
-
-	}
-
-	public void AfterStateLoaded()
-	{
-
-	}
-
-	public void SerializeState( BinaryWriter writer )
-	{
-		writer.Write( Transform );
-		writer.Write( Inventory );
-	}
-
-	public void DeserializeState( BinaryReader reader )
-	{
-		Transform = reader.ReadTransform();
-
-		var container = reader.ReadInventoryContainer();
-		InternalInventory = new( container );
-		IsEmpty = container.IsEmpty;
 	}
 
 	public string GetContextName()
@@ -97,6 +73,22 @@ public partial class StorageCrate : Deployable, IContextActionProvider, IPersist
 				Delete();
 			}
 		}
+	}
+
+	public override void SerializeState( BinaryWriter writer )
+	{
+		base.SerializeState( writer );
+
+		writer.Write( Inventory );
+	}
+
+	public override void DeserializeState( BinaryReader reader )
+	{
+		base.DeserializeState( reader );
+
+		var container = reader.ReadInventoryContainer();
+		InternalInventory = new( container );
+		IsEmpty = container.IsEmpty;
 	}
 
 	public override void Spawn()

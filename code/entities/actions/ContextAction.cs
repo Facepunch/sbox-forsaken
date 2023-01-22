@@ -13,7 +13,13 @@ public class ContextAction : EqualityComparer<ContextAction>, IValid
 	public bool IsValid => !string.IsNullOrEmpty( Id );
 	public int Hash { get; private set; }
 
-	private Func<ForsakenPlayer,bool> Condition { get; set; }
+	private Func<ForsakenPlayer, Availability> Condition { get; set; }
+
+	public struct Availability
+	{
+		public bool IsAvailable { get; set; }
+		public string Message { get; set; }
+	}
 
 	public ContextAction( string id, string name, string icon )
 	{
@@ -23,14 +29,19 @@ public class ContextAction : EqualityComparer<ContextAction>, IValid
 		Hash = id.FastHash();
 	}
 
-	public void SetCondition( Func<ForsakenPlayer, bool> condition )
+	public void SetCondition( Func<ForsakenPlayer, Availability> condition )
 	{
 		Condition = condition;
 	}
 
 	public bool IsAvailable( ForsakenPlayer player )
 	{
-		return Condition?.Invoke( player ) ?? true;
+		return Condition?.Invoke( player ).IsAvailable ?? true;
+	}
+
+	public Availability GetAvailability( ForsakenPlayer player )
+	{
+		return Condition?.Invoke( player ) ?? new Availability { IsAvailable = true };
 	}
 
 	public override bool Equals( ContextAction x, ContextAction y )

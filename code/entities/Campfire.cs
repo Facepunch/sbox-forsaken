@@ -5,7 +5,7 @@ using System.IO;
 
 namespace Facepunch.Forsaken;
 
-public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter, ICookerEntity, IPersistence
+public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter, ICookerEntity
 {
 	public float InteractionRange => 100f;
 	public bool AlwaysGlow => false;
@@ -28,7 +28,13 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 	public Campfire()
 	{
 		PickupAction = new( "pickup", "Pickup", "textures/ui/actions/pickup.png" );
-		PickupAction.SetCondition( p => Processor.IsEmpty && !Processor.IsActive );
+		PickupAction.SetCondition( p =>
+		{
+			return new ContextAction.Availability
+			{
+				IsAvailable = Processor.IsEmpty && !Processor.IsActive
+			};
+		} );
 
 		OpenAction = new( "open", "Open", "textures/ui/actions/open.png" );
 
@@ -39,33 +45,6 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 	public string GetContextName()
 	{
 		return "Campfire";
-	}
-
-	public bool ShouldSaveState()
-	{
-		return true;
-	}
-
-	public void BeforeStateLoaded()
-	{
-
-	}
-
-	public void AfterStateLoaded()
-	{
-
-	}
-
-	public void SerializeState( BinaryWriter writer )
-	{
-		writer.Write( Transform );
-		Processor.Serialize( writer );
-	}
-
-	public void DeserializeState( BinaryReader reader )
-	{
-		Transform = reader.ReadTransform();
-		Processor.Deserialize( reader );
 	}
 
 	public void Open( ForsakenPlayer player )
@@ -149,6 +128,20 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 		Tags.Add( "hover", "solid" );
 
 		base.Spawn();
+	}
+
+	public override void SerializeState( BinaryWriter writer )
+	{
+		base.SerializeState( writer );
+
+		Processor.Serialize( writer );
+	}
+
+	public override void DeserializeState( BinaryReader reader )
+	{
+		base.DeserializeState( reader );
+
+		Processor.Deserialize( reader );
 	}
 
 	public override void OnPlacedByPlayer( ForsakenPlayer player, TraceResult trace )

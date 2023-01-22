@@ -449,13 +449,21 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 
 		var startPosition = CameraPosition;
 		var endPosition = CameraPosition + CursorDirection * 1000f;
-		var cursor = Trace.Ray( startPosition, endPosition )
+		var query = Trace.Ray( startPosition, endPosition )
 			.EntitiesOnly()
 			.WithoutTags( "trigger" )
 			.WithTag( "hover" )
 			.Ignore( this )
-			.Size( 16f )
-			.Run();
+			.Size( 16f );
+
+		var hotbarItem = GetActiveHotbarItem();
+
+		if ( hotbarItem is not HammerItem )
+		{
+			query = query.WithoutTags( "hammer" );
+		}
+
+		var cursor = query.Run();
 
 		if ( cursor.Entity.IsValid() )
 		{
