@@ -50,7 +50,7 @@ public partial class NPC : AnimatedEntity
 		GroundEntity = pm.Entity;
 
 		if ( !GroundEntity.IsValid() )
-			Velocity += Vector3.Down * 600f;
+			Velocity += Vector3.Down * 600f * Time.Delta;
 		else
 			Velocity = Velocity.WithZ( 0f );
 
@@ -155,7 +155,7 @@ public partial class NPC : AnimatedEntity
 		{
 			if ( Position.Distance( firstSegment.Position ) > 80f )
 			{
-				var direction = (firstSegment.Position - Position).Normal;
+				var direction = (firstSegment.Position - Position).Normal.WithZ( 0f );
 				Accelerate( direction, MoveSpeed, 0f, 8f );
 
 				var targetRotation = Rotation.LookAt( direction, Vector3.Up );
