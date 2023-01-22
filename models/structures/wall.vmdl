@@ -76,13 +76,7 @@
 				[
 					{
 						_class = "DefaultMaterialGroup"
-						remaps = 
-						[
-							{
-								from = "materials/dev/dev_measuregeneric01.vmat"
-								to = "models/rust_props/portacabins/portacabin_wood_panels.vmat"
-							},
-						]
+						remaps = [  ]
 						use_global_default = false
 						global_default_material = ""
 					},
@@ -92,8 +86,8 @@
 						remaps = 
 						[
 							{
-								from = "materials/generic/floor_wooden_deck_a.vmat"
-								to = "materials/generic/wall_limestone_brick_large_bottom.vmat"
+								from = "models/rust_props/portacabins/portacabin_wood_panels.vmat"
+								to = "materials/concrete_a_bld.vmat"
 							},
 						]
 					},
@@ -103,8 +97,8 @@
 						remaps = 
 						[
 							{
-								from = "materials/generic/floor_wooden_deck_a.vmat"
-								to = "models/rust_props/pipelines/pipelines_rusty_metal.vmat"
+								from = "models/rust_props/portacabins/portacabin_wood_panels.vmat"
+								to = "models/rust_props/remnant_container/corrugated_a_cont.vmat"
 							},
 						]
 					},

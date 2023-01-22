@@ -50,6 +50,18 @@ public partial class Foundation : UpgradableStructure
 		Tags.Add( "hammer", "solid", "foundation" );
 	}
 
+	public override void OnPlacedByPlayer( ForsakenPlayer player )
+	{
+		var pickups = FindInBox( WorldSpaceBounds ).OfType<ResourcePickup>();
+
+		foreach ( var pickup in pickups )
+		{
+			pickup.Delete();
+		}
+
+		base.OnPlacedByPlayer( player );
+	}
+
 	public override string GetContextName()
 	{
 		return $"Foundation ({Health.CeilToInt()}HP)";
