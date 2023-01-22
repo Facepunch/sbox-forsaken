@@ -27,7 +27,17 @@
 
     &.unavailable {
         &.visible {
-            opacity: 0.7;
+            opacity: 0.9;
+            background-color: darken( indianred, 1 );
+            border-color: indianred;
+
+            .icon {
+                background-tint: lighten( indianred, 0.2 );
+            }
+
+            .name {
+                color: indianred;
+            }
         }
     }
 
