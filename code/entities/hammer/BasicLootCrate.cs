@@ -10,7 +10,7 @@ public partial class BasicLootCrate : LootSpawner
 {
 	public override string Title { get; set; } = "Crate";
 	public override float RestockTime { get; set; } = 180f;
-	public override int SlotLimit { get; set; } = 4;
+	public override int SlotLimit { get; set; } = 5;
 	public override float MinLootChance { get; set; } = 0.25f;
 	public override float MaxLootChance { get; set; } = 1f;
 

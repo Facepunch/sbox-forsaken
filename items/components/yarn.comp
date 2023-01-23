@@ -2,7 +2,7 @@
 {
 	data = 
 	{
-		MaxStackSize = 5
+		MaxStackSize = 20
 		DefaultStackSize = 1
 		IsRecyclable = true
 		RecycleOutput = 
@@ -15,6 +15,7 @@
 		StockChance = 0.4
 		IsLootable = true
 		LootChance = 0.5
+		OncePerContainer = true
 		LootStackSize = "1.00,1.00,0"
 		ItemName = "Yarn"
 		UniqueId = "yarn"

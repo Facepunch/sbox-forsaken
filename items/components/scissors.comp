@@ -2,7 +2,7 @@
 {
 	data = 
 	{
-		MaxStackSize = 5
+		MaxStackSize = 20
 		DefaultStackSize = 1
 		IsRecyclable = true
 		RecycleOutput = 

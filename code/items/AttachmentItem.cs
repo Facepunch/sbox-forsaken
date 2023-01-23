@@ -16,6 +16,7 @@ public class AttachmentItem : InventoryItem, ILootSpawnerItem, IPurchasableItem
 	public virtual int SalvageCost => 1;
 	public virtual bool IsPurchasable => false;
 	public virtual bool IsLootable => false;
+	public virtual bool OncePerContainer => true;
 
 	public virtual int AttachmentSlot => 0;
 

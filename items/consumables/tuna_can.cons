@@ -36,6 +36,7 @@
 		StockChance = 0.75
 		IsLootable = true
 		LootChance = 0.15
+		OncePerContainer = true
 		LootStackSize = "1.00,0.00,0"
 		ItemName = "Tuna Can"
 		UniqueId = "tuna_can"

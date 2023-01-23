@@ -19,6 +19,7 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerIt
 	public virtual Curve RecoilCurve => Resource?.RecoilCurve ?? default;
 	public virtual int StockStackSize => Resource?.StockStackSize.GetValue().CeilToInt() ?? default;
 	public virtual int LootStackSize => Resource?.LootStackSize.GetValue().CeilToInt() ?? default;
+	public virtual bool OncePerContainer => Resource?.OncePerContainer ?? default;
 	public virtual float StockChance => Resource?.StockChance ?? default;
 	public virtual float LootChance => Resource?.LootChance ?? default;
 	public virtual int SalvageCost => Resource?.SalvageCost ?? default;

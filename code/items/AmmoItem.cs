@@ -12,6 +12,7 @@ public class AmmoItem : ResourceItem<AmmoResource, AmmoItem>, ILootSpawnerItem, 
 	public virtual AmmoType AmmoType => Resource?.AmmoType ?? AmmoType.None;
 	public virtual int StockStackSize => Resource?.StockStackSize.GetValue().CeilToInt() ?? default;
 	public virtual int LootStackSize => Resource?.LootStackSize.GetValue().CeilToInt() ?? default;
+	public virtual bool OncePerContainer => Resource?.OncePerContainer ?? default;
 	public virtual float StockChance => Resource?.StockChance ?? default;
 	public virtual float LootChance => Resource?.LootChance ?? default;
 	public virtual int SalvageCost => Resource?.SalvageCost ?? default;

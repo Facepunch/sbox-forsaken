@@ -13,8 +13,9 @@
 		SalvageCost = 20
 		StockStackSize = "1.00,1.00,0"
 		StockChance = 0.5
-		IsLootable = false
+		IsLootable = true
 		LootChance = 0.5
+		OncePerContainer = false
 		LootStackSize = "1.00,1.00,0"
 		ItemName = "Cardboard Pants"
 		UniqueId = "cardboard_pants"

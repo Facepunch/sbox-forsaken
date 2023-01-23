@@ -17,6 +17,7 @@ public class ConsumableItem : ResourceItem<ConsumableResource, ConsumableItem>, 
 	public virtual int SalvageCost => Resource?.SalvageCost ?? default;
 	public virtual bool IsPurchasable => Resource?.IsPurchasable ?? default;
 	public virtual bool IsLootable => Resource?.IsLootable ?? default;
+	public virtual bool OncePerContainer => Resource?.OncePerContainer ?? default;
 	public virtual string ConsumeSound => Resource?.ConsumeSound ?? default;
 	public virtual string ConsumeEffect => Resource?.ConsumeEffect ?? default;
 	public virtual string ActivateSound => Resource?.ActivateSound ?? default;

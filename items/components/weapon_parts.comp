@@ -16,6 +16,7 @@
 		StockChance = 0.5
 		IsLootable = true
 		LootChance = 0.35
+		OncePerContainer = true
 		LootStackSize = "1.00,1.00,0"
 		ItemName = "Weapon Parts"
 		UniqueId = "weapon_parts"

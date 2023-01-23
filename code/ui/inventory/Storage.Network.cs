@@ -20,6 +20,8 @@ public partial class Storage
         var container = InventoryContainer.Deserialize( data );
         var storage = Current;
 
+		if ( container.IsEmpty ) return;
+
         storage.SetName( name );
         storage.SetEntity( entity );
         storage.SetContainer( container );

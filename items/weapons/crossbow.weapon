@@ -3,7 +3,6 @@
 	data = 
 	{
 		WorldModelMaterialGroup = 0
-		ViewModelMaterialGroup = 0
 		WorldModelPath = resource:"weapons/rust_crossbow/rust_crossbow.vmdl"
 		AmmoType = "Bolt"
 		DefaultAmmo = 0
@@ -32,6 +31,7 @@
 		StockChance = 0.05
 		IsLootable = true
 		LootChance = 0.06
+		OncePerContainer = true
 		LootStackSize = "1.00,0.00,0"
 		ItemName = "Crossbow"
 		UniqueId = "crossbow"

@@ -3,7 +3,6 @@
 	data = 
 	{
 		WorldModelMaterialGroup = 0
-		ViewModelMaterialGroup = 0
 		WorldModelPath = resource:"models/mp5/w_mp5.vmdl"
 		AmmoType = "Pistol"
 		DefaultAmmo = 0
@@ -32,6 +31,7 @@
 		StockChance = 0.02
 		IsLootable = true
 		LootChance = 0.01
+		OncePerContainer = true
 		LootStackSize = "1.00,0.00,0"
 		ItemName = "MP5A4"
 		UniqueId = "mp5a4"

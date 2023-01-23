@@ -12,8 +12,9 @@ public class SalvageItem : InventoryItem, ILootSpawnerItem
 	public override string Name => "Salvage";
 	public override string Icon => "textures/items/salvage.png";
 
-	public int LootStackSize => Game.Random.Int( 2, 8 );
-	public float LootChance => 0.6f;
+	public bool OncePerContainer => false;
+	public int LootStackSize => Game.Random.Int( 2, 4 );
+	public float LootChance => 0.8f;
 	public bool IsLootable => true;
 
 	public override bool CanStackWith( InventoryItem other )

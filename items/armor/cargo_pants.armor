@@ -15,6 +15,7 @@
 		StockChance = 0.4
 		IsLootable = true
 		LootChance = 0.06
+		OncePerContainer = true
 		LootStackSize = "1.00,0.00,0"
 		ItemName = "Cargo Pants"
 		UniqueId = "cargo_pants"

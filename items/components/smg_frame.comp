@@ -16,6 +16,7 @@
 		StockChance = 0.2
 		IsLootable = true
 		LootChance = 0.12
+		OncePerContainer = true
 		LootStackSize = "1.00,1.00,0"
 		ItemName = "SMG Frame"
 		UniqueId = "smg_frame"

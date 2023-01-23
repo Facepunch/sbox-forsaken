@@ -53,6 +53,12 @@ public class ForsakenItemResource : ItemResource
 	public float LootChance { get; set; } = 0.5f;
 
 	/// <summary>
+	/// Whether or not this will only spawn once per lootable container.
+	/// </summary>
+	[Property, ShowIf( nameof( IsLootable ), true )]
+	public bool OncePerContainer { get; set; } = true;
+
+	/// <summary>
 	/// How many of this item should be stacked when spawned as loot?
 	/// </summary>
 	[Property, ShowIf( nameof( IsLootable ), true )]

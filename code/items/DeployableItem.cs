@@ -22,6 +22,7 @@ public class DeployableItem : InventoryItem, ILootSpawnerItem, IPurchasableItem
 	public virtual int SalvageCost => 1;
 	public virtual bool IsPurchasable => false;
 	public virtual bool IsLootable => false;
+	public virtual bool OncePerContainer => true;
 
 	public virtual bool CanPlaceOn( Entity entity )
 	{
