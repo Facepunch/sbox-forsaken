@@ -22,12 +22,18 @@
 			]
 		}
 		RecoilCurve = 
-		[
-			{
-				x = 0.5
-				y = 0.5
-			},
-		]
+		{
+			rangey = "-50,-50"
+			frames = 
+			[
+				{
+					y = 1
+				},
+				{
+					x = 0.093596
+				},
+			]
+		}
 		Damage = 10
 		ClassName = "weapon_pump_shotgun"
 		IsRecyclable = true

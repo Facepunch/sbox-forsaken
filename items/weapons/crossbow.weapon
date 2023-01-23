@@ -8,12 +8,19 @@
 		DefaultAmmo = 0
 		ClipSize = 10
 		DamageFalloff = 
-		[
-			{
-				x = 0.5
-				y = 0.5
-			},
-		]
+		{
+			rangex = "0,4000"
+			frames = 
+			[
+				{
+					y = 1
+				},
+				{
+					x = 0.997537
+					y = 0.296429
+				},
+			]
+		}
 		RecoilCurve = 
 		[
 			{
