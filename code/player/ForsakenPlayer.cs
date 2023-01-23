@@ -489,7 +489,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		ViewAngles = ViewAngles.WithPitch( 0f );
 
 		var startPosition = CameraPosition;
-		var endPosition = CameraPosition + CursorDirection * 1000f;
+		var endPosition = CameraPosition + CursorDirection * 3000f;
 		var query = Trace.Ray( startPosition, endPosition )
 			.EntitiesOnly()
 			.WithoutTags( "trigger" )

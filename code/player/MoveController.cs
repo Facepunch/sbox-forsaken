@@ -282,7 +282,13 @@ public partial class MoveController
 	private void StepMove()
 	{
 		var mover = new MoveHelper( Player.Position, Player.Velocity );
-		mover.Trace = mover.Trace.Size( Mins, Maxs ).Ignore( Player );
+
+		mover.Trace = mover.SetupTrace()
+			.WithoutTags( "passplayers" )
+			.WithAnyTags( "solid", "playerclip", "passbullets", "player" )
+			.Size( Mins, Maxs )
+			.Ignore( Player );
+
 		mover.MaxStandableAngle = GroundAngle;
 		mover.TryMoveWithStep( Time.Delta, StepSize );
 
@@ -293,7 +299,13 @@ public partial class MoveController
 	private void Move()
 	{
 		var mover = new MoveHelper( Player.Position, Player.Velocity );
-		mover.Trace = mover.Trace.Size( Mins, Maxs ).Ignore( Player );
+
+		mover.Trace = mover.SetupTrace()
+			.WithoutTags( "passplayers" )
+			.WithAnyTags( "solid", "playerclip", "passbullets", "player" )
+			.Size( Mins, Maxs )
+			.Ignore( Player );
+
 		mover.MaxStandableAngle = GroundAngle;
 		mover.TryMove( Time.Delta );
 

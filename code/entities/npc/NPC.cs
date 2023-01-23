@@ -35,7 +35,7 @@ public partial class NPC : AnimatedEntity
 
 	public override void Spawn()
 	{
-		Tags.Add( "npc", "solid" );
+		Tags.Add( "npc" );
 
 		base.Spawn();
 	}
@@ -85,7 +85,13 @@ public partial class NPC : AnimatedEntity
 		HandleAnimation();
 
 		var mover = new MoveHelper( Position, Velocity );
-		mover.Trace = mover.Trace.Size( GetHull() ).Ignore( this );
+
+		mover.Trace = mover.SetupTrace()
+			.WithoutTags( "passplayers", "player" )
+			.WithAnyTags( "solid", "playerclip", "passbullets" )
+			.Size( GetHull() )
+			.Ignore( this );
+
 		mover.MaxStandableAngle = 46f;
 		mover.TryMoveWithStep( Time.Delta, 28f );
 

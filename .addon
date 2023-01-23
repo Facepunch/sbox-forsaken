@@ -83,6 +83,11 @@
           "a": "passplayers",
           "b": "npc",
           "r": "Ignore"
+        },
+        {
+          "a": "player",
+          "b": "npc",
+          "r": "Ignore"
         }
       ]
     },

@@ -13,17 +13,22 @@ public struct MoveHelper
 	public float MaxStandableAngle;
 	public Trace Trace;
 
-	public MoveHelper( Vector3 position, Vector3 velocity ) : this()
+	public MoveHelper( Vector3 position, Vector3 velocity )  : this()
 	{
 		Velocity = velocity;
 		Position = position;
 		GroundBounce = 0f;
 		WallBounce = 0f;
 		MaxStandableAngle = 10f;
-		Trace = Trace.Ray( 0f, 0f )
-			.WorldAndEntities()
+
+		Trace = SetupTrace()
 			.WithoutTags( "passplayers" )
-			.WithAnyTags( "solid", "playerclip", "passbullets", "player" );
+			.WithAnyTags( "solid", "playerclip", "passbullets" );
+	}
+
+	public Trace SetupTrace()
+	{
+		return Trace.Ray( 0f, 0f ).WorldAndEntities();
 	}
 
 	public TraceResult TraceFromTo( Vector3 start, Vector3 end )

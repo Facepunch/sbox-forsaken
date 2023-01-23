@@ -154,6 +154,7 @@ public partial class Trader : NPC, IContextActionProvider, IPersistence, INameta
 		AttachArmor( FeetArmor );
 
 		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
+		EnableSolidCollisions = false;
 
 		NextRestockTime = 0f;
 
