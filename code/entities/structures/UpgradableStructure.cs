@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Facepunch.Forsaken;
@@ -59,6 +60,22 @@ public abstract partial class UpgradableStructure : Structure
 		base.BeforeStateLoaded();
 	}
 
+	public override IEnumerable<ContextAction> GetSecondaryActions( ForsakenPlayer player )
+	{
+		var hotbarItem = player.GetActiveHotbarItem();
+
+		if ( hotbarItem is HammerItem && player.HasPrivilegeAt( Position ) )
+		{
+			if ( Material == StructureMaterial.Wood )
+			{
+				if ( player.HasItems<MetalFragments>( MetalUpgradeCost ) )
+				{
+					yield return StoneUpgradeAction;
+				}
+			}
+		}
+	}
+
 	public override ContextAction GetPrimaryAction( ForsakenPlayer player )
 	{
 		var hotbarItem = player.GetActiveHotbarItem();
@@ -66,9 +83,16 @@ public abstract partial class UpgradableStructure : Structure
 		if ( hotbarItem is HammerItem && player.HasPrivilegeAt( Position ) )
 		{
 			if ( Material == StructureMaterial.Wood )
-				return StoneUpgradeAction;
+			{
+				if ( player.HasItems<MetalFragments>( MetalUpgradeCost ) )
+					return MetalUpgradeAction;
+				else
+					return StoneUpgradeAction;
+			}
 			else if ( Material == StructureMaterial.Stone )
+			{
 				return MetalUpgradeAction;
+			}
 		}
 
 		return default;
@@ -89,7 +113,7 @@ public abstract partial class UpgradableStructure : Structure
 				UpdateMaterial();
 			}
 		}
-		else if ( action == MetalUpgradeAction && Material == StructureMaterial.Stone )
+		else if ( action == MetalUpgradeAction && Material < StructureMaterial.Metal )
 		{
 			Sound.FromWorld( To.Everyone, PlaceSoundName, Position );
 			player.TakeItems<MetalFragments>( MetalUpgradeCost );
