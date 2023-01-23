@@ -13,6 +13,7 @@ public partial class ForsakenGame : GameManager
 	[ConVar.Server( "fsk.autosave", Saved = true )]
 	public static bool ShouldAutoSave { get; set; } = true;
 
+	private TimeUntil NextDespawnItems { get; set; }
 	private TimeUntil NextAutoSave { get; set; }
 	private TopDownCamera Camera { get; set; }
 	private bool HasLoadedWorld { get; set; }
@@ -141,6 +142,7 @@ public partial class ForsakenGame : GameManager
 			spawner.Interval = 120f;
 		}
 
+		NextDespawnItems = 30f;
 		HasLoadedWorld = true;
 		NextAutoSave = 60f;
 
@@ -155,6 +157,21 @@ public partial class ForsakenGame : GameManager
 			Log.Info( "[Forsaken] Saving world..." );
 			PersistenceSystem.SaveAll();
 			NextAutoSave = 60f;
+		}
+
+		if ( HasLoadedWorld && NextDespawnItems )
+		{
+			var items = All.OfType<ItemEntity>();
+
+			foreach ( var item in items )
+			{
+				if ( item.TimeSinceSpawned >= 1800f )
+				{
+					item.Delete();
+				}
+			}
+
+			NextDespawnItems = 30f;
 		}
 	}
 

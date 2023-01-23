@@ -10,6 +10,7 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersiste
 	public InventoryItem Item => InternalItem.Value;
 
 	public TimeUntil TimeUntilCanPickup { get; set; }
+	public TimeSince TimeSinceSpawned { get; set; }
 
 	public float InteractionRange => 100f;
 	public Color GlowColor => Item?.Color ?? Color.White;
@@ -61,6 +62,7 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersiste
 
 	public void SerializeState( BinaryWriter writer )
 	{
+		writer.Write( TimeSinceSpawned.Relative );
 		writer.Write( Transform );
 
 		if ( Item.IsValid() )
@@ -76,10 +78,12 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersiste
 
 	public void DeserializeState( BinaryReader reader )
 	{
+		TimeSinceSpawned = -reader.ReadSingle();
 		Transform = reader.ReadTransform();
 
-		var isValid = reader.ReadBoolean();
+		Log.Info( "Item Spawned: " + TimeSinceSpawned.Relative + " Seconds Ago" );
 
+		var isValid = reader.ReadBoolean();
 		
 		if ( isValid )
 		{
@@ -152,6 +156,7 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersiste
 	public override void Spawn()
 	{
 		TimeUntilCanPickup = 1f;
+		TimeSinceSpawned = 0f;
 		Transmit = TransmitType.Always;
 
 		Tags.Add( "hover", "solid", "passplayers" );
