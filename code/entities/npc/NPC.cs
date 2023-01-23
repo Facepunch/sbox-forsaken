@@ -32,6 +32,13 @@ public partial class NPC : AnimatedEntity
 	protected TimeUntil NextWanderTime { get; set; }
 	protected NavPath Path { get; set; }
 
+	public override void Spawn()
+	{
+		Tags.Add( "npc", "solid" );
+
+		base.Spawn();
+	}
+
 	[Event.Tick.Server]
 	protected virtual void ServerTick()
 	{
@@ -119,7 +126,7 @@ public partial class NPC : AnimatedEntity
 	{
 		var trace = Trace.Ray( start, end )
 			.Size( mins, maxs )
-			.WithoutTags( "trigger" )
+			.WithoutTags( "passplayers", "trigger" )
 			.WithAnyTags( "solid" )
 			.Ignore( this )
 			.Run();

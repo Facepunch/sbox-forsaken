@@ -157,7 +157,7 @@ public partial class Trader : NPC, IContextActionProvider, IPersistence, INameta
 
 		NextRestockTime = 0f;
 
-		Tags.Add( "hover", "solid", "trader" );
+		Tags.Add( "hover", "trader" );
 
 		base.Spawn();
 	}
