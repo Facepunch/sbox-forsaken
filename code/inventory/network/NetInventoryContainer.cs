@@ -56,6 +56,6 @@ public class NetInventoryContainer : BaseNetworkable, INetworkSerializer, IValid
 		write.Write( ++Version );
 		write.Write( Value.InventoryId );
 		write.Write( serialized.Length );
-		write.Write( serialized );
+		write.WriteUnmanagedArray( serialized );
 	}
 }
