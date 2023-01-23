@@ -171,7 +171,7 @@ public partial class MoveController
 		Duck.PreTick();
 
 		if ( Input.Down( InputButton.Run ) && !Input.Down( InputButton.Duck ) && WishVelocity.Length > 1f )
-			Player.ReduceStamina( 10f * Time.Delta );
+			Player.ReduceStamina( 5f * Time.Delta );
 		else
 			Player.GainStamina( 15f * Time.Delta );
 
