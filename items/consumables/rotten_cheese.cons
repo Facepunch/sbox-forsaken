@@ -11,17 +11,17 @@
 		Effects = 
 		[
 			{
-				Amount = 25
+				Amount = 10
 				Duration = 5
 			},
 			{
-				Target = "Health"
-				Amount = 15
-				Duration = 10
+				Target = "Hydration"
+				Amount = -10
+				Duration = 5
 			},
 			{
-				Target = "Hydration"
-				Amount = 10
+				Target = "Stamina"
+				Amount = -20
 				Duration = 5
 			},
 		]
@@ -30,17 +30,17 @@
 		CookedQuantity = 0
 		IsRecyclable = false
 		RecycleOutput = null
-		IsPurchasable = true
-		SalvageCost = 20
-		StockStackSize = "1.00,10.00,1"
-		StockChance = 0.75
+		IsPurchasable = false
+		SalvageCost = 0
+		StockStackSize = "1.00,1.00,0"
+		StockChance = 0.5
 		IsLootable = true
-		LootChance = 0.15
-		LootStackSize = "1.00,0.00,0"
-		ItemName = "Tuna Can"
-		UniqueId = "tuna_can"
-		Description = "A can of tuna. Who knows when it expired."
-		Icon = resource:"textures/items/tuna_can.png"
+		LootChance = 0.5
+		LootStackSize = "1.00,1.00,0"
+		ItemName = "Rotten Cheese"
+		UniqueId = "rotten_cheese"
+		Description = "This smells like shit."
+		Icon = resource:"textures/items/rotten_cheese.png"
 		WorldModel = resource:"models/sbox_props/burger_box/burger_box.vmdl"
 		Tags = [  ]
 	}

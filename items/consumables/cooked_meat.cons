@@ -8,7 +8,23 @@
 		ConsumeEffect = null
 		ActivateSound = null
 		ActivateDelay = 0
-		Effects = null
+		Effects = 
+		[
+			{
+				Amount = 20
+				Duration = 5
+			},
+			{
+				Target = "Health"
+				Amount = 10
+				Duration = 5
+			},
+			{
+				Target = "Hydration"
+				Amount = 5
+				Duration = 5
+			},
+		]
 		IsCookable = false
 		CookedItemId = ""
 		CookedQuantity = 0
