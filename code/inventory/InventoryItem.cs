@@ -141,7 +141,7 @@ public class InventoryItem : IValid
 
 	public virtual bool IsSameType( InventoryItem other )
 	{
-		return (GetType() == other.GetType());
+		return (GetType() == other.GetType() && UniqueId == other.UniqueId);
 	}
 
 	public virtual bool CanStackWith( InventoryItem other )
