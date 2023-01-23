@@ -8,7 +8,7 @@ public class StoneItem : InventoryItem
 	public override string Name => "Stone";
 	public override string UniqueId => "stone";
 	public override string Description => "A bunch of stones. Usually obtained by smashing rocks until they break.";
-	public override ushort MaxStackSize => 100;
+	public override ushort MaxStackSize => 500;
 	public override string Icon => "textures/items/stone.png";
 
 	protected override void BuildTags( HashSet<string> tags )

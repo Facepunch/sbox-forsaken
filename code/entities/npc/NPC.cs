@@ -30,6 +30,7 @@ public partial class NPC : AnimatedEntity
 	public virtual float MoveSpeed { get; set; } = 80f;
 
 	protected TimeUntil NextWanderTime { get; set; }
+	protected Vector3 WishDirection { get; set; }
 	protected NavPath Path { get; set; }
 
 	public override void Spawn()
@@ -63,16 +64,24 @@ public partial class NPC : AnimatedEntity
 
 		if ( !GroundEntity.IsValid() )
 		{
-			Velocity += Vector3.Down * 600f * Time.Delta;
+			Velocity += Vector3.Down * 700f * Time.Delta;
 		}
 		else
 		{
 			Position = Position.WithZ( pm.EndPosition.z );
 			Velocity = Velocity.WithZ( 0f );
+			Velocity = ApplyFriction( Velocity, 4f );
 		}
 
-		ApplyFriction( 4f );
-		UpdatePathVelocity();
+		var wishDirection = GetWishDirection();
+		Velocity = Accelerate( Velocity, wishDirection, MoveSpeed, 0f, 8f );
+
+		if ( wishDirection.Length > 0f )
+		{
+			var targetRotation = Rotation.LookAt( wishDirection, Vector3.Up );
+			Rotation = Rotation.Lerp( Rotation, targetRotation, Time.Delta * 10f );
+		}
+
 		HandleAnimation();
 
 		var mover = new MoveHelper( Position, Velocity );
@@ -84,22 +93,21 @@ public partial class NPC : AnimatedEntity
 		Velocity = mover.Velocity;
 	}
 
-	protected virtual void ApplyFriction( float amount = 1f )
+	protected virtual Vector3 ApplyFriction( Vector3 velocity, float amount = 1f )
 	{
 		var speed = Velocity.Length;
-		if ( speed < 0.1f ) return;
+		if ( speed < 0.1f ) return velocity;
 
 		var control = (speed < 100f) ? 100f : speed;
 		var newSpeed = speed - (control * Time.Delta * amount);
 
-		if ( newSpeed < 0 )
-			newSpeed = 0;
+		if ( newSpeed < 0 ) newSpeed = 0;
+		if ( newSpeed == speed ) return velocity;
 
-		if ( newSpeed != speed )
-		{
-			newSpeed /= speed;
-			Velocity *= newSpeed;
-		}
+		newSpeed /= speed;
+		velocity *= newSpeed;
+
+		return velocity;
 	}
 
 	protected virtual void HandleAnimation()
@@ -142,7 +150,7 @@ public partial class NPC : AnimatedEntity
 		return new BBox( mins, maxs );
 	}
 
-	protected virtual void Accelerate( Vector3 wishDir, float wishSpeed, float speedLimit, float acceleration )
+	protected virtual Vector3 Accelerate( Vector3 velocity, Vector3 wishDir, float wishSpeed, float speedLimit, float acceleration )
 	{
 		if ( speedLimit > 0 && wishSpeed > speedLimit )
 			wishSpeed = speedLimit;
@@ -151,20 +159,22 @@ public partial class NPC : AnimatedEntity
 		var addSpeed = wishSpeed - currentSpeed;
 
 		if ( addSpeed <= 0 )
-			return;
+			return velocity;
 
 		var accelSpeed = acceleration * Time.Delta * wishSpeed * 1f;
 
 		if ( accelSpeed > addSpeed )
 			accelSpeed = addSpeed;
 
-		Velocity += wishDir * accelSpeed;
+		velocity += wishDir * accelSpeed;
+
+		return velocity;
 	}
 
-	protected virtual void UpdatePathVelocity()
+	protected virtual Vector3 GetWishDirection()
 	{
-		if ( Path == null ) return;
-		if ( Path.Count == 0 ) return;
+		if ( Path == null ) return Vector3.Zero;
+		if ( Path.Count == 0 ) return Vector3.Zero;
 
 		var firstSegment = Path.Segments[0];
 
@@ -173,15 +183,11 @@ public partial class NPC : AnimatedEntity
 			if ( Position.Distance( firstSegment.Position ) > 80f )
 			{
 				var direction = (firstSegment.Position - Position).Normal.WithZ( 0f );
-				Accelerate( direction, MoveSpeed, 0f, 8f );
-
-				var targetRotation = Rotation.LookAt( direction, Vector3.Up );
-				Rotation = Rotation.Lerp( Rotation, targetRotation, Time.Delta * 10f );
-
-				return;
+				return direction;
 			}
 		}
 
 		Path.Segments.RemoveAt( 0 );
+		return Vector3.Zero;
 	}
 }
