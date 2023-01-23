@@ -92,6 +92,17 @@
     "Public": true,
     "SavedGames": true,
     "MapDependentSaves": true,
-    "SaveFormatVersion": 1001
+    "SaveFormatVersion": 1001,
+    "PackageSettings": [
+      {
+        "DisplayType": "Boolean",
+        "Choices": [],
+        "ConVarName": "fsk.pvp",
+        "DisplayName": "Enable PvP",
+        "DefaultValue": "true",
+        "Description": "Whether or not players are allowed to attack eachother.",
+        "Group": ""
+      }
+    ]
   }
 }

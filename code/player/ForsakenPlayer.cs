@@ -527,6 +527,9 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 	{
 		if ( info.Attacker is ForsakenPlayer attacker )
 		{
+			// Early out if PvP isn't enabled for this session.
+			if ( !ForsakenGame.EnablePvP ) return;
+
 			if ( info.HasTag( "bullet" ) )
 			{
 				if ( attacker.IsHeadshotTarget( this ) )
