@@ -97,6 +97,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 	private TimeSince TimeSinceBackpackOpen { get; set; }
 	private bool IsBackpackToggleMode { get; set; }
 	private List<ActiveEffect> ActiveEffects { get; set; } = new();
+	private TimeUntil NextNeedsDamage { get; set; }
 	private TimeSince TimeSinceLastKilled { get; set; }
 	private Glow GlowComponent { get; set; }
 	private Entity LastActiveChild { get; set; }
@@ -302,6 +303,11 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 
 		TimedAction?.StopSound();
 		TimedAction = null;
+	}
+
+	public void ClearEffects()
+	{
+		ActiveEffects.Clear();
 	}
 
 	public void AddEffect( ConsumableEffect effect )
@@ -579,6 +585,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		LifeState = LifeState.Dead;
 
 		ClearCraftingQueue();
+		ClearEffects();
 
 		var itemsToDrop = FindItems<InventoryItem>().Where( i => i.DropOnDeath );
 
@@ -707,6 +714,34 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 	protected virtual void ServerTick()
 	{
 		HeatEmitters.RemoveAll( e => !e.IsValid() );
+
+		if ( LifeState == LifeState.Dead )
+		{
+			return;
+		}
+
+		if ( NextNeedsDamage )
+		{
+			if ( Calories <= 0f )
+			{
+				var damage = new DamageInfo();
+				damage.Tags.Add( "hunger" );
+				damage.Damage = 1f;
+				damage.Position = Position;
+				TakeDamage( damage );
+			}
+
+			if ( Hydration <= 0f )
+			{
+				var damage = new DamageInfo();
+				damage.Tags.Add( "thirst" );
+				damage.Damage = 1f;
+				damage.Position = Position;
+				TakeDamage( damage );
+			}
+
+			NextNeedsDamage = 5f;
+		}
 
 		if ( NextCalculateTemperature )
 		{
