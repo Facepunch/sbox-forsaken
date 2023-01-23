@@ -29,6 +29,7 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider,
 	public InventoryContainer Inventory { get; private set; }
 
 	public virtual string OpeningSound { get; set; } = "rummage.loot";
+	public virtual string BreakSound { get; set; } = "fsk.break.wood";
 	public virtual string Title { get; set; } = "Loot Spawner";
 	public virtual float RestockTime { get; set; } = 30f;
 	public virtual int SlotLimit { get; set; } = 6;
@@ -192,6 +193,7 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider,
 
 		if ( !IsHidden && Inventory.IsEmpty )
 		{
+			Breakables.Break( this );
 			NextRestockTime = RestockTime;
 			Hide();
 		}
