@@ -111,7 +111,7 @@ public partial class ForsakenGame : GameManager
 
 		if ( !a.IsValid() || !b.IsValid() ) return false;
 
-		return a.Position.Distance( b.Position ) <= 3000f;
+		return a.Position.Distance( b.Position ) <= 2000f;
 	}
 
 	public override void OnVoicePlayed( IClient cl )
