@@ -7,8 +7,9 @@
 		SecondaryModel = null
 		PrimaryModel = resource:"models/citizen_clothes/vest/cardboard_chest/models/cardboard_chest.vmdl"
 		TemperatureModifier = 1
-		IsRecyclable = false
+		IsRecyclable = true
 		RecycleOutput = null
+		BaseComponentReturn = 0.5
 		IsPurchasable = true
 		SalvageCost = 20
 		StockStackSize = "1.00,1.00,0"

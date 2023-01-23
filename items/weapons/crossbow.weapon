@@ -23,8 +23,9 @@
 		]
 		Damage = 40
 		ClassName = "weapon_crossbow"
-		IsRecyclable = false
+		IsRecyclable = true
 		RecycleOutput = null
+		BaseComponentReturn = 0.5
 		IsPurchasable = true
 		SalvageCost = 40
 		StockStackSize = "1.00,1.00,0"

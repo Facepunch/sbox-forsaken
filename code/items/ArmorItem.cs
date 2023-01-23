@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
-public class ArmorItem : ResourceItem<ArmorResource, ArmorItem>, ILootSpawnerItem, IPurchasableItem
+public class ArmorItem : ResourceItem<ArmorResource, ArmorItem>, ILootSpawnerItem, IPurchasableItem, IRecyclableItem
 {
 	public override Color Color => ItemColors.Armor;
 	public virtual float TemperatureModifier => Resource?.TemperatureModifier ?? 0f;
@@ -19,6 +19,9 @@ public class ArmorItem : ResourceItem<ArmorResource, ArmorItem>, ILootSpawnerIte
 	public virtual int SalvageCost => Resource?.SalvageCost ?? default;
 	public virtual bool IsPurchasable => Resource?.IsPurchasable ?? default;
 	public virtual bool IsLootable => Resource?.IsLootable ?? default;
+	public virtual Dictionary<string, int> RecycleOutput => Resource?.RecycleOutput ?? default;
+	public virtual float BaseComponentReturn => Resource?.BaseComponentReturn ?? 0.5f;
+	public virtual bool IsRecyclable => Resource?.IsRecyclable ?? default;
 
 	public override bool CanStackWith( InventoryItem other )
 	{

@@ -10,12 +10,14 @@
 			salvage = 30
 			metal_fragments = 20
 		}
+		BaseComponentReturn = 0.5
 		IsPurchasable = true
 		SalvageCost = 150
 		StockStackSize = "1.00,3.00,1"
 		StockChance = 0.35
 		IsLootable = true
 		LootChance = 0.15
+		OncePerContainer = true
 		LootStackSize = "1.00,1.00,0"
 		ItemName = "Handgun Frame"
 		UniqueId = "handgun_frame"

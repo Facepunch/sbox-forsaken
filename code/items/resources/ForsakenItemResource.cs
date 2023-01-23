@@ -14,7 +14,14 @@ public class ForsakenItemResource : ItemResource
 	/// <summary>
 	/// The unique item ids and their quantities to output as a result of recycling this item.
 	/// </summary>
-	[Property, ShowIf( nameof( IsRecyclable ), true )] public Dictionary<string, int> RecycleOutput { get; set; }
+	[Property, ShowIf( nameof( IsRecyclable ), true )]
+	public Dictionary<string, int> RecycleOutput { get; set; }
+
+	/// <summary>
+	/// If this item is craftable, then this percentage of its base components will be given back when recycled.
+	/// </summary>
+	[Property, ShowIf( nameof( IsRecyclable ), true ), Range( 0f, 1f )]
+	public float BaseComponentReturn { get; set; } = 0.5f;
 
 	/// <summary>
 	/// Can this item be purchased from a trader?

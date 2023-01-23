@@ -11,8 +11,19 @@ public partial class BackpackContainer : InventoryContainer
 
 	public override InventoryContainer GetTransferTarget( InventoryItem item )
 	{
+		var recycling = UI.Recycling.Current;
 		var cooking = UI.Cooking.Current;
 		var storage = UI.Storage.Current;
+
+		if ( recycling.IsOpen )
+		{
+			var processor = recycling.Recycler.Processor;
+
+			if ( processor.Input.DoesPassFilter( item ) )
+				return processor.Input;
+
+			return null;
+		}
 
 		if ( cooking.IsOpen )
 		{
@@ -23,6 +34,8 @@ public partial class BackpackContainer : InventoryContainer
 
 			if ( processor.Input.DoesPassFilter( item ) )
 				return processor.Input;
+
+			return null;
 		}
 
 		if ( storage.IsOpen )

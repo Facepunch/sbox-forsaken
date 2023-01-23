@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Facepunch.Forsaken;
 
-public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerItem, ILootSpawnerItem, IPurchasableItem
+public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerItem, ILootSpawnerItem, IPurchasableItem, IRecyclableItem
 {
 	public override string PrimaryUseHint => "Attack";
 	public override Color Color => ItemColors.Weapon;
@@ -25,6 +25,9 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerIt
 	public virtual int SalvageCost => Resource?.SalvageCost ?? default;
 	public virtual bool IsPurchasable => Resource?.IsPurchasable ?? default;
 	public virtual bool IsLootable => Resource?.IsLootable ?? default;
+	public virtual Dictionary<string, int> RecycleOutput => Resource?.RecycleOutput ?? default;
+	public virtual float BaseComponentReturn => Resource?.BaseComponentReturn ?? 0.5f;
+	public virtual bool IsRecyclable => Resource?.IsRecyclable ?? default;
 
 	public AttachmentContainer Attachments { get; private set; }
 	public InventoryContainer Container => Attachments;

@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Facepunch.Forsaken;
 
-public class ComponentItem : ResourceItem<ComponentResource, ComponentItem>, ILootSpawnerItem, IPurchasableItem
+public class ComponentItem : ResourceItem<ComponentResource, ComponentItem>, ILootSpawnerItem, IPurchasableItem, IRecyclableItem
 {
 	public override Color Color => ItemColors.Component;
 	public override ushort DefaultStackSize => (ushort)(Resource?.DefaultStackSize ?? 1);
@@ -17,6 +17,9 @@ public class ComponentItem : ResourceItem<ComponentResource, ComponentItem>, ILo
 	public virtual int SalvageCost => Resource?.SalvageCost ?? default;
 	public virtual bool IsPurchasable => Resource?.IsPurchasable ?? default;
 	public virtual bool IsLootable => Resource?.IsLootable ?? default;
+	public virtual Dictionary<string, int> RecycleOutput => Resource?.RecycleOutput ?? default;
+	public virtual float BaseComponentReturn => Resource?.BaseComponentReturn ?? 0.5f;
+	public virtual bool IsRecyclable => Resource?.IsRecyclable ?? default;
 
 	public override bool CanStackWith( InventoryItem other )
 	{

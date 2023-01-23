@@ -1,0 +1,156 @@
+﻿@using System;
+@using Sandbox;
+@using Sandbox.UI;
+@using Facepunch.Forsaken;
+
+@namespace Facepunch.Forsaken.UI
+@attribute [StyleSheet( "/ui/inventory/Recycling.scss" )]
+@inherits Panel
+@implements IDialog
+@implements IDroppable
+
+@if ( !ForsakenPlayer.Me.IsValid() ) return;
+@if ( !Recycler.IsValid() ) return;
+@if ( Recycler.Processor is null ) return;
+
+@{
+    var backpack = ForsakenPlayer.Me.Backpack;
+    if ( !backpack.IsValid() ) return;
+
+    var hotbar = ForsakenPlayer.Me.Hotbar;
+    if ( !hotbar.IsValid() ) return;
+
+    var input = Recycler.Processor.Input;
+    var output = Recycler.Processor.Output;
+}
+
+<root>
+    <div class="body-container">
+        <div class="backpack">
+            <label class="title">Backpack</label>
+
+            <div class="slots">
+                @for ( ushort i = 0; i < backpack.SlotLimit; i++ )
+                {
+                    <InventorySlot Container=@backpack Slot=@i></InventorySlot>
+                }
+            </div>
+        </div>
+        <div class="recycling">
+            <label class="title">@Name</label>
+
+            <label class="subtitle">Input</label>
+            <div class="slots">
+                @for ( ushort i = 0; i < input.SlotLimit; i++ )
+                {
+                    <InventorySlot Container=@input Slot=@i></InventorySlot>
+                }
+            </div>
+
+            <label class="subtitle">Output</label>
+            <div class="slots">
+                @for ( ushort i = 0; i < output.SlotLimit; i++ )
+                {
+                    <InventorySlot Container=@output Slot=@i></InventorySlot>
+                }
+            </div>
+
+            @if ( Recycler.Processor.IsActive )
+            {
+                <div class="toggle-button" onclick=@OnToggleButtonClicked>Stop</div>
+            }
+            else
+            {
+                <div class="toggle-button" onclick=@OnToggleButtonClicked>Start</div>
+            }
+        </div>
+    </div>
+
+    <div class="hotbar">
+        <label class="title">Hotbar</label>
+
+        <div class="slots">
+            @for ( ushort i = 0; i < hotbar.SlotLimit; i++ )
+            {
+                <InventorySlot Container=@hotbar Slot=@i></InventorySlot>
+            }
+        </div>
+    </div>
+</root>
+
+@code
+{
+    public static Recycling Current { get; private set; }
+
+    public Recycler Recycler { get; private set; }
+    public bool IsOpen { get; private set; }
+    public Entity Entity { get; private set; }
+    public string Name { get; private set; }
+
+    public Recycling()
+    {
+        Current = this;
+        BindClass( "hidden", () => !IsOpen );
+    }
+
+    public void Open()
+    {
+        if ( IsOpen ) return;
+        Dialog.Activate( this );
+        IsOpen = true;
+    }
+
+    public void Close()
+    {
+        if ( !IsOpen ) return;
+        Dialog.Deactivate( this );
+        IsOpen = false;
+    }
+
+    public void SetName( string name )
+    {
+        Name = name;
+    }
+
+    public void SetRecycler( Recycler recycler )
+    {
+        Recycler = recycler;
+
+        recycler.Processor.Input.SetTransferHandler( GetTransferTarget );
+        recycler.Processor.Output.SetTransferHandler( GetTransferTarget );
+    }
+
+    public virtual bool CanDrop( IDraggable draggable, DraggableMode mode )
+    {
+        return true;
+    }
+
+    public virtual void OnDrop( IDraggable draggable, DraggableMode mode )
+    {
+        if ( draggable is InventorySlot slot )
+        {
+            ForsakenPlayer.ThrowItem( slot.Item, Screen.GetDirection( Mouse.Position ), mode == DraggableMode.Split ? true : false );
+        }
+    }
+
+    protected override int BuildHash()
+    {
+        var backpack = ForsakenPlayer.Me?.Backpack;
+        var hotbar = ForsakenPlayer.Me?.Hotbar;
+
+        return HashCode.Combine( ForsakenPlayer.Me, backpack, hotbar, Recycler,
+            Recycler?.Processor?.Input ?? null,
+            Recycler?.Processor?.Output ?? null,
+            Recycler?.Processor?.IsActive ?? false );
+    }
+
+    private void OnToggleButtonClicked()
+    {
+        Recycler.ToggleCmd( Recycler.NetworkIdent );
+    }
+
+    private InventoryContainer GetTransferTarget( InventoryItem item )
+    {
+        return ForsakenPlayer.Me?.Backpack;
+    }
+}

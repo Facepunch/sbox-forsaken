@@ -10,12 +10,14 @@
 			salvage = 50
 			metal_fragments = 30
 		}
+		BaseComponentReturn = 0.5
 		IsPurchasable = true
 		SalvageCost = 200
 		StockStackSize = "1.00,2.00,1"
 		StockChance = 0.15
 		IsLootable = true
 		LootChance = 0.1
+		OncePerContainer = true
 		LootStackSize = "1.00,1.00,0"
 		ItemName = "Rifle Frame"
 		UniqueId = "rifle_frame"

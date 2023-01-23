@@ -7,8 +7,12 @@
 		SecondaryModel = null
 		PrimaryModel = resource:"models/citizen_clothes/jacket/hoodie/models/hoodie_black.vmdl"
 		TemperatureModifier = 3
-		IsRecyclable = false
-		RecycleOutput = null
+		IsRecyclable = true
+		RecycleOutput = 
+		{
+			yarn = 2
+		}
+		BaseComponentReturn = 0.5
 		IsPurchasable = true
 		SalvageCost = 70
 		StockStackSize = "1.00,1.00,0"

@@ -9,6 +9,7 @@
 		{
 			plant_fiber = 25
 		}
+		BaseComponentReturn = 0.5
 		IsPurchasable = true
 		SalvageCost = 20
 		StockStackSize = "1.00,4.00,1"

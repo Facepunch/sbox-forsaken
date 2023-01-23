@@ -9,12 +9,14 @@
 		{
 			metal_fragments = 5
 		}
+		BaseComponentReturn = 0.5
 		IsPurchasable = true
 		SalvageCost = 10
 		StockStackSize = "1.00,10.00,1"
 		StockChance = 0.29
 		IsLootable = true
 		LootChance = 0.6
+		OncePerContainer = true
 		LootStackSize = "1.00,3.00,1"
 		ItemName = "Nails"
 		UniqueId = "nails"

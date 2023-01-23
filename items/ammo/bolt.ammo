@@ -5,14 +5,16 @@
 		AmmoType = "Bolt"
 		MaxStackSize = 10
 		DefaultStackSize = 2
-		IsRecyclable = false
+		IsRecyclable = true
 		RecycleOutput = null
+		BaseComponentReturn = 0.5
 		IsPurchasable = true
 		SalvageCost = 2
 		StockStackSize = "1.00,1.00,0"
 		StockChance = 0.3
 		IsLootable = true
 		LootChance = 0
+		OncePerContainer = true
 		LootStackSize = "0.00,0.00,0"
 		ItemName = "Crossbow Bolt"
 		UniqueId = "ammo_bolt"

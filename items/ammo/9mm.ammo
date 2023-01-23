@@ -5,14 +5,16 @@
 		AmmoType = "Pistol"
 		MaxStackSize = 128
 		DefaultStackSize = 4
-		IsRecyclable = false
+		IsRecyclable = true
 		RecycleOutput = null
+		BaseComponentReturn = 0.5
 		IsPurchasable = false
 		SalvageCost = 0
 		StockStackSize = "1.00,1.00,0"
 		StockChance = 0.15
 		IsLootable = true
 		LootChance = 0.15
+		OncePerContainer = true
 		LootStackSize = "4.00,30.00,1"
 		ItemName = "9mm Ammo"
 		UniqueId = "ammo_pistol"

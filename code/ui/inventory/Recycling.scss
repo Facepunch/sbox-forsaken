@@ -1,4 +1,4 @@
-﻿Cooking {
+﻿Recycling {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -36,13 +36,13 @@
             width: 560px;
         }
 
-        .cooking {
+        .recycling {
             flex-direction: column;
         }
     }
 
     .backpack,
-    .cooking,
+    .recycling,
     .hotbar {
         .slots {
             display: flex;
@@ -61,7 +61,7 @@
         }
     }
 
-    .cooking {
+    .recycling {
         .subtitle {
             margin-top: 24px;
         }
@@ -121,7 +121,7 @@
         }
     }
 
-    .cooking,
+    .recycling,
     .backpack {
         margin-bottom: 32px;
     }
@@ -130,7 +130,7 @@
         opacity: 0;
 
         .backpack,
-        .cooking,
+        .recycling,
         .hotbar {
             pointer-events: none;
         }

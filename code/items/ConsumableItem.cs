@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
-public class ConsumableItem : ResourceItem<ConsumableResource, ConsumableItem>, ILootSpawnerItem, IConsumableItem, ICookableItem, IPurchasableItem
+public class ConsumableItem : ResourceItem<ConsumableResource, ConsumableItem>, ILootSpawnerItem, IConsumableItem, ICookableItem, IPurchasableItem, IRecyclableItem
 {
 	public override Color Color => ItemColors.Consumable;
 	public override ushort DefaultStackSize => (ushort)(Resource?.DefaultStackSize ?? 1);
@@ -26,6 +26,9 @@ public class ConsumableItem : ResourceItem<ConsumableResource, ConsumableItem>, 
 	public virtual string CookedItemId => Resource?.CookedItemId ?? default;
 	public virtual int CookedQuantity => Resource?.CookedQuantity ?? default;
 	public virtual bool IsCookable => Resource?.IsCookable ?? default;
+	public virtual Dictionary<string, int> RecycleOutput => Resource?.RecycleOutput ?? default;
+	public virtual float BaseComponentReturn => Resource?.BaseComponentReturn ?? 0.5f;
+	public virtual bool IsRecyclable => Resource?.IsRecyclable ?? default;
 
 	public async void Consume( ForsakenPlayer player )
 	{

@@ -22,15 +22,15 @@ public partial class Cooking
         if ( Game.LocalPawn is not ForsakenPlayer ) return;
 		if ( entity is not ICookerEntity cooker ) return;
 
-        var storage = Current;
+        var cooking = Current;
 
 		InventoryContainer.Deserialize( fuel );
 		InventoryContainer.Deserialize( input );
 		InventoryContainer.Deserialize( output );
 
-		storage.SetName( name );
-        storage.SetCooker( cooker );
-        storage.Open();
+		cooking.SetName( name );
+		cooking.SetCooker( cooker );
+		cooking.Open();
 
         Sound.FromScreen( "inventory.open" );
     }

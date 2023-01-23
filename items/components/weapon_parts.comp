@@ -10,6 +10,7 @@
 			salvage = 25
 			metal_fragments = 15
 		}
+		BaseComponentReturn = 0.5
 		IsPurchasable = true
 		SalvageCost = 100
 		StockStackSize = "1.00,5.00,1"

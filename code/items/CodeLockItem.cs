@@ -9,11 +9,8 @@ public class CodeLockItem : InventoryItem, IRecyclableItem
 	public override string Name => "Code Lock";
 	public override string Icon => "textures/items/code_lock.png";
 
-	public Dictionary<string, int> RecycleOutput => new()
-	{
-		["metal_fragments"] = 10,
-		["wood"] = 5
-	};
+	public Dictionary<string, int> RecycleOutput => null;
+	public float BaseComponentReturn => 0.5f;
 	public bool IsRecyclable => true;
 
 	public override bool CanStackWith( InventoryItem other )

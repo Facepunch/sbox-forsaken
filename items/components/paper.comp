@@ -9,12 +9,14 @@
 		{
 			plant_fiber = 5
 		}
+		BaseComponentReturn = 0.5
 		IsPurchasable = false
 		SalvageCost = 0
 		StockStackSize = "1.00,1.00,0"
 		StockChance = 0.5
 		IsLootable = true
 		LootChance = 0.7
+		OncePerContainer = true
 		LootStackSize = "1.00,2.00,1"
 		ItemName = "Paper"
 		UniqueId = "paper"

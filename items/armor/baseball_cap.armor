@@ -7,8 +7,12 @@
 		SecondaryModel = null
 		PrimaryModel = resource:"models/citizen_clothes/hat/baseball_cap/model/baseball_cap.vmdl"
 		TemperatureModifier = 1
-		IsRecyclable = false
-		RecycleOutput = null
+		IsRecyclable = true
+		RecycleOutput = 
+		{
+			yarn = 1
+		}
+		BaseComponentReturn = 0.5
 		IsPurchasable = true
 		SalvageCost = 40
 		StockStackSize = "1.00,1.00,0"

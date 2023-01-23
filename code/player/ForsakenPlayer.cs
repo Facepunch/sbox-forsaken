@@ -406,8 +406,11 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 
 		var storage = UI.Storage.Current;
 		var cooking = UI.Cooking.Current;
+		var recycling = UI.Recycling.Current;
 
-		if ( cooking.IsOpen && cooking.Cooker.IsValid() )
+		if ( recycling.IsOpen && recycling.Recycler.IsValid() )
+			OpenContainerIds = recycling.Recycler.Processor.GetContainerIdString();
+		else if ( cooking.IsOpen && cooking.Cooker.IsValid() )
 			OpenContainerIds = cooking.Cooker.Processor.GetContainerIdString();
 		else if ( storage.IsOpen && storage.Container.IsValid() )
 			OpenContainerIds = storage.Container.ContainerId.ToString();

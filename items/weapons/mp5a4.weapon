@@ -23,8 +23,9 @@
 		]
 		Damage = 20
 		ClassName = "weapon_mp5a4"
-		IsRecyclable = false
+		IsRecyclable = true
 		RecycleOutput = null
+		BaseComponentReturn = 0.5
 		IsPurchasable = true
 		SalvageCost = 300
 		StockStackSize = "1.00,1.00,0"

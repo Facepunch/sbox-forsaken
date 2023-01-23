@@ -10,12 +10,14 @@
 			salvage = 5
 			metal_fragments = 5
 		}
+		BaseComponentReturn = 0.5
 		IsPurchasable = false
 		SalvageCost = 0
 		StockStackSize = "1.00,1.00,0"
 		StockChance = 0.5
 		IsLootable = true
 		LootChance = 0.6
+		OncePerContainer = true
 		LootStackSize = "1.00,1.00,0"
 		ItemName = "Scissors"
 		UniqueId = "scissors"
