@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using Sandbox.Component;
 using System.IO;
 using System.Linq;
 
@@ -22,6 +23,11 @@ public partial class Deployable : ModelEntity, IDamageable, IPersistence
 				Transmit = TransmitType.Never,
 				Model = model
 			};
+
+			var glow = Ghost.Components.GetOrCreate<Glow>();
+			glow.Color = Color.White.WithAlpha( 0.8f );
+			glow.InsideObscuredColor = Color.White.WithAlpha( 0.6f );
+			glow.Width = 0.2f;
 
 			Ghost.SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
 			Ghost.SetMaterialOverride( Material.Load( "materials/blueprint.vmat" ) );

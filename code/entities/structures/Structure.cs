@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using Sandbox.Component;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,6 +31,11 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 			Ghost.EnableShadowReceive = false;
 			Ghost.EnableAllCollisions = false;
 			Ghost.SetMaterialOverride( Material.Load( "materials/blueprint.vmat" ) );
+
+			var glow = Ghost.Components.GetOrCreate<Glow>();
+			glow.Color = Color.White.WithAlpha( 0.8f );
+			glow.InsideObscuredColor = Color.White.WithAlpha( 0.6f );
+			glow.Width = 0.2f;
 		}
 
 		return Ghost;

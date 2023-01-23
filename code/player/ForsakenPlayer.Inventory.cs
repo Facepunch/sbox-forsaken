@@ -398,20 +398,24 @@ public partial class ForsakenPlayer
 	{
 		var currentSlotIndex = HotbarIndex;
 		var maxSlotIndex = Hotbar.SlotLimit - 1;
+		var canUseMouseWheel = !Input.Down( InputButton.Walk );
 
 		if ( IsHotbarSelected() )
 		{
-			if ( Input.MouseWheel > 0 )
-				currentSlotIndex++;
-			else if ( Input.MouseWheel < 0 )
-				currentSlotIndex--;
+			if ( canUseMouseWheel )
+			{
+				if ( Input.MouseWheel > 0 )
+					currentSlotIndex++;
+				else if ( Input.MouseWheel < 0 )
+					currentSlotIndex--;
+			}
 
 			if ( currentSlotIndex < 0 )
 				currentSlotIndex = maxSlotIndex;
 			else if ( currentSlotIndex > maxSlotIndex )
 				currentSlotIndex = 0;
 		}
-		else
+		else if ( canUseMouseWheel )
 		{
 			if ( Input.MouseWheel > 0 )
 				currentSlotIndex = 0;

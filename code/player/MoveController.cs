@@ -153,7 +153,7 @@ public partial class MoveController
 		Player.Velocity += new Vector3( 0, 0, Player.BaseVelocity.z ) * Time.Delta;
 		Player.BaseVelocity = Player.BaseVelocity.WithZ( 0 );
 
-		var startOnGround = Player.GroundEntity != null;
+		var startOnGround = Player.GroundEntity.IsValid();
 
 		if ( startOnGround )
 		{
@@ -162,6 +162,10 @@ public partial class MoveController
 		}
 
 		WishVelocity = new Vector3( Player.InputDirection.x, Player.InputDirection.y, 0 );
+
+		if ( ForsakenGame.Isometric )
+			WishVelocity *= Rotation.From( 0f, 45f, 0f );
+
 		var inSpeed = WishVelocity.Length.Clamp( 0, 1 );
 
 		WishVelocity = WishVelocity.WithZ( 0 );

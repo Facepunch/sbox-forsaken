@@ -10,6 +10,9 @@ public partial class ForsakenGame : GameManager
 {
 	public static ForsakenGame Entity => Current as ForsakenGame;
 
+	[ConVar.Replicated( "fsk.isometric" )]
+	public static bool Isometric { get; set; } = true;
+
 	[ConVar.Server( "fsk.autosave", Saved = true )]
 	public static bool ShouldAutoSave { get; set; } = true;
 
@@ -18,7 +21,8 @@ public partial class ForsakenGame : GameManager
 
 	private TimeUntil NextDespawnItems { get; set; }
 	private TimeUntil NextAutoSave { get; set; }
-	private TopDownCamera Camera { get; set; }
+	private IsometricCamera IsometricCamera { get; set; }
+	private TopDownCamera TopDownCamera { get; set; }
 	private bool HasLoadedWorld { get; set; }
 
 	public ForsakenGame() : base()
@@ -53,7 +57,8 @@ public partial class ForsakenGame : GameManager
 		Game.RootPanel?.Delete( true );
 		Game.RootPanel = new UI.Hud();
 
-		Camera = new();
+		IsometricCamera = new();
+		TopDownCamera = new();
 
 		base.ClientSpawn();
 	}
@@ -199,6 +204,9 @@ public partial class ForsakenGame : GameManager
 	[Event.Client.Frame]
 	private void OnFrame()
 	{
-		Camera?.Update();
+		if ( Isometric )
+			IsometricCamera?.Update();
+		else
+			TopDownCamera?.Update();
 	}
 }

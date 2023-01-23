@@ -229,8 +229,13 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		SetStructureTypeCmd( type.Identity );
 	}
 
-	public bool IsHeadshotTarget( ForsakenPlayer other )
+	public bool IsHeadshotTarget( ForsakenPlayer other, DamageInfo info )
 	{
+		if ( !ForsakenGame.Isometric )
+		{
+			return info.Hitbox.HasTag( "head" );
+		}
+
 		var startPosition = CameraPosition;
 		var endPosition = CameraPosition + CursorDirection * 1000f;
 		var cursor = Trace.Ray( startPosition, endPosition )
@@ -342,6 +347,11 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		return Hydration >= 0f;
 	}
 
+	public virtual bool IsAiming()
+	{
+		return ForsakenGame.Isometric && Input.Down( InputButton.SecondaryAttack );
+	}
+
 	public virtual void Respawn()
 	{
 		EnableAllCollisions = true;
@@ -434,13 +444,6 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		if ( Input.StopProcessing )
 			return;
 
-		var look = Input.AnalogLook;
-
-		if ( ViewAngles.pitch > 90f || ViewAngles.pitch < -90f )
-		{
-			look = look.WithYaw( look.yaw * -1f );
-		}
-
 		if ( Input.Released( InputButton.Reload ) )
 		{
 			DeployableYaw += 90;
@@ -448,12 +451,6 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 			if ( DeployableYaw >= 360 )
 				DeployableYaw = 0;
 		}
-
-		var viewAngles = ViewAngles;
-		viewAngles += look;
-		viewAngles.pitch = viewAngles.pitch.Clamp( -89f, 89f );
-		viewAngles.roll = 0f;
-		ViewAngles = viewAngles.Normal;
 
 		var mouseDelta = Input.MouseDelta / new Vector2( Screen.Width, Screen.Height );
 
@@ -468,14 +465,28 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		CursorDirection = Screen.GetDirection( Screen.Size * Cursor );
 		CameraPosition = Camera.Position;
 
-		var plane = new Plane( Position, Vector3.Up );
-		var trace = plane.Trace( new Ray( EyePosition, CursorDirection ), true );
-
-		if ( trace.HasValue )
+		if ( IsAiming() )
 		{
-			var direction = (trace.Value - Position).Normal;
+			var trace = Trace.Ray( CameraPosition, CameraPosition + CursorDirection * 3000f )
+				.Ignore( this )
+				.Run();
+
+			var direction = (trace.EndPosition - Position).Normal;
 			ViewAngles = direction.EulerAngles;
 		}
+		else
+		{
+			var plane = new Plane( Position, Vector3.Up );
+			var trace = plane.Trace( new Ray( CameraPosition, CursorDirection ), true );
+
+			if ( trace.HasValue )
+			{
+				var direction = (trace.Value - Position).Normal;
+				ViewAngles = direction.EulerAngles;
+			}
+		}
+
+		ViewAngles = ViewAngles.WithPitch( 0f );
 
 		var startPosition = CameraPosition;
 		var endPosition = CameraPosition + CursorDirection * 1000f;
@@ -495,7 +506,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 
 		var cursor = query.Run();
 
-		if ( cursor.Entity.IsValid() )
+		if ( !IsAiming() && cursor.Entity.IsValid() )
 		{
 			var visible = Trace.Ray( EyePosition, cursor.Entity.WorldSpaceBounds.Center )
 				.WithoutTags( "trigger" )
@@ -547,7 +558,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 
 			if ( info.HasTag( "bullet" ) )
 			{
-				if ( attacker.IsHeadshotTarget( this ) )
+				if ( attacker.IsHeadshotTarget( this, info ) )
 				{
 					Sound.FromScreen( To.Single( attacker ), "hitmarker.headshot" );
 					info.Damage *= 2f;
@@ -737,7 +748,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 			NextNeedsWarning = 60f;
 		}
 
-		if ( NextNeedsDamage )
+		if ( NextNeedsDamage && ( Calories <= 0f || Hydration <= 0f ) )
 		{
 			if ( Calories <= 0f )
 			{
@@ -769,7 +780,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 				}
 			}
 
-			NextNeedsDamage = 5f;
+			NextNeedsDamage = 30f;
 		}
 
 		if ( NextCalculateTemperature )
@@ -1013,7 +1024,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		}
 
 		var startPosition = CameraPosition;
-		var endPosition = CameraPosition + CursorDirection * 1000f;
+		var endPosition = CameraPosition + CursorDirection * 3000f;
 		var trace = Trace.Ray( startPosition, endPosition )
 			.WithoutTags( "trigger" )
 			.WithAnyTags( deployable.ValidTags )
@@ -1057,6 +1068,9 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 			{
 				ghost.RenderColor = Color.Cyan.WithAlpha( 0.5f );
 			}
+
+			var glow = ghost.Components.GetOrCreate<Glow>();
+			glow.InsideObscuredColor = ghost.RenderColor;
 
 			ghost.ResetInterpolation();
 		}
@@ -1152,7 +1166,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 			return;
 		}
 
-		var trace = Trace.Ray( CameraPosition, CameraPosition + CursorDirection * 1000f )
+		var trace = Trace.Ray( CameraPosition, CameraPosition + CursorDirection * 3000f )
 			.WithoutTags( "trigger" )
 			.WorldOnly()
 			.Run();
@@ -1202,6 +1216,9 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 				ghost.RenderColor = Color.Red.WithAlpha( 0.5f );
 			else
 				ghost.RenderColor = Color.Orange.WithAlpha( 0.5f );
+
+			var glow = ghost.Components.GetOrCreate<Glow>();
+			glow.InsideObscuredColor = ghost.RenderColor;
 		}
 
 		if ( Prediction.FirstTime && Input.Released( InputButton.PrimaryAttack ) )

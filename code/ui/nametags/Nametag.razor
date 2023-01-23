@@ -25,12 +25,18 @@
     public override void Tick()
     {
         var isHidden = true;
-        var position = (Provider.EyePosition - Provider.Rotation.Forward * 20f).ToScreen();
+
+        Vector3 position;
+
+        if ( ForsakenGame.Isometric )
+            position = (Provider.EyePosition + Vector3.Up * 20f).ToScreen();
+        else
+            position = (Provider.EyePosition - Provider.Rotation.Forward * 20f).ToScreen();
 
         if ( position.z >= 0f )
         {
             var distance = Camera.Main.Position.Distance( Provider.EyePosition );
-            var maxDistance = 1024f;
+            var maxDistance = ForsakenGame.Isometric ? 3000f : 1000f;
 
             if ( distance <= maxDistance )
             {

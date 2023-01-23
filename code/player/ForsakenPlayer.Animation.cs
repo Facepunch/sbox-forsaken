@@ -16,23 +16,34 @@ public partial class ForsakenPlayer
 		else
 			rotation = ViewAngles.ToRotation();
 
-		var isSimulating = Prediction.CurrentHost.IsValid();
-
-		if ( isSimulating && Input.Down( InputButton.Run ) )
+		if ( !ForsakenGame.Isometric )
 		{
-			rotation = Rotation.LookAt( InputDirection, Vector3.Up );
+			var isSimulating = Prediction.CurrentHost.IsValid();
+
+			if ( isSimulating && Input.Down( InputButton.Run ) )
+			{
+				rotation = Rotation.LookAt( InputDirection, Vector3.Up );
+			}
 		}
 
 		Rotation = Rotation.Lerp( Rotation, rotation, Time.Delta * 10f );
 
 		var animHelper = new CitizenAnimationHelper( this );
 
+		var trace = Trace.Ray( CameraPosition, CameraPosition + CursorDirection * 3000f )
+			.WithoutTags( "trigger" )
+			.WithAnyTags( "solid", "world" )
+			.Ignore( this )
+			.Run();
+
+		var lookAtPosition = IsAiming() ? trace.EndPosition : (EyePosition + EyeRotation.Forward * 100f);
+
 		animHelper.WithWishVelocity( Controller.WishVelocity );
 		animHelper.WithVelocity( Velocity );
-		animHelper.WithLookAt( EyePosition + EyeRotation.Forward * 100.0f, 1.0f, 1.0f, 0.5f );
+		animHelper.WithLookAt( lookAtPosition, 1f, 1f, 0.5f );
 		animHelper.AimAngle = rotation;
-		animHelper.DuckLevel = MathX.Lerp( animHelper.DuckLevel, Controller.HasTag( "ducked" ) ? 1 : 0, Time.Delta * 10.0f );
-		animHelper.VoiceLevel = (Game.IsClient && Client.IsValid()) ? Client.Voice.LastHeard < 0.5f ? Client.Voice.CurrentLevel : 0.0f : 0.0f;
+		animHelper.DuckLevel = MathX.Lerp( animHelper.DuckLevel, Controller.HasTag( "ducked" ) ? 1f : 0f, Time.Delta * 10f );
+		animHelper.VoiceLevel = (Game.IsClient && Client.IsValid()) ? Client.Voice.LastHeard < 0.5f ? Client.Voice.CurrentLevel : 0f : 0f;
 		animHelper.IsGrounded = GroundEntity != null;
 		animHelper.IsSitting = Controller.HasTag( "sitting" );
 		animHelper.IsNoclipping = Controller.HasTag( "noclip" );
