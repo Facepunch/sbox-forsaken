@@ -410,7 +410,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		if ( cooking.IsOpen && cooking.Cooker.IsValid() )
 			OpenContainerIds = cooking.Cooker.Processor.GetContainerIdString();
 		else if ( storage.IsOpen && storage.Container.IsValid() )
-			OpenContainerIds = storage.Container.InventoryId.ToString();
+			OpenContainerIds = storage.Container.ContainerId.ToString();
 		else
 			OpenContainerIds = string.Empty;
 
@@ -748,9 +748,9 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 	{
 		if ( Game.IsServer )
 		{
-			InventorySystem.Remove( Hotbar, true );
-			InventorySystem.Remove( Backpack, true );
-			InventorySystem.Remove( Equipment, true );
+			InventorySystem.Remove( Hotbar );
+			InventorySystem.Remove( Backpack );
+			InventorySystem.Remove( Equipment );
 		}
 
 		base.OnDestroy();

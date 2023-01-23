@@ -59,12 +59,15 @@ public partial class CookingProcessor : BaseNetworkable
 
 	public void Deserialize( BinaryReader reader )
 	{
+		InventorySystem.Remove( Fuel );
 		var fuel = reader.ReadInventoryContainer();
 		InternalFuelInventory = new( fuel );
 
+		InventorySystem.Remove( Input );
 		var input = reader.ReadInventoryContainer();
 		InternalInputInventory = new( input );
 
+		InventorySystem.Remove( Output );
 		var output = reader.ReadInventoryContainer();
 		InternalOutputInventory = new( output );
 	}
@@ -144,7 +147,7 @@ public partial class CookingProcessor : BaseNetworkable
 
 	public string GetContainerIdString()
 	{
-		return $"{Fuel.InventoryId},{Input.InventoryId},{Output.InventoryId}";
+		return $"{Fuel.ContainerId},{Input.ContainerId},{Output.ContainerId}";
 	}
 
 	private void OnIsActiveChanged()

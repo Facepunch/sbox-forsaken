@@ -9,11 +9,10 @@ namespace Facepunch.Forsaken;
 
 public static class PersistenceSystem
 {
-	public static int Version => 16;
+	public static int Version => 17;
 
 	private static Dictionary<long, byte[]> PlayerData { get; set; } = new();
 	private static ulong PersistentId { get; set; }
-	private static string FileName => $"{Game.Server.MapIdent.ToLower()}.save";
 
 	[ConCmd.Admin( "fsk.save.me" )]
 	private static void SaveMe()
@@ -105,6 +104,7 @@ public static class PersistenceSystem
 		}
 
 		InventorySystem.Deserialize( reader );
+		InventorySystem.ReassignIds();
 
 		LoadPlayers( reader );
 		LoadEntities( reader );

@@ -105,7 +105,7 @@ public class InventoryItem : IValid
 	}
 
 	public bool IsValid { get; set; }
-	public ulong ItemId { get; set; }
+	public ulong ItemId { get; private set; }
 	public ushort SlotId { get; set; }
 
 	public void SetWorldEntity( ItemEntity entity )
@@ -114,6 +114,11 @@ public class InventoryItem : IValid
 		IsWorldEntity = entity.IsValid();
 		IsDirty = true;
 		Remove();
+	}
+
+	public void SetItemId( ulong itemId )
+	{
+		ItemId = itemId;
 	}
 
 	public void ClearWorldEntity()
@@ -201,6 +206,6 @@ public class InventoryItem : IValid
 
 	public override int GetHashCode()
 	{
-		return HashCode.Combine( IsValid, ItemId, StackSize );
+		return HashCode.Combine( IsValid, UniqueId, ItemId, StackSize );
 	}
 }

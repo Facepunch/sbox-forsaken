@@ -32,14 +32,14 @@ public class NetInventoryContainer : BaseNetworkable, INetworkSerializer, IValid
 	public void Read( ref NetRead read )
 	{
 		var version = read.Read<uint>();
-		var itemId = read.Read<ulong>();
+		var containerId = read.Read<ulong>();
 		var totalBytes = read.Read<int>();
 		var output = new byte[totalBytes];
 		read.ReadUnmanagedArray( output );
 
 		if ( Version == version ) return;
 
-		var container = InventorySystem.Find( itemId );
+		var container = InventorySystem.Find( containerId );
 		if ( container.IsValid() )
 		{
 			Value = container;
@@ -47,6 +47,7 @@ public class NetInventoryContainer : BaseNetworkable, INetworkSerializer, IValid
 		}
 
 		Value = InventoryContainer.Deserialize( output );
+
 		Version = version;
 	}
 
@@ -54,7 +55,7 @@ public class NetInventoryContainer : BaseNetworkable, INetworkSerializer, IValid
 	{
 		var serialized = Value.Serialize();
 		write.Write( ++Version );
-		write.Write( Value.InventoryId );
+		write.Write( Value.ContainerId );
 		write.Write( serialized.Length );
 		write.WriteUnmanagedArray( serialized );
 	}

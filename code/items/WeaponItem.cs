@@ -132,7 +132,7 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerIt
 	{
 		if ( Game.IsServer && Attachments.IsValid() )
 		{
-			InventorySystem.Remove( Attachments, true );
+			InventorySystem.Remove( Attachments );
 		}
 
 		if ( Game.IsServer && Weapon.IsValid() )

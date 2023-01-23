@@ -44,14 +44,14 @@ public class InventoryContainer : IValid
 	public ulong ParentId { get; private set; }
 	public HashSet<string> Blacklist { get; set; } = new();
 	public HashSet<string> Whitelist { get; set; } = new();
-	public ulong InventoryId { get; private set; }
+	public ulong ContainerId { get; private set; }
 	public bool IsTakeOnly { get; set; }
 	public Entity Entity { get; private set; }
 	public List<IClient> Connections { get; }
 	public List<InventoryItem> ItemList { get; }
 	public ushort SlotLimit { get; private set; }
 	public bool IsEmpty => !ItemList.Any( i => i.IsValid() );
-	public bool IsValid => true;
+	public bool IsValid => ContainerId > 0;
 
 	protected TransferHandlerCallback TransferHandler { get; set; }
 
@@ -132,7 +132,35 @@ public class InventoryContainer : IValid
 		}
 		else if ( slotLimit < ItemList.Count )
 		{
-			return false;
+			if ( Game.IsClient )
+				Log.Info( "RUNNING SLOT LIMIT LOGIC ON CLIENT " );
+
+			var difference = ItemList.Count - slotLimit;
+
+			for ( var i = 0; i < difference; i++ )
+			{
+				var index = ItemList.Count - 1;
+				var item = ItemList[index];
+
+				if ( item.IsValid() )
+				{
+					item.Parent = null;
+					item.SlotId = 0;
+					item.OnRemoved();
+				}
+
+				ItemList.RemoveAt( index );
+			}
+
+			for ( int i = 0; i < ItemList.Count; i++ )
+			{
+				var item = ItemList[i];
+
+				if ( item.IsValid() )
+				{
+					item.SlotId = (ushort)i;
+				}
+			}
 		}
 
 		SlotLimit = slotLimit;
@@ -188,16 +216,16 @@ public class InventoryContainer : IValid
 		return ItemList[slot];
 	}
 
-	public void SetInventoryId( ulong inventoryId )
+	public void SetContainerId( ulong containerId )
 	{
-		InventoryId = inventoryId;
+		ContainerId = containerId;
 	}
 
 	public IEnumerable<IClient> GetRecipients()
 	{
 		var recipients = Game.Clients
 			.Where( c => c.Components.TryGet<InventoryViewer>( out var viewer )
-			&& viewer.ContainerIds.Contains( InventoryId ) )
+			&& viewer.ContainerIds.Contains( ContainerId ) )
 			.Concat( Connections );
 
 		if ( Parent.IsValid() && Parent.Parent.IsValid() )
@@ -759,7 +787,7 @@ public class InventoryContainer : IValid
 				hash = hash * 31 + 0;
 		}
 
-		return HashCode.Combine( hash, InventoryId, SlotLimit );
+		return HashCode.Combine( hash, ContainerId, SlotLimit );
 	}
 
 	public virtual InventoryContainer GetTransferTarget( InventoryItem item )

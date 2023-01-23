@@ -45,7 +45,7 @@ public static partial class BinaryWriterExtension
 
 		self.Write( typeDesc.Name );
 		self.Write( container.ParentId );
-		self.Write( container.InventoryId );
+		self.Write( container.ContainerId );
 		self.Write( container.SlotLimit );
 
 		if ( container.Entity.IsValid() )

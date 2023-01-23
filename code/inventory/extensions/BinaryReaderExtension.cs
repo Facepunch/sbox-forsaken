@@ -54,15 +54,15 @@ public static partial class BinaryReaderExtension
 		}
 	}
 
-	public static InventoryContainer ReadInventoryContainer( this BinaryReader buffer )
+	public static InventoryContainer ReadInventoryContainer( this BinaryReader buffer, InventoryContainer target = null )
 	{
 		var typeName = buffer.ReadString();
 		var parentItemId = buffer.ReadUInt64();
-		var inventoryId = buffer.ReadUInt64();
+		var containerId = buffer.ReadUInt64();
 		var slotLimit = buffer.ReadUInt16();
 		var entity = buffer.ReadEntity();
 
-		var container = InventorySystem.Find( inventoryId );
+		var container = target ?? InventorySystem.Find( containerId );
 
 		if ( container == null )
 		{
@@ -78,13 +78,18 @@ public static partial class BinaryReaderExtension
 			container.SetEntity( entity );
 			container.SetParent( parentItemId );
 			container.SetSlotLimit( slotLimit );
-			InventorySystem.Register( container, inventoryId );
+			InventorySystem.Register( container, containerId );
 		}
 		else
 		{
 			container.SetEntity( entity );
 			container.SetParent( parentItemId );
 			container.SetSlotLimit( slotLimit );
+		}
+
+		if ( target.IsValid() )
+		{
+			InventorySystem.ReassignId( target, containerId );
 		}
 
 		for ( var i = 0; i < slotLimit; i++ )

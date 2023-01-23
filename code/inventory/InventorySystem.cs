@@ -49,6 +49,50 @@ public static partial class InventorySystem
 		NextItemId = reader.ReadUInt64();
 	}
 
+	public static ulong GenerateContainerId()
+	{
+		return ++NextContainerId;
+	}
+
+	public static ulong GenerateItemId()
+	{
+		return ++NextItemId;
+	}
+
+	public static void ReassignId( InventoryContainer container, ulong containerId )
+	{
+		Containers.Remove( container.ContainerId );
+		container.SetContainerId( containerId );
+		Containers.Add( containerId, container );
+	}
+
+	public static void ReassignIds()
+	{
+		var containers = Containers.Values.ToList();
+		var items = Items.Values.ToList();
+
+		foreach ( var item in items )
+		{
+			if ( !item.Parent.IsValid() ) continue;
+			if ( !item.Parent.Entity.IsValid() ) continue;
+			if ( !item.Parent.Entity.IsFromMap ) continue;
+
+			Items.Remove( item.ItemId );
+			item.SetItemId( GenerateItemId() );
+			Items.Add( item.ItemId, item );
+		}
+
+		foreach ( var container in containers )
+		{
+			if ( !container.Entity.IsValid() ) continue;
+			if ( !container.Entity.IsFromMap ) continue;
+
+			Containers.Remove( container.ContainerId );
+			container.SetContainerId( GenerateContainerId() );
+			Containers.Add( container.ContainerId, container );
+		}
+	}
+
 	public static IEnumerable<InventoryItem> GetDefinitions()
 	{
 		foreach ( var kv in Definitions )
@@ -57,39 +101,41 @@ public static partial class InventorySystem
 		}
 	}
 
-	public static ulong Register( InventoryContainer container, ulong inventoryId = 0 )
+	public static ulong Register( InventoryContainer container, ulong containerId = 0 )
 	{
-		if ( inventoryId == 0 && Game.IsClient )
+		if ( containerId == 0 && Game.IsClient )
 		{
 			throw new Exception( "Cannot register a new InventoryContainer client-side without an explicit inventory id!" );
 		}
 
-		if ( inventoryId == 0 )
+		if ( containerId == 0 )
 		{
-			inventoryId = ++NextContainerId;
+			containerId = GenerateContainerId();
 		}
 
-		container.SetInventoryId( inventoryId );
-		Containers[inventoryId] = container;
+		container.SetContainerId( containerId );
+		Containers[containerId] = container;
 
-		return inventoryId;
+		return containerId;
 	}
 
-	public static List<InventoryItem> Remove( InventoryContainer container, bool destroyItems = false )
+	public static List<InventoryItem> Remove( InventoryContainer container, bool destroyItems = true )
 	{
-		var inventoryId = container.InventoryId;
+		var containerId = container.ContainerId;
 
-		if ( Containers.Remove( inventoryId ) )
+		if ( Containers.Remove( containerId ) )
 		{
 			var itemList = container.RemoveAll();
 
 			if ( destroyItems )
 			{
-				for ( var i = 0; i < itemList.Count; i++ )
+				for ( var i = itemList.Count - 1; i >= 0; i-- )
 				{
 					RemoveItem( itemList[i] );
 				}
 			}
+
+			container.SetContainerId( 0 );
 
 			return itemList;
 		}
@@ -163,11 +209,11 @@ public static partial class InventorySystem
 
 		if ( itemId == 0 )
 		{
-			itemId = ++NextItemId;
+			itemId = GenerateItemId();
 		}
 
 		instance = TypeLibrary.Create<InventoryItem>( typeof( T ) );
-		instance.ItemId = itemId;
+		instance.SetItemId( itemId );
 		instance.IsValid = true;
 		instance.StackSize = instance.DefaultStackSize;
 		instance.OnCreated();
@@ -199,11 +245,11 @@ public static partial class InventorySystem
 
 		if ( itemId == 0 )
 		{
-			itemId = ++NextItemId;
+			itemId = GenerateItemId();
 		}
 
 		instance = TypeLibrary.Create<InventoryItem>( type );
-		instance.ItemId = itemId;
+		instance.SetItemId( itemId );
 		instance.IsValid = true;
 		instance.StackSize = instance.DefaultStackSize;
 		instance.OnCreated();
@@ -222,7 +268,7 @@ public static partial class InventorySystem
 
 		if ( itemId == 0 )
 		{
-			itemId = ++NextItemId;
+			itemId = GenerateItemId();
 		}
 
 		if ( !Definitions.ContainsKey( uniqueId ) )
@@ -234,7 +280,7 @@ public static partial class InventorySystem
 		var definition = Definitions[uniqueId];
 
 		instance = TypeLibrary.Create<InventoryItem>( definition.GetType() );
-		instance.ItemId = itemId;
+		instance.SetItemId( itemId );
 		instance.IsValid = true;
 		instance.StackSize = instance.DefaultStackSize;
 
@@ -278,8 +324,8 @@ public static partial class InventorySystem
 			using ( var writer = new BinaryWriter( stream ) )
 			{
 				writer.Write( fromSlot );
-				writer.Write( from.InventoryId );
-				writer.Write( to.InventoryId );
+				writer.Write( from.ContainerId );
+				writer.Write( to.ContainerId );
 				SendEventDataToServer( NetworkEvent.Transfer, Convert.ToBase64String( stream.ToArray() ) );
 			}
 		}
@@ -292,9 +338,9 @@ public static partial class InventorySystem
 			using ( var writer = new BinaryWriter( stream ) )
 			{
 				writer.Write( fromSlot );
-				writer.Write( from.InventoryId );
+				writer.Write( from.ContainerId );
 				writer.Write( toSlot );
-				writer.Write( to.InventoryId );
+				writer.Write( to.ContainerId );
 				SendEventDataToServer( NetworkEvent.Split, Convert.ToBase64String( stream.ToArray() ) );
 			}
 		}
@@ -307,9 +353,9 @@ public static partial class InventorySystem
 			using ( var writer = new BinaryWriter( stream ) )
 			{
 				writer.Write( fromSlot );
-				writer.Write( from.InventoryId );
+				writer.Write( from.ContainerId );
 				writer.Write( toSlot );
-				writer.Write( to.InventoryId );
+				writer.Write( to.ContainerId );
 				SendEventDataToServer( NetworkEvent.Move, Convert.ToBase64String( stream.ToArray() ) );
 			}
 		}
@@ -321,7 +367,7 @@ public static partial class InventorySystem
 		{
 			using ( var writer = new BinaryWriter( stream ) )
 			{
-				writer.Write( container.InventoryId );
+				writer.Write( container.ContainerId );
 				writer.Write( instance );
 				writer.Write( slotId );
 				SendEventDataToClient( to, NetworkEvent.Give, stream.ToArray() );
@@ -335,7 +381,7 @@ public static partial class InventorySystem
 		{
 			using ( var writer = new BinaryWriter( stream ) )
 			{
-				writer.Write( container.InventoryId );
+				writer.Write( container.ContainerId );
 				writer.Write( slotId );
 				SendEventDataToClient( to, NetworkEvent.Take, stream.ToArray() );
 			}
@@ -348,7 +394,7 @@ public static partial class InventorySystem
 		{
 			using ( var writer = new BinaryWriter( stream ) )
 			{
-				writer.Write( container.InventoryId );
+				writer.Write( container.ContainerId );
 
 				ushort dirtyCount = 0;
 				var itemList = container.ItemList;
@@ -657,8 +703,18 @@ public static partial class InventorySystem
 		while ( OrphanedItems.Count > 0 )
 		{
 			var itemId = OrphanedItems.Dequeue();
-			Items.Remove( itemId );
+
+			if ( Items.TryGetValue( itemId, out var item ) )
+			{
+				RemoveItem( item );
+			}
+
 			totalOrphanedItems++;
+		}
+
+		if ( totalOrphanedItems > 0 )
+		{
+			Log.Info( $"Removing {totalOrphanedItems} orphaned inventory items..." );
 		}
 	}
 }

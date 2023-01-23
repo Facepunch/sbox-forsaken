@@ -28,9 +28,9 @@ public partial class InventoryViewer : EntityComponent, IValid
 	/// </summary>
 	public void AddContainer( InventoryContainer container )
 	{
-		if ( !ContainerIds.Contains( container.InventoryId ) )
+		if ( !ContainerIds.Contains( container.ContainerId ) )
 		{
-			ContainerIds.Add( container.InventoryId );
+			ContainerIds.Add( container.ContainerId );
 		}
 	}
 
