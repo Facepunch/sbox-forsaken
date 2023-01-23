@@ -37,4 +37,32 @@ public partial class ForsakenPlayer
 		"That's too far away.",
 		"I should try getting closer."
 	};
+
+	private static string[] HungryThoughts = new string[]
+	{
+		"I could do with eating something soon.",
+		"I'm feeling a little peckish...",
+		"Some food would be nice."
+	};
+
+	private static string[] ThirstyThoughts = new string[]
+	{
+		"I'm feeling a little thirsty.",
+		"I should try to find a drink soon.",
+		"I'm a little thirsty."
+	};
+
+	private static string[] StarvingThoughts = new string[]
+	{
+		"I'm extremely hungry!",
+		"I'm dying of hunger!",
+		"I need to eat something, fast!"
+	};
+
+	private static string[] DehydrationThoughts = new string[]
+	{
+		"I'm extremely dehydrated!",
+		"I need to drink something, fast!",
+		"I need water... I'm dying!."
+	};
 }

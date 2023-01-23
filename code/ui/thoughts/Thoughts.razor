@@ -29,9 +29,10 @@
         Instance = this;
     }
 
-    private void AddEntry( string thought )
+    private ThoughtEntry AddEntry( string thought )
     {
         var entry = Entries.AddChild<ThoughtEntry>();
         entry.Initialize( thought );
+        return entry;
     }
 }

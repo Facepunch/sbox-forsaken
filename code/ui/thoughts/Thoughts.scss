@@ -19,6 +19,12 @@
                 color: white;
             }
 
+            &.needs {
+                label {
+                    color: indianred;
+                }
+            }
+
             &:intro {
                 opacity: 0;
             }

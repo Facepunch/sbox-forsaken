@@ -172,7 +172,7 @@ public partial class MoveController
 
 		if ( Input.Down( InputButton.Run ) && !Input.Down( InputButton.Duck ) && WishVelocity.Length > 1f )
 			Player.ReduceStamina( 5f * Time.Delta );
-		else
+		else if ( Player.CanStaminaRegenerate() )
 			Player.GainStamina( 15f * Time.Delta );
 
 		var stayOnGround = false;

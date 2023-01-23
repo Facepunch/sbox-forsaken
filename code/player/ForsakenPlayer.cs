@@ -98,6 +98,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 	private bool IsBackpackToggleMode { get; set; }
 	private List<ActiveEffect> ActiveEffects { get; set; } = new();
 	private TimeUntil NextNeedsDamage { get; set; }
+	private TimeUntil NextNeedsWarning { get; set; }
 	private TimeSince TimeSinceLastKilled { get; set; }
 	private Glow GlowComponent { get; set; }
 	private Entity LastActiveChild { get; set; }
@@ -334,6 +335,11 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 			else if ( effect.Target == ConsumableType.Stamina )
 				Stamina = Math.Clamp( Stamina + effect.Amount, 0f, MaxStamina );
 		}
+	}
+
+	public virtual bool CanStaminaRegenerate()
+	{
+		return Hydration >= 0f;
 	}
 
 	public virtual void Respawn()
@@ -720,24 +726,47 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 			return;
 		}
 
+		if ( NextNeedsWarning )
+		{
+			if ( Calories > 0f && Calories < 20f && Game.Random.Float() > 0.5f )
+				Thoughts.Show( To.Single( this ), "needs_warning", Game.Random.FromArray( HungryThoughts ) );
+
+			if ( Hydration > 0f && Hydration < 20f && Game.Random.Float() > 0.5f )
+				Thoughts.Show( To.Single( this ), "needs_warning", Game.Random.FromArray( ThirstyThoughts ) );
+
+			NextNeedsWarning = 60f;
+		}
+
 		if ( NextNeedsDamage )
 		{
 			if ( Calories <= 0f )
 			{
-				var damage = new DamageInfo();
-				damage.Tags.Add( "hunger" );
+				var damage = new DamageInfo()
+					.WithTag( "hunger" )
+					.WithPosition( Position );
+
 				damage.Damage = 1f;
-				damage.Position = Position;
 				TakeDamage( damage );
+
+				if ( Game.Random.Float() > 0.5f )
+				{
+					Thoughts.Show( To.Single( this ), "needs", Game.Random.FromArray( StarvingThoughts ) );
+				}
 			}
 
 			if ( Hydration <= 0f )
 			{
-				var damage = new DamageInfo();
-				damage.Tags.Add( "thirst" );
+				var damage = new DamageInfo()
+					.WithTag( "thirst" )
+					.WithPosition( Position );
+
 				damage.Damage = 1f;
-				damage.Position = Position;
 				TakeDamage( damage );
+
+				if ( Game.Random.Float() > 0.5f )
+				{
+					Thoughts.Show( To.Single( this ), "needs", Game.Random.FromArray( DehydrationThoughts ) );
+				}
 			}
 
 			NextNeedsDamage = 5f;
