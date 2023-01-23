@@ -14,7 +14,7 @@
 		IsLootable = true
 		LootChance = 0
 		LootStackSize = "0.00,0.00,0"
-		ItemName = "Bolt"
+		ItemName = "Crossbow Bolt"
 		UniqueId = "ammo_bolt"
 		Description = "Ammunition typically used for crossbows."
 		Icon = resource:"textures/items/ammo_bolt.png"

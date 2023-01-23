@@ -1,0 +1,27 @@
+<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:generic:version{7412167c-06e9-4698-aff2-e63eb59037e7} -->
+{
+	data = 
+	{
+		MaxStackSize = 5
+		DefaultStackSize = 1
+		IsRecyclable = true
+		RecycleOutput = 
+		{
+			salvage = 25
+			metal_fragments = 15
+		}
+		IsPurchasable = true
+		SalvageCost = 100
+		StockStackSize = "1.00,5.00,1"
+		StockChance = 0.5
+		IsLootable = true
+		LootChance = 0.35
+		LootStackSize = "1.00,1.00,0"
+		ItemName = "Weapon Parts"
+		UniqueId = "weapon_parts"
+		Description = "A bunch of weapon parts. They\'re in good condition."
+		Icon = resource:"textures/items/weapon_parts.png"
+		WorldModel = resource:"models/sbox_props/burger_box/burger_box.vmdl"
+		Tags = [  ]
+	}
+}

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
-[GameResource( "Consumable", "cons", "A type of consumable item for use with Forsaken.", Icon = "food-apple" )]
+[GameResource( "Consumable", "cons", "A type of consumable item for use with Forsaken.", Icon = "lunch_dining" )]
 [ItemClass( typeof( ConsumableItem ) )]
 public class ConsumableResource : ForsakenItemResource
 {

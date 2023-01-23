@@ -1,0 +1,27 @@
+<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:generic:version{7412167c-06e9-4698-aff2-e63eb59037e7} -->
+{
+	data = 
+	{
+		MaxStackSize = 5
+		DefaultStackSize = 1
+		IsRecyclable = true
+		RecycleOutput = 
+		{
+			salvage = 5
+			metal_fragments = 5
+		}
+		IsPurchasable = false
+		SalvageCost = 0
+		StockStackSize = "1.00,1.00,0"
+		StockChance = 0.5
+		IsLootable = true
+		LootChance = 0.6
+		LootStackSize = "1.00,1.00,0"
+		ItemName = "Scissors"
+		UniqueId = "scissors"
+		Description = "Don\'t run with these, it could be dangerous."
+		Icon = resource:"textures/items/scissors.png"
+		WorldModel = resource:"models/sbox_props/burger_box/burger_box.vmdl"
+		Tags = [  ]
+	}
+}

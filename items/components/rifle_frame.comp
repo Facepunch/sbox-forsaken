@@ -1,0 +1,27 @@
+<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:generic:version{7412167c-06e9-4698-aff2-e63eb59037e7} -->
+{
+	data = 
+	{
+		MaxStackSize = 5
+		DefaultStackSize = 1
+		IsRecyclable = true
+		RecycleOutput = 
+		{
+			salvage = 50
+			metal_fragments = 30
+		}
+		IsPurchasable = true
+		SalvageCost = 200
+		StockStackSize = "1.00,2.00,1"
+		StockChance = 0.15
+		IsLootable = true
+		LootChance = 0.1
+		LootStackSize = "1.00,1.00,0"
+		ItemName = "Rifle Frame"
+		UniqueId = "rifle_frame"
+		Description = "The frame of an old rifle. It could be reused if only it had a few extra parts."
+		Icon = resource:"textures/items/rifle_frame.png"
+		WorldModel = resource:"models/sbox_props/burger_box/burger_box.vmdl"
+		Tags = [  ]
+	}
+}
