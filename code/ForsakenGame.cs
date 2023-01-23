@@ -102,6 +102,24 @@ public partial class ForsakenGame : GameManager
 		base.ClientDisconnect( client, reason );
 	}
 
+	public override bool CanHearPlayerVoice( IClient source, IClient receiver )
+	{
+		if ( !source.IsValid() || !receiver.IsValid() ) return false;
+
+		var a = source.Pawn as ForsakenPlayer;
+		var b = source.Pawn as ForsakenPlayer;
+
+		if ( !a.IsValid() || !b.IsValid() ) return false;
+
+		return a.Position.Distance( b.Position ) <= 3000f;
+	}
+
+	public override void OnVoicePlayed( IClient cl )
+	{
+		cl.Voice.WantsStereo = false;
+		base.OnVoicePlayed( cl );
+	}
+
 	public override void PostLevelLoaded()
 	{
 		Game.WorldEntity.Tags.Add( "world" );
