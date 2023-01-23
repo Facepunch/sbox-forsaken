@@ -78,10 +78,8 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersiste
 
 	public void DeserializeState( BinaryReader reader )
 	{
-		TimeSinceSpawned = -reader.ReadSingle();
+		TimeSinceSpawned = reader.ReadSingle();
 		Transform = reader.ReadTransform();
-
-		Log.Info( "Item Spawned: " + TimeSinceSpawned.Relative + " Seconds Ago" );
 
 		var isValid = reader.ReadBoolean();
 		
