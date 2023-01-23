@@ -12,7 +12,7 @@ public partial class MilitaryCrate : LootSpawner
 	public override float RestockTime { get; set; } = 180f;
 	public override int SlotLimit { get; set; } = 4;
 	public override float MinLootChance { get; set; } = 0f;
-	public override float MaxLootChance { get; set; } = 0.6f;
+	public override float MaxLootChance { get; set; } = 0.5f;
 
 	public override void Spawn()
 	{

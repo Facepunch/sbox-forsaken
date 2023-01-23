@@ -7,6 +7,19 @@ namespace Facepunch.Forsaken;
 
 public abstract partial class LootSpawner : ModelEntity, IContextActionProvider, IPersistence
 {
+	[ConCmd.Server( "fsk.loot.restock" )]
+	public static void RestockAll()
+	{
+		foreach ( var s in All.OfType<LootSpawner>() )
+		{
+			if ( s.IsHidden )
+			{
+				s.Restock();
+				s.Show();
+			}
+		}
+	}
+
 	public float InteractionRange => 100f;
 	public Color GlowColor => Color.Green;
 	public bool AlwaysGlow => true;

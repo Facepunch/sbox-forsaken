@@ -14,7 +14,7 @@
 		StockStackSize = "1.00,1.00,0"
 		StockChance = 0.5
 		IsLootable = true
-		LootChance = 0.5
+		LootChance = 0.4
 		OncePerContainer = false
 		LootStackSize = "1.00,1.00,0"
 		ItemName = "Cardboard Pants"
