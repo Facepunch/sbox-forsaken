@@ -146,7 +146,6 @@ public partial class Stockpile : Deployable, IContextActionProvider, ICodeLockab
 		base.DeserializeState( reader );
 
 		var container = reader.ReadInventoryContainer( Inventory );
-		container.SetEntity( this );
 		InternalInventory = new( container );
 
 		IsLocked = reader.ReadBoolean();

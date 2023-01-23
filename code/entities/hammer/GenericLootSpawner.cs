@@ -8,6 +8,7 @@ namespace Facepunch.Forsaken;
 [Model]
 public partial class GenericLootSpawner : LootSpawner
 {
+	[Property, ResourceType( "sound" )] public override string OpeningSound { get; set; } = "rummage.loot";
 	[Property] public override string Title { get; set; } = "Container";
 	[Property] public override float RestockTime { get; set; } = 180f;
 	[Property] public override int SlotLimit { get; set; } = 4;

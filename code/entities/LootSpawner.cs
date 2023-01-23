@@ -28,6 +28,7 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider,
 
 	public InventoryContainer Inventory { get; private set; }
 
+	public virtual string OpeningSound { get; set; } = "rummage.loot";
 	public virtual string Title { get; set; } = "Loot Spawner";
 	public virtual float RestockTime { get; set; } = 30f;
 	public virtual int SlotLimit { get; set; } = 6;
@@ -68,7 +69,15 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider,
 		{
 			if ( Game.IsServer )
 			{
-				Open( player );
+				var timedAction = new TimedActionInfo( Open );
+
+				timedAction.SoundName = OpeningSound;
+				timedAction.Title = "Opening";
+				timedAction.Origin = Position;
+				timedAction.Duration = 1f;
+				timedAction.Icon = "textures/ui/actions/open.png";
+
+				player.StartTimedAction( timedAction );
 			}
 		}
 	}
