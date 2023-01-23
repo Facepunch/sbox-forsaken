@@ -347,8 +347,8 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		EnableAllCollisions = true;
 		EnableDrawing = true;
 		LifeState = LifeState.Alive;
-		Calories = 100f;
-		Hydration = 30f;
+		Calories = 70f;
+		Hydration = 40f;
 		Stamina = 100f;
 		Health = 100f;
 		Velocity = Vector3.Zero;
