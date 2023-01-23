@@ -10,7 +10,7 @@ public partial class ScrapBarrel : LootSpawner
 {
 	public override string Title { get; set; } = "Barrel";
 	public override float RestockTime { get; set; } = 90f;
-	public override int SlotLimit { get; set; } = 3;
+	public override int SlotLimit { get; set; } = 2;
 	public override float MinLootChance { get; set; } = 0.6f;
 	public override float MaxLootChance { get; set; } = 1f;
 
