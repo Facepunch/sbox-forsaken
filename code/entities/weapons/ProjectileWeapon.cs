@@ -84,7 +84,12 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 			else
 				direction = player.EyeRotation.Forward;
 
-			direction += (Vector3.Random + Vector3.Random + Vector3.Random + Vector3.Random).WithZ( 0f ) * Spread * 0.25f;
+			var spread = (Vector3.Random + Vector3.Random + Vector3.Random + Vector3.Random) * Spread * 0.25f;
+
+			if ( !ForsakenGame.Isometric )
+				spread = spread.WithZ( 0f );
+
+			direction += spread;
 			direction = direction.Normal;
 
 			var velocity = (direction * Speed) + (player.Velocity * InheritVelocity);

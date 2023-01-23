@@ -12,8 +12,8 @@ public partial class MP5A4 : ProjectileWeapon<CrossbowBoltProjectile>
 	public override string DamageType => "bullet";
 	public override float PrimaryRate => 10f;
 	public override float SecondaryRate => 1f;
-	public override float Speed => 1500f;
-	public override float Gravity => 6f;
+	public override float Speed => 2000f;
+	public override float Spread => 0.025f;
 	public override float InheritVelocity => 0f;
 	public override string ReloadSoundName => "mp5.mag";
 	public override string ProjectileModel => null;
