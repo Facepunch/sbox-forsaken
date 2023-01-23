@@ -193,6 +193,11 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider,
 
 		if ( !IsHidden && Inventory.IsEmpty )
 		{
+			if ( !string.IsNullOrEmpty( BreakSound ) )
+			{
+				PlaySound( BreakSound );
+			}
+
 			Breakables.Break( this );
 			NextRestockTime = RestockTime;
 			Hide();
