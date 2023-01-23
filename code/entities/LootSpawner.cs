@@ -90,10 +90,7 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider,
 		IsHidden = reader.ReadBoolean();
 		NextRestockTime = RestockTime * reader.ReadSingle();
 
-		InventorySystem.Remove( Inventory );
-		Inventory = reader.ReadInventoryContainer();
-		Inventory.SetEntity( this );
-		Inventory.IsTakeOnly = true;
+		Inventory = reader.ReadInventoryContainer( Inventory );
 		Inventory.SetSlotLimit( (ushort)SlotLimit );
 	}
 

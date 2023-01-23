@@ -132,14 +132,14 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 	{
 		base.SerializeState( writer );
 
-		Processor.Serialize( writer );
+		Processor.SerializeState( writer );
 	}
 
 	public override void DeserializeState( BinaryReader reader )
 	{
 		base.DeserializeState( reader );
 
-		Processor.Deserialize( reader );
+		Processor.DeserializeState( reader );
 	}
 
 	public override void ClientSpawn()

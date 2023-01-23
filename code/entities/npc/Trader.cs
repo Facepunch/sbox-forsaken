@@ -82,9 +82,7 @@ public partial class Trader : NPC, IContextActionProvider, IPersistence, INameta
 	{
 		NextRestockTime = RestockTime * reader.ReadSingle();
 
-		InventorySystem.Remove( Inventory );
-		Inventory = reader.ReadInventoryContainer();
-		Inventory.SetEntity( this );
+		Inventory = reader.ReadInventoryContainer( Inventory );
 		Inventory.SetSlotLimit( (ushort)MaxItemsForSale );
 	}
 

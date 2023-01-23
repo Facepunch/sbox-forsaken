@@ -69,31 +69,13 @@ public partial class ForsakenPlayer
 
 		DeserializeCraftingQueue( reader );
 
-		InventorySystem.Remove( Hotbar );
-
-		var hotbar = reader.ReadInventoryContainer();
-		hotbar.SetEntity( this );
-		hotbar.AddConnection( Client );
-		hotbar.ItemTaken += OnHotbarItemTaken;
-		hotbar.ItemGiven += OnHotbarItemGiven;
+		var hotbar = reader.ReadInventoryContainer( Hotbar );
 		InternalHotbar = new NetInventoryContainer( hotbar );
 
-		InventorySystem.Remove( Backpack );
-
-		var backpack = reader.ReadInventoryContainer();
-		backpack.SetEntity( this );
-		backpack.AddConnection( Client );
-		backpack.ItemTaken += OnBackpackItemTaken;
-		backpack.ItemGiven += OnBackpackItemGiven;
+		var backpack = reader.ReadInventoryContainer( Backpack );
 		InternalBackpack = new NetInventoryContainer( backpack );
 
-		InventorySystem.Remove( Equipment );
-
-		var equipment = reader.ReadInventoryContainer();
-		equipment.SetEntity( this );
-		equipment.AddConnection( Client );
-		equipment.ItemTaken += OnEquipmentItemTaken;
-		equipment.ItemGiven += OnEquipmentItemGiven;
+		var equipment = reader.ReadInventoryContainer( Equipment );
 		InternalEquipment = new NetInventoryContainer( equipment );
 
 		if ( reader.ReadBoolean() )

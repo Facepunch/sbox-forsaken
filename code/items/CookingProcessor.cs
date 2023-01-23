@@ -50,25 +50,22 @@ public partial class CookingProcessor : BaseNetworkable
 		}
 	}
 
-	public void Serialize( BinaryWriter writer )
+	public void SerializeState( BinaryWriter writer )
 	{
 		writer.Write( Fuel );
 		writer.Write( Input );
 		writer.Write( Output );
 	}
 
-	public void Deserialize( BinaryReader reader )
+	public void DeserializeState( BinaryReader reader )
 	{
-		InventorySystem.Remove( Fuel );
-		var fuel = reader.ReadInventoryContainer();
+		var fuel = reader.ReadInventoryContainer( Fuel );
 		InternalFuelInventory = new( fuel );
 
-		InventorySystem.Remove( Input );
-		var input = reader.ReadInventoryContainer();
+		var input = reader.ReadInventoryContainer( Input );
 		InternalInputInventory = new( input );
 
-		InventorySystem.Remove( Output );
-		var output = reader.ReadInventoryContainer();
+		var output = reader.ReadInventoryContainer( Output );
 		InternalOutputInventory = new( output );
 	}
 

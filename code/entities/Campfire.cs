@@ -134,14 +134,14 @@ public partial class Campfire : Deployable, IContextActionProvider, IHeatEmitter
 	{
 		base.SerializeState( writer );
 
-		Processor.Serialize( writer );
+		Processor.SerializeState( writer );
 	}
 
 	public override void DeserializeState( BinaryReader reader )
 	{
 		base.DeserializeState( reader );
 
-		Processor.Deserialize( reader );
+		Processor.DeserializeState( reader );
 	}
 
 	public override void OnPlacedByPlayer( ForsakenPlayer player, TraceResult trace )

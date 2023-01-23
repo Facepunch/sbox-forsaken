@@ -86,9 +86,7 @@ public partial class StorageCrate : Deployable, IContextActionProvider
 	{
 		base.DeserializeState( reader );
 
-		InventorySystem.Remove( Inventory );
-		var container = reader.ReadInventoryContainer();
-		container.SetEntity( this );
+		var container = reader.ReadInventoryContainer( Inventory );
 		InternalInventory = new( container );
 
 		IsEmpty = container.IsEmpty;
