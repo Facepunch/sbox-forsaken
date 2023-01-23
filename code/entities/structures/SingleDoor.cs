@@ -217,9 +217,12 @@ public partial class SingleDoor : Structure, ICodeLockable
 		var parent = Socket.Connection;
 		if ( !parent.IsValid() ) return;
 
-		if ( IsOpen )
-			LocalRotation = Rotation.Slerp( LocalRotation, parent.Rotation.RotateAroundAxis( Vector3.Up, 90f ), Time.Delta * 8f );
+		var targetRotation = IsOpen ? parent.Rotation.RotateAroundAxis( Vector3.Up, 90f ) : parent.Rotation;
+		LocalRotation = Rotation.Slerp( LocalRotation, targetRotation, Time.Delta * 8f );
+
+		if ( LocalRotation.Distance( targetRotation ) > 1f )
+			EnableAllCollisions = false;
 		else
-			LocalRotation = Rotation.Slerp( LocalRotation, parent.Rotation, Time.Delta * 8f );
+			EnableAllCollisions = true;
 	}
 }
