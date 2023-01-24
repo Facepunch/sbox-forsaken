@@ -1,6 +1,7 @@
 ﻿@using System;
 @using Sandbox;
 @using Sandbox.UI;
+@using Sandbox.UI.Construct;
 @using Facepunch.Forsaken;
 
 @namespace Facepunch.Forsaken.UI
@@ -22,6 +23,10 @@
     <Backpack></Backpack>
     <LockScreen></LockScreen>
 
+    <div @ref="Top" class="top">
+
+    </div>
+
     <div class="bottom">
         <Hotbar></Hotbar>
     </div>
@@ -35,3 +40,26 @@
         <Cursor></Cursor>
     </div>
 </root>
+
+@code
+{
+    public static Hud Current { get; private set; }
+
+    private Label ZoneName { get; set; }
+    private Panel Top { get; set; }
+
+    public async void ShowZoneName( string name, float delay )
+    {
+        ZoneName?.Delete( true );
+        ZoneName = Top.Add.Label( name, "zone" );
+
+        await Task.DelaySeconds( delay );
+
+        ZoneName?.Delete();
+    }
+
+    protected override void OnParametersSet()
+    {
+        Current = this;
+    }
+}

@@ -83,8 +83,13 @@
                     height: 48px;
                 }
 
+                &:active {
+                    sound-in: "ui.click";
+                }
+
                 &:hover {
                     transform: scale( 1.1 );
+                    sound-in: "ui.hover";
                 }
             }
         }
@@ -119,8 +124,13 @@
                     border-color: white;
                 }
 
+                &:active {
+                    sound-in: "ui.click";
+                }
+
                 &:hover {
                     transform: scale( 1.1 );
+                    sound-in: "ui.hover";
                 }
             }
         }
@@ -160,8 +170,13 @@
                     background-color: black;
                 }
 
+                &:active {
+                    sound-in: "ui.click";
+                }
+
                 &:hover {
                     transform: scale( 1.1 );
+                    sound-in: "ui.hover";
                 }
             }
         }
@@ -198,9 +213,14 @@
                 height: 64px;
             }
 
+            &:active {
+                sound-in: "ui.click";
+            }
+
             &:hover {
                 background-color: black;
                 transform: scale( 1.1 );
+                sound-in: "ui.hover";
             }
         }
 

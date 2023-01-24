@@ -87,6 +87,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 	[Net] public long SteamId { get; private set; }
 	[Net] public Bedroll Bedroll { get; private set; }
 
+	public HashSet<BaseTrigger> InsideZones { get; private set; } = new();
 	public Color? NametagColor => null;
 	public bool ShowNametag => LifeState == LifeState.Alive && ( Nametags.ShowOwnNametag || !IsLocalPawn );
 	public bool IsInactive => IsSleeping;
@@ -378,6 +379,8 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 
 		NextCalculateTemperature = 0f;
 		EnableLagCompensation = true;
+
+		Components.Add( new RpcComponent() );
 
 		Tags.Add( "player" );
 
@@ -727,6 +730,8 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		}
 	}
 
+	private TimeUntil NextRemove;
+
 	[Event.Tick.Server]
 	protected virtual void ServerTick()
 	{
@@ -786,6 +791,11 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		if ( NextCalculateTemperature )
 		{
 			CalculatedTemperature = TimeSystem.Temperature;
+
+			CalculatedTemperature += InsideZones.OfType<TemperatureZone>().Sum( e =>
+			{
+				return e.Temperature;
+			} );
 			CalculatedTemperature += Equipment.FindItems<ArmorItem>().Sum( i => i.TemperatureModifier );
 			CalculatedTemperature += HeatEmitters.Sum( e =>
 			{
