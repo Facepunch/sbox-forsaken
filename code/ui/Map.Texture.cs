@@ -51,6 +51,19 @@ public partial class Map
 		return output.ToArray();
 	}
 
+	public static byte[] Decompress( byte[] data )
+	{
+		var input = new MemoryStream( data );
+		var output = new MemoryStream();
+
+		using ( var deflate = new DeflateStream( input, CompressionMode.Decompress ) )
+		{
+			deflate.CopyTo( output );
+		}
+
+		return output.ToArray();
+	}
+
 	public static Texture CreateTexture()
 	{
 		if ( Texture is not null ) return Texture;
@@ -62,10 +75,7 @@ public partial class Map
 		{
 			using ( var reader = FileSystem.Data.OpenRead( $"maps/{ForsakenGame.UniqueSaveId}.txt", FileMode.Open ) )
 			{
-				using ( var deflate = new DeflateStream( reader, CompressionMode.Decompress ) )
-				{
-					deflate.Read( Data, 0, Data.Length );
-				}
+				Data = Decompress( reader.ReadByteArrayFromStream( 0, (uint)reader.Length ) );
 			}
 		}
 		else
