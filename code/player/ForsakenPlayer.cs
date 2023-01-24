@@ -380,8 +380,6 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		NextCalculateTemperature = 0f;
 		EnableLagCompensation = true;
 
-		Components.Add( new RpcComponent() );
-
 		Tags.Add( "player" );
 
 		base.Spawn();
@@ -729,8 +727,6 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 			nextWeapon?.ActiveStart( this );
 		}
 	}
-
-	private TimeUntil NextRemove;
 
 	[Event.Tick.Server]
 	protected virtual void ServerTick()
