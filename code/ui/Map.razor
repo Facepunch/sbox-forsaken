@@ -69,6 +69,7 @@
     private Vector2 Position { get; set; }
     private Color SelectedColor { get; set; } = Color.Red;
     private bool FollowPlayer { get; set; } = true;
+    private Vector3 PanStartPosition { get; set; }
     private Dictionary<string, Color> Colors { get; set; } = new()
     {
         ["red"] = Color.Red,
@@ -155,11 +156,9 @@
     {
         if ( IsPanning )
         {
-            var cx = Container.Style.Left.GetValueOrDefault( 0f );
-            var cy = Container.Style.Top.GetValueOrDefault( 0f );
-
-            var nx = (cx.Value * ScaleToScreen) + Mouse.Delta.x * 2f;
-            var ny = (cy.Value * ScaleToScreen) + Mouse.Delta.y * 2f;
+            var cp = Container.Box.Rect;
+            var nx = (cp.Width * Position.x) + Mouse.Delta.x * 2f;
+            var ny = (cp.Height * Position.y) + Mouse.Delta.y * 2f;
 
             nx = Math.Min( nx, 0f );
             ny = Math.Min( ny, 0f );
@@ -168,7 +167,6 @@
             var vw = vp.Width;
             var vh = vp.Height;
 
-            var cp = Container.Box.Rect;
             var dw = cp.Width - vw;
             var dh = cp.Height - vh;
 
