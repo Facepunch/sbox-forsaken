@@ -7,6 +7,12 @@ namespace Facepunch.Forsaken.UI;
 
 public partial class Map
 {
+	public enum DrawMode
+	{
+		Paint,
+		Erase
+	}
+
     public static Texture Texture { get; private set; }
 
 	private static byte[] Data { get; set; }
@@ -32,7 +38,7 @@ public partial class Map
 				Data[index + 0] = color.r;
 				Data[index + 1] = color.g;
 				Data[index + 2] = color.b;
-				Data[index + 3] = sdf;
+				Data[index + 3] = Math.Min( sdf, color.a );
 			}
 		}
 

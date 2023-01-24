@@ -36,6 +36,46 @@
             text-shadow: 2px 2px rgba( 0 0 0 0.5 );
             margin-bottom: 8px;
             font-size: 32px;
+
+            &:not( :first-child ) {
+                margin-top: 32px;
+            }
+        }
+
+        .tools {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            column-gap: 16px;
+            row-gap: 16px;
+
+            .tool {
+                border: 2px solid rgba( white, 0.1 );
+                background-color: rgba( 0 0 0 0.5 );
+                transition: all 0.2s ease-in;
+                border-radius: 8px;
+                cursor: pointer;
+                width: 64px;
+                height: 64px;
+
+                .icon {
+                    font-family: MaterialIcons;
+                    justify-content: center;
+                    align-items: center;
+                    font-size: 40px;
+                    color: white;
+                    width: 64px;
+                    height: 64px;
+                }
+
+                &.selected {
+                    border-color: white;
+                }
+
+                &:hover {
+                    transform: scale( 1.1 );
+                }
+            }
         }
 
         .colors {

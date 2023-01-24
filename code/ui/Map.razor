@@ -47,6 +47,16 @@
                 <div class=@GetColorClass( kv.Key ) onclick=@(() => OnColorClick( kv.Value ))></div>
             }
         </div>
+
+        <label class="title">Tools</label>
+        <div class="tools">
+            <div tooltip="Brush" class=@GetToolClass( DrawMode.Paint ) onclick=@(() => SetDrawMode( DrawMode.Paint ))>
+                <i class="icon">brush</i>
+            </div>
+            <div tooltip="Eraser" class=@GetToolClass( DrawMode.Erase ) onclick=@(() => SetDrawMode( DrawMode.Erase ))>
+                <i class="icon">auto_fix_normal</i>
+            </div>
+        </div>
     </div>
 </root>
 
@@ -64,6 +74,7 @@
     private Panel Grid { get; set; }
     private bool IsDrawing { get; set; }
     private bool IsPanning { get; set; }
+    private DrawMode SelectedDrawMode { get; set; } = DrawMode.Paint;
     private Vector2 LastMousePosition { get; set; }
     private TimeUntil NextSaveMap { get; set; }
     private Vector2 Position { get; set; }
@@ -238,7 +249,13 @@
 
     protected override int BuildHash()
     {
-        return HashCode.Combine( ForsakenPlayer.Me, SelectedColor );
+        return HashCode.Combine( ForsakenPlayer.Me, SelectedColor, SelectedDrawMode );
+    }
+
+    private string GetToolClass( DrawMode mode )
+    {
+        var isSelected = (SelectedDrawMode == mode);
+        return $"tool {mode.ToString().ToLower()} {(isSelected ? "selected" : "")}";
     }
 
     private string GetColorClass( string colorName )
@@ -270,6 +287,11 @@
         }
 
         NextSaveMap = 10f;
+    }
+
+    private void SetDrawMode( DrawMode mode )
+    {
+        SelectedDrawMode = mode;
     }
 
     private void OnColorClick( Color color )
@@ -320,7 +342,10 @@
                 var x = rx.CeilToInt().Clamp( 0, Map.Texture.Width - 1 );
                 var y = ry.CeilToInt().Clamp( 0, Map.Texture.Height - 1 );
 
-                Map.Draw( x, y, 2f, SelectedColor );
+                if ( SelectedDrawMode == DrawMode.Paint )
+                    Map.Draw( x, y, 2f, SelectedColor );
+                else
+                    Map.Draw( x, y, 2f, Color.Transparent );
             }
         }
 
