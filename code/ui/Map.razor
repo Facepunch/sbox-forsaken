@@ -50,12 +50,20 @@
 
         <label class="title">Tools</label>
         <div class="tools">
-            <div tooltip="Brush" class=@GetToolClass( DrawMode.Paint ) onclick=@(() => SetDrawMode( DrawMode.Paint ))>
+            <div tooltip="Paint" class=@GetToolClass( DrawMode.Paint ) onclick=@(() => SetDrawMode( DrawMode.Paint ))>
                 <i class="icon">brush</i>
             </div>
             <div tooltip="Eraser" class=@GetToolClass( DrawMode.Erase ) onclick=@(() => SetDrawMode( DrawMode.Erase ))>
                 <i class="icon">auto_fix_normal</i>
             </div>
+        </div>
+
+        <label class="title">Brush Size</label>
+        <div class="sizes">
+            <div class=@GetSizeClass( 2f ) onclick=@(() => SetBrushSize( 2f ))></div>
+            <div class=@GetSizeClass( 3f ) onclick=@(() => SetBrushSize( 3f ))></div>
+            <div class=@GetSizeClass( 4f ) onclick=@(() => SetBrushSize( 4f ))></div>
+            <div class=@GetSizeClass( 5f ) onclick=@(() => SetBrushSize( 5f ))></div>
         </div>
     </div>
 </root>
@@ -74,6 +82,7 @@
     private Panel Grid { get; set; }
     private bool IsDrawing { get; set; }
     private bool IsPanning { get; set; }
+    private float BrushSize { get; set; } = 2f;
     private DrawMode SelectedDrawMode { get; set; } = DrawMode.Paint;
     private Vector2 LastMousePosition { get; set; }
     private TimeUntil NextSaveMap { get; set; }
@@ -252,6 +261,12 @@
         return HashCode.Combine( ForsakenPlayer.Me, SelectedColor, SelectedDrawMode );
     }
 
+    private string GetSizeClass( float size )
+    {
+        var isSelected = (BrushSize == size);
+        return $"size brush-{size.FloorToInt()} {(isSelected ? "selected" : "")}";
+    }
+
     private string GetToolClass( DrawMode mode )
     {
         var isSelected = (SelectedDrawMode == mode);
@@ -287,6 +302,11 @@
         }
 
         NextSaveMap = 10f;
+    }
+
+    private void SetBrushSize( float size )
+    {
+        BrushSize = size;
     }
 
     private void SetDrawMode( DrawMode mode )
@@ -343,9 +363,9 @@
                 var y = ry.CeilToInt().Clamp( 0, Map.Texture.Height - 1 );
 
                 if ( SelectedDrawMode == DrawMode.Paint )
-                    Map.Draw( x, y, 2f, SelectedColor );
+                    Map.Draw( x, y, BrushSize, SelectedColor );
                 else
-                    Map.Draw( x, y, 2f, Color.Transparent );
+                    Map.Draw( x, y, BrushSize, Color.Transparent );
             }
         }
 
