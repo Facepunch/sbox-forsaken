@@ -122,14 +122,15 @@
         var localPlayer = ForsakenPlayer.Me;
         if ( !localPlayer.IsValid() ) return;
 
-        var mapBounds = new Vector2( 7000f, 7000f );
+        var mapBounds = Game.PhysicsWorld.Body.GetBounds();
         var position = new Vector2( localPlayer.Position );
+        var origin = mapBounds.Mins + mapBounds.Maxs;
 
-        position.x += mapBounds.x * 0.5f;
-        position.y += mapBounds.y * 0.5f;
+        position.x += (mapBounds.Size.x * 0.5f) - (origin.x * 0.5f);
+        position.y += (mapBounds.Size.y * 0.5f) - (origin.y * 0.5f);
 
-        var fx = position.x / mapBounds.x;
-        var fy = position.y / mapBounds.y;
+        var fx = position.x / mapBounds.Size.x;
+        var fy = position.y / mapBounds.Size.y;
 
         var rotation = localPlayer.Rotation.Inverse.Yaw();
 
