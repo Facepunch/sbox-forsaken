@@ -16,8 +16,27 @@
 <root>
     <div @ref="Viewport" class="viewport">
         <div @ref="Container" class="map">
-            <div @ref="Grid" class="grid"></div>
+            <div @ref="Grid" class="grid">
+                @for ( var x = 0; x < 10; x++ )
+                {
+                    for ( var y = 0; y < 10; y++ )
+                    {
+                        var squareSize = 200f;
+                        var character = ((char)(65 + x)).ToString().ToUpper();
+                        var left = (squareSize * x);
+                        var top = (squareSize * y);
+
+                        <div class="square" style="left: @(left)px; top: @(top)px;">
+                            <label class="coord">@(character)@y</label>
+                        </div>
+                    }
+                }
+            </div>
             <img @ref="Drawing" class="drawing" />
+        </div>
+
+        <div tooltip="Follow You" class="recenter" onclick=@CenterOnPlayer>
+            <div class="icon"></div>
         </div>
     </div>
     <div class="control-panel">
@@ -49,6 +68,7 @@
     private TimeUntil NextSaveMap { get; set; }
     private Vector2 Position { get; set; }
     private Color SelectedColor { get; set; } = Color.Red;
+    private bool FollowPlayer { get; set; } = true;
     private Dictionary<string, Color> Colors { get; set; } = new()
     {
         ["red"] = Color.Red,
@@ -101,7 +121,34 @@
         Player.Style.Left = Length.Fraction( fx );
         Player.Style.Top = Length.Fraction( 1f - fy );
 
+        if ( FollowPlayer )
+        {
+            FocusOn( fx, 1f - fy );
+        }
+
         base.Tick();
+    }
+
+    private void FocusOn( float px, float py )
+    {
+        var vp = Viewport.Box.Rect;
+        var vw = vp.Width;
+        var vh = vp.Height;
+
+        var cp = Container.Box.Rect;
+        var dw = cp.Width - vw;
+        var dh = cp.Height - vh;
+
+        var realX = -(cp.Width * px) + (vw * 0.5f);
+        var realY = -(cp.Height * py) + (vh * 0.5f);
+
+        realX = Math.Min( realX, 0f );
+        realY = Math.Min( realY, 0f );
+
+        realX = Math.Max( realX, -dw );
+        realY = Math.Max( realY, -dh );
+
+        Position = new Vector2( realX / cp.Width, realY / cp.Height );
     }
 
     protected override void OnMouseMove( MousePanelEvent e )
@@ -146,6 +193,7 @@
 
         if ( e.Button == "mouseright" )
         {
+            FollowPlayer = false;
             IsPanning = true;
         }
 
@@ -186,7 +234,6 @@
 
         CreatePlayerMarker();
         UpdatePosition();
-        PopulateGrid();
 
         base.OnAfterTreeRender( firstTime );
     }
@@ -201,6 +248,11 @@
         var color = Colors[colorName];
         var isSelected = (SelectedColor == color);
         return $"color {colorName} {(isSelected ? "selected" : "")}";
+    }
+
+    private void CenterOnPlayer()
+    {
+        FollowPlayer = true;
     }
 
     [Event.Tick.Client]
@@ -225,26 +277,6 @@
     private void OnColorClick( Color color )
     {
         SelectedColor = color;
-    }
-
-    private void PopulateGrid()
-    {
-        Grid.DeleteChildren( true );
-
-        var cp = Container.Box.Rect;
-
-        for ( var x = 0; x < 10; x++ )
-        {
-            for ( var y = 0; y < 10; y++ )
-            {
-                var squareSize = cp.Width / 10f;
-                var square = Grid.AddChild<Panel>( "square" );
-                square.Style.Left = Length.Pixels( (squareSize * x * ScaleFromScreen) );
-                square.Style.Top = Length.Pixels( (squareSize * y * ScaleFromScreen) );
-                var character = ((char)(65 + x)).ToString().ToUpper();
-                square.Add.Label( $"{character}{y}", "coord" );
-            }
-        }
     }
 
     private void UpdatePosition()

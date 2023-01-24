@@ -25,3 +25,27 @@
         align-items: center;
     }
 }
+
+.tooltip {
+    background-color: rgba( black, 0.8 );
+    border: 1px solid rgba( #555, 0.1 );
+    padding: 16px;
+    border: 2px solid lightgoldenrodyellow;
+    border-radius: 4px;
+    align-items: center;
+    justify-content: center;
+    font-family: Vollkorn;
+    font-size: 24px;
+    color: lightgoldenrodyellow;
+    font-weight: bold;
+    transition: opacity 0.2s linear 0.1s, transform 0.2s ease-out 0.1s;
+    opacity: 1;
+    transform: scale( 1 );
+    margin: 0px;
+
+    &:intro, &:outro {
+        opacity: 0;
+        transform: scale( 0.8f );
+        transition: all 0.1s ease-out;
+    }
+}

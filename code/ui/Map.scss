@@ -46,14 +46,15 @@
             row-gap: 16px;
 
             .color {
-                border: 2px solid rgba( white, 0.5 );
+                border: 2px solid rgba( white, 0.1 );
                 transition: all 0.2s ease-in;
                 border-radius: 8px;
+                cursor: pointer;
                 width: 64px;
                 height: 64px;
 
                 &.selected {
-                    border-color: greenyellow;
+                    border-color: white;
                 }
 
                 &.red {
@@ -87,6 +88,34 @@
         max-width: 2000px;
         max-height: 2000px;
         overflow: hidden;
+
+        .recenter {
+            position: absolute;
+            background-color: rgba( black 0.9 );
+            transition: all 0.2s ease-in;
+            box-shadow: 0 0 32px 2px black;
+            cursor: pointer;
+            border-radius: 8px;
+            justify-content: center;
+            align-items: center;
+            width: 64px;
+            height: 64px;
+            bottom: 16px;
+            right: 16px;
+
+            .icon {
+                background-image: url( textures/ui/center.png );
+                background-size: cover;
+                background-tint: red;
+                width: 48px;
+                height: 48px;
+            }
+
+            &:hover {
+                background-color: black;
+                transform: scale( 1.1 );
+            }
+        }
 
         .map {
             position: absolute;
