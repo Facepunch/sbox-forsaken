@@ -1,5 +1,7 @@
 ﻿using Sandbox;
 using System;
+using System.IO;
+using System.IO.Compression;
 
 namespace Facepunch.Forsaken.UI;
 
@@ -37,6 +39,18 @@ public partial class Map
 		Texture.Update( Data );
 	}
 
+	public static byte[] Compress( byte[] data )
+	{
+		var output = new MemoryStream();
+
+		using ( var deflate = new DeflateStream( output, CompressionLevel.Optimal ) )
+		{
+			deflate.Write( data, 0, data.Length );
+		}
+
+		return output.ToArray();
+	}
+
 	public static Texture CreateTexture()
 	{
 		if ( Texture is not null ) return Texture;
@@ -46,9 +60,12 @@ public partial class Map
 		if ( !string.IsNullOrEmpty( ForsakenGame.UniqueSaveId )
 			&& FileSystem.Data.FileExists( $"maps/{ForsakenGame.UniqueSaveId}.txt" ) )
 		{
-			using ( var reader = FileSystem.Data.OpenRead( $"maps/{ForsakenGame.UniqueSaveId}.txt", System.IO.FileMode.Open ) )
+			using ( var reader = FileSystem.Data.OpenRead( $"maps/{ForsakenGame.UniqueSaveId}.txt", FileMode.Open ) )
 			{
-				reader.Read( Data, 0, Data.Length );
+				using ( var deflate = new DeflateStream( reader, CompressionMode.Decompress ) )
+				{
+					deflate.Read( Data, 0, Data.Length );
+				}
 			}
 		}
 		else
