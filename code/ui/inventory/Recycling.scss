@@ -19,7 +19,7 @@
         margin-top: 100px;
 
         .title {
-            color: white;
+            color: lightgoldenrodyellow;
             font-family: Vollkorn;
             font-size: 40px;
         }
@@ -71,10 +71,11 @@
         }
 
         .toggle-button {
-            background-color: rgba( 0 0 0 0.4 );
+            background-color: rgba( 50 150 50 0.5 );
             justify-content: center;
             align-items: center;
             border-radius: 4px;
+            border: 2px solid white;
             transition: all 0.15s ease-in;
             margin-top: 32px;
             height: 64px;
@@ -90,9 +91,21 @@
             }
 
             &:hover {
-                background-color: rgba( 0 0 0 0.6 );
+                background-color: white;
                 transform: scale( 1.05, 1.05 );
                 sound-in: "ui.hover";
+
+                label {
+                    color: black;
+                }
+            }
+        }
+    }
+
+    &.is-active {
+        .cooking {
+            .toggle-button {
+                background-color: rgba( 150 50 50 0.5 );
             }
         }
     }
@@ -105,7 +118,7 @@
         bottom: 32px;
 
         .title {
-            color: white;
+            color: lightgoldenrodyellow;
             font-family: Vollkorn;
             font-size: 40px;
         }

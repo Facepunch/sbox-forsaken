@@ -88,12 +88,6 @@
     public Entity Entity { get; private set; }
     public string Name { get; private set; }
 
-    public Recycling()
-    {
-        Current = this;
-        BindClass( "hidden", () => !IsOpen );
-    }
-
     public void Open()
     {
         if ( IsOpen ) return;
@@ -132,6 +126,15 @@
         {
             ForsakenPlayer.ThrowItem( slot.Item, Screen.GetDirection( Mouse.Position ), mode == DraggableMode.Split ? true : false );
         }
+    }
+
+    protected override void OnParametersSet()
+    {
+        Current = this;
+        BindClass( "is-active", () => Recycler?.Processor?.IsActive ?? false );
+        BindClass( "hidden", () => !IsOpen );
+
+        base.OnParametersSet();
     }
 
     protected override int BuildHash()
