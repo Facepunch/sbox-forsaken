@@ -43,15 +43,26 @@ public partial class Map
 
 		Data = new byte[1024 * 1024 * 4];
 
-		for ( int y = 0; y < 1024; y++ )
+		if ( !string.IsNullOrEmpty( ForsakenGame.UniqueSaveId )
+			&& FileSystem.Data.FileExists( $"maps/{ForsakenGame.UniqueSaveId}.txt" ) )
 		{
-			for ( int x = 0; x < 1024; x++ )
+			using ( var reader = FileSystem.Data.OpenRead( $"maps/{ForsakenGame.UniqueSaveId}.txt", System.IO.FileMode.Open ) )
 			{
-				var index = ((y * 1024) + x) * 4;
-				Data[index + 0] = 0;
-				Data[index + 1] = 0;
-				Data[index + 2] = 0;
-				Data[index + 3] = 0;
+				reader.Read( Data, 0, Data.Length );
+			}
+		}
+		else
+		{
+			for ( int y = 0; y < 1024; y++ )
+			{
+				for ( int x = 0; x < 1024; x++ )
+				{
+					var index = ((y * 1024) + x) * 4;
+					Data[index + 0] = 0;
+					Data[index + 1] = 0;
+					Data[index + 2] = 0;
+					Data[index + 3] = 0;
+				}
 			}
 		}
 

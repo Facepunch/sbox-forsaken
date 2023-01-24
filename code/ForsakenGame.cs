@@ -9,6 +9,7 @@ namespace Facepunch.Forsaken;
 public partial class ForsakenGame : GameManager
 {
 	public static ForsakenGame Entity => Current as ForsakenGame;
+	public static string UniqueSaveId => Entity?.InternalSaveId ?? string.Empty;
 
 	[ConVar.Replicated( "fsk.isometric" )]
 	public static bool Isometric { get; set; } = true;
@@ -24,6 +25,8 @@ public partial class ForsakenGame : GameManager
 	private IsometricCamera IsometricCamera { get; set; }
 	private TopDownCamera TopDownCamera { get; set; }
 	private bool HasLoadedWorld { get; set; }
+
+	[Net] private string InternalSaveId { get; set; }
 
 	public ForsakenGame() : base()
 	{
@@ -199,6 +202,8 @@ public partial class ForsakenGame : GameManager
 
 			NextDespawnItems = 30f;
 		}
+
+		InternalSaveId = PersistenceSystem.UniqueId;
 	}
 
 	[Event.Client.Frame]

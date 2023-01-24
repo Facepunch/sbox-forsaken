@@ -9,7 +9,8 @@ namespace Facepunch.Forsaken;
 
 public static class PersistenceSystem
 {
-	public static int Version => 17;
+	public static string UniqueId { get; private set; }
+	public static int Version => 18;
 
 	private static Dictionary<long, byte[]> PlayerData { get; set; } = new();
 	private static ulong PersistentId { get; set; }
@@ -73,7 +74,13 @@ public static class PersistenceSystem
 		using var s = new MemoryStream();
 		using var w = new BinaryWriter( s );
 
+		if ( string.IsNullOrEmpty( UniqueId ) )
+		{
+			UniqueId = Guid.NewGuid().ToString();
+		}
+
 		w.Write( Version );
+		w.Write( UniqueId );
 
 		InventorySystem.Serialize( w );
 
@@ -102,6 +109,8 @@ public static class PersistenceSystem
 			Log.Warning( "Unable to load a save from a different version!" );
 			return;
 		}
+
+		UniqueId = reader.ReadString();
 
 		InventorySystem.Deserialize( reader );
 		InventorySystem.ReassignIds();
