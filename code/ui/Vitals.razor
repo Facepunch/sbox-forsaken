@@ -13,24 +13,60 @@
 }
 
 <root>
-    <label class="health">Health: @(Health)</label>
-    <label class="stamina">Stamina: @(Stamina)</label>
-    <label class="calories">Calories: @(Calories)</label>
-    <label class="hydration">Hydration: @(Hydration)</label>
-    <label class="temperature">Temperature: @(Temperature)&deg;C</label>
+    <div class="stat health @GetStatClass( Health, player.MaxHealth )">
+        <i class="icon">monitor_heart</i>
+        <label class="value">@(Health)</label>
+    </div>
+
+    <div class="stat stamina @GetStatClass( Stamina, player.MaxStamina )">
+        <i class="icon">bolt</i>
+        <label class="value">@(Stamina)</label>
+    </div>
+
+    <div class="stat calories @GetStatClass( Calories, player.MaxCalories )">
+        <i class="icon">lunch_dining</i>
+        <label class="value">@(Calories)</label>
+    </div>
+
+    <div class="stat hydration @GetStatClass( Hydration, player.MaxHydration )">
+        <i class="icon">water_drop</i>
+        <label class="value">@(Hydration)</label>
+    </div>
+
+    <div class="stat temperature @GetTemperatureClass( Temperature )">
+        <i class="icon">thermostat</i>
+        <label class="value">@(Temperature)&deg;C</label>
+    </div>
 </root>
 
 @code
 {
-    private float Health => ForsakenPlayer.Me.Health.CeilToInt();
-    private float Stamina => ForsakenPlayer.Me.Stamina.CeilToInt();
-    private float Calories => ForsakenPlayer.Me.Calories.CeilToInt();
-    private float Hydration => ForsakenPlayer.Me.Hydration.CeilToInt();
-    private float Temperature => ForsakenPlayer.Me.Temperature.CeilToInt();
+    private int Health => ForsakenPlayer.Me.Health.CeilToInt();
+    private int Stamina => ForsakenPlayer.Me.Stamina.CeilToInt();
+    private int Calories => ForsakenPlayer.Me.Calories.CeilToInt();
+    private int Hydration => ForsakenPlayer.Me.Hydration.CeilToInt();
+    private int Temperature => ForsakenPlayer.Me.Temperature.CeilToInt();
 
     protected override int BuildHash()
     {
         if ( !ForsakenPlayer.Me.IsValid() ) return 0;
         return HashCode.Combine( ForsakenPlayer.Me, Health, Stamina, Temperature, Calories, Hydration );
+    }
+
+    private string GetStatClass( int currentValue, int maxValue )
+    {
+        var me = ForsakenPlayer.Me;
+        if ( currentValue == 0 ) return "empty";
+        return (currentValue < maxValue * 0.3f ? "low" : "");
+    }
+
+    private string GetTemperatureClass( int currentValue )
+    {
+        var me = ForsakenPlayer.Me;
+        if ( currentValue > 20 ) return "very-hot";
+        if ( currentValue > 10 ) return "warm";
+        if ( currentValue < -10 ) return "very-cold";
+        if ( currentValue < 3 ) return "cold";
+        return "";
     }
 }

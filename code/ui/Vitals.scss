@@ -1,13 +1,105 @@
 ﻿Vitals {
     position: absolute;
-    flex-direction: column;
-    bottom: 32px;
+    flex-direction: row;
+    bottom: 40px;
     left: 48px;
 
-    label {
-        font-family: Vollkorn;
-        font-size: 24px;
-        text-shadow: 0px 0px 4px black;
-        color: white;
+    .stat {
+        align-items: center;
+        min-width: 100px;
+
+        .icon {
+            font-family: MaterialIcons;
+            text-shadow: 0px 0px 2px black;
+            font-size: 40px;
+            color: lightgoldenrodyellow;
+        }
+
+        .value {
+            font-family: Vollkorn;
+            font-size: 24px;
+            text-shadow: 0px 0px 4px black;
+            color: white;
+        }
+
+        &.empty {
+            .icon {
+                animation-name: big-pulse-icon;
+                animation-duration: 0.25s;
+                animation-timing-function: ease;
+                animation-direction: alternate;
+                color: red;
+            }
+        }
+
+        &.low {
+            .icon {
+                animation-name: pulse-icon;
+                animation-duration: 0.5s;
+                animation-timing-function: ease;
+                animation-direction: alternate;
+                color: indianred;
+            }
+        }
+
+        &.very-hot {
+            .icon {
+                animation-name: pulse-icon;
+                animation-duration: 0.25s;
+                animation-timing-function: ease;
+                animation-direction: alternate;
+                color: orangered;
+            }
+        }
+
+        &.warm {
+            .icon {
+                color: orange;
+            }
+        }
+
+        &.cold {
+            .icon {
+                color: skyblue;
+            }
+        }
+
+        &.very-cold {
+            .icon {
+                animation-name: pulse-icon;
+                animation-duration: 0.25s;
+                animation-timing-function: ease;
+                animation-direction: alternate;
+                color: deepskyblue;
+            }
+        }
+    }
+}
+
+@keyframes pulse-icon {
+    0% {
+        transform: scale( 1 );
+    }
+
+    50% {
+        transform: scale( 1.15 );
+    }
+
+    100% {
+        transform: scale( 1 );
+    }
+}
+
+@keyframes big-pulse-icon {
+    0% {
+        transform: scale( 1 );
+    }
+
+    50% {
+        transform: scale( 1.25 );
+    }
+
+    100% {
+        transform: scale( 1 );
     }
 }
