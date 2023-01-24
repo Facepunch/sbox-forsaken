@@ -96,19 +96,19 @@
             box-shadow: 0 0 32px 2px black;
             cursor: pointer;
             border-radius: 8px;
-            justify-content: center;
-            align-items: center;
             width: 64px;
             height: 64px;
             bottom: 16px;
             right: 16px;
 
             .icon {
-                background-image: url( textures/ui/center.png );
-                background-size: cover;
-                background-tint: red;
-                width: 48px;
-                height: 48px;
+                font-family: MaterialIcons;
+                justify-content: center;
+                align-items: center;
+                font-size: 40px;
+                color: white;
+                width: 64px;
+                height: 64px;
             }
 
             &:hover {
