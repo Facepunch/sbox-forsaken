@@ -83,6 +83,7 @@
     public static Recycling Current { get; private set; }
 
     public Recycler Recycler { get; private set; }
+    public bool AllowMovement => false;
     public bool IsOpen { get; private set; }
     public Entity Entity { get; private set; }
     public string Name { get; private set; }

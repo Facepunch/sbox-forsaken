@@ -26,6 +26,19 @@ public partial class ForsakenPlayer
 			}
 		}
 
+		if ( HasDialogOpen )
+		{
+			if ( InputDirection.Length > 0f )
+			{
+				rotation = Rotation.LookAt( InputDirection, Vector3.Up );
+				rotation *= Rotation.From( 0f, 45f, 0f );
+			}
+			else
+			{
+				rotation = Rotation;
+			}
+		}
+
 		Rotation = Rotation.Lerp( Rotation, rotation, Time.Delta * 10f );
 
 		var animHelper = new CitizenAnimationHelper( this );

@@ -19,8 +19,7 @@
 
     .viewport {
         border-radius: 16px;
-        align-items: center;
-        justify-content: center;
+        box-shadow: 0 0 32px 2px black;
         width: 90%;
         height: 90%;
         max-width: 2000px;
@@ -32,29 +31,29 @@
             background-image: url( /textures/ui/map.jpg );
             background-size: 100%;
             background-repeat: no-repeat;
+            align-items: center;
+            justify-content: center;
             width: 2000px;
             height: 2000px;
 
             .drawing {
+                position: absolute;
                 width: 100%;
                 height: 100%;
             }
 
             .player {
                 position: absolute;
-                background-color: black;
-                border: 2px solid white;
-                border-radius: 50%;
-                width: 24px;
-                height: 24px;
+                background-image: url( /textures/ui/navigation.png );
+                background-size: cover;
+                width: 48px;
+                height: 48px;
             }
 
             .grid {
                 position: absolute;
                 width: 100%;
                 height: 100%;
-                margin-left: 4px;
-                margin-top: 4px;
 
                 .square {
                     position: absolute;

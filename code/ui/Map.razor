@@ -17,7 +17,6 @@
         <div @ref="Container" class="map">
             <div @ref="Grid" class="grid"></div>
             <img @ref="Drawing" class="drawing" />
-            <div @ref="Player" class="player"></div>
         </div>
     </div>
 </root>
@@ -26,7 +25,8 @@
 {
     public static Map Current { get; private set; }
 
-    public bool IsOpen { get; set; }
+    public bool AllowMovement => true;
+    public bool IsOpen { get; private set; }
 
     private Panel Viewport { get; set; }
     private Panel Container { get; set; }
@@ -72,6 +72,14 @@
         var fx = position.x / mapBounds.x;
         var fy = position.y / mapBounds.y;
 
+        var rotation = localPlayer.Rotation.Inverse.Yaw();
+
+        var tx = new PanelTransform();
+        tx.AddTranslateX( Length.Fraction( -0.5f ) );
+        tx.AddTranslateY( Length.Fraction( -0.5f ) );
+        tx.AddRotation( 0f, 0f, rotation + 90f );
+
+        Player.Style.Transform = tx;
         Player.Style.Left = Length.Fraction( fx );
         Player.Style.Top = Length.Fraction( 1f - fy );
 
@@ -154,6 +162,8 @@
     protected override void OnAfterTreeRender( bool firstTime )
     {
         Drawing.Texture = Map.CreateTexture();
+
+        CreatePlayerMarker();
         UpdatePosition();
         PopulateGrid();
 
@@ -208,6 +218,12 @@
         var cp = Container.Box.Rect;
         Container.Style.Left = Length.Pixels( cp.Width * Position.x * ScaleFromScreen );
         Container.Style.Top = Length.Pixels( cp.Height * Position.y * ScaleFromScreen );
+    }
+
+    private void CreatePlayerMarker()
+    {
+        Player?.Delete( true );
+        Player = Container.AddChild<Panel>( "player" );
     }
 
     [Event.Client.Frame]

@@ -103,7 +103,8 @@
     public static Backpack Current { get; private set; }
 
     public InventorySlot Selected { get; private set; }
-    public bool IsOpen { get; set; }
+    public bool AllowMovement => false;
+    public bool IsOpen { get; private set; }
 
     public Backpack()
     {
