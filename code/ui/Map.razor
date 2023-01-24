@@ -3,6 +3,7 @@
 @using Sandbox.UI;
 @using Sandbox.UI.Construct;
 @using Facepunch.Forsaken;
+@using System.Collections.Generic;
 @using System.IO;
 
 @namespace Facepunch.Forsaken.UI
@@ -17,6 +18,15 @@
         <div @ref="Container" class="map">
             <div @ref="Grid" class="grid"></div>
             <img @ref="Drawing" class="drawing" />
+        </div>
+    </div>
+    <div class="control-panel">
+        <label class="title">Draw Color</label>
+        <div class="colors">
+            @foreach ( var kv in Colors )
+            {
+                <div class=@GetColorClass( kv.Key ) onclick=@(() => OnColorClick( kv.Value ))></div>
+            }
         </div>
     </div>
 </root>
@@ -38,6 +48,14 @@
     private Vector2 LastMousePosition { get; set; }
     private TimeUntil NextSaveMap { get; set; }
     private Vector2 Position { get; set; }
+    private Color SelectedColor { get; set; } = Color.Red;
+    private Dictionary<string, Color> Colors { get; set; } = new()
+    {
+        ["red"] = Color.Red,
+        ["green"] = Color.Green,
+        ["blue"] = Color.Blue,
+        ["black"] = Color.Black
+    };
 
     public void Open()
     {
@@ -151,9 +169,12 @@
 
     protected override void OnParametersSet()
     {
+        Current?.Delete(true);
+
         BindClass( "is-panning", () => IsPanning );
         BindClass( "is-drawing", () => IsDrawing );
         BindClass( "hidden", () => !IsOpen );
+
         Current = this;
 
         base.OnParametersSet();
@@ -172,7 +193,14 @@
 
     protected override int BuildHash()
     {
-        return HashCode.Combine( ForsakenPlayer.Me );
+        return HashCode.Combine( ForsakenPlayer.Me, SelectedColor );
+    }
+
+    private string GetColorClass( string colorName )
+    {
+        var color = Colors[colorName];
+        var isSelected = (SelectedColor == color);
+        return $"color {colorName} {(isSelected ? "selected" : "")}";
     }
 
     [Event.Tick.Client]
@@ -194,6 +222,11 @@
         NextSaveMap = 10f;
     }
 
+    private void OnColorClick( Color color )
+    {
+        SelectedColor = color;
+    }
+
     private void PopulateGrid()
     {
         Grid.DeleteChildren( true );
@@ -208,7 +241,8 @@
                 var square = Grid.AddChild<Panel>( "square" );
                 square.Style.Left = Length.Pixels( (squareSize * x * ScaleFromScreen) );
                 square.Style.Top = Length.Pixels( (squareSize * y * ScaleFromScreen) );
-                square.Add.Label( $"{x},{y}", "coord" );
+                var character = ((char)(65 + x)).ToString().ToUpper();
+                square.Add.Label( $"{character}{y}", "coord" );
             }
         }
     }
@@ -256,7 +290,7 @@
                 var x = rx.CeilToInt().Clamp( 0, Map.Texture.Width - 1 );
                 var y = ry.CeilToInt().Clamp( 0, Map.Texture.Height - 1 );
 
-                Map.Draw( x, y, 2f, Color.Red );
+                Map.Draw( x, y, 2f, SelectedColor );
             }
         }
 
