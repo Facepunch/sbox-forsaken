@@ -1,0 +1,142 @@
+﻿@using System;
+@using Sandbox;
+@using Sandbox.UI;
+@using Facepunch.Forsaken;
+
+@namespace Facepunch.Forsaken.UI
+@attribute [StyleSheet( "/ui/Map.scss" )]
+@inherits Panel
+@implements IDialog
+
+@if ( !ForsakenPlayer.Me.IsValid() ) return;
+
+<root>
+    <div class="body-container">
+        <img @ref="Image" />
+        <div @ref="Player" class="player"></div>
+    </div>
+</root>
+
+@code
+{
+    public static Map Current { get; private set; }
+
+    public bool IsOpen { get; set; }
+
+    private Panel Player { get; set; }
+    private Image Image { get; set; }
+    private bool IsDrawing { get; set; }
+    private Vector2 LastMousePosition { get; set; }
+
+    public Map()
+    {
+        BindClass( "hidden", () => !IsOpen );
+        Current = this;
+    }
+
+    public void Open()
+    {
+        if ( IsOpen ) return;
+        Dialog.Activate( this );
+        FileSystem.Data.WriteAllText( "wow.txt", "hi" );
+        IsOpen = true;
+    }
+
+    public void Close()
+    {
+        if ( !IsOpen ) return;
+        Dialog.Deactivate( this );
+        IsOpen = false;
+    }
+
+    public override void Tick()
+    {
+        if ( Image is null ) return;
+        if ( Player is null ) return;
+
+        Image.Texture = Map.CreateTexture();
+
+        var localPlayer = ForsakenPlayer.Me;
+        if ( !localPlayer.IsValid() ) return;
+
+        var mapBounds = new Vector2( 7000f, 7000f );
+        var position = new Vector2( localPlayer.Position );
+
+        position.x += mapBounds.x * 0.5f;
+        position.y += mapBounds.y * 0.5f;
+
+        var fx = position.x / mapBounds.x;
+        var fy = position.y / mapBounds.y;
+
+        Player.Style.Left = Length.Fraction( fx );
+        Player.Style.Top = Length.Fraction( 1f - fy );
+
+        base.Tick();
+    }
+
+    protected override void OnMouseDown( MousePanelEvent e )
+    {
+        if ( e.Button == "mouseleft" )
+        {
+            LastMousePosition = Mouse.Position;
+            IsDrawing = true;
+        }
+
+        base.OnMouseDown( e );
+    }
+
+    protected override void OnMouseUp( MousePanelEvent e )
+    {
+        if ( e.Button == "mouseleft")
+        {
+            IsDrawing = false;
+        }
+
+        base.OnMouseUp( e );
+    }
+
+    protected override void OnAfterTreeRender( bool firstTime )
+    {
+        Image.Texture = Map.CreateTexture();
+
+        base.OnAfterTreeRender( firstTime );
+    }
+
+    protected override int BuildHash()
+    {
+        return HashCode.Combine( ForsakenPlayer.Me );
+    }
+
+    [Event.Client.Frame]
+    private void OnFrame()
+    {
+        if ( !IsVisible || !IsDrawing ) return;
+
+        var box = Image.Box.Rect;
+
+        var start = LastMousePosition;
+        var end = Mouse.Position;
+        var points = new Vector2[10];
+
+        for ( var i = 0; i < 10; i++ )
+        {
+            points[i].x = ((start.x - end.x) / 10f) * i + end.x;
+            points[i].y = ((start.y - end.y) / 10f) * i + end.y;
+        }
+
+        foreach ( var point in points )
+        {
+            if ( box.IsInside( point ) )
+            {
+                var rx = (point.x - box.Left) * (Map.Texture.Width / box.Width);
+                var ry = (point.y - box.Top) * (Map.Texture.Height / box.Height);
+                var x = rx.CeilToInt().Clamp( 0, Map.Texture.Width - 1 );
+                var y = ry.CeilToInt().Clamp( 0, Map.Texture.Height - 1 );
+
+                Map.Draw( x, y, 4f, Color.Red );
+            }
+        }
+
+        LastMousePosition = Mouse.Position;
+    }
+}

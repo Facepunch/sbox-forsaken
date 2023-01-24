@@ -500,6 +500,14 @@ public partial class ForsakenPlayer
 				else
 					UI.Crafting.Current?.Open();
 			}
+
+			if ( Input.Released( InputButton.View ) )
+			{
+				if ( UI.Dialog.IsActive() )
+					UI.Dialog.Close();
+				else
+					UI.Map.Current?.Open();
+			}
 		}
 	}
 

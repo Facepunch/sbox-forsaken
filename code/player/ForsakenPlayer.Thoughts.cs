@@ -63,6 +63,6 @@ public partial class ForsakenPlayer
 	{
 		"I'm extremely dehydrated!",
 		"I need to drink something, fast!",
-		"I need water... I'm dying!."
+		"I need water... I'm dying!"
 	};
 }
