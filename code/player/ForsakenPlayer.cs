@@ -100,6 +100,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 	private List<ActiveEffect> ActiveEffects { get; set; } = new();
 	private TimeUntil NextNeedsDamage { get; set; }
 	private TimeUntil NextNeedsWarning { get; set; }
+	private TimeUntil NextNeedsAlert { get; set; }
 	private TimeSince TimeSinceLastKilled { get; set; }
 	private Glow GlowComponent { get; set; }
 	private Entity LastActiveChild { get; set; }
@@ -760,9 +761,10 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 				damage.Damage = 1f;
 				TakeDamage( damage );
 
-				if ( Game.Random.Float() > 0.5f )
+				if ( NextNeedsAlert && Game.Random.Float() > 0.5f )
 				{
 					Thoughts.Show( To.Single( this ), "needs", Game.Random.FromArray( StarvingThoughts ) );
+					NextNeedsAlert = 30f;
 				}
 			}
 
@@ -775,13 +777,14 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 				damage.Damage = 1f;
 				TakeDamage( damage );
 
-				if ( Game.Random.Float() > 0.5f )
+				if ( NextNeedsAlert && Game.Random.Float() > 0.5f )
 				{
 					Thoughts.Show( To.Single( this ), "needs", Game.Random.FromArray( DehydrationThoughts ) );
+					NextNeedsAlert = 30f;
 				}
 			}
 
-			NextNeedsDamage = 30f;
+			NextNeedsDamage = 4f;
 		}
 
 		if ( NextCalculateTemperature )
