@@ -1,6 +1,7 @@
 ﻿@using System;
 @using Sandbox;
 @using Sandbox.UI;
+@using Sandbox.UI.Construct;
 @using Facepunch.Forsaken;
 @using System.IO;
 
@@ -14,16 +15,7 @@
 <root>
     <div @ref="Viewport" class="viewport">
         <div @ref="Container" class="map">
-            <div class="grid">
-                @for ( var x = 0; x < 10; x++ )
-                {
-                   @for ( var y = 0; y < 10; x++ )
-                   {
-                        <div class="square"></div>
-                   }
-                }
-            </div>
-
+            <div @ref="Grid" class="grid"></div>
             <img @ref="Drawing" class="drawing" />
             <div @ref="Player" class="player"></div>
         </div>
@@ -40,6 +32,7 @@
     private Panel Container { get; set; }
     private Panel Player { get; set; }
     private Image Drawing { get; set; }
+    private Panel Grid { get; set; }
     private bool IsDrawing { get; set; }
     private bool IsPanning { get; set; }
     private Vector2 LastMousePosition { get; set; }
@@ -160,6 +153,7 @@
     {
         Drawing.Texture = Map.CreateTexture();
         UpdatePosition();
+        PopulateGrid();
 
         base.OnAfterTreeRender( firstTime );
     }
@@ -186,6 +180,25 @@
         }
 
         NextSaveMap = 10f;
+    }
+
+    private void PopulateGrid()
+    {
+        Grid.DeleteChildren( true );
+
+        var cp = Container.Box.Rect;
+
+        for ( var x = 0; x < 10; x++ )
+        {
+            for ( var y = 0; y < 10; y++ )
+            {
+                var squareSize = cp.Width / 10f;
+                var square = Grid.AddChild<Panel>( "square" );
+                square.Style.Left = Length.Pixels( (squareSize * x * ScaleFromScreen) );
+                square.Style.Top = Length.Pixels( (squareSize * y * ScaleFromScreen) );
+                square.Add.Label( $"{x},{y}", "coord" );
+            }
+        }
     }
 
     private void UpdatePosition()
