@@ -61,6 +61,14 @@
         }
     }
 
+    &.is-active {
+        .cooking {
+            .toggle-button {
+                background-color: rgba( 150 50 50 0.5 );
+            }
+        }
+    }
+
     .cooking {
         .subtitle {
             margin-top: 24px;
@@ -98,14 +106,6 @@
                 label {
                     color: black;
                 }
-            }
-        }
-    }
-
-    &.is-active {
-        .cooking {
-            .toggle-button {
-                background-color: rgba( 150 50 50 0.5 );
             }
         }
     }
