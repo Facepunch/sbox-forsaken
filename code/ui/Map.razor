@@ -143,6 +143,8 @@
 
     protected override void OnParametersSet()
     {
+        BindClass( "is-panning", () => IsPanning );
+        BindClass( "is-drawing", () => IsDrawing );
         BindClass( "hidden", () => !IsOpen );
         Current = this;
 
