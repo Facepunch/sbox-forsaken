@@ -12,9 +12,21 @@
 @if ( !ForsakenPlayer.Me.IsValid() ) return;
 
 <root>
-    <div class="body-container">
-        <img @ref="Image" />
-        <div @ref="Player" class="player"></div>
+    <div @ref="Viewport" class="viewport">
+        <div @ref="Container" class="map">
+            <div class="grid">
+                @for ( var x = 0; x < 10; x++ )
+                {
+                   @for ( var y = 0; y < 10; x++ )
+                   {
+                        <div class="square"></div>
+                   }
+                }
+            </div>
+
+            <img @ref="Drawing" class="drawing" />
+            <div @ref="Player" class="player"></div>
+        </div>
     </div>
 </root>
 
@@ -24,17 +36,15 @@
 
     public bool IsOpen { get; set; }
 
+    private Panel Viewport { get; set; }
+    private Panel Container { get; set; }
     private Panel Player { get; set; }
-    private Image Image { get; set; }
+    private Image Drawing { get; set; }
     private bool IsDrawing { get; set; }
+    private bool IsPanning { get; set; }
     private Vector2 LastMousePosition { get; set; }
     private TimeUntil NextSaveMap { get; set; }
-
-    public Map()
-    {
-        BindClass( "hidden", () => !IsOpen );
-        Current = this;
-    }
+    private Vector2 Position { get; set; }
 
     public void Open()
     {
@@ -52,10 +62,10 @@
 
     public override void Tick()
     {
-        if ( Image is null ) return;
+        if ( Drawing is null ) return;
         if ( Player is null ) return;
 
-        Image.Texture = Map.CreateTexture();
+        Drawing.Texture = Map.CreateTexture();
 
         var localPlayer = ForsakenPlayer.Me;
         if ( !localPlayer.IsValid() ) return;
@@ -75,12 +85,49 @@
         base.Tick();
     }
 
+    protected override void OnMouseMove( MousePanelEvent e )
+    {
+        if ( IsPanning )
+        {
+            var cx = Container.Style.Left.GetValueOrDefault( 0f );
+            var cy = Container.Style.Top.GetValueOrDefault( 0f );
+
+            var nx = (cx.Value * ScaleToScreen) + Mouse.Delta.x * 2f;
+            var ny = (cy.Value * ScaleToScreen) + Mouse.Delta.y * 2f;
+
+            nx = Math.Min( nx, 0f );
+            ny = Math.Min( ny, 0f );
+
+            var vp = Viewport.Box.Rect;
+            var vw = vp.Width;
+            var vh = vp.Height;
+
+            var cp = Container.Box.Rect;
+            var dw = cp.Width - vw;
+            var dh = cp.Height - vh;
+
+            nx = Math.Max( nx, -dw );
+            ny = Math.Max( ny, -dh );
+
+            Position = new Vector2( nx / cp.Width, ny / cp.Height );
+
+            UpdatePosition();
+        }
+
+        base.OnMouseMove( e );
+    }
+
     protected override void OnMouseDown( MousePanelEvent e )
     {
         if ( e.Button == "mouseleft" )
         {
             LastMousePosition = Mouse.Position;
             IsDrawing = true;
+        }
+
+        if ( e.Button == "mouseright" )
+        {
+            IsPanning = true;
         }
 
         base.OnMouseDown( e );
@@ -93,12 +140,26 @@
             IsDrawing = false;
         }
 
+        if ( e.Button == "mouseright" )
+        {
+            IsPanning = false;
+        }
+
         base.OnMouseUp( e );
+    }
+
+    protected override void OnParametersSet()
+    {
+        BindClass( "hidden", () => !IsOpen );
+        Current = this;
+
+        base.OnParametersSet();
     }
 
     protected override void OnAfterTreeRender( bool firstTime )
     {
-        Image.Texture = Map.CreateTexture();
+        Drawing.Texture = Map.CreateTexture();
+        UpdatePosition();
 
         base.OnAfterTreeRender( firstTime );
     }
@@ -112,7 +173,7 @@
     private void ClientTick()
     {
         if ( string.IsNullOrEmpty( ForsakenGame.UniqueSaveId ) ) return;
-        if ( Image?.Texture is null ) return;
+        if ( Drawing?.Texture is null ) return;
         if ( !NextSaveMap ) return;
 
         var fileName = $"maps/{ForsakenGame.UniqueSaveId}.map";
@@ -127,12 +188,23 @@
         NextSaveMap = 10f;
     }
 
+    private void UpdatePosition()
+    {
+        var cp = Container.Box.Rect;
+        Container.Style.Left = Length.Pixels( cp.Width * Position.x * ScaleFromScreen );
+        Container.Style.Top = Length.Pixels( cp.Height * Position.y * ScaleFromScreen );
+    }
+
     [Event.Client.Frame]
     private void OnFrame()
     {
-        if ( !IsVisible || !IsDrawing ) return;
+        if ( !IsVisible || Container is null ) return;
 
-        var box = Image.Box.Rect;
+        UpdatePosition();
+
+        if ( !IsDrawing ) return;
+
+        var box = Drawing.Box.Rect;
 
         var start = LastMousePosition;
         var end = Mouse.Position;
@@ -153,7 +225,7 @@
                 var x = rx.CeilToInt().Clamp( 0, Map.Texture.Width - 1 );
                 var y = ry.CeilToInt().Clamp( 0, Map.Texture.Height - 1 );
 
-                Map.Draw( x, y, 4f, Color.Red );
+                Map.Draw( x, y, 2f, Color.Red );
             }
         }
 
