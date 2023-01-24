@@ -71,9 +71,9 @@ public partial class Map
 		Data = new byte[1024 * 1024 * 4];
 
 		if ( !string.IsNullOrEmpty( ForsakenGame.UniqueSaveId )
-			&& FileSystem.Data.FileExists( $"maps/{ForsakenGame.UniqueSaveId}.txt" ) )
+			&& FileSystem.Data.FileExists( $"maps/{ForsakenGame.UniqueSaveId}.map" ) )
 		{
-			using ( var reader = FileSystem.Data.OpenRead( $"maps/{ForsakenGame.UniqueSaveId}.txt", FileMode.Open ) )
+			using ( var reader = FileSystem.Data.OpenRead( $"maps/{ForsakenGame.UniqueSaveId}.map", FileMode.Open ) )
 			{
 				Data = Decompress( reader.ReadByteArrayFromStream( 0, (uint)reader.Length ) );
 			}
