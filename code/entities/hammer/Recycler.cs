@@ -12,7 +12,7 @@ namespace Facepunch.Forsaken;
 public partial class Recycler : ModelEntity, IContextActionProvider, IPersistence
 {
 	public float InteractionRange => 100f;
-	public bool AlwaysGlow => false;
+	public bool AlwaysGlow => true;
 	public Color GlowColor => Color.Green;
 
 	[ConCmd.Server( "fsk.recycler.toggle" )]
