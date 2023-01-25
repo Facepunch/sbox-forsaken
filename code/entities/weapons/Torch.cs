@@ -21,6 +21,11 @@ public partial class Torch : MeleeWeapon
 		if ( Game.IsServer )
 		{
 			IsIgnited = !IsIgnited;
+
+			if ( IsIgnited )
+				PlaySound( "torch.ignite" );
+			else
+				PlaySound( "fire.extinguish" );
 		}
 	}
 
