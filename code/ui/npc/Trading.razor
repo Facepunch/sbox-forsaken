@@ -20,16 +20,20 @@
             @for ( ushort i = 0; i < Inventory.SlotLimit; i++ )
             {
                 @{
-                    var item = Inventory.GetFromSlot( i ) as IPurchasableItem;
+                    var item = Inventory.GetFromSlot( i );
+                    var purchasable = (item as IPurchasableItem);
                 }
 
                 <div class="listing">
                     <InventorySlot class="large" Container=@Inventory Slot=@i HideStackSize></InventorySlot>
 
-                    @if ( item.IsValid() )
+                    @if ( purchasable.IsValid() )
                     {
-                        var className = @GetPurchaseButtonClass( item );
-                        <div onclick=@(() => @DoPurchaseItem( item )) class="purchase @className">@(item.SalvageCost)x Salvage</div>
+                        var className = @GetPurchaseButtonClass( purchasable );
+                        <div class="group">
+                            <label class="remaining">@item.StackSize in stock</label>
+                            <div onclick=@(() => @DoPurchaseItem( purchasable )) class="purchase @className">@(purchasable.SalvageCost)x Salvage</div>
+                        </div>
                     }
                     else
                     {

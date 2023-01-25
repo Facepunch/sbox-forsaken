@@ -61,6 +61,15 @@
                     }
                 }
 
+                .group {
+                    flex-direction: column;
+                }
+                .remaining {
+                    font-family: Vollkorn;
+                    font-size: 24px;
+                    color: lightgoldenrodyellow;
+                }
+
                 .purchase {
                     background-color: rgba( darken( rgb( 50 150 50 ), 0.4 ), 0.3 );
                     justify-content: center;
