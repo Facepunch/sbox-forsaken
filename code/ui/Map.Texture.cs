@@ -10,7 +10,8 @@ public partial class Map
 	public enum DrawMode
 	{
 		Paint,
-		Erase
+		Erase,
+		Marker
 	}
 
     public static Texture Texture { get; private set; }

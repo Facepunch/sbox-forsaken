@@ -44,6 +44,14 @@ public partial class ForsakenPlayer
 		writer.Write( Backpack );
 		writer.Write( Equipment );
 
+		writer.Write( Markers.Count );
+
+		foreach ( var marker in Markers )
+		{
+			writer.Write( marker.Position );
+			writer.Write( marker.Color );
+		}
+
 		if ( Bedroll.IsValid() )
 		{
 			writer.Write( true );
@@ -77,6 +85,20 @@ public partial class ForsakenPlayer
 
 		var equipment = reader.ReadInventoryContainer( Equipment );
 		InternalEquipment = new NetInventoryContainer( equipment );
+
+		Markers.Clear();
+
+		var markerCount = reader.ReadInt32();
+		for ( var i = 0; i < markerCount; i++ )
+		{
+			var position = reader.ReadVector3();
+			var color = reader.ReadColor();
+			Markers.Add( new MapMarker
+			{
+				Position = position,
+				Color = color
+			} );
+		}
 
 		if ( reader.ReadBoolean() )
 		{

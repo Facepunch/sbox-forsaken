@@ -40,7 +40,7 @@
         </div>
     </div>
     <div class="control-panel">
-        <label class="title">Draw Color</label>
+        <label class="title">Color</label>
         <div class="colors">
             @foreach ( var kv in Colors )
             {
@@ -55,6 +55,9 @@
             </div>
             <div tooltip="Eraser" class=@GetToolClass( DrawMode.Erase ) onclick=@(() => SetDrawMode( DrawMode.Erase ))>
                 <i class="icon">auto_fix_normal</i>
+            </div>
+            <div tooltip="Marker" class=@GetToolClass( DrawMode.Marker ) onclick=@(() => SetDrawMode( DrawMode.Marker ))>
+                <i class="icon">location_on</i>
             </div>
         </div>
 
@@ -77,6 +80,7 @@
 
     private Panel Viewport { get; set; }
     private Panel Container { get; set; }
+    private List<MapMarkerPanel> MapMarkers { get; set; } = new();
     private Panel Player { get; set; }
     private Image Drawing { get; set; }
     private Panel Grid { get; set; }
@@ -96,8 +100,16 @@
         ["red"] = Color.Red,
         ["green"] = Color.Green,
         ["blue"] = Color.Blue,
+        ["orange"] = Color.Orange,
+        ["yellow"] = Color.Yellow,
+        ["magenta"] = Color.Magenta,
         ["black"] = Color.Black
     };
+
+    private class MapMarkerPanel : Panel
+    {
+        public MapMarker Marker { get; set; }
+    }
 
     public void Open()
     {
@@ -123,16 +135,6 @@
         var localPlayer = ForsakenPlayer.Me;
         if ( !localPlayer.IsValid() ) return;
 
-        var mapBounds = Game.PhysicsWorld.Body.GetBounds();
-        var position = new Vector2( localPlayer.Position );
-        var origin = mapBounds.Mins + mapBounds.Maxs;
-
-        position.x += (mapBounds.Size.x * 0.5f) - (origin.x * 0.5f);
-        position.y += (mapBounds.Size.y * 0.5f) - (origin.y * 0.5f);
-
-        var fx = position.x / mapBounds.Size.x;
-        var fy = position.y / mapBounds.Size.y;
-
         var rotation = localPlayer.Rotation.Inverse.Yaw();
 
         var tx = new PanelTransform();
@@ -141,17 +143,55 @@
         tx.AddRotation( 0f, 0f, rotation + 90f );
 
         Player.Style.Transform = tx;
-        Player.Style.Left = Length.Fraction( fx );
-        Player.Style.Top = Length.Fraction( 1f - fy );
+
+        var playerPosition = GetPanelLocalPosition( Player, localPlayer.Position );
+
+        Player.Style.Left = Length.Fraction( playerPosition.x );
+        Player.Style.Top = Length.Fraction( playerPosition.y );
+
+        foreach ( var marker in MapMarkers ) 
+        {
+            var position = GetPanelLocalPosition( marker, marker.Marker.Position );
+            marker.Style.Left = Length.Fraction( position.x );
+            marker.Style.Top = Length.Fraction( position.y );
+        }
 
         if ( FollowPlayer )
         {
-            FocusOn( fx, 1f - fy );
+            FocusOn( playerPosition.x, playerPosition.y );
         }
 
         UpdatePosition();
 
         base.Tick();
+    }
+
+    private Vector3 GetWorldPosition( Vector2 panelPosition )
+    {
+        var mapBounds = Game.PhysicsWorld.Body.GetBounds();
+        var origin = mapBounds.Mins + mapBounds.Maxs;
+        var px = (mapBounds.Size.x * panelPosition.x) - (mapBounds.Size.x * 0.5f);
+        var py = (mapBounds.Size.y * panelPosition.y) - (mapBounds.Size.y * 0.5f);
+
+        px += (origin.x * 0.5f);
+        py -= (origin.y * 0.5f);
+
+        return new Vector3( px, -py );        
+    }
+
+    private Vector2 GetPanelLocalPosition( Panel panel, Vector3 worldPosition )
+    {
+        var mapBounds = Game.PhysicsWorld.Body.GetBounds();
+        var position = new Vector2( worldPosition );
+        var origin = mapBounds.Mins + mapBounds.Maxs;
+
+        position.x += (mapBounds.Size.x * 0.5f) - (origin.x * 0.5f);
+        position.y += (mapBounds.Size.y * 0.5f) - (origin.y * 0.5f);
+
+        var fx = position.x / mapBounds.Size.x;
+        var fy = position.y / mapBounds.Size.y;
+
+        return new Vector2( fx, 1f - fy );
     }
 
     private void FocusOn( float px, float py )
@@ -174,6 +214,40 @@
         realY = Math.Max( realY, -dh );
 
         Position = new Vector2( realX / cp.Width, realY / cp.Height );
+    }
+
+    protected override void OnClick( MousePanelEvent e )
+    {
+        var vp = Viewport.Box.Rect;
+        var point = Mouse.Position;
+
+        if ( SelectedDrawMode == DrawMode.Marker && vp.IsInside( Mouse.Position ) )
+        {
+            var box = Container.Box.Rect;
+            var rx = (point.x - box.Left);
+            var ry = (point.y - box.Top);
+            var x = rx.Clamp( 0, box.Width );
+            var y = ry.Clamp( 0, box.Width );
+            var fx = (x / box.Width);
+            var fy = (y / box.Height);
+
+            var worldPosition = GetWorldPosition(new Vector2( fx, fy ));
+
+            foreach ( var marker in MapMarkers )
+            {
+                if ( marker.Marker.Position.Distance( worldPosition ) <= 100f )
+                {
+                    ForsakenPlayer.RemoveMapMarker( worldPosition.ToCSV() );
+                    return;
+                }
+            }
+
+            if ( MapMarkers.Count > 6 ) return;
+
+            ForsakenPlayer.AddMapMarker( worldPosition.ToCSV(), SelectedColor.Hex );
+        }
+
+        base.OnClick( e );
     }
 
     protected override void OnMouseMove( MousePanelEvent e )
@@ -254,6 +328,7 @@
     {
         Drawing.Texture = Map.CreateTexture();
 
+        CreateMapMarkers();
         CreatePlayerMarker();
         UpdatePosition();
 
@@ -262,7 +337,7 @@
 
     protected override int BuildHash()
     {
-        return HashCode.Combine( ForsakenPlayer.Me, SelectedColor, SelectedDrawMode );
+        return HashCode.Combine( ForsakenPlayer.Me, SelectedColor, SelectedDrawMode, ForsakenPlayer.Me?.Markers?.Count ?? 0 );
     }
 
     private string GetSizeClass( float size )
@@ -334,6 +409,20 @@
         Container.Style.Top = Length.Pixels( cp.Height * Position.y * ScaleFromScreen );
     }
 
+    private void CreateMapMarkers()
+    {
+        MapMarkers.ForEach( m => m.Delete( true ) );
+        MapMarkers.Clear();
+
+        foreach ( var marker in ForsakenPlayer.Me.Markers )
+        {
+            var panel = Container.AddChild<MapMarkerPanel>( "marker" );
+            panel.Style.BackgroundTint = marker.Color.WithAlpha( 1f );
+            panel.Marker = marker;
+            MapMarkers.Add( panel );
+        }
+    }
+
     private void CreatePlayerMarker()
     {
         Player?.Delete( true );
@@ -345,6 +434,7 @@
     {
         if ( !IsVisible || Container is null ) return;
         if ( !IsDrawing ) return;
+        if ( SelectedDrawMode == DrawMode.Marker ) return;
 
         var box = Drawing.Box.Rect;
 

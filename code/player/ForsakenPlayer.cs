@@ -38,6 +38,42 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		}
 	}
 
+	[ConCmd.Server]
+	public static void RemoveMapMarker( string csv )
+	{
+		if ( ConsoleSystem.Caller.Pawn is not ForsakenPlayer player ) return;
+
+		var position = csv.ToVector3();
+
+		foreach ( var marker in player.Markers )
+		{
+			if ( marker.Position.Distance( position ) <= 100f )
+			{
+				player.Markers.Remove( marker );
+				break;
+			}
+		}
+
+		player.RemoveMapMarker( To.Single( player ), position );
+	}
+
+	[ConCmd.Server]
+	public static void AddMapMarker( string csv, string hex )
+	{
+		if ( ConsoleSystem.Caller.Pawn is not ForsakenPlayer player ) return;
+
+		var position = csv.ToVector3();
+		var color = Color.Parse( hex ).Value.WithAlpha( 1f );
+
+		var marker = new MapMarker();
+		marker.Position = position;
+		marker.Color = color;
+
+		player.Markers.Add( marker );
+
+		player.AddMapMarker( To.Single( player ), position, color );
+	}
+
 	[Net] public string DisplayName { get; private set; }
 	[Net] public float Temperature { get; private set; }
 	[Net] public float Calories { get; private set; }
@@ -46,6 +82,8 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 	[Net, Predicted] public bool IsOutOfBreath { get; private set; }
 	[Net, Predicted] public int HotbarIndex { get; private set; }
 	[Net] public TimedAction TimedAction { get; private set; }
+
+	public List<MapMarker> Markers { get; private set; } = new List<MapMarker>();
 
 	[Net] private NetInventoryContainer InternalBackpack { get; set; }
 	public InventoryContainer Backpack => InternalBackpack.Value;
@@ -216,6 +254,11 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 
 		DisplayName = client.Name;
 		SteamId = client.SteamId;
+
+		foreach ( var marker in Markers )
+		{
+			AddMapMarker( To.Single( client ), marker.Position, marker.Color );
+		}
 	}
 
 	public void SetAmmoType( string uniqueId )
@@ -254,6 +297,25 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		}
 
 		return false;
+	}
+
+	[ClientRpc]
+	public void AddMapMarker( Vector3 position, Color color )
+	{
+		Markers.Add( new MapMarker { Position = position, Color = color } );
+	}
+
+	[ClientRpc]
+	public void RemoveMapMarker( Vector3 position )
+	{
+		foreach ( var marker in Markers )
+		{
+			if ( marker.Position.Distance( position ) <= 100f )
+			{
+				Markers.Remove( marker );
+				break;
+			}
+		}
 	}
 
 	[ClientRpc]
