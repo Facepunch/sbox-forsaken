@@ -6,8 +6,8 @@ namespace Facepunch.Forsaken;
 
 public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerItem, ILootSpawnerItem, IPurchasableItem, IRecyclableItem
 {
-	public override string PrimaryUseHint => "Attack";
-	public override string SecondaryUseHint => ForsakenGame.Isometric ? "(Hold) Aim" : string.Empty;
+	public override string PrimaryUseHint => InternalWeapon?.PrimaryUseHint ?? "Attack";
+	public override string SecondaryUseHint => InternalWeapon?.SecondaryUseHint ?? (ForsakenGame.Isometric ? "(Hold) Aim" : string.Empty);
 	public override Color Color => ItemColors.Weapon;
 
 	public virtual int WorldModelMaterialGroup => Resource?.WorldModelMaterialGroup ?? 0;

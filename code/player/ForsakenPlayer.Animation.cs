@@ -62,6 +62,7 @@ public partial class ForsakenPlayer
 		animHelper.IsNoclipping = Controller.HasTag( "noclip" );
 		animHelper.IsClimbing = Controller.HasTag( "climbing" );
 		animHelper.IsSwimming = false;
+		animHelper.Handedness = CitizenAnimationHelper.Hand.Both;
 		animHelper.IsWeaponLowered = false;
 
 		if ( Controller.HasEvent( "jump" ) ) animHelper.TriggerJump();

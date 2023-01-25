@@ -13,7 +13,7 @@ public abstract partial class MeleeWeapon : Weapon
 	public virtual bool UseTierBodyGroups => false;
 	public virtual string HitPlayerSound => "melee.hitflesh";
 	public virtual string HitObjectSound => "sword.hit";
-	public override CitizenAnimationHelper.HoldTypes HoldType => CitizenAnimationHelper.HoldTypes.Swing;
+	public override CitizenAnimationHelper.HoldTypes HoldType => CitizenAnimationHelper.HoldTypes.HoldItem;
 	public virtual string SwingSound => "melee.swing";
 	public virtual float Force => 1.5f;
 
@@ -46,18 +46,10 @@ public abstract partial class MeleeWeapon : Weapon
 		player.ReduceStamina( StaminaLossPerSwing );
 	}
 
-	public override void CreateViewModel()
+	public override void SimulateAnimator( CitizenAnimationHelper anim )
 	{
-		Game.AssertClient();
-		base.CreateViewModel();
-	}
-
-	protected override void ShootEffects()
-	{
-		base.ShootEffects();
-
-		ViewModelEntity?.SetAnimParameter( "attack", true );
-		ViewModelEntity?.SetAnimParameter( "holdtype_attack", 1 );
+		anim.Handedness = CitizenAnimationHelper.Hand.Right;
+		base.SimulateAnimator( anim );
 	}
 
 	protected override void OnMeleeAttackMissed( TraceResult trace )
@@ -70,8 +62,6 @@ public abstract partial class MeleeWeapon : Weapon
 
 	protected override void OnMeleeAttackHit( Entity victim )
 	{
-		ViewModelEntity?.SetAnimParameter( "attack_has_hit", true );
-
 		if ( victim is ForsakenPlayer target )
 			target.PlaySound( HitPlayerSound );
 		else

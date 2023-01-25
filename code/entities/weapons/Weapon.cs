@@ -15,6 +15,8 @@ public abstract partial class Weapon : BaseWeapon
 	public virtual bool IsMelee => false;
 	public virtual float MeleeRange => 100f;
 	public virtual float BulletRange => 20000f;
+	public virtual string PrimaryUseHint => "Attack";
+	public virtual string SecondaryUseHint => "Attack";
 	public virtual string TracerEffect => null;
 	public virtual bool ReloadAnimation => true;
 	public virtual bool UnlimitedAmmo => false;
@@ -424,11 +426,6 @@ public abstract partial class Weapon : BaseWeapon
 		return true;
 	}
 
-	public override void CreateViewModel()
-	{
-		Game.AssertClient();
-	}
-
 	public bool IsUsable()
 	{
 		if ( IsMelee || ClipSize == 0 || AmmoClip > 0 )
@@ -507,8 +504,6 @@ public abstract partial class Weapon : BaseWeapon
 		{
 			CreateMuzzleFlash();
 		}
-
-		ViewModelEntity?.SetAnimParameter( "fire", true );
 	}
 
 	protected virtual void OnWeaponItemChanged()
@@ -522,7 +517,7 @@ public abstract partial class Weapon : BaseWeapon
 
 	protected virtual ModelEntity GetEffectEntity()
 	{
-		return EffectEntity;
+		return this;
 	}
 
 	[ClientRpc]

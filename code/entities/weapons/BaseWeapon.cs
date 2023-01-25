@@ -5,11 +5,6 @@ namespace Facepunch.Forsaken;
 
 public abstract partial class BaseWeapon : AnimatedEntity
 {
-	public virtual string ViewModelPath => null;
-	public BaseViewModel ViewModelEntity { get; protected set; }
-
-	public virtual ModelEntity EffectEntity => (ViewModelEntity.IsValid() && IsFirstPersonMode) ? ViewModelEntity : this;
-
 	public virtual float PrimaryRate => 5.0f;
 	public virtual float SecondaryRate => 15.0f;
 
@@ -148,12 +143,6 @@ public abstract partial class BaseWeapon : AnimatedEntity
 	public virtual void ActiveStart( Entity ent )
 	{
 		EnableDrawing = true;
-
-		if ( IsLocalPawn )
-		{
-			DestroyViewModel();
-			CreateViewModel();
-		}
 	}
 
 	public virtual void ActiveEnd( Entity ent, bool dropped )
@@ -162,41 +151,6 @@ public abstract partial class BaseWeapon : AnimatedEntity
 		{
 			EnableDrawing = false;
 		}
-
-		if ( Game.IsClient )
-		{
-			DestroyViewModel();
-		}
-	}
-
-	protected override void OnDestroy()
-	{
-		base.OnDestroy();
-
-		if ( Game.IsClient && ViewModelEntity.IsValid() )
-		{
-			DestroyViewModel();
-		}
-	}
-
-	public virtual void CreateViewModel()
-	{
-		Game.AssertClient();
-
-		if ( string.IsNullOrEmpty( ViewModelPath ) )
-			return;
-
-		ViewModelEntity = new BaseViewModel();
-		ViewModelEntity.Position = Position;
-		ViewModelEntity.Owner = Owner;
-		ViewModelEntity.EnableViewmodelRendering = true;
-		ViewModelEntity.SetModel( ViewModelPath );
-	}
-
-	public virtual void DestroyViewModel()
-	{
-		ViewModelEntity?.Delete();
-		ViewModelEntity = null;
 	}
 
 	public override Sound PlaySound( string soundName, string attachment )
