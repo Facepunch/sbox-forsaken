@@ -10,11 +10,11 @@
 		BaseComponentReturn = 0.5
 		IsPurchasable = true
 		SalvageCost = 2
-		StockStackSize = "1.00,1.00,0"
+		StockStackSize = "20.00,50.00,1"
 		StockChance = 0.3
-		IsLootable = true
+		IsLootable = false
 		LootChance = 0
-		OncePerContainer = true
+		OncePerContainer = false
 		LootStackSize = "0.00,0.00,0"
 		ItemName = "Crossbow Bolt"
 		UniqueId = "ammo_bolt"

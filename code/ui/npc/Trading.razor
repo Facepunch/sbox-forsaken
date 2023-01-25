@@ -1,0 +1,124 @@
+﻿@using System;
+@using Sandbox;
+@using Sandbox.UI;
+@using Facepunch.Forsaken;
+
+@namespace Facepunch.Forsaken.UI
+@attribute [StyleSheet( "/ui/npc/Trading.scss" )]
+@inherits Panel
+@implements IDialog
+
+@if ( !ForsakenPlayer.Me.IsValid() ) return;
+@if ( !Trader.IsValid() ) return;
+
+<root>
+    <div class="body-container">
+        <label class="title">@Trader.DisplayName</label>
+        <label class="subtitle">Stocked items will change in @GetRestockTimeString()</label>
+
+        <div class="stock">
+            @for ( ushort i = 0; i < Inventory.SlotLimit; i++ )
+            {
+                @{
+                    var item = Inventory.GetFromSlot( i ) as IPurchasableItem;
+                }
+
+                <div class="listing">
+                    <InventorySlot class="large" Container=@Inventory Slot=@i HideStackSize></InventorySlot>
+
+                    @if ( item.IsValid() )
+                    {
+                        var className = @GetPurchaseButtonClass( item );
+                        <div onclick=@(() => @DoPurchaseItem( item )) class="purchase @className">@(item.SalvageCost)x Salvage</div>
+                    }
+                    else
+                    {
+                        <div class="nostock">OUT OF STOCK</div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</root>
+
+@code
+{
+    public static Trading Current { get; private set; }
+
+    public InventoryContainer Inventory { get; private set; }
+    public Trader Trader { get; private set; }
+    public bool AllowMovement => false;
+    public bool IsOpen { get; private set; }
+
+    public void Open()
+    {
+        if ( IsOpen ) return;
+        Dialog.Activate( this );
+        IsOpen = true;
+    }
+
+    public void Close()
+    {
+        if ( !IsOpen ) return;
+        Dialog.Deactivate( this );
+        IsOpen = false;
+    }
+
+    public void SetTrader( Trader trader )
+    {
+        Trader = trader;
+    }
+
+    public void SetInventory( InventoryContainer inventory )
+    {
+        Inventory = inventory;
+    }
+
+    public override void Tick()
+    {
+        if ( IsOpen && (!Trader.IsValid() || Trader.Position.Distance( ForsakenPlayer.Me.Position ) > 500f ) )
+        {
+            Close();
+        }
+
+        base.Tick();
+    }
+
+    protected override void OnParametersSet()
+    {
+        Current = this;
+        BindClass( "hidden", () => !IsOpen );
+
+        base.OnParametersSet();
+    }
+
+    protected override int BuildHash()
+    {
+        var backpack = ForsakenPlayer.Me?.Backpack;
+        var hotbar = ForsakenPlayer.Me?.Hotbar;
+
+        return HashCode.Combine( ForsakenPlayer.Me, backpack, hotbar, Trader, Inventory, Trader.NextRestockTime );
+    }
+
+    private string GetRestockTimeString()
+    {
+        return TimeSpan.FromSeconds( Trader.NextRestockTime ).ToString( @"mm\:ss" );
+    }
+
+    private void DoPurchaseItem( IPurchasableItem item )
+    {
+        if ( !ForsakenPlayer.Me.HasItems<SalvageItem>( item.SalvageCost ) )
+            return;
+
+        var baseItem = (item as InventoryItem);
+        Trader.PurchaseItemCmd( Trader.NetworkIdent, (int)baseItem.SlotId );
+    }
+
+    private string GetPurchaseButtonClass( IPurchasableItem item )
+    {
+        if ( !ForsakenPlayer.Me.HasItems<SalvageItem>( item.SalvageCost ) )
+            return "unaffordable";
+        else
+            return string.Empty;
+    }
+}

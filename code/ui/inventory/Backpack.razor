@@ -106,12 +106,6 @@
     public bool AllowMovement => false;
     public bool IsOpen { get; private set; }
 
-    public Backpack()
-    {
-        BindClass( "hidden", () => !IsOpen );
-        Current = this;
-    }
-
     public void Open()
     {
         if ( IsOpen ) return;
@@ -175,6 +169,14 @@
     protected virtual void OnHotbarSlotSelected( InventorySlot slot )
     {
         Select( slot );
+    }
+
+    protected override void OnParametersSet()
+    {
+        Current = this;
+        BindClass( "hidden", () => !IsOpen );
+
+        base.OnParametersSet();
     }
 
     protected override int BuildHash()

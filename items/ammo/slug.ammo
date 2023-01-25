@@ -8,10 +8,10 @@
 		IsRecyclable = true
 		RecycleOutput = null
 		BaseComponentReturn = 0.5
-		IsPurchasable = false
-		SalvageCost = 0
-		StockStackSize = "1.00,1.00,0"
-		StockChance = 0.12
+		IsPurchasable = true
+		SalvageCost = 3
+		StockStackSize = "20.00,50.00,1"
+		StockChance = 0.25
 		IsLootable = true
 		LootChance = 0.09
 		OncePerContainer = true

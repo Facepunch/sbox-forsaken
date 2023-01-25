@@ -428,11 +428,14 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		OriginalViewAngles = ViewAngles;
 		InputDirection = Input.AnalogMove;
 
+		var trader = UI.Trading.Current;
 		var storage = UI.Storage.Current;
 		var cooking = UI.Cooking.Current;
 		var recycling = UI.Recycling.Current;
 
-		if ( recycling.IsOpen && recycling.Recycler.IsValid() )
+		if ( trader.IsOpen && trader.Trader.IsValid() )
+			OpenContainerIds = trader.Inventory.ContainerId.ToString();
+		else if ( recycling.IsOpen && recycling.Recycler.IsValid() )
 			OpenContainerIds = recycling.Recycler.Processor.GetContainerIdString();
 		else if ( cooking.IsOpen && cooking.Cooker.IsValid() )
 			OpenContainerIds = cooking.Cooker.Processor.GetContainerIdString();

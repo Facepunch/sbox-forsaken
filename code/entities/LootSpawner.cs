@@ -18,6 +18,11 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider,
 				s.Show();
 			}
 		}
+
+		foreach ( var s in All.OfType<Trader>() )
+		{
+			s.Restock();
+		}
 	}
 
 	public float InteractionRange => 100f;

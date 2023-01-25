@@ -11,6 +11,35 @@ namespace Facepunch.Forsaken;
 [Model( Model = "models/citizen/citizen.vmdl" )]
 public partial class Trader : NPC, IContextActionProvider, IPersistence, INametagProvider
 {
+	[ConCmd.Server]
+	public static void PurchaseItemCmd( int networkId, int slotId )
+	{
+		if ( ConsoleSystem.Caller.Pawn is not ForsakenPlayer player ) return;
+
+		var trader = FindByIndex( networkId ) as Trader;
+		if ( !trader.IsValid() ) return;
+
+		var item = trader.Inventory.GetFromSlot( (ushort)slotId );
+		var purchasable = item as IPurchasableItem;
+
+		if ( !purchasable.IsValid() ) return;
+
+		if ( !player.HasItems<SalvageItem>( purchasable.SalvageCost ) )
+			return;
+
+		var copy = InventorySystem.DuplicateItem( item );
+		copy.StackSize = 1;
+
+		var remainder = player.TryGiveItem( copy );
+
+		if ( remainder == 0 )
+		{
+			Sound.FromScreen( To.Single( player ), "ui.code.press" );
+			player.TakeItems<SalvageItem>( purchasable.SalvageCost );
+			item.StackSize--;
+		}
+	}
+
 	public float InteractionRange => 100f;
 	public Color GlowColor => Color.Cyan;
 	public bool AlwaysGlow => true;
@@ -62,7 +91,7 @@ public partial class Trader : NPC, IContextActionProvider, IPersistence, INameta
 		{
 			if ( Game.IsServer )
 			{
-
+				UI.Trading.Open( player, this );
 			}
 		}
 	}
@@ -96,8 +125,10 @@ public partial class Trader : NPC, IContextActionProvider, IPersistence, INameta
 
 	}
 
-	protected virtual void Restock()
+	public virtual void Restock()
 	{
+		Inventory.RemoveAll();
+
 		var possibleItems = InventorySystem.GetDefinitions()
 			.OfType<IPurchasableItem>()
 			.Where( i => i.IsPurchasable )
@@ -126,6 +157,17 @@ public partial class Trader : NPC, IContextActionProvider, IPersistence, INameta
 				}
 			}
 		}
+	}
+
+	protected override Vector3 GetWishDirection()
+	{
+		var isTrading = EntityComponent.GetAllOfType<InventoryViewer>()
+			.Where( c => c.Containers.Contains( Inventory ) )
+			.Any();
+
+		if ( isTrading ) return Vector3.Zero;
+
+		return base.GetWishDirection();
 	}
 
 	protected override void ServerTick()

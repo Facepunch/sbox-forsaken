@@ -115,12 +115,6 @@
     public Entity Entity { get; private set; }
     public string Name { get; private set; }
 
-    public Storage()
-    {
-        Current = this;
-        BindClass( "hidden", () => !IsOpen );
-    }
-
     public void Open()
     {
         if ( IsOpen ) return;
@@ -148,7 +142,7 @@
 
     public override void Tick()
     {
-        if ( IsOpen && !Entity.IsValid() || ( Entity is LootSpawner spawner && Container.IsEmpty ) )
+        if ( IsOpen && ( !Entity.IsValid() || ( Entity is LootSpawner spawner && Container.IsEmpty ) ) )
         {
             Close();
         }
@@ -212,6 +206,14 @@
     protected virtual void OnStorageSlotSelected( InventorySlot slot )
     {
         Select( slot );
+    }
+
+    protected override void OnParametersSet()
+    {
+        Current = this;
+        BindClass( "hidden", () => !IsOpen );
+
+        base.OnParametersSet();
     }
 
     protected override int BuildHash()

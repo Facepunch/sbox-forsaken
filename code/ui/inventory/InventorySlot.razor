@@ -35,8 +35,9 @@
     public ushort Slot { get; set; }
     public int DisplaySlot { get; set; }
     public InventoryItem Item => Container.GetFromSlot( Slot );
+    public bool HideStackSize { get; set; }
     public bool IsSelected { get; set; }
-    public string StackSize => GetStackSize();
+    public string StackSize => HideStackSize ? string.Empty : GetStackSize();
     public float IconSize => Box.Rect.Size.Length;
     public string DefaultIcon { get; set; }
     public Action<InventorySlot> OnSelected { get; set; }
