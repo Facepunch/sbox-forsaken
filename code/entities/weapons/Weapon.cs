@@ -15,8 +15,8 @@ public abstract partial class Weapon : BaseWeapon
 	public virtual bool IsMelee => false;
 	public virtual float MeleeRange => 100f;
 	public virtual float BulletRange => 20000f;
-	public virtual string PrimaryUseHint => "Attack";
-	public virtual string SecondaryUseHint => "Attack";
+	public virtual string PrimaryUseHint => null;
+	public virtual string SecondaryUseHint => null;
 	public virtual string TracerEffect => null;
 	public virtual bool ReloadAnimation => true;
 	public virtual bool UnlimitedAmmo => false;
