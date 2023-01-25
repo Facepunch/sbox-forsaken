@@ -3,7 +3,7 @@
 	data = 
 	{
 		WorldModelMaterialGroup = 0
-		WorldModelPath = resource:"weapons/rust_crossbow/rust_crossbow.vmdl"
+		WorldModelPath = resource:"models/torch/torch.vmdl"
 		AmmoType = "None"
 		DefaultAmmo = 0
 		ClipSize = 0
@@ -40,7 +40,7 @@
 		UniqueId = "torch"
 		Description = "A humble torch that will bring light wherever there is darkness."
 		Icon = resource:"textures/items/torch.png"
-		WorldModel = resource:"weapons/rust_crossbow/rust_crossbow.vmdl"
+		WorldModel = resource:"models/torch/torch.vmdl"
 		Tags = [  ]
 	}
 }

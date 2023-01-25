@@ -33,7 +33,16 @@
         var player = ForsakenPlayer.Me;
         if ( !player.IsValid() ) return 0;
 
-        return HashCode.Combine( player, player.ActiveChild, player.HotbarIndex, player.LifeState, HasPrimaryAttack(), Cursor.Current.HasMoreOptions );
+        return HashCode.Combine(
+            player,
+            player.ActiveChild,
+            player.HotbarIndex,
+            player.LifeState,
+            HasPrimaryAttack(),
+            GetPrimaryAttackText(),
+            GetSecondaryAttackText(),
+            Cursor.Current.HasMoreOptions
+        );
     }
 
     private string GetPrimaryAttackText()

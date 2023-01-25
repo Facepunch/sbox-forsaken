@@ -13,28 +13,14 @@ public partial class Torch : MeleeWeapon
 
 	[Net] private bool IsIgnited { get; set; }
 	private PointLightEntity Light { get; set; }
+	private Particles Effect { get; set; }
 
 	public override void AttackPrimary()
 	{
 		if ( Game.IsServer )
 		{
 			IsIgnited = !IsIgnited;
-
-			if ( IsIgnited )
-				CreateLight();
-			else
-				DestroyLight();
 		}
-	}
-
-	public override void ActiveStart( Entity owner )
-	{
-		if ( Game.IsServer && IsIgnited )
-		{
-			CreateLight();
-		}
-
-		base.ActiveStart( owner );
 	}
 
 	public override void ActiveEnd( Entity ent, bool dropped )
@@ -53,19 +39,50 @@ public partial class Torch : MeleeWeapon
 
 	private void DestroyLight()
 	{
+		Effect?.Destroy();
+		Effect = null;
+
 		Light?.Delete();
 		Light = null;
 	}
 
 	private void CreateLight()
 	{
-		Light?.Delete();
+		DestroyLight();
+
+		var attachment = GetAttachment( "light" );
+		if ( !attachment.HasValue ) return;
 
 		Light = new();
-		Light.Position = Position;
+		Light.Position = attachment.Value.Position;
 		Light.SetParent( this );
-		Light.Range = 600f;
-		Light.Color = Color.Orange.Lighten( 0.5f );
-		Light.Brightness = 0.1f;
+		Light.Range = 800f;
+		Light.Color = Color.Orange;
+		Light.Brightness = 0.2f;
+	}
+
+	[Event.Tick.Client]
+	private void ClientTick()
+	{
+		if ( Owner is not ForsakenPlayer player ) return;
+		if ( player.ActiveChild != this ) return;
+
+		if ( IsIgnited )
+		{
+			var attachment = GetAttachment( "light" );
+			if ( !attachment.HasValue ) return;
+
+			if ( !Light.IsValid() )
+			{
+				CreateLight();
+			}
+
+			Effect ??= Particles.Create( "particles/example/int_from_model_example/int_from_model_example.vpcf" );
+			Effect?.SetPosition( 0, attachment.Value.Position );
+		}
+		else
+		{
+			DestroyLight();
+		}
 	}
 }
