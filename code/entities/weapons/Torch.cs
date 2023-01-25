@@ -11,6 +11,7 @@ public partial class Torch : MeleeWeapon
 	public override float PrimaryRate => 1.5f;
 	public override float Force => 1f;
 
+	private AnimateBrightness BrightnessAnimator { get; set; }
 	[Net] private bool IsIgnited { get; set; }
 	private PointLightEntity Light { get; set; }
 	private Particles Effect { get; set; }
@@ -59,11 +60,9 @@ public partial class Torch : MeleeWeapon
 		Light.Range = 800f;
 		Light.Color = Color.Orange;
 		Light.Brightness = 0.2f;
-	}
 
-	private TimeUntil NextFlickerTime { get; set; }
-	private float[] BrightnessValues { get; set; } = new float[] { 0.9f, 1f, 1f, 0.7f, 1f, 1f, 0.8f, 0.8f, 1.2f };
-	private int BrightnessIndex { get; set; } = 0;
+		BrightnessAnimator = new( new float[] { 0.9f, 1f, 1f, 0.7f, 1f, 1f, 0.8f, 0.8f, 1.2f }, 8f );
+	}
 
 	[Event.Tick.Client]
 	private void ClientTick()
@@ -81,19 +80,7 @@ public partial class Torch : MeleeWeapon
 				CreateLight();
 			}
 
-			var interpolateSpeed = 8f;
-
-			Light.Brightness = Light.Brightness.LerpTo( BrightnessValues[BrightnessIndex], Time.Delta * interpolateSpeed );
-
-			if ( NextFlickerTime )
-			{
-				BrightnessIndex++;
-
-				if ( BrightnessIndex >= BrightnessValues.Length )
-					BrightnessIndex = 0;
-
-				NextFlickerTime = Time.Delta * interpolateSpeed;
-			}
+			Light.Brightness = BrightnessAnimator.Update( Light.Brightness );
 
 			Effect ??= Particles.Create( "particles/example/int_from_model_example/int_from_model_example.vpcf" );
 			Effect?.SetPosition( 0, attachment.Value.Position );
