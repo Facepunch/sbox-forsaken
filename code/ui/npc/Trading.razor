@@ -101,7 +101,7 @@
         var backpack = ForsakenPlayer.Me?.Backpack;
         var hotbar = ForsakenPlayer.Me?.Hotbar;
 
-        return HashCode.Combine( ForsakenPlayer.Me, backpack, hotbar, Trader, Inventory, Trader.NextRestockTime );
+        return HashCode.Combine( ForsakenPlayer.Me, backpack, hotbar, Trader, Inventory, Trader?.NextRestockTime ?? 0f );
     }
 
     private string GetRestockTimeString()

@@ -83,6 +83,7 @@
     private bool IsDrawing { get; set; }
     private bool IsPanning { get; set; }
     private float BrushSize { get; set; } = 2f;
+    private bool MapHasChanged { get; set; }
     private DrawMode SelectedDrawMode { get; set; } = DrawMode.Paint;
     private Vector2 LastMousePosition { get; set; }
     private TimeUntil NextSaveMap { get; set; }
@@ -147,6 +148,8 @@
         {
             FocusOn( fx, 1f - fy );
         }
+
+        UpdatePosition();
 
         base.Tick();
     }
@@ -293,15 +296,19 @@
         if ( Drawing?.Texture is null ) return;
         if ( !NextSaveMap ) return;
 
-        var fileName = $"maps/{ForsakenGame.UniqueSaveId}.map";
-
-        FileSystem.Data.CreateDirectory( $"maps" );
-
-        using ( var writer = FileSystem.Data.OpenWrite( fileName, FileMode.Create ) )
+        if ( MapHasChanged )
         {
-            writer.Write( Compress( Map.Data ) );
+            var fileName = $"maps/{ForsakenGame.UniqueSaveId}.map";
+
+            FileSystem.Data.CreateDirectory( $"maps" );
+
+            using ( var writer = FileSystem.Data.OpenWrite( fileName, FileMode.Create ) )
+            {
+                writer.Write( Compress( Map.Data ) );
+            } 
         }
 
+        MapHasChanged = false;
         NextSaveMap = 10f;
     }
 
@@ -337,9 +344,6 @@
     private void OnFrame()
     {
         if ( !IsVisible || Container is null ) return;
-
-        UpdatePosition();
-
         if ( !IsDrawing ) return;
 
         var box = Drawing.Box.Rect;
@@ -371,5 +375,6 @@
         }
 
         LastMousePosition = Mouse.Position;
+        MapHasChanged = true;
     }
 }
