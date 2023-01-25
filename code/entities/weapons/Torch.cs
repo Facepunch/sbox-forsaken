@@ -61,6 +61,10 @@ public partial class Torch : MeleeWeapon
 		Light.Brightness = 0.2f;
 	}
 
+	private TimeUntil NextFlickerTime { get; set; }
+	private float[] BrightnessValues { get; set; } = new float[] { 0.9f, 1f, 1f, 0.7f, 1f, 1f, 0.8f, 0.8f, 1.2f };
+	private int BrightnessIndex { get; set; } = 0;
+
 	[Event.Tick.Client]
 	private void ClientTick()
 	{
@@ -75,6 +79,20 @@ public partial class Torch : MeleeWeapon
 			if ( !Light.IsValid() )
 			{
 				CreateLight();
+			}
+
+			var interpolateSpeed = 8f;
+
+			Light.Brightness = Light.Brightness.LerpTo( BrightnessValues[BrightnessIndex], Time.Delta * interpolateSpeed );
+
+			if ( NextFlickerTime )
+			{
+				BrightnessIndex++;
+
+				if ( BrightnessIndex >= BrightnessValues.Length )
+					BrightnessIndex = 0;
+
+				NextFlickerTime = Time.Delta * interpolateSpeed;
 			}
 
 			Effect ??= Particles.Create( "particles/example/int_from_model_example/int_from_model_example.vpcf" );
