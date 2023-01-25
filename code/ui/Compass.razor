@@ -1,0 +1,112 @@
+﻿@using System;
+@using System.Linq;
+@using Sandbox;
+@using Sandbox.UI;
+@using Facepunch.Forsaken;
+@using System.Collections.Generic;
+@using Sandbox.Utility;
+
+@namespace Facepunch.Forsaken.UI
+@attribute [StyleSheet( "/ui/Compass.scss" )]
+@inherits Panel
+
+@{
+    var player = ForsakenPlayer.Me;
+    if (!player.IsValid()) return;
+}
+
+<root>
+    <div @ref="Container" class="container">
+        <div @ref="MarkerContainer" class="markers">
+            <div @ref="North" class="marker north text">N</div>
+            <div @ref="East" class="marker east text">E</div>
+            <div @ref="South" class="marker south text">S</div>
+            <div @ref="West" class="marker west text">W</div>
+        </div>
+        <div class="circle"></div>
+    </div>
+</root>
+
+@code
+{
+    private Dictionary<MapMarker, Panel> Markers { get; set; } = new();
+    private Panel MarkerContainer { get; set; }
+    private Panel Container { get; set; }
+    private Panel North { get; set; }
+    private Panel East { get; set; }
+    private Panel South { get; set; }
+    private Panel West { get; set; }
+
+    public override void Tick()
+    {
+        var localPlayer = ForsakenPlayer.Me;
+        var playerYaw = localPlayer.Rotation.Yaw();
+
+        UpdateMarker( North, 90f );
+        UpdateMarker( East, 0f );
+        UpdateMarker( South, 270f );
+        UpdateMarker( West, 180f );
+
+        foreach ( var marker in localPlayer.Markers )
+        {
+            if ( !Markers.TryGetValue( marker, out var panel ) || !panel.IsValid )
+            {
+                panel = MarkerContainer.AddChild<Panel>( "marker pin" );
+                panel.Style.BackgroundTint = marker.Color;
+                Markers[marker] = panel;
+            }
+
+            var markerPosition = marker.Position.WithZ( 0f );
+            var position = localPlayer.Position.WithZ( 0f );
+            var forward = localPlayer.Rotation.Forward.WithZ( 0f );
+            var angle = Vector3.GetAngle( (markerPosition - position).Normal, forward );
+
+            UpdateMarker( panel, Angles.ClampAngle( playerYaw - angle ) );
+
+            var distance = position.Distance( markerPosition );
+            var opacityScale = distance.Remap( 0f, 800f, 0f, 1f );
+
+            panel.Style.Opacity *= opacityScale;
+        }
+
+        foreach ( var key in Markers.Keys.ToArray() )
+        {
+            if ( !localPlayer.Markers.Contains( key ) )
+            {
+                Markers.Remove(key);
+
+            }
+        }
+
+        base.Tick();
+    }
+
+    protected override int BuildHash()
+    {
+        if ( !ForsakenPlayer.Me.IsValid() ) return 0;
+        return HashCode.Combine( ForsakenPlayer.Me );
+    }
+
+    private void UpdateMarker( Panel panel, float yaw )
+    {
+        var playerYaw = Angles.ClampAngle(ForsakenPlayer.Me.Rotation.Yaw());
+        var totalWidth = Container.Box.Rect.Width * ScaleFromScreen;
+        var relativeYaw = Angles.ClampAngle( (playerYaw - yaw) + 180f );
+
+        var position = (totalWidth / 360f) * relativeYaw;
+        var difference = yaw - playerYaw;
+
+        while ( difference < -180f ) difference += 360f;
+        while ( difference > 180f ) difference -= 360f;
+
+        difference = Math.Abs( difference );
+
+        var tx = new PanelTransform();
+        tx.AddScale( difference.Remap( 0f, 180f, 1f, 0.2f ) );
+        tx.AddTranslateX( Length.Percent( -50f ) );
+
+        panel.Style.Opacity = difference.Remap( 0f, 180f, 1f, 0f );
+        panel.Style.Transform = tx;
+        panel.Style.Left = Length.Pixels( position );
+    }
+}

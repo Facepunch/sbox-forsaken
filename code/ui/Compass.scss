@@ -1,0 +1,48 @@
+﻿Compass {
+    flex-direction: row;
+    top: 48px;
+
+    .container {
+        background-color: rgba( 0 0 0 0.3 );
+        border-radius: 8px;
+        width: 500px;
+        height: 48px;
+
+        .circle {
+            position: absolute;
+            border-radius: 20%;
+            border: 2px solid white;
+            transform: translateX( -50% ) translateY( -50% );
+            left: 50%;
+            top: 50%;
+            width: 64px;
+            height: 64px;
+            opacity: 0.3;
+        }
+
+        .markers {
+            align-items: center;
+
+            .marker {
+                position: absolute;
+            }
+
+            .text {
+                text-shadow: 2px 2px black;
+                text-align: center;
+                font-family: Poppins;
+                font-size: 48px;
+                color: white;
+                opacity: 0.6;
+            }
+
+            .pin {
+                background-image: url( /textures/ui/location.png );
+                transform: translateY( -100% );
+                background-size: cover;
+                width: 40px;
+                height: 40px;
+            }
+        }
+    }
+}
