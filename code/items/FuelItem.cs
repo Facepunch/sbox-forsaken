@@ -14,7 +14,7 @@ public class FuelItem : InventoryItem, ILootSpawnerItem
 
 	public bool OncePerContainer => true;
 	public int LootStackSize => Game.Random.Int( 5, 20 );
-	public float LootChance => 0.4f;
+	public float LootChance => 0.5f;
 	public bool IsLootable => true;
 
 	public override bool CanStackWith( InventoryItem other )
