@@ -329,7 +329,12 @@ public partial class ForsakenPlayer
 
 	private void GiveInitialItems()
 	{
+		var item = InventorySystem.CreateItem( "torch" );
 
+		if ( item.IsValid() )
+		{
+			Hotbar.Give( item );
+		}
 	}
 
 	private void CreateInventories()
