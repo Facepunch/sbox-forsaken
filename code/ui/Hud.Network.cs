@@ -14,6 +14,6 @@ public partial class Hud
 		if ( LastZoneName == name && LastZoneShown < 10f )
 			return;
 
-		Current.ShowZoneName( name, 4f );
+		Current?.ShowZoneName( name, 4f );
 	}
 }

@@ -71,7 +71,7 @@ public partial class Map
 		return output.ToArray();
 	}
 
-	public static Texture CreateTexture()
+	public static Texture GetOrCreateTexture()
 	{
 		if ( Texture is not null ) return Texture;
 

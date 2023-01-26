@@ -1,0 +1,93 @@
+﻿@using System;
+@using System.Linq;
+@using Sandbox;
+@using Sandbox.UI;
+@using Facepunch.Forsaken;
+@using System.Collections.Generic;
+@using Sandbox.Utility;
+
+@namespace Facepunch.Forsaken.UI
+@attribute [StyleSheet( "/ui/Minimap.scss" )]
+@inherits Panel
+
+@{
+    var player = ForsakenPlayer.Me;
+    if (!player.IsValid()) return;
+}
+
+<root>
+    <div @ref="Container" class="container">
+        <img class="image" @ref="Image" />
+        <div @ref="MarkerContainer" class=" markers"></div>
+    </div>
+</root>
+
+@code
+{
+    private Dictionary<MapMarker, Panel> Markers { get; set; } = new();
+    private Panel MarkerContainer { get; set; }
+    private Panel Container { get; set; }
+    private Image Image { get; set; }
+
+    public override void Tick()
+    {
+        var localPlayer = ForsakenPlayer.Me;
+
+        Render( localPlayer.Position );
+        Image.Texture = GetOrCreateTexture();
+
+        foreach ( var marker in localPlayer.Markers )
+        {
+            if ( !Markers.TryGetValue( marker, out var panel ) || !panel.IsValid )
+            {
+                panel = MarkerContainer.AddChild<Panel>( "marker pin" );
+                panel.Style.BackgroundTint = marker.Color;
+                Markers[marker] = panel;
+            }
+
+            var markerPosition = marker.Position.WithZ( 0f );
+            var position = localPlayer.Position.WithZ( 0f );
+            var direction = (markerPosition - position).Normal;
+            var angle = -Angles.NormalizeAngle( Vector3.VectorAngle( direction ).yaw - 45f );
+            var box = MarkerContainer.Box.Rect;
+
+            var x = MathF.Sin( angle.DegreeToRadian() ) * box.Width;
+            var y = MathF.Cos( angle.DegreeToRadian() ) * -box.Height;
+
+            x += box.Width * 0.5f;
+            y += box.Height * 0.5f;
+
+            var panelSize = panel.Box.Rect;
+            var pw = panelSize.Width + 16f;
+            var ph = panelSize.Height + 16f;
+
+            x = Math.Clamp( x, pw * 0.5f, box.Width - (pw * 0.5f) );
+            y = Math.Clamp( y, ph * 0.5f, box.Height - (ph * 0.5f) );
+
+            panel.Style.Left = Length.Pixels( x * ScaleFromScreen );
+            panel.Style.Top = Length.Pixels( y * ScaleFromScreen );
+
+            var distance = position.Distance( markerPosition );
+
+            panel.Style.Opacity = distance.Remap( 500f, 1000f, 0f, 1f ).Clamp( 0f, 1f );
+        }
+
+        foreach ( var key in Markers.Keys.ToArray() )
+        {
+            if ( !localPlayer.Markers.Contains( key ) )
+            {
+                Markers[key].Delete( true );
+                Markers.Remove( key );
+
+            }
+        }
+
+        base.Tick();
+    }
+
+    protected override int BuildHash()
+    {
+        if ( !ForsakenPlayer.Me.IsValid() ) return 0;
+        return HashCode.Combine( ForsakenPlayer.Me );
+    }
+}

@@ -130,7 +130,7 @@
         if ( Drawing is null ) return;
         if ( Player is null ) return;
 
-        Drawing.Texture = Map.CreateTexture();
+        Drawing.Texture = Map.GetOrCreateTexture();
 
         var localPlayer = ForsakenPlayer.Me;
         if ( !localPlayer.IsValid() ) return;
@@ -326,7 +326,7 @@
 
     protected override void OnAfterTreeRender( bool firstTime )
     {
-        Drawing.Texture = Map.CreateTexture();
+        Drawing.Texture = Map.GetOrCreateTexture();
 
         CreateMapMarkers();
         CreatePlayerMarker();
