@@ -87,7 +87,7 @@ public partial class Torch : MeleeWeapon
 
 			Light.Brightness = BrightnessAnimator.Update( Light.Brightness );
 
-			Effect ??= Particles.Create("particles/torch/torch.vpcf");
+			Effect ??= Particles.Create( "particles/torch/torch.vpcf" );
 			Effect?.SetPosition( 0, attachment.Value.Position );
 		}
 		else

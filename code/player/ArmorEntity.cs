@@ -15,4 +15,11 @@ public partial class ArmorEntity : ModelEntity
 
 		base.ClientSpawn();
 	}
+
+	public override void Spawn()
+	{
+		Tags.Add( "armor" );
+
+		base.Spawn();
+	}
 }

@@ -182,7 +182,10 @@ public abstract partial class Weapon : BaseWeapon
 	public override void Spawn()
 	{
 		base.Spawn();
+
 		SetModel( "weapons/rust_pistol/rust_pistol.vmdl" );
+
+		Tags.Add( "weapon" );
 	}
 
 	public override void BuildInput()

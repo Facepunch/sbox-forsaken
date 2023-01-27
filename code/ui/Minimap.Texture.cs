@@ -5,41 +5,9 @@ namespace Facepunch.Forsaken.UI;
 
 public class MinimapNoEntitiesHook : RenderHook
 {
-	private HashSet<SceneObject> HiddenSceneObjects { get; set; }
-
 	public override void OnFrame( SceneCamera target )
 	{
-		HiddenSceneObjects ??= new();
-		HiddenSceneObjects.Clear();
-
-		foreach ( var so in Game.SceneWorld.SceneObjects )
-		{
-			if ( so is not SceneModel )
-				continue;
-
-			if ( !so.RenderingEnabled )
-			{
-				HiddenSceneObjects.Add( so );
-			}
-
-			so.RenderingEnabled = false;
-		}
-
-		base.OnFrame( target );
-	}
-
-	public override void OnStage( SceneCamera target, Stage renderStage )
-	{
-		if ( renderStage == Stage.AfterPostProcess )
-		{
-			foreach ( var so in Game.SceneWorld.SceneObjects )
-			{
-				if ( !HiddenSceneObjects.Contains( so ) )
-					so.RenderingEnabled = true;
-			}
-		}
-
-		base.OnStage( target, renderStage );
+		
 	}
 }
 
@@ -51,12 +19,13 @@ public partial class Minimap
 	public static void Render( Vector3 position )
 	{
 		var cameraPosition = position;
-		cameraPosition.z += 2000f;
+		cameraPosition.z += 1000f;
 
 		if ( Camera == null )
 		{
 			Camera = new SceneCamera( "Minimap" );
 			Camera.World = Game.SceneWorld;
+			Camera.RenderTags.Add( "world" );
 		}
 
 		Camera.FindOrCreateHook<MinimapNoEntitiesHook>();

@@ -25,6 +25,16 @@
             width: 100%;
             height: 100%;
 
+            .player {
+                position: absolute;
+                background-image: url( /textures/ui/navigation.png );
+                transform: translate( -50% -50% );
+                pointer-events: none;
+                background-size: cover;
+                width: 32px;
+                height: 32px;
+            }
+
             .marker {
                 position: absolute;
                 background-image: url( /textures/ui/location.png );

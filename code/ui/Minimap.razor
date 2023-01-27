@@ -18,7 +18,9 @@
 <root>
     <div @ref="Container" class="container">
         <img class="image" @ref="Image" />
-        <div @ref="MarkerContainer" class=" markers"></div>
+        <div @ref="MarkerContainer" class=" markers">
+            <div @ref="Player" class="player"></div>
+        </div
     </div>
 </root>
 
@@ -27,6 +29,7 @@
     private Dictionary<MapMarker, Panel> Markers { get; set; } = new();
     private Panel MarkerContainer { get; set; }
     private Panel Container { get; set; }
+    private Panel Player { get; set; }
     private Image Image { get; set; }
 
     public override void Tick()
@@ -35,6 +38,13 @@
 
         Render( localPlayer.Position );
         Image.Texture = GetOrCreateTexture();
+
+        var rotation = localPlayer.Rotation.Inverse.Yaw();
+
+        var tx = new PanelTransform();
+        tx.AddRotation( 0f, 0f, rotation + 45f );
+
+        Player.Style.Transform = tx;
 
         foreach ( var marker in localPlayer.Markers )
         {
@@ -61,8 +71,8 @@
             var pw = panelSize.Width + 16f;
             var ph = panelSize.Height + 16f;
 
-            x = Math.Clamp( x, pw * 0.5f, box.Width - (pw * 0.5f) );
-            y = Math.Clamp( y, ph * 0.5f, box.Height - (ph * 0.5f) );
+            x = x.Clamp( pw * 0.5f, box.Width - (pw * 0.5f) );
+            y = y.Clamp( ph * 0.5f, box.Height - (ph * 0.5f) );
 
             panel.Style.Left = Length.Pixels( x * ScaleFromScreen );
             panel.Style.Top = Length.Pixels( y * ScaleFromScreen );

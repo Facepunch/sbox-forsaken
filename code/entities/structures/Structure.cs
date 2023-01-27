@@ -75,10 +75,16 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 	{
 		var testPosition = Position + Vector3.Up * 4f;
 		var collision = Trace.Body( PhysicsBody, Transform.WithPosition( testPosition ), testPosition )
-			.WithAnyTags( "nobuild", "world" )
+			.WithAnyTags( "world" )
 			.Run();
 
-		return (collision.Hit || collision.StartedSolid);
+		if ( collision.Hit || collision.StartedSolid )
+			return true;
+
+		var zones = All.OfType<BuildExclusionZone>()
+			.Where( z => PhysicsBody.CheckOverlap( z.PhysicsBody ) );
+
+		return zones.Any();
 	}
 
 	public void SnapToSocket( Socket.Match match )

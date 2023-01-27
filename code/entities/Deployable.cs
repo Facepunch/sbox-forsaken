@@ -46,10 +46,16 @@ public partial class Deployable : ModelEntity, IDamageable, IPersistence
 	{
 		var testPosition = entity.Position + Vector3.Up * 4f;
 		var collision = Trace.Body( entity.PhysicsBody, entity.Transform.WithPosition( testPosition ), testPosition )
-			.WithAnyTags( "nobuild", "solid", "world" )
+			.WithAnyTags( "solid", "world" )
 			.Run();
 
-		return (collision.Hit || collision.StartedSolid);
+		if ( collision.Hit || collision.StartedSolid )
+			return true;
+
+		var zones = All.OfType<BuildExclusionZone>()
+			.Where( z => entity.PhysicsBody.CheckOverlap( z.PhysicsBody ) );
+
+		return zones.Any();
 	}
 
 	public virtual float MaxHealth => 100f;

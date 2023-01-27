@@ -13,10 +13,7 @@ namespace Facepunch.Forsaken
 		{
 			base.Spawn();
 
-			EnableTraceAndQueries = true;
 			Transmit = TransmitType.Always;
-
-			Tags.Add( "nobuild" );
 		}
 	}
 }

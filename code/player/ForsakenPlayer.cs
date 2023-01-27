@@ -899,6 +899,13 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		}
 	}
 
+	[Event.Tick.Client]
+	private void ClientTick()
+	{
+		Camera.Main.RenderTags.Clear();
+		Camera.Main.ExcludeTags.Clear();
+	}
+
 	protected override void OnDestroy()
 	{
 		if ( Game.IsServer )
