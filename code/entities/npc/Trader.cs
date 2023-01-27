@@ -34,7 +34,7 @@ public partial class Trader : NPC, IContextActionProvider, IPersistence, INameta
 
 		if ( remainder == 0 )
 		{
-			Sound.FromScreen( To.Single( player ), "ui.code.press" );
+			Sound.FromScreen( To.Single( player ), "ui.purchase" );
 			player.TakeItems<SalvageItem>( purchasable.SalvageCost );
 			item.StackSize--;
 		}
