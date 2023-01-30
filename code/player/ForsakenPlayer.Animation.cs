@@ -16,10 +16,10 @@ public partial class ForsakenPlayer
 		else
 			rotation = ViewAngles.ToRotation();
 
+		var isSimulating = Prediction.CurrentHost.IsValid();
+
 		if ( !ForsakenGame.Isometric )
 		{
-			var isSimulating = Prediction.CurrentHost.IsValid();
-
 			if ( isSimulating && Input.Down( InputButton.Run ) )
 			{
 				rotation = Rotation.LookAt( InputDirection, Vector3.Up );
@@ -42,14 +42,18 @@ public partial class ForsakenPlayer
 		Rotation = Rotation.Lerp( Rotation, rotation, Time.Delta * 10f );
 
 		var animHelper = new CitizenAnimationHelper( this );
+		var lookAtPosition = EyePosition + EyeRotation.Forward * 100f;
 
-		var trace = Trace.Ray( CameraPosition, CameraPosition + CursorDirection * 3000f )
-			.WithoutTags( "trigger" )
-			.WithAnyTags( "solid", "world" )
-			.Ignore( this )
-			.Run();
+		if ( isSimulating && IsAiming() )
+		{
+			var trace = Trace.Ray( CameraPosition, CameraPosition + CursorDirection * 3000f )
+				.WithoutTags( "trigger" )
+				.WithAnyTags( "solid", "world" )
+				.Ignore( this )
+				.Run();
 
-		var lookAtPosition = IsAiming() ? trace.EndPosition : (EyePosition + EyeRotation.Forward * 100f);
+			lookAtPosition = trace.EndPosition;
+		}
 
 		animHelper.WithWishVelocity( Controller.WishVelocity );
 		animHelper.WithVelocity( Velocity );
