@@ -1,31 +1,20 @@
-﻿CraftingQueueItem {
+﻿ItemIcon {
     border: 2px solid rgba( #FFF, 0.2 );
     background: linear-gradient(rgba(#000000, 0.8), rgba(#444, 0.8));
     transition: box-shadow 0.15s ease-in;
     transition: border 0.15s ease-in;
     transition: transform 0.15s ease-in;
+    border-radius: 2px;
     align-items: center;
     justify-content: center;
-    border-radius: 2px;
-    height: 100px;
-    width: 100px;
+    height: 80px;
+    width: 80px;
 
     > .icon {
-        width: 80%;
-        height: 80%;
+        width: 90%;
+        height: 90%;
         background-size: cover;
         pointer-events: none;
-    }
-
-    > .timeleft {
-        position: absolute;
-        pointer-events: none;
-        font-family: Vollkorn;
-        text-shadow: 0 2px 0 rgba(0, 0, 0, 0.8);
-        font-size: 24px;
-        color: white;
-        bottom: -2px;
-        left: 4px;
     }
 
     > .quantity {
@@ -46,15 +35,6 @@
         height: 100%;
     }
 
-    &:first-child {
-        &:not( .is-empty ) {
-            animation-name: pulse;
-            animation-duration: 0.5s;
-            animation-timing-function: ease-in;
-            animation-direction: alternate;
-        }
-    }
-
     &:not( :last-child ) {
         margin-right: 8px;
     }
@@ -67,7 +47,7 @@
 
     &:hover {
         &:not( .is-empty ) {
-            box-shadow: 0 0 16px 2px rgba( red 0.05 );
+            box-shadow: 0 0 16px 2px rgba( red 0.2 );
             border-color: rgba( red 0.2 );
             transform: scale( 1.05 1.05 );
             sound-in: "ui.hover";
@@ -80,19 +60,5 @@
         .glow {
             display: none;
         }
-    }
-}
-
-@keyframes pulse {
-    0% {
-        transform: scale( 1 );
-    }
-
-    50% {
-        transform: scale( 1.1 );
-    }
-
-    100% {
-        transform: scale( 1 );
     }
 }

@@ -1,0 +1,62 @@
+﻿@using System;
+@using Sandbox;
+@using Sandbox.UI;
+@using Facepunch.Forsaken;
+@using System.Collections.Generic;
+
+@namespace Facepunch.Forsaken.UI
+@attribute [StyleSheet( "/ui/inventory/ItemIcon.scss" )]
+@inherits Panel
+
+<root>
+    <div @ref="Glow" class="glow"></div>
+    <div @ref="Icon" class="icon"></div>
+
+    @if ( Quantity > 1 )
+    {
+        <label class="quantity">x@(Quantity)</label>
+    }
+</root>
+
+@code
+{
+    public bool IsEmpty => !Item.IsValid();
+
+    public InventoryItem Item { get; set; }
+    public int Quantity { get; set; }
+
+    private Panel Icon { get; set; }
+    private Panel Glow { get; set; }
+
+    public ItemIcon()
+    {
+        BindClass( "is-empty", () => IsEmpty );
+    }
+
+    protected override int BuildHash()
+    {
+        return HashCode.Combine( Item );
+    }
+
+    protected override void OnAfterTreeRender( bool firstTime )
+    {
+        if ( Item.IsValid() )
+        {
+            var icon = Item.Icon;
+
+            if ( !string.IsNullOrEmpty( icon ) )
+            {
+                Icon.Style.SetBackgroundImage( icon );
+                Icon.Style.BackgroundTint = Item.IconTintColor;
+            }
+            else
+            {
+                Icon.Style.BackgroundImage = null;
+            }
+
+            Glow.Style.SetRadialGradientBackground( Item.Color, 0.6f, Color.Black, 0f );
+        }
+
+        base.OnAfterTreeRender( firstTime );
+    }
+}

@@ -120,7 +120,7 @@
 
                 @for ( var i = 0; i < 10; i++ )
                 {
-                    if (craftingQueue.Count > i)
+                    if ( craftingQueue.Count > i )
                     {
                         <CraftingQueueItem Entry=@craftingQueue[i] OnSelected=@OnCraftingEntrySelected></CraftingQueueItem>
                     }
@@ -170,8 +170,9 @@
 
     protected override int BuildHash()
     {
-        if ( !ForsakenPlayer.Me.IsValid() ) return 0;
-        return HashCode.Combine( ForsakenPlayer.Me, SelectedRecipe, SelectedCategory, SearchQuery, Quantity, ForsakenPlayer.Me.CraftingQueue.Count );
+        var player = ForsakenPlayer.Me;
+        if ( !player.IsValid() ) return 0;
+        return HashCode.Combine( ForsakenPlayer.Me, SelectedRecipe, SelectedCategory, SearchQuery, Quantity, player.CraftingQueue.Count );
     }
 
     private void OnSearchQueryChanged( string value )

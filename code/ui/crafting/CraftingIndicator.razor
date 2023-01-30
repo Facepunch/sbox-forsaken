@@ -1,0 +1,32 @@
+﻿@using System;
+@using System.Linq;
+@using Sandbox;
+@using Sandbox.UI;
+@using Facepunch.Forsaken;
+
+@namespace Facepunch.Forsaken.UI
+@attribute [StyleSheet( "/ui/crafting/CraftingIndicator.scss" )]
+@inherits Panel
+
+@{
+    var entry = ForsakenPlayer.Me?.CraftingQueue.FirstOrDefault();
+    if ( entry is null ) return;
+
+    var item = InventorySystem.GetDefinition( entry.Recipe.Output );
+    if ( !item.IsValid() ) return;
+}
+
+<div class="container">
+    <ItemIcon Item=@item Quantity=@entry.Quantity></ItemIcon>
+    <label>@item.Name (@(entry.FinishTime.Relative.CeilToInt())s)</label>
+</div>
+
+@code
+{
+    protected override int BuildHash()
+    {
+        var entry = ForsakenPlayer.Me?.CraftingQueue.FirstOrDefault();
+        if ( entry is null ) return 0;
+        return HashCode.Combine( entry, entry.Recipe, entry.Quantity, entry.FinishTime.Relative.CeilToInt() );
+    }
+}

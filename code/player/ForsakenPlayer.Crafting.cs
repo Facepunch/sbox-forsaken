@@ -28,7 +28,7 @@ public partial class ForsakenPlayer
 		if ( ConsoleSystem.Caller.Pawn is not ForsakenPlayer player )
 			return;
 
-		if ( player.CraftingQueue.Count >= index )
+		if ( player.CraftingQueue.Count > index )
 		{
 			var entry = player.CraftingQueue[index];
 			player.CancelCrafting( entry );
