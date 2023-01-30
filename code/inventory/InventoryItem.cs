@@ -144,6 +144,11 @@ public class InventoryItem : IValid
 		}
 	}
 
+	public virtual bool OnTrySwap( InventoryItem other )
+	{
+		return true;
+	}
+
 	public virtual bool IsSameType( InventoryItem other )
 	{
 		return (GetType() == other.GetType() && UniqueId == other.UniqueId);

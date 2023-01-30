@@ -386,6 +386,9 @@ public class InventoryContainer : IValid
 				}
 			}
 
+			if ( !target.ItemList[toSlot].OnTrySwap( fromInstance ) )
+				return false;
+
 			fromInstance.Parent = target;
 			fromInstance.SlotId = toSlot;
 

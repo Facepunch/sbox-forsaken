@@ -82,6 +82,17 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerIt
 		return false;
 	}
 
+	public override bool OnTrySwap( InventoryItem other )
+	{
+		if ( other is AttachmentItem )
+		{
+			Attachments.Give( other );
+			return false;
+		}
+
+		return true;
+	}
+
 	public override void Write( BinaryWriter writer )
 	{
 		writer.Write( Attachments );
