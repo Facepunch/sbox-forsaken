@@ -7,6 +7,7 @@
     align-items: center;
     justify-content: center;
     backdrop-filter-blur: 24px;
+    z-index: 1000;
     background-color: rgba(0, 0, 0, 0.7);
     transition: backdrop-filter-blur 0.15s ease-in;
     transition: opacity 0.15s ease-in;

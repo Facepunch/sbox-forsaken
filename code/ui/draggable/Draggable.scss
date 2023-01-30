@@ -7,9 +7,9 @@
     background-repeat: no-repeat;
     background-position: center;
     backdrop-filter-blur: 24px;
+    z-index: 1001;
     border: 1px solid white;
     display: none;
-    z-index: 101;
 
     &.active {
         display: flex;

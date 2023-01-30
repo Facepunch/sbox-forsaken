@@ -6,6 +6,7 @@
     display: flex;
     pointer-events: all;
     backdrop-filter-blur: 24px;
+    z-index: 1000;
     flex-direction: column;
     background-color: rgba(0, 0, 0, 0.9);
     transition: backdrop-filter-blur 0.15s ease-in;
@@ -63,6 +64,7 @@
                 .group {
                     flex-direction: column;
                 }
+
                 .remaining {
                     font-family: Vollkorn;
                     font-size: 24px;
