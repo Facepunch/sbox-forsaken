@@ -1,0 +1,52 @@
+﻿@using System;
+@using Sandbox;
+@using Sandbox.UI;
+@using Sandbox.UI.Construct;
+@using Facepunch.Forsaken;
+@using System.Collections.Generic;
+@using System.IO;
+
+@namespace Facepunch.Forsaken.UI
+@attribute [StyleSheet( "/ui/death/Death.scss" )]
+@inherits Panel
+
+@if ( !ForsakenPlayer.Me.IsValid() ) return;
+
+<root>
+    <div class="container">
+        <div class="header">
+            <label class="title">You died to</label>
+            <img src="@WeaponIcon" class="icon" />
+            <label class="name">@(AttackerName)</label>
+        </div>
+
+        <div class="subtitle">You managed to survive for @(TimeSpan.FromSeconds( TimeAliveFor ).ToString( @"hh\:mm\:ss" ))</div>
+    </div>
+</root>
+
+@code
+{
+    public static Death Current { get; private set; }
+
+    public string AttackerName { get; private set; }
+    public string WeaponIcon { get; private set; }
+    public int TimeAliveFor { get; private set; }
+
+    public bool IsOpen => (ForsakenPlayer.Me?.LifeState ?? LifeState.Alive) == LifeState.Dead;
+
+    protected override void OnParametersSet()
+    {
+        Current?.Delete( true );
+        Current = this;
+
+        BindClass( "hidden", () => !IsOpen );
+
+        base.OnParametersSet();
+    }
+
+    protected override int BuildHash()
+    {
+        var player = ForsakenPlayer.Me;
+        return HashCode.Combine( player, player?.LifeState ?? LifeState.Alive, AttackerName, WeaponIcon, TimeAliveFor );
+    }
+}
