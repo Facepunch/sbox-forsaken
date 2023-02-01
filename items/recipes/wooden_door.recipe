@@ -3,7 +3,7 @@
 	data = 
 	{
 		Category = "Building"
-		Output = "single_door"
+		Output = "wooden_door"
 		StackSize = 1
 		Inputs = 
 		{

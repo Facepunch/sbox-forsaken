@@ -5,8 +5,10 @@ using System.Linq;
 
 namespace Facepunch.Forsaken;
 
-public partial class SingleDoor : Structure, ICodeLockable
+public abstract partial class SingleDoor : Structure, ICodeLockable
 {
+	public virtual StructureMaterial Material => StructureMaterial.Wood;
+
 	public override Color GlowColor => IsAuthorized() ? Color.Green : Color.Red;
 
 	private ContextAction OpenAction { get; set; }
@@ -143,10 +145,6 @@ public partial class SingleDoor : Structure, ICodeLockable
 	public override void Spawn()
 	{
 		base.Spawn();
-
-		SetModel( "models/structures/single_door.vmdl" );
-		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
-
 		Tags.Add( "hover", "solid", "door" );
 	}
 
@@ -169,6 +167,8 @@ public partial class SingleDoor : Structure, ICodeLockable
 	{
 		if ( Game.IsServer || IsClientOnly )
 		{
+			Socket?.Delete();
+
 			Socket = AddSocket( "center" );
 			Socket.ConnectAny.Add( "doorway" );
 			Socket.Tags.Add( "door" );
