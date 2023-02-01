@@ -28,6 +28,7 @@ public partial class ForsakenPlayer
 
 	public virtual void SerializeState( BinaryWriter writer )
 	{
+		writer.Write( TimeSinceLastKilled.Relative );
 		writer.Write( SteamId );
 		writer.Write( DisplayName );
 		writer.Write( (byte)LifeState );
@@ -65,6 +66,7 @@ public partial class ForsakenPlayer
 
 	public virtual void DeserializeState( BinaryReader reader )
 	{
+		TimeSinceLastKilled = reader.ReadSingle();
 		SteamId = reader.ReadInt64();
 		DisplayName = reader.ReadString();
 		LifeState = (LifeState)reader.ReadByte();
