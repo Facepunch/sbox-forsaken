@@ -139,6 +139,8 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 		{
 			socket.Serialize( writer );
 		}
+
+		writer.Write( Health );
 	}
 
 	public virtual void DeserializeState( BinaryReader reader )
@@ -156,6 +158,8 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 				socket.Deserialize( reader );
 			}
 		}
+
+		Health = reader.ReadSingle();
 	}
 
 	public virtual string GetContextName()
