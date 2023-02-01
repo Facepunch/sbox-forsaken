@@ -30,6 +30,15 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 	}
 
 	[ConCmd.Server]
+	public static void StarveMe()
+	{
+		if ( ConsoleSystem.Caller.Pawn is ForsakenPlayer pl )
+		{
+			pl.TakeDamage( DamageInfo.FromBullet( pl.Position, Vector3.Random * 80f, 1000f ).WithTag( "hunger" ) );
+		}
+	}
+
+	[ConCmd.Server]
 	public static void KillMe()
 	{
 		if ( ConsoleSystem.Caller.Pawn is ForsakenPlayer pl )
@@ -136,10 +145,10 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 	private TimeSince TimeSinceBackpackOpen { get; set; }
 	private bool IsBackpackToggleMode { get; set; }
 	private List<ActiveEffect> ActiveEffects { get; set; } = new();
+	private TimeSince TimeSinceLastKilled { get; set; }
 	private TimeUntil NextNeedsDamage { get; set; }
 	private TimeUntil NextNeedsWarning { get; set; }
 	private TimeUntil NextNeedsAlert { get; set; }
-	private TimeSince TimeSinceLastKilled { get; set; }
 	private Glow GlowComponent { get; set; }
 	private Entity LastActiveChild { get; set; }
 
@@ -418,13 +427,14 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 
 	public virtual void Respawn()
 	{
+		TimeSinceLastKilled = 0f;
 		EnableAllCollisions = true;
 		EnableDrawing = true;
 		LifeState = LifeState.Alive;
-		Calories = 70f;
-		Hydration = 40f;
-		Stamina = 100f;
-		Health = 100f;
+		Calories = 90f;
+		Hydration = 60f;
+		Stamina = MaxStamina;
+		Health = MaxHealth;
 		Velocity = Vector3.Zero;
 
 		CreateHull();
@@ -661,6 +671,8 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 	{
 		BecomeRagdollOnServer( LastDamageTaken.Force, LastDamageTaken.BoneIndex );
 
+		Death.Show( this, LastDamageTaken, TimeSinceLastKilled.Relative.CeilToInt() );
+
 		GameManager.Current?.OnKilled( this );
 
 		TimeSinceLastKilled = 0f;
@@ -706,7 +718,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 	{
 		if ( LifeState == LifeState.Dead )
 		{
-			if ( TimeSinceLastKilled > 3f && Game.IsServer )
+			if ( TimeSinceLastKilled > 5f && Game.IsServer )
 			{
 				Respawn();
 			}
