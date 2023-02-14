@@ -19,7 +19,7 @@ public partial class Minimap
 	public static void Render( Vector3 position )
 	{
 		var cameraPosition = position;
-		cameraPosition.z += 1000f;
+		cameraPosition.z += 2000f;
 
 		if ( Camera == null )
 		{
