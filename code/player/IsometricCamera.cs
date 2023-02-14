@@ -24,7 +24,7 @@ public partial class IsometricCamera
 
 			ZoomLevel = ZoomLevel.Clamp( 0f, 1f );
 
-			Camera.FieldOfView = Screen.CreateVerticalFieldOfView( 40f );
+			Camera.FieldOfView = Screen.CreateVerticalFieldOfView( 30f );
 
 			LookAt = pawn.Position + Vector3.Up * 50f;
 
