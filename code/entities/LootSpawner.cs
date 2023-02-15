@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using Sandbox.Component;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -125,6 +126,12 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider,
 	public override void OnNewModel( Model model )
 	{
 		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
+
+		if ( Game.IsServer )
+		{
+			UpdateNavBlocker();
+		}
+
 		base.OnNewModel( model );
 	}
 
@@ -179,6 +186,31 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider,
 				}
 			}
 		}
+	}
+
+	protected void UpdateNavBlocker()
+	{
+		Game.AssertServer();
+		Components.RemoveAny<NavBlocker>();
+		Components.Add( new NavBlocker() );
+		Event.Run( "fsk.navblocker.added", Position );
+	}
+
+	protected void RemoveNavBlocker()
+	{
+		Game.AssertServer();
+		Components.RemoveAny<NavBlocker>();
+		Event.Run( "fsk.navblocker.removed", Position );
+	}
+
+	protected override void OnDestroy()
+	{
+		if ( Game.IsServer )
+		{
+			RemoveNavBlocker();
+		}
+
+		base.OnDestroy();
 	}
 
 	[Event.Tick.Server]

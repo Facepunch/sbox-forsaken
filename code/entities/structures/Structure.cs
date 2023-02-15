@@ -89,8 +89,6 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 
 	public void SnapToSocket( Socket.Match match )
 	{
-		// TODO: Speak to the Rust team. I brute forced all of this until it kind of worked.
-
 		var transform = match.Theirs.Transform;
 
 		Rotation = Rotation.Identity;
@@ -109,6 +107,7 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 		if ( ShouldRotate )
 			Rotation = rotation;
 
+		PhysicsBody.Transform = Transform;
 		ResetInterpolation();
 	}
 
@@ -160,6 +159,8 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 		}
 
 		Health = reader.ReadSingle();
+
+		UpdateNavBlocker();
 	}
 
 	public virtual string GetContextName()
@@ -184,7 +185,7 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 
 	public virtual void OnPlacedByPlayer( ForsakenPlayer player )
 	{
-
+		UpdateNavBlocker();
 	}
 
 	public virtual void OnConnected( Socket ours, Socket theirs )
@@ -242,6 +243,21 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 		base.Spawn();
 	}
 
+	protected void UpdateNavBlocker()
+	{
+		Game.AssertServer();
+		Components.RemoveAny<NavBlocker>();
+		Components.Add( new NavBlocker() );
+		Event.Run( "fsk.navblocker.added", Position );
+	}
+
+	protected void RemoveNavBlocker()
+	{
+		Game.AssertServer();
+		Components.RemoveAny<NavBlocker>();
+		Event.Run( "fsk.navblocker.removed", Position );
+	}
+
 	protected Socket AddSocket( string attachmentName )
 	{
 		var attachment = GetAttachment( attachmentName );
@@ -268,5 +284,15 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 		socket.SetParent( this );
 		Sockets.Add( socket );
 		return socket;
+	}
+
+	protected override void OnDestroy()
+	{
+		if ( Game.IsServer )
+		{
+			RemoveNavBlocker();
+		}
+
+		base.OnDestroy();
 	}
 }
