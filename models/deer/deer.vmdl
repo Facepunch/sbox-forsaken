@@ -1,0 +1,2012 @@
+<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:modeldoc29:version{3cec427c-1b0e-4d48-a90a-0436f33a6041} -->
+{
+	rootNode = 
+	{
+		_class = "RootNode"
+		children = 
+		[
+			{
+				_class = "Skeleton"
+				children = 
+				[
+					{
+						_class = "Bone"
+						name = "RigRoot"
+						children = 
+						[
+							{
+								_class = "Bone"
+								name = "RigPelvis"
+								children = 
+								[
+									{
+										_class = "Bone"
+										name = "RigLBLeg1"
+										children = 
+										[
+											{
+												_class = "Bone"
+												name = "RigLBLeg2"
+												children = 
+												[
+													{
+														_class = "Bone"
+														name = "RigLBLeg3"
+														children = 
+														[
+															{
+																_class = "Bone"
+																name = "RigLBLegAnkle"
+																origin = [ 40.314819, 0.0, 0.000011 ]
+																angles = [ -3.510327, 51.582268, 3.883721 ]
+																do_not_discard = true
+															},
+														]
+														origin = [ 39.235447, 0.000252, 0.000025 ]
+														angles = [ -0.2278, 40.562195, 0.10895 ]
+														do_not_discard = true
+													},
+												]
+												origin = [ 33.795822, -0.000004, -0.000008 ]
+												angles = [ -0.043983, -54.109676, -0.004972 ]
+												do_not_discard = true
+											},
+										]
+										origin = [ -2.14991, -0.328712, 12.172808 ]
+										angles = [ -0.678661, 172.378693, 174.735977 ]
+										do_not_discard = true
+									},
+									{
+										_class = "Bone"
+										name = "RigSpine1"
+										children = 
+										[
+											{
+												_class = "Bone"
+												name = "RigSpine2"
+												children = 
+												[
+													{
+														_class = "Bone"
+														name = "RigSpine3"
+														children = 
+														[
+															{
+																_class = "Bone"
+																name = "RigChest"
+																children = 
+																[
+																	{
+																		_class = "Bone"
+																		name = "RigLFLegCollarbone"
+																		children = 
+																		[
+																			{
+																				_class = "Bone"
+																				name = "RigLFLeg1"
+																				children = 
+																				[
+																					{
+																						_class = "Bone"
+																						name = "RigLFLeg2"
+																						children = 
+																						[
+																							{
+																								_class = "Bone"
+																								name = "RigLFLeg3"
+																								children = 
+																								[
+																									{
+																										_class = "Bone"
+																										name = "RigLFLegAnkle"
+																										origin = [ 32.025097, 0.0, 0.000002 ]
+																										angles = [ 1.541825, 46.394424, 1.704844 ]
+																										do_not_discard = true
+																									},
+																								]
+																								origin = [ 36.825829, -0.000008, 0.000007 ]
+																								angles = [ -0.031058, -5.709161, -0.024314 ]
+																								do_not_discard = true
+																							},
+																						]
+																						origin = [ 31.919159, 0.000013, 0.00001 ]
+																						angles = [ -0.109881, 34.626991, 0.003087 ]
+																						do_not_discard = true
+																					},
+																				]
+																				origin = [ 25.532341, 0.000015, -0.000027 ]
+																				angles = [ -27.616076, 42.504856, -90.46888 ]
+																				do_not_discard = true
+																			},
+																		]
+																		origin = [ 29.599281, -11.804153, -2.695338 ]
+																		angles = [ -40.028671, 89.24173, -89.354462 ]
+																		do_not_discard = true
+																	},
+																	{
+																		_class = "Bone"
+																		name = "RigNeck1"
+																		children = 
+																		[
+																			{
+																				_class = "Bone"
+																				name = "RigNeck2"
+																				children = 
+																				[
+																					{
+																						_class = "Bone"
+																						name = "RigNeck3"
+																						children = 
+																						[
+																							{
+																								_class = "Bone"
+																								name = "RigHead"
+																								children = 
+																								[
+																									{
+																										_class = "Bone"
+																										name = "RigJaw1"
+																										children = 
+																										[
+																											{
+																												_class = "Bone"
+																												name = "RigTongue1"
+																												children = 
+																												[
+																													{
+																														_class = "Bone"
+																														name = "RigTongue2"
+																														children = 
+																														[
+																															{
+																																_class = "Bone"
+																																name = "RigTongue3"
+																																origin = [ 4.409027, 0.0, 0.0 ]
+																																angles = [ 0.000002, 2.060563, 0.0 ]
+																																do_not_discard = true
+																															},
+																														]
+																														origin = [ 6.739098, 0.0, 0.000004 ]
+																														angles = [ 0.000001, 2.179295, -0.000041 ]
+																														do_not_discard = true
+																													},
+																												]
+																												origin = [ 25.166061, 3.200562, -0.000002 ]
+																												angles = [ -0.000003, -23.739803, -0.000015 ]
+																												do_not_discard = true
+																											},
+																										]
+																										origin = [ 7.169266, 3.951744, -0.000006 ]
+																										angles = [ 0.000027, 76.499962, -0.000015 ]
+																										do_not_discard = true
+																									},
+																									{
+																										_class = "Bone"
+																										name = "RigLEar1"
+																										origin = [ 9.08992, -6.064178, 10.351883 ]
+																										angles = [ -65.278519, -35.753365, 1.489962 ]
+																										do_not_discard = true
+																									},
+																									{
+																										_class = "Bone"
+																										name = "RigREar1"
+																										origin = [ 9.089951, -6.064171, -10.351877 ]
+																										angles = [ 65.278534, -35.753391, -1.490004 ]
+																										do_not_discard = true
+																									},
+																									{
+																										_class = "Bone"
+																										name = "RigLEye1"
+																										origin = [ 16.758453, 8.508598, 9.691241 ]
+																										angles = [ -55.450855, 65.42942, -17.107389 ]
+																										do_not_discard = true
+																									},
+																									{
+																										_class = "Bone"
+																										name = "RigREye1"
+																										origin = [ 16.758453, 8.508606, -9.691251 ]
+																										angles = [ 55.450871, 65.429405, 17.10729 ]
+																										do_not_discard = true
+																									},
+																									{
+																										_class = "Bone"
+																										name = "RigLEyelid1"
+																										origin = [ 16.287979, 8.448181, 9.790873 ]
+																										angles = [ -38.096161, 1.204813, 32.861649 ]
+																										do_not_discard = true
+																									},
+																									{
+																										_class = "Bone"
+																										name = "RigREyelid1"
+																										origin = [ 16.287964, 8.448196, -9.790884 ]
+																										angles = [ 38.096172, 1.204794, -32.861732 ]
+																										do_not_discard = true
+																									},
+																								]
+																								origin = [ 20.963898, 0.0, 0.0 ]
+																								angles = [ -0.000006, 17.237185, 0.000002 ]
+																								do_not_discard = true
+																							},
+																						]
+																						origin = [ 19.284317, 0.000011, 0.000003 ]
+																						angles = [ -0.000018, -18.467024, -0.000019 ]
+																						do_not_discard = true
+																					},
+																				]
+																				origin = [ 21.283928, 0.0, 0.000005 ]
+																				angles = [ -0.000004, -14.646139, 0.0 ]
+																				do_not_discard = true
+																			},
+																		]
+																		origin = [ 38.228481, 7.196098, -0.000006 ]
+																		angles = [ -0.000016, -27.624043, -0.000019 ]
+																		do_not_discard = true
+																	},
+																	{
+																		_class = "Bone"
+																		name = "RigRFLegCollarbone"
+																		children = 
+																		[
+																			{
+																				_class = "Bone"
+																				name = "RigRFLeg1"
+																				children = 
+																				[
+																					{
+																						_class = "Bone"
+																						name = "RigRFLeg2"
+																						children = 
+																						[
+																							{
+																								_class = "Bone"
+																								name = "RigRFLeg3"
+																								children = 
+																								[
+																									{
+																										_class = "Bone"
+																										name = "RigRFLegAnkle"
+																										origin = [ 32.025108, -0.000122, 0.000137 ]
+																										angles = [ -1.54823, 46.38895, -1.7116 ]
+																										do_not_discard = true
+																									},
+																								]
+																								origin = [ 36.82579, -0.000011, -0.000002 ]
+																								angles = [ 0.040289, -5.703471, 0.024348 ]
+																								do_not_discard = true
+																							},
+																						]
+																						origin = [ 31.919121, 0.000023, -0.000007 ]
+																						angles = [ 0.109908, 34.62714, -0.003104 ]
+																						do_not_discard = true
+																					},
+																				]
+																				origin = [ 25.532333, -0.000053, 0.000023 ]
+																				angles = [ 27.616215, 42.504791, 90.468842 ]
+																				do_not_discard = true
+																			},
+																		]
+																		origin = [ 29.599281, -11.804153, 2.695344 ]
+																		angles = [ 40.028667, 89.241737, 89.354492 ]
+																		do_not_discard = true
+																	},
+																	{
+																		_class = "Bone"
+																		name = "RigLShoulderBlade"
+																		origin = [ 11.071723, -21.796158, -5.97127 ]
+																		angles = [ -89.999992, -0.000012, 0.0 ]
+																		do_not_discard = true
+																	},
+																	{
+																		_class = "Bone"
+																		name = "RigRShoulderBlade"
+																		origin = [ 11.071721, -21.796173, 5.971305 ]
+																		angles = [ 89.999992, 0.000008, 0.0 ]
+																		do_not_discard = true
+																	},
+																]
+																origin = [ 18.660265, -0.000008, -0.000002 ]
+																angles = [ 0.0, -0.0, -0.000014 ]
+																do_not_discard = true
+															},
+														]
+														origin = [ 18.660263, 0.0, -0.000002 ]
+														angles = [ -0.0, 0.0, -0.000014 ]
+														do_not_discard = true
+													},
+												]
+												origin = [ 18.660246, 0.000023, 0.000001 ]
+												angles = [ -0.000007, 0.000022, -0.000014 ]
+												do_not_discard = true
+											},
+										]
+										origin = [ 0.000015, 15.785034, -0.000005 ]
+										angles = [ 0.00002, 89.999992, -0.000005 ]
+										do_not_discard = true
+									},
+									{
+										_class = "Bone"
+										name = "RigRBLeg1"
+										children = 
+										[
+											{
+												_class = "Bone"
+												name = "RigRBLeg2"
+												children = 
+												[
+													{
+														_class = "Bone"
+														name = "RigRBLeg3"
+														children = 
+														[
+															{
+																_class = "Bone"
+																name = "RigRBLegAnkle"
+																origin = [ 40.314781, -0.000008, 0.000013 ]
+																angles = [ 3.505665, 51.585709, -3.889379 ]
+																do_not_discard = true
+															},
+														]
+														origin = [ 39.235435, 0.000259, -0.000031 ]
+														angles = [ 0.235172, 40.558281, -0.109083 ]
+														do_not_discard = true
+													},
+												]
+												origin = [ 33.795807, 0.000004, 0.000021 ]
+												angles = [ 0.043881, -54.109467, 0.005028 ]
+												do_not_discard = true
+											},
+										]
+										origin = [ -2.149925, -0.328712, -12.172812 ]
+										angles = [ 0.678696, 172.378799, -174.735977 ]
+										do_not_discard = true
+									},
+									{
+										_class = "Bone"
+										name = "RigTail1"
+										children = 
+										[
+											{
+												_class = "Bone"
+												name = "RigTail2"
+												children = 
+												[
+													{
+														_class = "Bone"
+														name = "RigTail3"
+														children = 
+														[
+															{
+																_class = "Bone"
+																name = "RigTail4"
+																origin = [ 7.752884, 0.000038, -0.000002 ]
+																angles = [ 0.000015, -15.500008, 0.0 ]
+																do_not_discard = true
+															},
+														]
+														origin = [ 3.883671, -0.000076, -0.0 ]
+														angles = [ 0.000015, -23.500017, 0.000003 ]
+														do_not_discard = true
+													},
+												]
+												origin = [ 3.883705, 0.000031, -0.000003 ]
+												angles = [ 0.000026, -18.49999, 0.000013 ]
+												do_not_discard = true
+											},
+										]
+										origin = [ 7.540382, -18.417587, 0.00001 ]
+										angles = [ -0.00001, -123.000031, 0.00002 ]
+										do_not_discard = true
+									},
+								]
+								origin = [ -0.000003, 61.777714, 116.367989 ]
+								angles = [ -90.0, -179.999985, 0.0 ]
+								do_not_discard = true
+							},
+						]
+						origin = [ 0.0, -0.000004, -0.0 ]
+						angles = [ -0.0, 90.0, -0.0 ]
+						do_not_discard = true
+					},
+				]
+			},
+			{
+				_class = "MaterialGroupList"
+				children = 
+				[
+					{
+						_class = "DefaultMaterialGroup"
+						remaps = 
+						[
+							{
+								from = "reddeer_m.vmat"
+								to = "models/deer/deer.vmat"
+							},
+						]
+						use_global_default = false
+						global_default_material = ""
+					},
+				]
+			},
+			{
+				_class = "RenderMeshList"
+				children = 
+				[
+					{
+						_class = "RenderMeshFile"
+						filename = "models/deer/meshes/RedDeer_M.fbx"
+						import_translation = [ 0.0, 0.0, 0.0 ]
+						import_rotation = [ 0.0, 0.0, 0.0 ]
+						import_scale = 1.0
+						align_origin_x_type = "None"
+						align_origin_y_type = "None"
+						align_origin_z_type = "None"
+						parent_bone = ""
+						import_filter = 
+						{
+							exclude_by_default = false
+							exception_list = [  ]
+						}
+					},
+				]
+			},
+			{
+				_class = "AnimationList"
+				children = 
+				[
+					{
+						_class = "AnimFile"
+						name = "Attack_FrontLegs_01_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Attack_FrontLegs_01-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Attack_FrontLegs_02_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Attack_FrontLegs_02-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Attack_Head_01_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Attack_Head_01-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Attack_Head_02_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Attack_Head_02-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Attack_HindLegs_01_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Attack_HindLegs_01-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Attack_HindLegs_02_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Attack_HindLegs_02-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Death_Stand_Left_Pose_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Death_Stand_Left_Pose-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Death_Stand_Left_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Death_Stand_Left-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Death_Stand_Right_Pose_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Death_Stand_Right_Pose-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Death_Stand_Right_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Death_Stand_Right-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Jump_Down_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Jump_Down-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Jump_Run_IP"
+						children = 
+						[
+							{
+								_class = "ExtractMotion"
+								extract_tx = true
+								extract_ty = true
+								extract_tz = false
+								extract_rz = false
+								linear = false
+								quadratic = false
+								root_bone_name = ""
+								motion_type = "Single"
+							},
+						]
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = true
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Jump_Run-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Jump_Stand_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Jump_Stand-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Jump_Trot_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Jump_Trot-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Jump_Up_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Jump_Up-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "JumpX_End_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/JumpX_End-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "JumpX_Loop_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = true
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/JumpX_Loop-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "JumpX_Start_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/JumpX_Start-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Loco_Run_L_IP"
+						children = 
+						[
+							{
+								_class = "ExtractMotion"
+								extract_tx = true
+								extract_ty = true
+								extract_tz = false
+								extract_rz = false
+								linear = false
+								quadratic = false
+								root_bone_name = ""
+								motion_type = "Single"
+							},
+						]
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = true
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Loco_Run_L-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Loco_Run_R_IP"
+						children = 
+						[
+							{
+								_class = "ExtractMotion"
+								extract_tx = true
+								extract_ty = true
+								extract_tz = false
+								extract_rz = false
+								linear = false
+								quadratic = false
+								root_bone_name = ""
+								motion_type = "Single"
+							},
+						]
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = true
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Loco_Run_R-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Loco_Run_IP"
+						children = 
+						[
+							{
+								_class = "ExtractMotion"
+								extract_tx = true
+								extract_ty = true
+								extract_tz = false
+								extract_rz = false
+								linear = false
+								quadratic = false
+								root_bone_name = ""
+								motion_type = "Single"
+							},
+						]
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = true
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Loco_Run-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Loco_Sneak_L_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Loco_Sneak_L-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Loco_Sneak_R_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Loco_Sneak_R-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Loco_Sneak_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Loco_Sneak-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Loco_Sprint_L_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Loco_Sprint_L-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Loco_Sprint_R_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Loco_Sprint_R-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Loco_Sprint_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Loco_Sprint-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Loco_Swim_L_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Loco_Swim_L-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Loco_Swim_R_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Loco_Swim_R-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Loco_Swim_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Loco_Swim-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Loco_Trot_L_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Loco_Trot_L-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Loco_Trot_R_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Loco_Trot_R-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Loco_Trot_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Loco_Trot-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Loco_Walk_L_IP"
+						children = 
+						[
+							{
+								_class = "ExtractMotion"
+								extract_tx = true
+								extract_ty = true
+								extract_tz = false
+								extract_rz = false
+								linear = false
+								quadratic = false
+								root_bone_name = ""
+								motion_type = "Single"
+							},
+						]
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = true
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Loco_Walk_L-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Loco_Walk_R_IP"
+						children = 
+						[
+							{
+								_class = "ExtractMotion"
+								extract_tx = true
+								extract_ty = true
+								extract_tz = false
+								extract_rz = false
+								linear = false
+								quadratic = false
+								root_bone_name = ""
+								motion_type = "Single"
+							},
+						]
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = true
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Loco_Walk_R-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Loco_WalkBack_IP"
+						children = 
+						[
+							{
+								_class = "ExtractMotion"
+								extract_tx = true
+								extract_ty = true
+								extract_tz = false
+								extract_rz = false
+								linear = false
+								quadratic = false
+								root_bone_name = ""
+								motion_type = "Single"
+							},
+						]
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = true
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Loco_WalkBack-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Loco_Walk_IP"
+						children = 
+						[
+							{
+								_class = "ExtractMotion"
+								extract_tx = true
+								extract_ty = true
+								extract_tz = false
+								extract_rz = false
+								linear = false
+								quadratic = false
+								root_bone_name = ""
+								motion_type = "Single"
+							},
+						]
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = true
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Loco_Walk-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Loco_WalkSlow_L_IP"
+						children = 
+						[
+							{
+								_class = "ExtractMotion"
+								extract_tx = true
+								extract_ty = true
+								extract_tz = false
+								extract_rz = false
+								linear = false
+								quadratic = false
+								root_bone_name = ""
+								motion_type = "Single"
+							},
+						]
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = true
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Loco_WalkSlow_L-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Loco_WalkSlow_R_IP"
+						children = 
+						[
+							{
+								_class = "ExtractMotion"
+								extract_tx = true
+								extract_ty = true
+								extract_tz = false
+								extract_rz = false
+								linear = false
+								quadratic = false
+								root_bone_name = ""
+								motion_type = "Single"
+							},
+						]
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = true
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Loco_WalkSlow_R-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Loco_WalkSlow_IP"
+						children = 
+						[
+							{
+								_class = "ExtractMotion"
+								extract_tx = true
+								extract_ty = true
+								extract_tz = false
+								extract_rz = false
+								linear = false
+								quadratic = false
+								root_bone_name = ""
+								motion_type = "Single"
+							},
+						]
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = true
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Loco_WalkSlow-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Sitting_00_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Sitting_00-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Sitting_01_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Sitting_01-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Sitting_02_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Sitting_02-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Sleeping_01_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Sleeping_01-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Stand_00_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Stand_00-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Stand_01_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Stand_01-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Stand_02_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Stand_02-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Stand_Drinking_01_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Stand_Drinking_01-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Stand_Eating_01_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Stand_Eating_01-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Stand_Eating_02_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Stand_Eating_02-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Stand_Eating_03_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Stand_Eating_03-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Swimming_01_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Swimming_01-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Trans_Sitting_to_Sleeping_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Trans_Sitting_to_Sleeping-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Trans_Sitting_to_Stand_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Trans_Sitting_to_Stand-IP.fbx"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Trans_Sleeping_to_Sitting_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Trans_Sleeping_to_Sitting-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Trans_Stand_to_Sitting_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Trans_Stand_to_Sitting-IP.fbx"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Trans_TurnL90_OnSpot_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Trans_TurnL90_OnSpot-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Trans_TurnL90_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Trans_TurnL90-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Trans_TurnR90_OnSpot_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Trans_TurnR90_OnSpot-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Trans_TurnR90_IP"
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = false
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Trans_TurnR90-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Trans_WalkStart_IP"
+						children = 
+						[
+							{
+								_class = "ExtractMotion"
+								extract_tx = true
+								extract_ty = true
+								extract_tz = false
+								extract_rz = false
+								linear = false
+								quadratic = false
+								root_bone_name = ""
+								motion_type = "Single"
+							},
+						]
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = true
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Trans_WalkStart-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+					{
+						_class = "AnimFile"
+						name = "Trans_WalkStop_IP"
+						children = 
+						[
+							{
+								_class = "ExtractMotion"
+								extract_tx = true
+								extract_ty = true
+								extract_tz = false
+								extract_rz = false
+								linear = false
+								quadratic = false
+								root_bone_name = ""
+								motion_type = "Single"
+							},
+						]
+						activity_name = ""
+						activity_weight = 1
+						weight_list_name = ""
+						fade_in_time = 0.2
+						fade_out_time = 0.2
+						looping = true
+						delta = false
+						worldSpace = false
+						hidden = false
+						anim_markup_ordered = false
+						disable_compression = false
+						source_filename = "models/deer/animations/InPlace/Trans_WalkStop-IP.FBX"
+						start_frame = -1
+						end_frame = -1
+						framerate = -1.0
+						take = 0
+						reverse = false
+					},
+				]
+				default_root_bone_name = ""
+			},
+			{
+				_class = "ModelModifierList"
+				children = 
+				[
+					{
+						_class = "ModelModifier_ScaleAndMirror"
+						scale = 0.4
+						mirror_x = false
+						mirror_y = false
+						mirror_z = false
+						flip_bone_forward = false
+						swap_left_and_right_bones = false
+					},
+				]
+			},
+			{
+				_class = "PhysicsShapeList"
+				children = 
+				[
+					{
+						_class = "PhysicsShapeBox"
+						parent_bone = "RigRoot"
+						surface_prop = "default"
+						collision_tags = "solid"
+						origin = [ -9.887033, -14.490723, 79.975319 ]
+						angles = [ 0.0, 0.0, 0.0 ]
+						dimensions = [ 72.12883, 219.399689, 169.950638 ]
+					},
+				]
+			},
+			{
+				_class = "HitboxSetList"
+				children = 
+				[
+					{
+						_class = "HitboxSet"
+						name = "default"
+						children = 
+						[
+							{
+								_class = "Hitbox"
+								name = "RigChest"
+								parent_bone = "RigChest"
+								surface_property = ""
+								translation_only = false
+								tags = "chest"
+								hitbox_mins = [ -71.920273, -23.253569, -26.359587 ]
+								hitbox_maxs = [ 38.602505, 33.655308, 25.012308 ]
+							},
+							{
+								_class = "Hitbox"
+								name = "RigHead"
+								parent_bone = "RigHead"
+								surface_property = ""
+								translation_only = false
+								tags = "head"
+								hitbox_mins = [ -11.971189, -32.310902, -20.355587 ]
+								hitbox_maxs = [ 41.119911, 40.018166, 20.356136 ]
+							},
+						]
+					},
+				]
+			},
+		]
+		model_archetype = ""
+		primary_associated_entity = ""
+		anim_graph_name = "models/deer/deer.vanmgrph"
+		base_model_name = ""
+	}
+}
