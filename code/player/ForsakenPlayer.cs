@@ -8,7 +8,7 @@ using Sandbox.Diagnostics;
 
 namespace Facepunch.Forsaken;
 
-public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProvider
+public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProvider, IDamageable
 {
 	private class ActiveEffect
 	{
@@ -117,10 +117,10 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 	[ClientInput] public int DeployableYaw { get; set; }
 	public Angles OriginalViewAngles { get; private set; }
 
-	public int MaxHealth => 100;
-	public int MaxStamina => 100;
-	public int MaxCalories => 300;
-	public int MaxHydration => 200;
+	public float MaxHealth => 100;
+	public float MaxStamina => 100;
+	public float MaxCalories => 300;
+	public float MaxHydration => 200;
 
 	public Dictionary<ArmorSlot, List<ArmorEntity>> Armor { get; private set; }
 	public ProjectileSimulator Projectiles { get; private set; }
@@ -648,6 +648,11 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 				else
 				{
 					Sound.FromScreen( To.Single( attacker ), "hitmarker.hit" );
+				}
+
+				using ( Prediction.Off() )
+				{
+					PlaySound( "melee.hitflesh" );
 				}
 			}
 

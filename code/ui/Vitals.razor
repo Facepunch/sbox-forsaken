@@ -53,7 +53,7 @@
         return HashCode.Combine( ForsakenPlayer.Me, Health, Stamina, Temperature, Calories, Hydration );
     }
 
-    private string GetStatClass( int currentValue, int maxValue )
+    private string GetStatClass( int currentValue, float maxValue )
     {
         var me = ForsakenPlayer.Me;
         if ( currentValue == 0 ) return "empty";
