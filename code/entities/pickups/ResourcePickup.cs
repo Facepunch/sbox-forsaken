@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
-public abstract partial class ResourcePickup : ModelEntity, IContextActionProvider
+public abstract partial class ResourcePickup : ModelEntity, IContextActionProvider, ILimitedSpawner
 {
 	public float InteractionRange => 100f;
 	public Color GlowColor => Color.White;
