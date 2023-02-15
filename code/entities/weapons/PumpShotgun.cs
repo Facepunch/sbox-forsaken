@@ -87,29 +87,6 @@ public partial class PumpShotgun : ProjectileWeapon<CrossbowBoltProjectile>
 		base.ShootEffects();
 	}
 
-	protected override void OnProjectileHit( CrossbowBoltProjectile projectile, TraceResult trace )
-	{
-		if ( Game.IsServer && trace.Entity is ForsakenPlayer victim )
-		{
-			var info = new DamageInfo()
-				.WithAttacker( Owner )
-				.WithWeapon( this )
-				.WithPosition( trace.EndPosition )
-				.WithForce( projectile.Velocity * 0.05f )
-				.WithTag( DamageType )
-				.UsingTraceResult( trace );
-
-			info.Damage = GetDamageFalloff( projectile.StartPosition.Distance( victim.Position ), WeaponItem.Damage );
-
-			victim.TakeDamage( info );
-			
-			using ( Prediction.Off() )
-			{
-				victim.PlaySound( "melee.hitflesh" );
-			}
-		}
-	}
-
 	private bool IsSlugAmmo()
 	{
 		if ( !WeaponItem.IsValid() )

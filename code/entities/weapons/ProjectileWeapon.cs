@@ -146,11 +146,19 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 
 	protected virtual void OnProjectileHit( T projectile, TraceResult trace )
 	{
-		if ( Game.IsServer && trace.Entity.IsValid() )
+		if ( Game.IsServer && trace.Entity is IDamageable victim )
 		{
-			var distance = trace.Entity.Position.Distance( projectile.StartPosition );
-			var damage = GetDamageFalloff( distance, WeaponItem.Damage );
-			DealDamage( trace.Entity, projectile.Position, projectile.Velocity * 0.1f, damage );
+			var info = new DamageInfo()
+				.WithAttacker( Owner )
+				.WithWeapon( this )
+				.WithPosition( trace.EndPosition )
+				.WithForce( projectile.Velocity * 0.02f )
+				.WithTag( DamageType )
+				.UsingTraceResult( trace );
+
+			info.Damage = GetDamageFalloff( projectile.StartPosition.Distance( victim.Position ), WeaponItem.Damage );
+
+			victim.TakeDamage( info );
 		}
 	}
 }

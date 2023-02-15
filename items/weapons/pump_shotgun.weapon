@@ -1,57 +1,49 @@
-<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:generic:version{7412167c-06e9-4698-aff2-e63eb59037e7} -->
 {
-	data = 
-	{
-		WorldModelMaterialGroup = 0
-		WorldModelPath = resource:"models/r870/w_r870.vmdl"
-		AmmoType = "Shotgun"
-		DefaultAmmo = 0
-		ClipSize = 6
-		DamageFalloff = 
-		{
-			rangex = "0,4000"
-			frames = 
-			[
-				{
-					y = 1
-				},
-				{
-					x = 1
-					y = 0.357143
-				},
-			]
-		}
-		RecoilCurve = 
-		{
-			rangey = "-50,-50"
-			frames = 
-			[
-				{
-					y = 1
-				},
-				{
-					x = 0.093596
-				},
-			]
-		}
-		Damage = 10
-		ClassName = "weapon_pump_shotgun"
-		IsRecyclable = true
-		RecycleOutput = null
-		BaseComponentReturn = 0.5
-		IsPurchasable = true
-		SalvageCost = 200
-		StockStackSize = "1.00,1.00,0"
-		StockChance = 0.03
-		IsLootable = true
-		LootChance = 0.02
-		OncePerContainer = true
-		LootStackSize = "1.00,0.00,0"
-		ItemName = "Pump Shotgun"
-		UniqueId = "pump_shotgun"
-		Description = "The kind of weapon that\'ll blast your entire face off."
-		Icon = resource:"textures/items/pump_shotgun.png"
-		WorldModel = resource:"models/r870/w_r870.vmdl"
-		Tags = [  ]
-	}
+  "WorldModelMaterialGroup": 0,
+  "WorldModelPath": "models/r870/w_r870.vmdl",
+  "AmmoType": "Shotgun",
+  "DefaultAmmo": 0,
+  "ClipSize": 6,
+  "DamageFalloff": {
+    "rangex": "0,4000",
+    "frames": [
+      {
+        "y": 1
+      },
+      {
+        "x": 1,
+        "y": 0.357143
+      }
+    ]
+  },
+  "RecoilCurve": {
+    "rangey": "-50,-50",
+    "frames": [
+      {
+        "y": 1
+      },
+      {
+        "x": 0.093596
+      }
+    ]
+  },
+  "Damage": 30,
+  "ClassName": "weapon_pump_shotgun",
+  "IsRecyclable": true,
+  "RecycleOutput": null,
+  "BaseComponentReturn": 0.5,
+  "IsPurchasable": true,
+  "SalvageCost": 200,
+  "StockStackSize": "1.00,1.00,0",
+  "StockChance": 0.03,
+  "IsLootable": true,
+  "LootChance": 0.02,
+  "OncePerContainer": true,
+  "LootStackSize": "1.00,0.00,0",
+  "ItemName": "Pump Shotgun",
+  "UniqueId": "pump_shotgun",
+  "Description": "The kind of weapon that\u0027ll blast your entire face off.",
+  "Icon": "textures/items/pump_shotgun.png",
+  "WorldModel": "models/r870/w_r870.vmdl",
+  "Tags": []
 }

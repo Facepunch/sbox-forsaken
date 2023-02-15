@@ -1,51 +1,44 @@
-<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:generic:version{7412167c-06e9-4698-aff2-e63eb59037e7} -->
 {
-	data = 
-	{
-		WorldModelMaterialGroup = 0
-		WorldModelPath = resource:"weapons/rust_crossbow/rust_crossbow.vmdl"
-		AmmoType = "Bolt"
-		DefaultAmmo = 0
-		ClipSize = 10
-		DamageFalloff = 
-		{
-			rangex = "0,4000"
-			frames = 
-			[
-				{
-					y = 1
-				},
-				{
-					x = 0.997537
-					y = 0.296429
-				},
-			]
-		}
-		RecoilCurve = 
-		[
-			{
-				x = 0.5
-				y = 0.5
-			},
-		]
-		Damage = 40
-		ClassName = "weapon_crossbow"
-		IsRecyclable = true
-		RecycleOutput = null
-		BaseComponentReturn = 0.5
-		IsPurchasable = true
-		SalvageCost = 40
-		StockStackSize = "1.00,1.00,0"
-		StockChance = 0.05
-		IsLootable = true
-		LootChance = 0.06
-		OncePerContainer = true
-		LootStackSize = "1.00,0.00,0"
-		ItemName = "Crossbow"
-		UniqueId = "crossbow"
-		Description = "A light damage crossbow for dealing ranged damage."
-		Icon = resource:"textures/items/weapon_crossbow.png"
-		WorldModel = resource:"weapons/rust_crossbow/rust_crossbow.vmdl"
-		Tags = [  ]
-	}
+  "WorldModelMaterialGroup": 0,
+  "WorldModelPath": "weapons/rust_crossbow/rust_crossbow.vmdl",
+  "AmmoType": "Bolt",
+  "DefaultAmmo": 0,
+  "ClipSize": 10,
+  "DamageFalloff": {
+    "rangex": "0,4000",
+    "frames": [
+      {
+        "y": 1
+      },
+      {
+        "x": 0.997537,
+        "y": 0.296429
+      }
+    ]
+  },
+  "RecoilCurve": [
+    {
+      "x": 0.5,
+      "y": 0.5
+    }
+  ],
+  "Damage": 60,
+  "ClassName": "weapon_crossbow",
+  "IsRecyclable": true,
+  "RecycleOutput": null,
+  "BaseComponentReturn": 0.5,
+  "IsPurchasable": true,
+  "SalvageCost": 40,
+  "StockStackSize": "1.00,1.00,0",
+  "StockChance": 0.05,
+  "IsLootable": true,
+  "LootChance": 0.06,
+  "OncePerContainer": true,
+  "LootStackSize": "1.00,0.00,0",
+  "ItemName": "Crossbow",
+  "UniqueId": "crossbow",
+  "Description": "A light damage crossbow for dealing ranged damage.",
+  "Icon": "textures/items/weapon_crossbow.png",
+  "WorldModel": "weapons/rust_crossbow/rust_crossbow.vmdl",
+  "Tags": []
 }

@@ -47,24 +47,6 @@ public partial class MP5A4 : ProjectileWeapon<CrossbowBoltProjectile>
 		base.ShootEffects();
 	}
 
-	protected override void OnProjectileHit( CrossbowBoltProjectile projectile, TraceResult trace )
-	{
-		if ( Game.IsServer && trace.Entity is IDamageable victim )
-		{
-			var info = new DamageInfo()
-				.WithAttacker( Owner )
-				.WithWeapon( this )
-				.WithPosition( trace.EndPosition )
-				.WithForce( projectile.Velocity * 0.02f )
-				.WithTag( DamageType )
-				.UsingTraceResult( trace );
-
-			info.Damage = GetDamageFalloff( projectile.StartPosition.Distance( victim.Position ), WeaponItem.Damage );
-
-			victim.TakeDamage( info );
-		}
-	}
-
 	private string GetTrailEffect()
 	{
 		return "particles/weapons/crossbow/crossbow_trail.vpcf";

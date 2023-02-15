@@ -62,7 +62,7 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 
 	public override float GetMoveSpeed()
 	{
-		return LastDamageTime < 10f ? 400f : 120f;
+		return LastDamageTime < 10f ? 300f : 120f;
 	}
 
 	public override void Spawn()
@@ -160,7 +160,7 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 		}
 		else
 		{
-			var speed = Velocity.Length.Remap( 0f, 400f, 0f, 1f );
+			var speed = Velocity.Length.Remap( 0f, 300f, 0f, 1f );
 			SetAnimParameter( "dead", false );
 			SetAnimParameter( "speed", speed );
 		}

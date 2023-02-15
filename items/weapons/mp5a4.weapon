@@ -1,60 +1,51 @@
-<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:generic:version{7412167c-06e9-4698-aff2-e63eb59037e7} -->
 {
-	data = 
-	{
-		WorldModelMaterialGroup = 0
-		WorldModelPath = resource:"models/mp5/w_mp5.vmdl"
-		AmmoType = "Pistol"
-		DefaultAmmo = 0
-		ClipSize = 30
-		DamageFalloff = 
-		{
-			rangex = "0,4000"
-			frames = 
-			[
-				{
-					y = 1
-				},
-				{
-					x = 1
-					y = 0.264286
-				},
-			]
-		}
-		RecoilCurve = 
-		{
-			rangey = "-30,30"
-			frames = 
-			[
-				{
-				},
-				{
-					x = 0.5
-					y = 1
-				},
-				{
-					x = 1
-				},
-			]
-		}
-		Damage = 20
-		ClassName = "weapon_mp5a4"
-		IsRecyclable = true
-		RecycleOutput = null
-		BaseComponentReturn = 0.5
-		IsPurchasable = true
-		SalvageCost = 300
-		StockStackSize = "1.00,1.00,0"
-		StockChance = 0.02
-		IsLootable = true
-		LootChance = 0.01
-		OncePerContainer = true
-		LootStackSize = "1.00,0.00,0"
-		ItemName = "MP5A4"
-		UniqueId = "mp5a4"
-		Description = "A rapid-fire submachine gun that deals light damage."
-		Icon = resource:"textures/items/mp5a4.png"
-		WorldModel = resource:"models/mp5/w_mp5.vmdl"
-		Tags = [  ]
-	}
+  "WorldModelMaterialGroup": 0,
+  "WorldModelPath": "models/mp5/w_mp5.vmdl",
+  "AmmoType": "Pistol",
+  "DefaultAmmo": 0,
+  "ClipSize": 30,
+  "DamageFalloff": {
+    "rangex": "0,4000",
+    "frames": [
+      {
+        "y": 1
+      },
+      {
+        "x": 1,
+        "y": 0.264286
+      }
+    ]
+  },
+  "RecoilCurve": {
+    "rangey": "-30,30",
+    "frames": [
+      {},
+      {
+        "x": 0.5,
+        "y": 1
+      },
+      {
+        "x": 1
+      }
+    ]
+  },
+  "Damage": 35,
+  "ClassName": "weapon_mp5a4",
+  "IsRecyclable": true,
+  "RecycleOutput": null,
+  "BaseComponentReturn": 0.5,
+  "IsPurchasable": true,
+  "SalvageCost": 300,
+  "StockStackSize": "1.00,1.00,0",
+  "StockChance": 0.02,
+  "IsLootable": true,
+  "LootChance": 0.01,
+  "OncePerContainer": true,
+  "LootStackSize": "1.00,0.00,0",
+  "ItemName": "MP5A4",
+  "UniqueId": "mp5a4",
+  "Description": "A rapid-fire submachine gun that deals light damage.",
+  "Icon": "textures/items/mp5a4.png",
+  "WorldModel": "models/mp5/w_mp5.vmdl",
+  "Tags": []
 }
