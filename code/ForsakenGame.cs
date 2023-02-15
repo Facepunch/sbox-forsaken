@@ -174,6 +174,7 @@ public partial class ForsakenGame : GameManager
 		{
 			var spawner = new LimitedSpawner();
 			spawner.SetType<Deer>();
+			spawner.UseNavMesh = true;
 			spawner.MaxTotal = 20;
 			spawner.MinPerSpawn = 1;
 			spawner.MaxPerSpawn = 10;

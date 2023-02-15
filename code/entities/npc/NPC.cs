@@ -46,14 +46,13 @@ public abstract partial class NPC : AnimatedEntity
 			Position = closest.Value;
 	}
 
-	protected bool MoveToLocation( Vector3 position, float stepSize = 8f, float climbDistance = 8f, float dropDistance = 8f )
+	protected bool MoveToLocation( Vector3 position, float stepSize = 16f )
 	{
 		TargetLocation = position;
 
 		Path = NavMesh.PathBuilder( Position )
-			.WithMaxClimbDistance( climbDistance )
+			.WithAgentHull( NavAgentHull.Default )
 			.WithPartialPaths()
-			.WithMaxDropDistance( dropDistance )
 			.WithStepHeight( stepSize )
 			.Build( TargetLocation );
 
