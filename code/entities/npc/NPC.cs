@@ -29,6 +29,7 @@ public partial class NPC : AnimatedEntity
 	/// </summary>
 	public virtual float MoveSpeed { get; set; } = 80f;
 
+	protected Vector3 TargetLocation { get; set; }
 	protected TimeUntil NextWanderTime { get; set; }
 	protected Vector3 WishDirection { get; set; }
 	protected NavPath Path { get; set; }
@@ -40,21 +41,54 @@ public partial class NPC : AnimatedEntity
 		base.Spawn();
 	}
 
+	protected void SnapToNavMesh()
+	{
+		var closest = NavMesh.GetClosestPoint( Position );
+
+		if ( closest.HasValue )
+			Position = closest.Value;
+	}
+
+	protected bool MoveToLocation( Vector3 position, float stepSize = 8f, float climbDistance = 8f, float dropDistance = 8f )
+	{
+		TargetLocation = position;
+
+		Path = NavMesh.PathBuilder( Position )
+			.WithMaxClimbDistance( climbDistance )
+			.WithPartialPaths()
+			.WithMaxDropDistance( dropDistance )
+			.WithStepHeight( stepSize )
+			.Build( TargetLocation );
+
+		return (Path?.Count ?? 0) > 0;
+	}
+
+	protected bool TryGetNavMeshPosition( float minRadius, float maxRadius, out Vector3 position )
+	{
+		var targetPosition = NavMesh.GetPointWithinRadius( Position, minRadius, maxRadius );
+
+		if ( targetPosition.HasValue )
+		{
+			position = targetPosition.Value;
+			return true;
+		}
+
+		position = default;
+		return false;
+	}
+
 	[Event.Tick.Server]
 	protected virtual void ServerTick()
 	{
 		if ( DoesWander && NextWanderTime && NavMesh.IsLoaded )
 		{
-			NextWanderTime = Game.Random.Float( MinIdleDuration, MaxIdleDuration );
+			SnapToNavMesh();
 
-			var targetPosition = NavMesh.GetPointWithinRadius( Position, 500f, 5000f );
-			if ( !targetPosition.HasValue ) return;
-
-			Path = NavMesh.PathBuilder( Position )
-				.WithMaxClimbDistance( 8f )
-				.WithMaxDropDistance( 8f )
-				.WithStepHeight( 24f )
-				.Build( targetPosition.Value );
+			if ( TryGetNavMeshPosition( 100f, 5000f, out var targetPosition ) )
+			{
+				MoveToLocation( targetPosition );
+				NextWanderTime = Game.Random.Float( MinIdleDuration, MaxIdleDuration );
+			}
 		}
 
 		var hull = GetHull();
@@ -195,5 +229,19 @@ public partial class NPC : AnimatedEntity
 
 		Path.Segments.RemoveAt( 0 );
 		return Vector3.Zero;
+	}
+
+	[ForsakenEvent.NavBlockerAdded]
+	protected virtual void OnNavBlockerAdded( Vector3 position )
+	{
+		if ( Path == null || Path.Count == 0 )
+			return;
+
+		SnapToNavMesh();
+
+		if ( !MoveToLocation( TargetLocation ) )
+		{
+			NextWanderTime = 0f;
+		}
 	}
 }
