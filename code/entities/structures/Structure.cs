@@ -234,6 +234,16 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 		return default;
 	}
 
+	public override void OnKilled()
+	{
+
+	}
+
+	public override void TakeDamage( DamageInfo info )
+	{
+
+	}
+
 	public override void Spawn()
 	{
 		Health = MaxHealth;
