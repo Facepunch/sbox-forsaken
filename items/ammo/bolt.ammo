@@ -1,26 +1,22 @@
-<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:generic:version{7412167c-06e9-4698-aff2-e63eb59037e7} -->
 {
-	data = 
-	{
-		AmmoType = "Bolt"
-		MaxStackSize = 10
-		DefaultStackSize = 2
-		IsRecyclable = true
-		RecycleOutput = null
-		BaseComponentReturn = 0.5
-		IsPurchasable = true
-		SalvageCost = 2
-		StockStackSize = "20.00,50.00,1"
-		StockChance = 0.3
-		IsLootable = false
-		LootChance = 0
-		OncePerContainer = false
-		LootStackSize = "0.00,0.00,0"
-		ItemName = "Crossbow Bolt"
-		UniqueId = "ammo_bolt"
-		Description = "Ammunition typically used for crossbows."
-		Icon = resource:"textures/items/ammo_bolt.png"
-		WorldModel = null
-		Tags = [  ]
-	}
+  "AmmoType": "Bolt",
+  "MaxStackSize": 64,
+  "DefaultStackSize": 2,
+  "IsRecyclable": true,
+  "RecycleOutput": null,
+  "BaseComponentReturn": 0.5,
+  "IsPurchasable": true,
+  "SalvageCost": 2,
+  "StockStackSize": "20.00,50.00,1",
+  "StockChance": 0.3,
+  "IsLootable": false,
+  "LootChance": 0,
+  "OncePerContainer": false,
+  "LootStackSize": "0.00,0.00,0",
+  "ItemName": "Crossbow Bolt",
+  "UniqueId": "ammo_bolt",
+  "Description": "Ammunition typically used for crossbows.",
+  "Icon": "textures/items/ammo_bolt.png",
+  "WorldModel": null,
+  "Tags": []
 }
