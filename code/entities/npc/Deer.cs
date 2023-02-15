@@ -68,6 +68,11 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 		return true;
 	}
 
+	public override float GetIdleDuration()
+	{
+		return Game.Random.Float( 8f, 16f );
+	}
+
 	public override float GetMoveSpeed()
 	{
 		if ( LastDamageTime < 10f )

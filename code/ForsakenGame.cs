@@ -138,6 +138,7 @@ public partial class ForsakenGame : GameManager
 		{
 			var spawner = new LimitedSpawner();
 			spawner.SetType<WoodPickup>();
+			spawner.UseNavMesh = true;
 			spawner.MaxTotal = 400;
 			spawner.MinPerSpawn = 200;
 			spawner.MaxPerSpawn = 300;
@@ -147,6 +148,7 @@ public partial class ForsakenGame : GameManager
 		{
 			var spawner = new LimitedSpawner();
 			spawner.SetType<StonePickup>();
+			spawner.UseNavMesh = true;
 			spawner.MaxTotal = 300;
 			spawner.MinPerSpawn = 100;
 			spawner.MaxPerSpawn = 200;
@@ -156,6 +158,7 @@ public partial class ForsakenGame : GameManager
 		{
 			var spawner = new LimitedSpawner();
 			spawner.SetType<MetalOrePickup>();
+			spawner.UseNavMesh = true;
 			spawner.MaxTotal = 200;
 			spawner.MinPerSpawn = 100;
 			spawner.MaxPerSpawn = 150;
@@ -165,6 +168,7 @@ public partial class ForsakenGame : GameManager
 		{
 			var spawner = new LimitedSpawner();
 			spawner.SetType<PlantFiberPickup>();
+			spawner.UseNavMesh = true;
 			spawner.MaxTotal = 250;
 			spawner.MinPerSpawn = 150;
 			spawner.MaxPerSpawn = 200;

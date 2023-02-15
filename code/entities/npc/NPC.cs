@@ -5,6 +5,7 @@ namespace Facepunch.Forsaken;
 public abstract partial class NPC : AnimatedEntity
 {
 	protected virtual bool UseMoveHelper => false;
+	protected virtual bool UseGravity => false;
 
 	protected Vector3 TargetLocation { get; set; }
 	protected TimeUntil NextWanderTime { get; set; }
@@ -46,13 +47,15 @@ public abstract partial class NPC : AnimatedEntity
 			Position = closest.Value;
 	}
 
-	protected bool MoveToLocation( Vector3 position, float stepSize = 16f )
+	protected bool MoveToLocation( Vector3 position, float stepSize = 24f )
 	{
 		TargetLocation = position;
 
 		Path = NavMesh.PathBuilder( Position )
-			.WithAgentHull( NavAgentHull.Default )
+			.WithMaxClimbDistance( 0f )
+			.WithMaxDropDistance( 128f )
 			.WithPartialPaths()
+			.WithAgentHull( NavAgentHull.Default )
 			.WithStepHeight( stepSize )
 			.Build( TargetLocation );
 
@@ -87,26 +90,27 @@ public abstract partial class NPC : AnimatedEntity
 		{
 			SnapToNavMesh();
 
-			if ( TryGetNavMeshPosition( 100f, 5000f, out var targetPosition ) )
+			if ( TryGetNavMeshPosition( 1000f, 5000f, out var targetPosition ) )
 			{
 				MoveToLocation( targetPosition );
 				NextWanderTime = GetIdleDuration();
 			}
 		}
 
-		var hull = GetHull();
-		var pm = TraceBBox( Position + Vector3.Up * 8f, Position + Vector3.Down * 32f, hull.Mins, hull.Maxs );
-
-		GroundEntity = pm.Entity;
-
-		if ( !GroundEntity.IsValid() )
+		if ( UseGravity )
 		{
+			var trace = Trace.Ray( Position + Vector3.Up * 8f, Position + Vector3.Down * 32f )
+				.WorldOnly()
+				.Ignore( this )
+				.Run();
+
+			GroundEntity = trace.Entity;
 			Velocity += Vector3.Down * 700f * Time.Delta;
+			Velocity = ApplyFriction( Velocity, 4f );
 		}
 		else
 		{
-			Position = Position.WithZ( pm.EndPosition.z );
-			Velocity = Velocity.WithZ( 0f );
+			GroundEntity = Game.WorldEntity;
 			Velocity = ApplyFriction( Velocity, 4f );
 		}
 
@@ -139,7 +143,12 @@ public abstract partial class NPC : AnimatedEntity
 		}
 		else
 		{
-			Position += Velocity * Time.Delta;
+			var trace = Trace.Ray( Position, Position + Velocity * Time.Delta )
+				.WorldOnly()
+				.Ignore( this )
+				.Run();
+
+			Position = trace.EndPosition;
 		}
 	}
 
@@ -213,13 +222,10 @@ public abstract partial class NPC : AnimatedEntity
 
 		var firstSegment = Path.Segments[0];
 
-		if ( firstSegment.SegmentType == NavNodeType.OnGround )
+		if ( Position.Distance( firstSegment.Position ) > 80f )
 		{
-			if ( Position.Distance( firstSegment.Position ) > 80f )
-			{
-				var direction = (firstSegment.Position - Position).Normal.WithZ( 0f );
-				return direction;
-			}
+			var direction = (firstSegment.Position - Position).Normal;
+			return direction;
 		}
 
 		Path.Segments.RemoveAt( 0 );

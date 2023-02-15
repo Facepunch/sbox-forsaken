@@ -37,6 +37,7 @@ public class LimitedSpawner
 	private void ServerTick()
 	{
 		if ( Type is null || !NextSpawnTime ) return;
+		if ( UseNavMesh && !NavMesh.IsLoaded ) return;
 
 		var totalCount = Entity.All
 			.OfType<ILimitedSpawner>()
@@ -59,19 +60,7 @@ public class LimitedSpawner
 
 				if ( trace.Hit && trace.Entity.IsWorld )
 				{
-					var description = TypeLibrary.GetType( Type );
-					var entity = description.Create<ILimitedSpawner>();
-					entity.Position = trace.EndPosition;
-					entity.Rotation = Rotation.Identity.RotateAroundAxis( Vector3.Up, Game.Random.Float() * 360f );
-
-					if ( UseNavMesh )
-					{
-						var closest = NavMesh.GetClosestPoint( entity.Position );
-
-						if ( closest.HasValue )
-							entity.Position = closest.Value;
-					}
-
+					CreateEntityAt( trace.EndPosition );
 					amountToSpawn--;
 				}
 				else
@@ -82,5 +71,22 @@ public class LimitedSpawner
 		}
 
 		NextSpawnTime = Interval;
+	}
+
+	private void CreateEntityAt( Vector3 position )
+	{
+		var description = TypeLibrary.GetType( Type );
+		var entity = description.Create<ILimitedSpawner>();
+		entity.Position = position;
+		entity.Rotation = Rotation.Identity.RotateAroundAxis( Vector3.Up, Game.Random.Float() * 360f );
+
+		if ( !UseNavMesh ) return;
+
+		var closest = NavMesh.GetClosestPoint( entity.Position );
+
+		if ( closest.HasValue )
+		{
+			entity.Position = closest.Value;
+		}
 	}
 }
