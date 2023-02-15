@@ -49,7 +49,7 @@ public abstract partial class ResourcePickup : ModelEntity, IContextActionProvid
 				timedAction.Title = "Harvesting";
 				timedAction.Origin = Position;
 				timedAction.Duration = 2f;
-				timedAction.Icon = "textures/ui/actions/pickup.png";
+				timedAction.Icon = "textures/ui/actions/harvest.png";
 
 				player.StartTimedAction( timedAction );
 			}
@@ -79,28 +79,27 @@ public abstract partial class ResourcePickup : ModelEntity, IContextActionProvid
 
 	private void OnHarvested( ForsakenPlayer player )
 	{
-		if ( IsValid )
+		if ( !IsValid ) return;
+
+		var item = InventorySystem.CreateItem( ItemType );
+		item.StackSize = (ushort)StackSize;
+
+		var remaining = player.TryGiveItem( item );
+
+		if ( remaining < StackSize )
 		{
-			var item = InventorySystem.CreateItem( ItemType );
-			item.StackSize = (ushort)StackSize;
-
-			var remaining = player.TryGiveItem( item );
-
-			if ( remaining < StackSize )
-			{
-				Sound.FromScreen( To.Single( player ), "inventory.move" );
-			}
-
-			if ( remaining == StackSize ) return;
-
-			if ( remaining > 0 )
-			{
-				var entity = new ItemEntity();
-				entity.Position = Position;
-				entity.SetItem( item );
-			}
-
-			Delete();
+			Sound.FromScreen( To.Single( player ), "inventory.move" );
 		}
+
+		if ( remaining == StackSize ) return;
+
+		if ( remaining > 0 )
+		{
+			var entity = new ItemEntity();
+			entity.Position = Position;
+			entity.SetItem( item );
+		}
+
+		Delete();
 	}
 }
