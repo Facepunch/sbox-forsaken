@@ -77,6 +77,22 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerIt
 	private Weapon InternalWeapon;
 	private int InternalAmmoCount;
 
+	public virtual void OnActiveStart( ForsakenPlayer player )
+	{
+		foreach ( var attachment in Attachments.FindItems<AttachmentItem>() )
+		{
+			attachment.OnActiveStart( this, player );
+		}
+	}
+
+	public virtual void OnActiveEnd( ForsakenPlayer player )
+	{
+		foreach ( var attachment in Attachments.FindItems<AttachmentItem>() )
+		{
+			attachment.OnActiveEnd( this, player );
+		}
+	}
+
 	public override bool CanStackWith( InventoryItem other )
 	{
 		return false;

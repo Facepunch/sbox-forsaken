@@ -34,6 +34,16 @@ public class AttachmentItem : InventoryItem, ILootSpawnerItem, IPurchasableItem
 		base.BuildTags( tags );
 	}
 
+	public virtual void OnActiveStart( WeaponItem item, ForsakenPlayer player )
+	{
+
+	}
+
+	public virtual void OnActiveEnd( WeaponItem item, ForsakenPlayer player )
+	{
+
+	}
+
 	public virtual void OnWeaponChanged( Weapon weapon )
 	{
 
