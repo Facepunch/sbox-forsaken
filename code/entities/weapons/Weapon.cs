@@ -47,7 +47,7 @@ public abstract partial class Weapon : BaseWeapon
 	[Net]
 	private string AmmoItemId { get; set; }
 
-	public AnimatedEntity AnimationOwner => Owner as AnimatedEntity;
+	public ForsakenPlayer Player => Owner as ForsakenPlayer;
 	public float ChargeAttackEndTime { get; private set; }
 
 	private TimeSince TimeSinceReloadPressed { get; set; }
@@ -76,6 +76,7 @@ public abstract partial class Weapon : BaseWeapon
 	}
 
 	public WeaponItem WeaponItem => InternalWeaponItem.IsValid() ? InternalWeaponItem.Value as WeaponItem : null;
+	public bool IsActive => Player?.ActiveChild == this;
 
 	public int AvailableAmmo()
 	{
@@ -138,7 +139,7 @@ public abstract partial class Weapon : BaseWeapon
 
 	public virtual void PlayAttackAnimation()
 	{
-		AnimationOwner?.SetAnimParameter( "b_attack", true );
+		Player?.SetAnimParameter( "b_attack", true );
 	}
 
 	public override bool CanReload()
@@ -160,8 +161,11 @@ public abstract partial class Weapon : BaseWeapon
 	public override void ActiveStart( Entity owner )
 	{
 		base.ActiveStart( owner );
+
 		PlaySound( $"weapon.pickup{Game.Random.Int( 1, 4 )}" );
 		TimeSinceDeployed = 0f;
+
+		WeaponItem?.OnActiveStart( Player );
 	}
 
 	public override void ActiveEnd( Entity ent, bool dropped )
@@ -171,6 +175,8 @@ public abstract partial class Weapon : BaseWeapon
 		ReloadSound.Stop();
 		TimeSinceReload = 0f;
 		IsReloading = false;
+
+		WeaponItem?.OnActiveEnd( Player );
 	}
 
 	public override void SimulateAnimator( CitizenAnimationHelper anim )
@@ -271,7 +277,7 @@ public abstract partial class Weapon : BaseWeapon
 		{
 			if ( Prediction.FirstTime && !WasReloading )
 			{
-				AnimationOwner?.SetAnimParameter( "b_reload", true );
+				Player?.SetAnimParameter( "b_reload", true );
 			}
 		}
 		else
