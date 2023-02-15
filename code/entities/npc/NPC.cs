@@ -4,6 +4,8 @@ namespace Facepunch.Forsaken;
 
 public abstract partial class NPC : AnimatedEntity
 {
+	protected virtual bool UseMoveHelper => false;
+
 	protected Vector3 TargetLocation { get; set; }
 	protected TimeUntil NextWanderTime { get; set; }
 	protected Vector3 WishDirection { get; set; }
@@ -120,25 +122,26 @@ public abstract partial class NPC : AnimatedEntity
 
 		HandleAnimation();
 
-		var mover = new MoveHelper( Position, Velocity );
-
-		mover.Trace = mover.SetupTrace()
-			.WithoutTags( "passplayers", "player" )
-			.WithAnyTags( "solid", "playerclip", "passbullets" )
-			.Size( GetHull() )
-			.Ignore( this );
-
-		// As we're using the Nav Mesh and we can't yet create agent hulls, ignore all.
-		if ( true )
+		if ( UseMoveHelper )
 		{
-			mover.Trace = mover.Trace.WithTag( "ignore_all" );
+			var mover = new MoveHelper( Position, Velocity );
+
+			mover.Trace = mover.SetupTrace()
+				.WithoutTags( "passplayers", "player" )
+				.WithAnyTags( "solid", "playerclip", "passbullets" )
+				.Size( GetHull() )
+				.Ignore( this );
+
+			mover.MaxStandableAngle = 40f;
+			mover.TryMoveWithStep( Time.Delta, 24f );
+
+			Position = mover.Position;
+			Velocity = mover.Velocity;
 		}
-
-		mover.MaxStandableAngle = 46f;
-		mover.TryMoveWithStep( Time.Delta, 28f );
-
-		Position = mover.Position;
-		Velocity = mover.Velocity;
+		else
+		{
+			Position += Velocity * Time.Delta;
+		}
 	}
 
 	protected virtual Vector3 ApplyFriction( Vector3 velocity, float amount = 1f )
