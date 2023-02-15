@@ -355,6 +355,11 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		ContextActionId = action.Hash;
 	}
 
+	public bool IsActiveHotbarItem( InventoryItem item )
+	{
+		return GetActiveHotbarItem() == item;
+	}
+
 	public InventoryItem GetActiveHotbarItem()
 	{
 		if ( !IsHotbarSelected() ) return null;
@@ -1352,6 +1357,8 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 				else if ( !structure.RequiresSocket )
 				{
 					structure.Position = trace.EndPosition;
+					structure.PhysicsBody.Transform = structure.Transform;
+					structure.ResetInterpolation();
 					isValid = structure.IsValidPlacement( structure.Position, trace.Normal );
 				}
 
