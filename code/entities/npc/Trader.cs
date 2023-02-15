@@ -9,7 +9,7 @@ namespace Facepunch.Forsaken;
 [HammerEntity]
 [Title( "Trader" )]
 [Model( Model = "models/citizen/citizen.vmdl" )]
-public partial class Trader : NPC, IContextActionProvider, IPersistence, INametagProvider
+public partial class Trader : HumanNPC, IContextActionProvider, IPersistence, INametagProvider
 {
 	[ConCmd.Server]
 	public static void PurchaseItemCmd( int networkId, int slotId )
@@ -39,6 +39,12 @@ public partial class Trader : NPC, IContextActionProvider, IPersistence, INameta
 			item.StackSize--;
 		}
 	}
+
+	[Net, Property] public string DisplayName { get; set; } = "NPC";
+	[Property] public bool DoesWander { get; set; } = false;
+	[Property] public float MinIdleDuration { get; set; } = 30f;
+	[Property] public float MaxIdleDuration { get; set; } = 60f;
+	public float MoveSpeed { get; set; } = 80f;
 
 	public float InteractionRange => 100f;
 	public Color GlowColor => Color.Cyan;
@@ -157,6 +163,26 @@ public partial class Trader : NPC, IContextActionProvider, IPersistence, INameta
 				}
 			}
 		}
+	}
+
+	public override bool ShouldWander()
+	{
+		return DoesWander;
+	}
+
+	public override string GetDisplayName()
+	{
+		return DisplayName;
+	}
+
+	public override float GetMoveSpeed()
+	{
+		return MoveSpeed;
+	}
+
+	public override float GetIdleDuration()
+	{
+		return Game.Random.Float( MinIdleDuration, MaxIdleDuration );
 	}
 
 	protected override Vector3 GetWishDirection()

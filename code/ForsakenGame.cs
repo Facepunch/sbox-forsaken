@@ -136,38 +136,47 @@ public partial class ForsakenGame : GameManager
 		Game.WorldEntity.Tags.Add( "world" );
 
 		{
-			var spawner = new PickupSpawner();
+			var spawner = new LimitedSpawner();
 			spawner.SetType<WoodPickup>();
-			spawner.MaxPickups = 400;
-			spawner.MinPickupsPerSpawn = 200;
-			spawner.MaxPickupsPerSpawn = 300;
+			spawner.MaxTotal = 400;
+			spawner.MinPerSpawn = 200;
+			spawner.MaxPerSpawn = 300;
 			spawner.Interval = 120f;
 		}
 
 		{
-			var spawner = new PickupSpawner();
+			var spawner = new LimitedSpawner();
 			spawner.SetType<StonePickup>();
-			spawner.MaxPickups = 300;
-			spawner.MinPickupsPerSpawn = 100;
-			spawner.MaxPickupsPerSpawn = 200;
+			spawner.MaxTotal = 300;
+			spawner.MinPerSpawn = 100;
+			spawner.MaxPerSpawn = 200;
 			spawner.Interval = 180f;
 		}
 
 		{
-			var spawner = new PickupSpawner();
+			var spawner = new LimitedSpawner();
 			spawner.SetType<MetalOrePickup>();
-			spawner.MaxPickups = 200;
-			spawner.MinPickupsPerSpawn = 100;
-			spawner.MaxPickupsPerSpawn = 150;
+			spawner.MaxTotal = 200;
+			spawner.MinPerSpawn = 100;
+			spawner.MaxPerSpawn = 150;
 			spawner.Interval = 300f;
 		}
 
 		{
-			var spawner = new PickupSpawner();
+			var spawner = new LimitedSpawner();
 			spawner.SetType<PlantFiberPickup>();
-			spawner.MaxPickups = 250;
-			spawner.MinPickupsPerSpawn = 150;
-			spawner.MaxPickupsPerSpawn = 200;
+			spawner.MaxTotal = 250;
+			spawner.MinPerSpawn = 150;
+			spawner.MaxPerSpawn = 200;
+			spawner.Interval = 120f;
+		}
+
+		{
+			var spawner = new LimitedSpawner();
+			spawner.SetType<Deer>();
+			spawner.MaxTotal = 20;
+			spawner.MinPerSpawn = 1;
+			spawner.MaxPerSpawn = 10;
 			spawner.Interval = 120f;
 		}
 

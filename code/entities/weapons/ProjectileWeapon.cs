@@ -32,7 +32,7 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 
 		var cursorTrace = Trace.Ray( player.CameraPosition, player.CameraPosition + player.CursorDirection * 3000f )
 			.WithoutTags( "trigger" )
-			.WithAnyTags( "solid", "world", "player" )
+			.WithAnyTags( "solid", "world", "player", "npc" )
 			.Ignore( player )
 			.Ignore( this )
 			.Run();

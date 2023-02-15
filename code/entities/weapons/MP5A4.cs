@@ -49,7 +49,7 @@ public partial class MP5A4 : ProjectileWeapon<CrossbowBoltProjectile>
 
 	protected override void OnProjectileHit( CrossbowBoltProjectile projectile, TraceResult trace )
 	{
-		if ( Game.IsServer && trace.Entity is ForsakenPlayer victim )
+		if ( Game.IsServer && trace.Entity is IDamageable victim )
 		{
 			var info = new DamageInfo()
 				.WithAttacker( Owner )
@@ -62,11 +62,6 @@ public partial class MP5A4 : ProjectileWeapon<CrossbowBoltProjectile>
 			info.Damage = GetDamageFalloff( projectile.StartPosition.Distance( victim.Position ), WeaponItem.Damage );
 
 			victim.TakeDamage( info );
-			
-			using ( Prediction.Off() )
-			{
-				victim.PlaySound( "melee.hitflesh" );
-			}
 		}
 	}
 

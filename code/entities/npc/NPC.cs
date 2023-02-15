@@ -2,33 +2,8 @@
 
 namespace Facepunch.Forsaken;
 
-public partial class NPC : AnimatedEntity
+public abstract partial class NPC : AnimatedEntity
 {
-	/// <summary>
-	/// The display name of the NPC.
-	/// </summary>
-	[Net, Property] public string DisplayName { get; set; } = "NPC";
-
-	/// <summary>
-	/// Whether or not the NPC randomly wanders around the map.
-	/// </summary>
-	[Property] public bool DoesWander { get; set; } = false;
-
-	/// <summary>
-	/// The minumum amount of time that the NPC will stay idle for before wandering again.
-	/// </summary>
-	[Property] public float MinIdleDuration { get; set; } = 30f;
-
-	/// <summary>
-	/// The maximum amount of time that the NPC will stay idle for before wandering again.
-	/// </summary>
-	[Property] public float MaxIdleDuration { get; set; } = 60f;
-
-	/// <summary>
-	/// The speed at which the NPC moves.
-	/// </summary>
-	public virtual float MoveSpeed { get; set; } = 80f;
-
 	protected Vector3 TargetLocation { get; set; }
 	protected TimeUntil NextWanderTime { get; set; }
 	protected Vector3 WishDirection { get; set; }
@@ -39,6 +14,26 @@ public partial class NPC : AnimatedEntity
 		Tags.Add( "npc" );
 
 		base.Spawn();
+	}
+
+	public virtual bool ShouldWander()
+	{
+		return false;
+	}
+
+	public virtual string GetDisplayName()
+	{
+		return "NPC";
+	}
+
+	public virtual float GetMoveSpeed()
+	{
+		return 80f;
+	}
+
+	public virtual float GetIdleDuration()
+	{
+		return 30f;
 	}
 
 	protected void SnapToNavMesh()
@@ -80,14 +75,21 @@ public partial class NPC : AnimatedEntity
 	[Event.Tick.Server]
 	protected virtual void ServerTick()
 	{
-		if ( DoesWander && NextWanderTime && NavMesh.IsLoaded )
+		if ( LifeState == LifeState.Dead )
+		{
+			Velocity = Vector3.Zero;
+			HandleAnimation();
+			return;
+		}
+
+		if ( ShouldWander() && NextWanderTime && NavMesh.IsLoaded )
 		{
 			SnapToNavMesh();
 
 			if ( TryGetNavMeshPosition( 100f, 5000f, out var targetPosition ) )
 			{
 				MoveToLocation( targetPosition );
-				NextWanderTime = Game.Random.Float( MinIdleDuration, MaxIdleDuration );
+				NextWanderTime = GetIdleDuration();
 			}
 		}
 
@@ -108,7 +110,7 @@ public partial class NPC : AnimatedEntity
 		}
 
 		var wishDirection = GetWishDirection();
-		Velocity = Accelerate( Velocity, wishDirection, MoveSpeed, 0f, 8f );
+		Velocity = Accelerate( Velocity, wishDirection, GetMoveSpeed(), 0f, 8f );
 
 		if ( wishDirection.Length > 0f )
 		{
@@ -152,22 +154,7 @@ public partial class NPC : AnimatedEntity
 
 	protected virtual void HandleAnimation()
 	{
-		var animHelper = new CitizenAnimationHelper( this );
 
-		animHelper.WithWishVelocity( Velocity );
-		animHelper.WithVelocity( Velocity );
-		animHelper.WithLookAt( Position + Rotation.Forward * 100f, 1f, 1f, 0.5f );
-		animHelper.AimAngle = Rotation;
-		animHelper.DuckLevel = 0f;
-		animHelper.VoiceLevel = 0f;
-		animHelper.IsGrounded = GroundEntity.IsValid();
-		animHelper.IsSitting = false;
-		animHelper.IsNoclipping = false;
-		animHelper.IsClimbing = false;
-		animHelper.IsSwimming = false;
-		animHelper.IsWeaponLowered = false;
-		animHelper.HoldType = CitizenAnimationHelper.HoldTypes.None;
-		animHelper.AimBodyWeight = 0.5f;
 	}
 
 	protected virtual TraceResult TraceBBox( Vector3 start, Vector3 end, Vector3 mins, Vector3 maxs )
