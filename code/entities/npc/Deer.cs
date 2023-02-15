@@ -13,6 +13,13 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 	public float MaxHealth => 80f;
 
 	private ContextAction HarvestAction { get; set; }
+	private TimeUntil NextSwapTrotting { get; set; }
+	private float CurrentSpeed { get; set; }
+	private bool IsTrotting { get; set; }
+
+	private float WalkSpeed => 80f;
+	private float TrotSpeed => 200f;
+	private float RunSpeed => 300f;
 
 	public Deer()
 	{
@@ -62,7 +69,13 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 
 	public override float GetMoveSpeed()
 	{
-		return LastDamageTime < 10f ? 300f : 120f;
+		if ( LastDamageTime < 10f )
+			return RunSpeed;
+
+		if ( IsTrotting )
+			return TrotSpeed;
+
+		return WalkSpeed;
 	}
 
 	public override void Spawn()
@@ -70,6 +83,7 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 		SetModel( "models/deer/deer.vmdl" );
 		SetupPhysicsFromModel( PhysicsMotionType.Keyframed );
 
+		EnableSolidCollisions = false;
 		Health = MaxHealth;
 		Scale = Game.Random.Float( 0.9f, 1.1f );
 
@@ -153,6 +167,12 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 
 	protected override void HandleAnimation()
 	{
+		if ( NextSwapTrotting )
+		{
+			NextSwapTrotting = Game.Random.Float( 8f, 16f );
+			IsTrotting = !IsTrotting;
+		}
+
 		if ( LifeState == LifeState.Dead )
 		{
 			SetAnimParameter( "dead", true );
@@ -160,9 +180,20 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 		}
 		else
 		{
-			var speed = Velocity.Length.Remap( 0f, 300f, 0f, 1f );
+			var velocity = Velocity.Length;
+			var targetSpeed = 0f;
+
+			if ( velocity >= RunSpeed * 0.9f )
+				targetSpeed = 1f;
+			else if ( velocity > TrotSpeed * 0.9f )
+				targetSpeed = 0.5f;
+			else if ( velocity > 1f )
+				targetSpeed = 0.01f;
+
+			CurrentSpeed = CurrentSpeed.LerpTo( targetSpeed, Time.Delta * 8f );
+
 			SetAnimParameter( "dead", false );
-			SetAnimParameter( "speed", speed );
+			SetAnimParameter( "speed", CurrentSpeed );
 		}
 	}
 }

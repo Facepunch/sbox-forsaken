@@ -128,6 +128,12 @@ public abstract partial class NPC : AnimatedEntity
 			.Size( GetHull() )
 			.Ignore( this );
 
+		// As we're using the Nav Mesh and we can't yet create agent hulls, ignore all.
+		if ( true )
+		{
+			mover.Trace = mover.Trace.WithTag( "ignore_all" );
+		}
+
 		mover.MaxStandableAngle = 46f;
 		mover.TryMoveWithStep( Time.Delta, 28f );
 
