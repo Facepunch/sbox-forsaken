@@ -6,6 +6,13 @@ namespace Facepunch.Forsaken;
 
 public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextActionProvider
 {
+	private enum DeerPose
+	{
+		Default,
+		Sitting,
+		Sleeping
+	}
+
 	public TimeSince LastDamageTime { get; set; }
 
 	public float InteractionRange => 100f;
@@ -15,8 +22,10 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 
 	private ContextAction HarvestAction { get; set; }
 	private TimeUntil NextSwapTrotting { get; set; }
+	private TimeUntil NextChangePose { get; set; }
 	private float CurrentSpeed { get; set; }
 	private bool IsTrotting { get; set; }
+	private DeerPose Pose { get; set; }
 
 	private float WalkSpeed => 80f;
 	private float TrotSpeed => 200f;
@@ -183,6 +192,7 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 		{
 			SetAnimParameter( "dead", true );
 			SetAnimParameter( "speed", 0f );
+			SetAnimParameter( "pose", (int)Pose );
 		}
 		else
 		{
@@ -196,9 +206,16 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 			else if ( velocity > 1f )
 				targetSpeed = 0.01f;
 
+			if ( NextChangePose )
+			{
+				NextChangePose = Game.Random.Float( 4f, 16f );
+				Pose = (DeerPose)Game.Random.Int( 0, 2 );
+			}
+
 			CurrentSpeed = CurrentSpeed.LerpTo( targetSpeed, Time.Delta * 8f );
 
 			SetAnimParameter( "dead", false );
+			SetAnimParameter( "pose", (int)Pose );
 			SetAnimParameter( "speed", CurrentSpeed );
 		}
 	}
