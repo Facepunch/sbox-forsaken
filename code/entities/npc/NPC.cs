@@ -19,6 +19,13 @@ public abstract partial class NPC : AnimatedEntity
 		base.Spawn();
 	}
 
+	public bool HasValidPath()
+	{
+		if ( Path is null ) return false;
+		if ( Path.Count == 0 ) return false;
+		return true;
+	}
+
 	public virtual bool ShouldWander()
 	{
 		return false;
@@ -86,11 +93,11 @@ public abstract partial class NPC : AnimatedEntity
 			return;
 		}
 
-		if ( ShouldWander() && NextWanderTime && NavMesh.IsLoaded )
+		if ( ShouldWander() && !HasValidPath() && NavMesh.IsLoaded )
 		{
 			SnapToNavMesh();
 
-			if ( TryGetNavMeshPosition( 1000f, 5000f, out var targetPosition ) )
+			if ( NextWanderTime && TryGetNavMeshPosition( 1000f, 5000f, out var targetPosition ) )
 			{
 				MoveToLocation( targetPosition );
 				NextWanderTime = GetIdleDuration();
@@ -119,7 +126,7 @@ public abstract partial class NPC : AnimatedEntity
 
 		if ( wishDirection.Length > 0f )
 		{
-			var targetRotation = Rotation.LookAt( wishDirection, Vector3.Up );
+			var targetRotation = Rotation.LookAt( wishDirection.WithZ( 0f ), Vector3.Up );
 			Rotation = Rotation.Lerp( Rotation, targetRotation, Time.Delta * 10f );
 		}
 
@@ -143,12 +150,7 @@ public abstract partial class NPC : AnimatedEntity
 		}
 		else
 		{
-			var trace = Trace.Ray( Position, Position + Velocity * Time.Delta )
-				.WorldOnly()
-				.Ignore( this )
-				.Run();
-
-			Position = trace.EndPosition;
+			Position += Velocity * Time.Delta;
 		}
 	}
 
@@ -194,6 +196,11 @@ public abstract partial class NPC : AnimatedEntity
 		return new BBox( mins, maxs );
 	}
 
+	protected virtual void OnFinishedPath()
+	{
+		NextWanderTime = GetIdleDuration();
+	}
+
 	protected virtual Vector3 Accelerate( Vector3 velocity, Vector3 wishDir, float wishSpeed, float speedLimit, float acceleration )
 	{
 		if ( speedLimit > 0 && wishSpeed > speedLimit )
@@ -217,8 +224,7 @@ public abstract partial class NPC : AnimatedEntity
 
 	protected virtual Vector3 GetWishDirection()
 	{
-		if ( Path == null ) return Vector3.Zero;
-		if ( Path.Count == 0 ) return Vector3.Zero;
+		if ( !HasValidPath() ) return Vector3.Zero;
 
 		var firstSegment = Path.Segments[0];
 
@@ -229,14 +235,19 @@ public abstract partial class NPC : AnimatedEntity
 		}
 
 		Path.Segments.RemoveAt( 0 );
+
+		if ( Path.Segments.Count == 0 )
+		{
+			OnFinishedPath();
+		}
+
 		return Vector3.Zero;
 	}
 
 	[ForsakenEvent.NavBlockerAdded]
 	protected virtual void OnNavBlockerAdded( Vector3 position )
 	{
-		if ( Path == null || Path.Count == 0 )
-			return;
+		if ( !HasValidPath() ) return;
 
 		SnapToNavMesh();
 

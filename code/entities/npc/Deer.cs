@@ -13,7 +13,7 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 		Sleeping
 	}
 
-	public TimeSince LastDamageTime { get; set; }
+	public TimeSince? LastDamageTime { get; set; }
 
 	public float InteractionRange => 100f;
 	public Color GlowColor => Color.White;
@@ -21,19 +21,25 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 	public float MaxHealth => 80f;
 
 	private ContextAction HarvestAction { get; set; }
+	private TimeUntil BlockMovementUntil { get; set; }
 	private TimeUntil NextSwapTrotting { get; set; }
 	private TimeUntil NextChangePose { get; set; }
 	private float CurrentSpeed { get; set; }
 	private bool IsTrotting { get; set; }
 	private DeerPose Pose { get; set; }
 
-	private float WalkSpeed => 80f;
-	private float TrotSpeed => 200f;
-	private float RunSpeed => 300f;
+	private float WalkSpeed => 60f;
+	private float TrotSpeed => 250f;
+	private float RunSpeed => 400f;
 
 	public Deer()
 	{
 		HarvestAction = new( "harvest", "Harvest", "textures/ui/actions/harvest.png" );
+	}
+
+	public bool IsInPanicMode()
+	{
+		return LastDamageTime.HasValue && LastDamageTime < 10f;
 	}
 
 	public IEnumerable<ContextAction> GetSecondaryActions( ForsakenPlayer player )
@@ -84,7 +90,7 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 
 	public override float GetMoveSpeed()
 	{
-		if ( LastDamageTime < 10f )
+		if ( IsInPanicMode() )
 			return RunSpeed;
 
 		if ( IsTrotting )
@@ -180,8 +186,22 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 		Delete();
 	}
 
+	protected override Vector3 GetWishDirection()
+	{
+		if ( BlockMovementUntil )
+			return base.GetWishDirection();
+
+		return Vector3.Zero;
+	}
+
 	protected override void HandleAnimation()
 	{
+		if ( HasValidPath() && Pose > DeerPose.Default && !IsInPanicMode() )
+		{
+			BlockMovementUntil = 3f;
+			Pose = DeerPose.Default;
+		}
+
 		if ( NextSwapTrotting )
 		{
 			NextSwapTrotting = Game.Random.Float( 8f, 16f );
@@ -192,27 +212,19 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 		{
 			SetAnimParameter( "dead", true );
 			SetAnimParameter( "speed", 0f );
-			SetAnimParameter( "pose", (int)Pose );
+			SetAnimParameter( "pose", (int)DeerPose.Default );
 		}
 		else
 		{
-			var velocity = Velocity.Length;
-			var targetSpeed = 0f;
+			var targetSpeed = Velocity.Length;
 
-			if ( velocity >= RunSpeed * 0.9f )
-				targetSpeed = 1f;
-			else if ( velocity > TrotSpeed * 0.9f )
-				targetSpeed = 0.5f;
-			else if ( velocity > 1f )
-				targetSpeed = 0.01f;
-
-			if ( NextChangePose )
+			if ( NextChangePose && targetSpeed == 0f && !HasValidPath() )
 			{
 				NextChangePose = Game.Random.Float( 4f, 16f );
 				Pose = (DeerPose)Game.Random.Int( 0, 2 );
 			}
 
-			CurrentSpeed = CurrentSpeed.LerpTo( targetSpeed, Time.Delta * 8f );
+			CurrentSpeed = CurrentSpeed.LerpTo( targetSpeed, Time.Delta * 60f );
 
 			SetAnimParameter( "dead", false );
 			SetAnimParameter( "pose", (int)Pose );

@@ -1257,7 +1257,7 @@
 				m_fDefaultValue = 0.0
 				m_fMinValue = 0.0
 				m_fMaxValue = 600.0
-				m_bInterpolate = true
+				m_bInterpolate = false
 			},
 			{
 				_class = "CBoolAnimParameter"
