@@ -3,12 +3,13 @@ using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
-public partial class ProjectileSimulator
+public partial class ProjectileSimulator : IValid
 {
     public List<Projectile> List { get; private set; }
     public Entity Owner { get; private set; }
+	public bool IsValid => Owner.IsValid();
 
-    public ProjectileSimulator( Entity owner )
+	public ProjectileSimulator( Entity owner )
     {
         List = new();
         Owner = owner;
@@ -36,8 +37,6 @@ public partial class ProjectileSimulator
 
     public void Simulate()
     {
-	using ( Entity.LagCompensation() )
-	{
 		for ( int i = List.Count - 1; i >= 0; i-- )
 		{
 			var projectile = List[i];
@@ -51,7 +50,6 @@ public partial class ProjectileSimulator
 			if ( Prediction.FirstTime )
 				projectile.Simulate();
 		}
-	}
     }
 }
 
