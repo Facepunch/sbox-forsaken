@@ -5,15 +5,9 @@ namespace Facepunch.Forsaken;
 
 public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile, new()
 {
-	public virtual string ProjectileModel => "";
-	public virtual float ProjectileRadius => 1f;
-	public virtual float ProjectileLifeTime => 10f;
+	public virtual string ProjectileData => "";
 	public virtual int ProjectileCount => 1;
-	public virtual string TrailEffect => null;
-	public virtual string HitSound => null;
 	public virtual float InheritVelocity => 0f;
-	public virtual float Gravity => 0f;
-	public virtual float Speed => 2000f;
 	public virtual float Spread => 0.05f;
 
 	public override void AttackPrimary()
@@ -41,19 +35,11 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 
 		for ( var i = 0; i < ProjectileCount; i++ )
 		{
-			var projectile = new T()
-			{
-				ExplosionEffect = ImpactEffect,
-				FaceDirection = true,
-				IgnoreEntity = this,
-				TrailEffect = TrailEffect,
-				Simulator = player.Projectiles,
-				Attacker = player,
-				HitSound = HitSound,
-				LifeTime = ProjectileLifeTime,
-				Gravity = Gravity,
-				ModelName = ProjectileModel
-			};
+			var projectile = Projectile.Create<T>( ProjectileData );
+
+			projectile.IgnoreEntity = this;
+			projectile.Simulator = player.Projectiles;
+			projectile.Attacker = player;
 
 			OnCreateProjectile( projectile );
 
@@ -92,11 +78,12 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 			direction += spread;
 			direction = direction.Normal;
 
-			var velocity = (direction * Speed) + (player.Velocity * InheritVelocity);
+			var speed = projectile.Data.Speed.GetValue();
+			var velocity = (direction * speed) + (player.Velocity * InheritVelocity);
 			velocity = AdjustProjectileVelocity( velocity );
 
-			position -= direction * Speed * Time.Delta;
-			projectile.Initialize( position, velocity, ProjectileRadius, ( p, t ) => OnProjectileHit( (T)p, t ) );
+			position -= direction * speed * Time.Delta;
+			projectile.Initialize( position, velocity, ( p, t ) => OnProjectileHit( (T)p, t ) );
 
 			OnProjectileFired( projectile );
 		}

@@ -1,0 +1,13 @@
+{
+  "FaceDirection": true,
+  "LifeTime": "4.00,5.00,0",
+  "Gravity": "6.00,50.00,0",
+  "Speed": "1500.00,2000.00,0",
+  "Radius": 8,
+  "ModelName": null,
+  "ExplosionEffect": "particles/weapons/crossbow/crossbow_impact.vpcf",
+  "FollowEffect": null,
+  "TrailEffect": "particles/weapons/crossbow/crossbow_trail.vpcf",
+  "LaunchSound": null,
+  "HitSound": null
+}

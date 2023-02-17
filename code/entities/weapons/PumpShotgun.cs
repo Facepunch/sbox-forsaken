@@ -5,22 +5,16 @@ namespace Facepunch.Forsaken;
 [Library( "weapon_pump_shotgun" )]
 public partial class PumpShotgun : ProjectileWeapon<CrossbowBoltProjectile>
 {
-	public override string ImpactEffect => GetImpactEffect();
-	public override string TrailEffect => GetTrailEffect();
+	public override string ProjectileData => IsSlugAmmo() ? "slug" : "buckshot";
 	public override string MuzzleFlashEffect => "particles/pistol_muzzleflash.vpcf";
-	public override string HitSound => null;
 	public override string DamageType => "bullet";
 	public override float PrimaryRate => 1f;
 	public override float SecondaryRate => 1f;
-	public override float Speed => 1500f;
 	public override CitizenAnimationHelper.HoldTypes HoldType => CitizenAnimationHelper.HoldTypes.Shotgun;
-	public override float Gravity => 6f;
 	public override float InheritVelocity => 0f;
 	public override string ReloadSoundName => "shotgun_load";
-	public override string ProjectileModel => null;
 	public override int ProjectileCount => IsSlugAmmo() ? 1 : 8;
 	public override float ReloadTime => 1f;
-	public override float ProjectileLifeTime => 4f;
 	public override float Spread => IsSlugAmmo() ? 0.05f : 1f;
 
 	public override void AttackPrimary()
@@ -96,15 +90,5 @@ public partial class PumpShotgun : ProjectileWeapon<CrossbowBoltProjectile>
 			return false;
 
 		return WeaponItem.AmmoDefinition.Tags.Contains( "slug" );
-	}
-
-	private string GetTrailEffect()
-	{
-		return "particles/weapons/crossbow/crossbow_trail.vpcf";
-	}
-
-	private string GetImpactEffect()
-	{
-		return "particles/weapons/crossbow/crossbow_impact.vpcf";
 	}
 }
