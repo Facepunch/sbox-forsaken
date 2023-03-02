@@ -185,6 +185,16 @@ public partial class ForsakenGame : GameManager
 			spawner.Interval = 120f;
 		}
 
+		{
+			var spawner = new LimitedSpawner();
+			spawner.SetType<Undead>();
+			spawner.UseNavMesh = true;
+			spawner.MaxTotal = 20;
+			spawner.MinPerSpawn = 1;
+			spawner.MaxPerSpawn = 10;
+			spawner.Interval = 120f;
+		}
+
 		NextDespawnItems = 30f;
 		HasLoadedWorld = true;
 		NextAutoSave = 60f;

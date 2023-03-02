@@ -122,6 +122,7 @@ public abstract partial class NPC : AnimatedEntity
 		}
 
 		var wishDirection = GetWishDirection();
+
 		Velocity = Accelerate( Velocity, wishDirection, GetMoveSpeed(), 0f, 8f );
 
 		if ( wishDirection.Length > 0f )
