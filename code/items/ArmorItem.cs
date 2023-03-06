@@ -7,7 +7,9 @@ public class ArmorItem : ResourceItem<ArmorResource, ArmorItem>, ILootSpawnerIte
 {
 	public override Color Color => ItemColors.Armor;
 	public virtual float TemperatureModifier => Resource?.TemperatureModifier ?? 0f;
-	public virtual float DamageMultiplier => Resource?.DamageMultiplier ?? 1f;
+	public virtual float DamageProtection => Resource?.DamageProtection ?? 1f;
+	public virtual HashSet<string> DamageTags => Resource?.DamageTags ?? default;
+	public virtual string DamageHitbox => Resource?.DamageHitbox ?? string.Empty;
 	public virtual ArmorSlot ArmorSlot => Resource?.ArmorSlot ?? ArmorSlot.None;
 	public virtual string SecondaryModel => Resource?.SecondaryModel ?? string.Empty;
 	public virtual string PrimaryModel => Resource?.PrimaryModel ?? string.Empty;

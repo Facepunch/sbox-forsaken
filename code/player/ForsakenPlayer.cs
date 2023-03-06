@@ -668,12 +668,22 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 			}
 		}
 
+		var protection = Equipment.FindItems<ArmorItem>()
+			.Where( i => info.HasAnyTag( i.DamageTags.ToArray() ) )
+			.Where( i => info.Hitbox.HasTag( i.DamageHitbox ) )
+			.Sum( i => i.DamageProtection );
+
+		var multiplier = 1f - ((1f / 100f) * protection);
+
+		info.Damage *= multiplier;
+
 		LastDamageTaken = info;
 
 		if ( LifeState == LifeState.Dead )
 			return;
 
 		base.TakeDamage( info );
+
 		this.ProceduralHitReaction( info );
 	}
 

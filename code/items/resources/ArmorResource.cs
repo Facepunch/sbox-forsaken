@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
@@ -6,8 +7,14 @@ namespace Facepunch.Forsaken;
 [ItemClass( typeof( ArmorItem ) )]
 public class ArmorResource : ForsakenItemResource
 {
+	[Property, Description( "The percentage of damage protection this armor provides." )]
+	public float DamageProtection { get; set; } = 5f;
+
 	[Property]
-	public float DamageMultiplier { get; set; } = 1f;
+	public HashSet<string> DamageTags { get; set; }
+
+	[Property]
+	public string DamageHitbox { get; set; } = string.Empty;
 
 	[Property]
 	public ArmorSlot ArmorSlot { get; set; } = ArmorSlot.None;
