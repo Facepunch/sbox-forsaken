@@ -9,10 +9,13 @@ public partial class Undead : AnimalNPC, ILimitedSpawner, IDamageable
 	public float MaxHealth => 80f;
 
 	private float CurrentSpeed { get; set; }
-
+	private float TargetRange => 60f;
+	private float AttackRadius => 60f;
+	private float AttackRate => 1f;
 	private float WalkSpeed => 60f;
 	private float RunSpeed => 80f;
 
+	private TimeSince TimeSinceLastAttack { get; set; }
 	private TimeUntil NextFindTarget { get; set; }
 	private ForsakenPlayer Target { get; set; }
 
@@ -55,6 +58,11 @@ public partial class Undead : AnimalNPC, ILimitedSpawner, IDamageable
 	public override void OnKilled()
 	{
 		LifeState = LifeState.Dead;
+	}
+
+	protected virtual bool CanAttack()
+	{
+		return TimeSinceLastAttack > (1f / AttackRate);
 	}
 
 	protected virtual void OnLoseTarget( ForsakenPlayer target )
@@ -111,7 +119,7 @@ public partial class Undead : AnimalNPC, ILimitedSpawner, IDamageable
 				var target = FindInSphere( Position, 2048f )
 					.OfType<ForsakenPlayer>()
 					.Where( CanSeeTarget )
-					.OrderByDescending( p => p.Position.Distance( Position ) )
+					.OrderBy( p => p.Position.Distance( Position ) )
 					.FirstOrDefault();
 
 				if ( target.IsValid() )
@@ -127,6 +135,15 @@ public partial class Undead : AnimalNPC, ILimitedSpawner, IDamageable
 				NextFindTarget = 1f;
 				Target = target;
 			}
+
+			if ( Target.IsValid() && Position.Distance( Target.Position ) <= AttackRadius )
+			{
+				if ( CanAttack() )
+				{
+					TimeSinceLastAttack = 0f;
+					SetAnimParameter( "attack", true );
+				}
+			}
 		}
 
 		base.ServerTick();
@@ -136,6 +153,11 @@ public partial class Undead : AnimalNPC, ILimitedSpawner, IDamageable
 	{
 		if ( Target.IsValid() && CanSeeTarget( Target ) )
 		{
+			if ( Position.Distance( Target.Position ) <= TargetRange )
+			{
+				return Vector3.Zero;
+			}
+
 			return (Target.Position - Position).Normal;
 		}
 
