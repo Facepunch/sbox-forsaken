@@ -8,6 +8,8 @@ public partial class Undead : AnimalNPC, ILimitedSpawner, IDamageable
 {
 	public float MaxHealth => 80f;
 
+	public bool IsTargetVisible { get; private set; }
+
 	private float CurrentSpeed { get; set; }
 	private float TargetRange => 60f;
 	private float AttackRadius => 60f;
@@ -65,17 +67,6 @@ public partial class Undead : AnimalNPC, ILimitedSpawner, IDamageable
 		return TimeSinceLastAttack > (1f / AttackRate);
 	}
 
-	protected virtual void OnLoseTarget( ForsakenPlayer target )
-	{
-		MoveToLocation( target.Position );
-		NextWanderTime = GetIdleDuration();
-	}
-
-	protected virtual void OnNewTarget( ForsakenPlayer target )
-	{
-		MoveToLocation( target.Position );
-	}
-
 	public override void TakeDamage( DamageInfo info )
 	{
 		if ( LifeState == LifeState.Dead ) return;
@@ -114,7 +105,7 @@ public partial class Undead : AnimalNPC, ILimitedSpawner, IDamageable
 	{
 		if ( LifeState == LifeState.Alive )
 		{
-			if ( NextFindTarget )
+			if ( ( !Target.IsValid() || Position.Distance( Target.Position ) > 2048f ) && NextFindTarget )
 			{
 				var target = FindInSphere( Position, 2048f )
 					.OfType<ForsakenPlayer>()
@@ -124,17 +115,17 @@ public partial class Undead : AnimalNPC, ILimitedSpawner, IDamageable
 
 				if ( target.IsValid() )
 				{
-					if ( Target != target )
-						OnNewTarget( target );
-				}
-				else if ( Target.IsValid() )
-				{
-					OnLoseTarget( Target );
+					Path = null;
 				}
 
-				NextFindTarget = 1f;
+				NextFindTarget = 8f;
 				Target = target;
 			}
+
+			if ( Target.IsValid() )
+				IsTargetVisible = CanSeeTarget( Target );
+			else
+				IsTargetVisible = false;
 
 			if ( Target.IsValid() && Position.Distance( Target.Position ) <= AttackRadius )
 			{
@@ -144,6 +135,18 @@ public partial class Undead : AnimalNPC, ILimitedSpawner, IDamageable
 					SetAnimParameter( "attack", true );
 				}
 			}
+
+			if ( Target.IsValid() )
+			{
+				if ( !IsTargetVisible && !HasValidPath() )
+				{
+					MoveToLocation( Target.Position );
+				}
+				else if ( IsTargetVisible )
+				{
+					Path = null;
+				}
+			}
 		}
 
 		base.ServerTick();
@@ -151,17 +154,54 @@ public partial class Undead : AnimalNPC, ILimitedSpawner, IDamageable
 
 	protected override Vector3 GetWishDirection()
 	{
-		if ( Target.IsValid() && CanSeeTarget( Target ) )
+		Vector3 direction;
+
+		if ( Target.IsValid() && IsTargetVisible )
 		{
 			if ( Position.Distance( Target.Position ) <= TargetRange )
-			{
-				return Vector3.Zero;
-			}
-
-			return (Target.Position - Position).Normal;
+				direction =  Vector3.Zero;
+			else
+				direction = (Target.Position - Position).Normal;
+		}
+		else
+		{
+			direction = base.GetWishDirection();
 		}
 
-		return base.GetWishDirection();
+		return direction;
+	}
+
+	protected override void UpdateRotation( Vector3 direction )
+	{
+		if ( Target.IsValid() && IsTargetVisible )
+		{
+			RotateOverTime( Target );
+			return;
+		}
+
+		base.UpdateRotation( direction );
+	}
+
+	protected override void UpdateVelocity( Vector3 direction )
+	{
+		if ( !IsTargetVisible )
+		{
+			base.UpdateVelocity( direction );
+			return;
+		}
+
+		var nearbyUndead = FindInSphere( Position, 100f )
+			.OfType<Undead>()
+			.ToArray();
+
+		var moveSpeed = GetMoveSpeed();
+
+		var flocker = new Flocker();
+		flocker.Setup( this, nearbyUndead, Position, moveSpeed, 60f );
+		flocker.Flock( Position + direction * moveSpeed );
+
+		var steerDirection = flocker.Force.WithZ( 0f );
+		Velocity = Accelerate( Velocity, steerDirection.Normal, moveSpeed, 0f, 8f );
 	}
 
 	protected override void HandleAnimation()
@@ -174,7 +214,7 @@ public partial class Undead : AnimalNPC, ILimitedSpawner, IDamageable
 		else
 		{
 			var targetSpeed = Velocity.Length;
-			CurrentSpeed = CurrentSpeed.LerpTo( targetSpeed, Time.Delta * 60f );
+			CurrentSpeed = CurrentSpeed.LerpTo( targetSpeed, Time.Delta * 8f );
 
 			SetAnimParameter( "dead", false );
 			SetAnimParameter( "speed", CurrentSpeed );
@@ -188,6 +228,7 @@ public partial class Undead : AnimalNPC, ILimitedSpawner, IDamageable
 			.WorldAndEntities()
 			.WithoutTags( "passplayers", "trigger", "npc" )
 			.WithAnyTags( "solid", "world", "player" )
+			.Size( 8f )
 			.Ignore( this )
 			.Run();
 

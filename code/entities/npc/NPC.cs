@@ -12,6 +12,19 @@ public abstract partial class NPC : AnimatedEntity
 	protected Vector3 WishDirection { get; set; }
 	protected NavPath Path { get; set; }
 
+	public void RotateOverTime( Vector3 direction )
+	{
+		var targetRotation = Rotation.LookAt( direction.WithZ( 0f ), Vector3.Up );
+		Rotation = Rotation.Lerp( Rotation, targetRotation, Time.Delta * 10f );
+	}
+
+	public void RotateOverTime( Entity target )
+	{
+		var direction = (target.Position - Position).Normal;
+		var targetRotation = Rotation.LookAt( direction.WithZ( 0f ), Vector3.Up );
+		Rotation = Rotation.Lerp( Rotation, targetRotation, Time.Delta * 10f );
+	}
+
 	public override void Spawn()
 	{
 		Tags.Add( "npc" );
@@ -56,13 +69,16 @@ public abstract partial class NPC : AnimatedEntity
 
 	protected bool MoveToLocation( Vector3 position, float stepSize = 24f )
 	{
-		TargetLocation = position;
+		var closestPoint = NavMesh.GetClosestPoint( position );
+		if ( !closestPoint.HasValue ) return false;
+
+		TargetLocation = closestPoint.Value;
 
 		Path = NavMesh.PathBuilder( Position )
 			.WithMaxClimbDistance( 0f )
 			.WithMaxDropDistance( 128f )
+			.WithAgentHull( NavAgentHull.Any )
 			.WithPartialPaths()
-			.WithAgentHull( NavAgentHull.Default )
 			.WithStepHeight( stepSize )
 			.Build( TargetLocation );
 
@@ -95,8 +111,6 @@ public abstract partial class NPC : AnimatedEntity
 
 		if ( ShouldWander() && !HasValidPath() && NavMesh.IsLoaded )
 		{
-			SnapToNavMesh();
-
 			if ( NextWanderTime && TryGetNavMeshPosition( 1000f, 5000f, out var targetPosition ) )
 			{
 				MoveToLocation( targetPosition );
@@ -123,13 +137,8 @@ public abstract partial class NPC : AnimatedEntity
 
 		var wishDirection = GetWishDirection();
 
-		Velocity = Accelerate( Velocity, wishDirection, GetMoveSpeed(), 0f, 8f );
-
-		if ( wishDirection.Length > 0f )
-		{
-			var targetRotation = Rotation.LookAt( wishDirection.WithZ( 0f ), Vector3.Up );
-			Rotation = Rotation.Lerp( Rotation, targetRotation, Time.Delta * 10f );
-		}
+		UpdateVelocity( wishDirection );
+		UpdateRotation( wishDirection );
 
 		HandleAnimation();
 
@@ -153,6 +162,19 @@ public abstract partial class NPC : AnimatedEntity
 		{
 			Position += Velocity * Time.Delta;
 		}
+	}
+
+	protected virtual void UpdateRotation( Vector3 direction )
+	{
+		if ( direction.Length > 0f )
+		{
+			RotateOverTime( direction );
+		}
+	}
+
+	protected virtual void UpdateVelocity( Vector3 direction )
+	{
+		Velocity = Accelerate( Velocity, direction, GetMoveSpeed(), 0f, 8f );
 	}
 
 	protected virtual Vector3 ApplyFriction( Vector3 velocity, float amount = 1f )
@@ -191,7 +213,7 @@ public abstract partial class NPC : AnimatedEntity
 
 	protected virtual BBox GetHull()
 	{
-		var girth = 16f;
+		var girth = 12f;
 		var mins = new Vector3( -girth, -girth, 0f );
 		var maxs = new Vector3( +girth, +girth, 72f );
 		return new BBox( mins, maxs );
@@ -225,11 +247,12 @@ public abstract partial class NPC : AnimatedEntity
 
 	protected virtual Vector3 GetWishDirection()
 	{
-		if ( !HasValidPath() ) return Vector3.Zero;
+		if ( !HasValidPath() )
+			return Vector3.Zero;
 
 		var firstSegment = Path.Segments[0];
 
-		if ( Position.Distance( firstSegment.Position ) > 80f )
+		if ( Position.Distance( firstSegment.Position ) > 10f )
 		{
 			var direction = (firstSegment.Position - Position).Normal;
 			return direction;
