@@ -111,7 +111,7 @@ public partial class Undead : AnimalNPC, ILimitedSpawner, IDamageable
 				var target = FindInSphere( Position, 2048f )
 					.OfType<ForsakenPlayer>()
 					.Where( CanSeeTarget )
-					.OrderByDescending( p => p.Position.Distance( Position ) )
+					.OrderBy( p => p.Position.Distance( Position ) )
 					.FirstOrDefault();
 
 				if ( target.IsValid() )
@@ -151,7 +151,7 @@ public partial class Undead : AnimalNPC, ILimitedSpawner, IDamageable
 		}
 		else
 		{
-			var targetSpeed = Velocity.Length;
+			var targetSpeed = Velocity.WithZ( 0f ).Length;
 			CurrentSpeed = CurrentSpeed.LerpTo( targetSpeed, Time.Delta * 60f );
 
 			SetAnimParameter( "dead", false );

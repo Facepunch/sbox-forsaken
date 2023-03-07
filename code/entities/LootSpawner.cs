@@ -1,4 +1,5 @@
-﻿using Sandbox;
+﻿using Facepunch.Forsaken.FlowFields;
+using Sandbox;
 using Sandbox.Component;
 using System.Collections.Generic;
 using System.IO;
@@ -129,7 +130,7 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider,
 
 		if ( Game.IsServer )
 		{
-			UpdateNavBlocker();
+			PathManager.UpdateCollisions( Position );
 		}
 
 		base.OnNewModel( model );
@@ -188,26 +189,11 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider,
 		}
 	}
 
-	protected void UpdateNavBlocker()
-	{
-		Game.AssertServer();
-		Components.RemoveAny<NavBlocker>();
-		Components.Add( new NavBlocker() );
-		Event.Run( "fsk.navblocker.added", Position );
-	}
-
-	protected void RemoveNavBlocker()
-	{
-		Game.AssertServer();
-		Components.RemoveAny<NavBlocker>();
-		Event.Run( "fsk.navblocker.removed", Position );
-	}
-
 	protected override void OnDestroy()
 	{
 		if ( Game.IsServer )
 		{
-			RemoveNavBlocker();
+			PathManager.UpdateCollisions( Position );
 		}
 
 		base.OnDestroy();

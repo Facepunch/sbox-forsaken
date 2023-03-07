@@ -1,4 +1,5 @@
-﻿using Sandbox;
+﻿using Facepunch.Forsaken.FlowFields;
+using Sandbox;
 using Sandbox.Component;
 using System;
 using System.Collections.Generic;
@@ -159,8 +160,6 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 		}
 
 		Health = reader.ReadSingle();
-
-		UpdateNavBlocker();
 	}
 
 	public virtual string GetContextName()
@@ -185,7 +184,7 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 
 	public virtual void OnPlacedByPlayer( ForsakenPlayer player )
 	{
-		UpdateNavBlocker();
+		PathManager.UpdateCollisions( Position );
 	}
 
 	public virtual void OnConnected( Socket ours, Socket theirs )
@@ -253,21 +252,6 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 		base.Spawn();
 	}
 
-	protected void UpdateNavBlocker()
-	{
-		Game.AssertServer();
-		Components.RemoveAny<NavBlocker>();
-		Components.Add( new NavBlocker() );
-		Event.Run( "fsk.navblocker.added", Position );
-	}
-
-	protected void RemoveNavBlocker()
-	{
-		Game.AssertServer();
-		Components.RemoveAny<NavBlocker>();
-		Event.Run( "fsk.navblocker.removed", Position );
-	}
-
 	protected Socket AddSocket( string attachmentName )
 	{
 		var attachment = GetAttachment( attachmentName );
@@ -300,7 +284,7 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 	{
 		if ( Game.IsServer )
 		{
-			RemoveNavBlocker();
+			PathManager.UpdateCollisions( Position );
 		}
 
 		base.OnDestroy();

@@ -150,7 +150,7 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 
 		LastDamageTime = 0f;
 
-		if ( TryGetNavMeshPosition( 2000f, 4000f, out var targetPosition ) )
+		if ( GetRandomPositionInRange( 4000f, out var targetPosition ) )
 		{
 			MoveToLocation( targetPosition );
 			NextWanderTime = 10f;
@@ -196,7 +196,7 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 
 	protected override void HandleAnimation()
 	{
-		if ( HasValidPath() && Pose > DeerPose.Default && !IsInPanicMode() )
+		if ( Path.IsValid() && Pose > DeerPose.Default && !IsInPanicMode() )
 		{
 			BlockMovementUntil = 3f;
 			Pose = DeerPose.Default;
@@ -216,9 +216,9 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 		}
 		else
 		{
-			var targetSpeed = Velocity.Length;
+			var targetSpeed = Velocity.WithZ( 0f ).Length;
 
-			if ( NextChangePose && targetSpeed == 0f && !HasValidPath() )
+			if ( NextChangePose && targetSpeed == 0f && !Path.IsValid() )
 			{
 				NextChangePose = Game.Random.Float( 4f, 16f );
 				Pose = (DeerPose)Game.Random.Int( 0, 2 );

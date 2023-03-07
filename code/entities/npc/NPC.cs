@@ -1,8 +1,11 @@
-﻿using Sandbox;
+﻿using Facepunch.Forsaken.FlowFields;
+using Sandbox;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Facepunch.Forsaken;
 
-public abstract partial class NPC : AnimatedEntity
+public abstract partial class NPC : AnimatedEntity, IMoveAgent
 {
 	protected virtual bool UseMoveHelper => false;
 	protected virtual bool UseGravity => false;
@@ -10,20 +13,17 @@ public abstract partial class NPC : AnimatedEntity
 	protected Vector3 TargetLocation { get; set; }
 	protected TimeUntil NextWanderTime { get; set; }
 	protected Vector3 WishDirection { get; set; }
-	protected NavPath Path { get; set; }
+
+	public virtual float AgentRadius => 28f;
+	public virtual Pathfinder Pathfinder => PathManager.Default;
+	public MoveGroup MoveGroup { get; private set; }
+	public PathRequest Path { get; private set; }
 
 	public override void Spawn()
 	{
 		Tags.Add( "npc" );
 
 		base.Spawn();
-	}
-
-	public bool HasValidPath()
-	{
-		if ( Path is null ) return false;
-		if ( Path.Count == 0 ) return false;
-		return true;
 	}
 
 	public virtual bool ShouldWander()
@@ -46,36 +46,58 @@ public abstract partial class NPC : AnimatedEntity
 		return 30f;
 	}
 
-	protected void SnapToNavMesh()
+	public virtual void OnMoveGroupDisposed( MoveGroup group )
 	{
-		var closest = NavMesh.GetClosestPoint( Position );
 
-		if ( closest.HasValue )
-			Position = closest.Value;
 	}
 
-	protected bool MoveToLocation( Vector3 position, float stepSize = 24f )
+	public Vector3? GetFreePositionAtTarget( Vector3 target, float radius )
+	{
+		var pathfinder = Pathfinder;
+		var potentialNodes = new List<Vector3>();
+
+		pathfinder.GetGridPositions( target, radius, potentialNodes, true );
+
+		var freeLocations = potentialNodes
+			.OrderBy( v => v.Distance( Position ) )
+			.ToList();
+
+		if ( freeLocations.Count > 0 )
+			return freeLocations[0];
+		else
+			return null;
+	}
+
+	protected bool MoveToLocation( Vector3 position )
 	{
 		TargetLocation = position;
 
-		Path = NavMesh.PathBuilder( Position )
-			.WithMaxClimbDistance( 0f )
-			.WithMaxDropDistance( 128f )
-			.WithPartialPaths()
-			.WithAgentHull( NavAgentHull.Default )
-			.WithStepHeight( stepSize )
-			.Build( TargetLocation );
+		var freePosition = GetFreePositionAtTarget( position, 128f );
 
-		return (Path?.Count ?? 0) > 0;
+		if ( freePosition.HasValue )
+		{
+			var wp = Pathfinder.CreateWorldPosition( freePosition.Value );
+			Pathfinder.DrawBox( wp, Color.Blue, 20f );
+			DebugOverlay.Line( Position + Vector3.Up * 64f, freePosition.Value, Color.Blue, 20f );
+			Path = Pathfinder.Request( freePosition.Value );
+		}
+		else
+		{
+			Path = null;
+		}
+
+		return Path.IsValid();
 	}
 
-	protected bool TryGetNavMeshPosition( float minRadius, float maxRadius, out Vector3 position )
+	protected bool GetRandomPositionInRange( float range, out Vector3 position )
 	{
-		var targetPosition = NavMesh.GetPointWithinRadius( Position, minRadius, maxRadius );
+		var potentialNodes = new List<Vector3>();
 
-		if ( targetPosition.HasValue )
+		Pathfinder.GetGridPositions( Position, range, potentialNodes );
+
+		if ( potentialNodes.Count > 0 )
 		{
-			position = targetPosition.Value;
+			position = Game.Random.FromList( potentialNodes );
 			return true;
 		}
 
@@ -93,11 +115,9 @@ public abstract partial class NPC : AnimatedEntity
 			return;
 		}
 
-		if ( ShouldWander() && !HasValidPath() && NavMesh.IsLoaded )
+		if ( ShouldWander() && !Path.IsValid() )
 		{
-			SnapToNavMesh();
-
-			if ( NextWanderTime && TryGetNavMeshPosition( 1000f, 5000f, out var targetPosition ) )
+			if ( NextWanderTime && GetRandomPositionInRange( 4000f, out var targetPosition ) )
 			{
 				MoveToLocation( targetPosition );
 				NextWanderTime = GetIdleDuration();
@@ -122,7 +142,6 @@ public abstract partial class NPC : AnimatedEntity
 		}
 
 		var wishDirection = GetWishDirection();
-
 		Velocity = Accelerate( Velocity, wishDirection, GetMoveSpeed(), 0f, 8f );
 
 		if ( wishDirection.Length > 0f )
@@ -152,6 +171,13 @@ public abstract partial class NPC : AnimatedEntity
 		else
 		{
 			Position += Velocity * Time.Delta;
+		}
+
+		if ( Path.IsValid() && Path.IsDestination( Position ) )
+		{
+			Log.Info( this + " finished path" );
+			OnFinishedPath();
+			Path = null;
 		}
 	}
 
@@ -225,32 +251,19 @@ public abstract partial class NPC : AnimatedEntity
 
 	protected virtual Vector3 GetWishDirection()
 	{
-		if ( !HasValidPath() ) return Vector3.Zero;
+		if ( !Path.IsValid() )
+			return default;
 
-		var firstSegment = Path.Segments[0];
+		var offset = Pathfinder.CenterOffset.Normal;
+		var direction = Path.GetDirection( Position );
 
-		if ( Position.Distance( firstSegment.Position ) > 80f )
-		{
-			var direction = (firstSegment.Position - Position).Normal;
-			return direction;
-		}
-
-		Path.Segments.RemoveAt( 0 );
-
-		if ( Path.Segments.Count == 0 )
-		{
-			OnFinishedPath();
-		}
-
-		return Vector3.Zero;
+		return (direction.Normal * offset);
 	}
 
 	[ForsakenEvent.NavBlockerAdded]
 	protected virtual void OnNavBlockerAdded( Vector3 position )
 	{
-		if ( !HasValidPath() ) return;
-
-		SnapToNavMesh();
+		if ( !Path.IsValid() ) return;
 
 		if ( !MoveToLocation( TargetLocation ) )
 		{

@@ -1,4 +1,5 @@
-﻿using Sandbox;
+﻿using Facepunch.Forsaken.FlowFields;
+using Sandbox;
 using Sandbox.Component;
 using System.IO;
 using System.Linq;
@@ -89,13 +90,11 @@ public partial class Deployable : ModelEntity, IDamageable, IPersistence
 		Handle = reader.ReadPersistenceHandle();
 		Transform = reader.ReadTransform();
 		Health = reader.ReadSingle();
-
-		UpdateNavBlocker();
 	}
 
 	public virtual void OnPlacedByPlayer( ForsakenPlayer player, TraceResult trace )
 	{
-		UpdateNavBlocker();
+		PathManager.UpdateCollisions( Position );
 	}
 
 	public override void Spawn()
@@ -105,26 +104,11 @@ public partial class Deployable : ModelEntity, IDamageable, IPersistence
 		base.Spawn();
 	}
 
-	protected void UpdateNavBlocker()
-	{
-		Game.AssertServer();
-		Components.RemoveAny<NavBlocker>();
-		Components.Add( new NavBlocker() );
-		Event.Run( "fsk.navblocker.added", Position );
-	}
-
-	protected void RemoveNavBlocker()
-	{
-		Game.AssertServer();
-		Components.RemoveAny<NavBlocker>();
-		Event.Run( "fsk.navblocker.removed", Position );
-	}
-
 	protected override void OnDestroy()
 	{
 		if ( Game.IsServer )
 		{
-			RemoveNavBlocker();
+			PathManager.UpdateCollisions( Position );
 		}
 
 		base.OnDestroy();

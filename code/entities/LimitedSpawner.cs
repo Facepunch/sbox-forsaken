@@ -11,7 +11,6 @@ public class LimitedSpawner
 
 	private TimeUntil NextSpawnTime { get; set; }
 
-	public bool UseNavMesh { get; set; }
 	public int MinPerSpawn { get; set; } = 0;
 	public int MaxPerSpawn { get; set; } = 100;
 	public int MaxTotal { get; set; } = 100;
@@ -37,7 +36,6 @@ public class LimitedSpawner
 	private void ServerTick()
 	{
 		if ( Type is null || !NextSpawnTime ) return;
-		if ( UseNavMesh && !NavMesh.IsLoaded ) return;
 
 		var totalCount = Entity.All
 			.OfType<ILimitedSpawner>()
@@ -79,14 +77,5 @@ public class LimitedSpawner
 		var entity = description.Create<ILimitedSpawner>();
 		entity.Position = position;
 		entity.Rotation = Rotation.Identity.RotateAroundAxis( Vector3.Up, Game.Random.Float() * 360f );
-
-		if ( !UseNavMesh ) return;
-
-		var closest = NavMesh.GetClosestPoint( entity.Position );
-
-		if ( closest.HasValue )
-		{
-			entity.Position = closest.Value;
-		}
 	}
 }

@@ -1,8 +1,10 @@
-﻿using Sandbox;
+﻿using Facepunch.Forsaken.FlowFields;
+using Sandbox;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Facepunch.Forsaken;
 
@@ -135,10 +137,14 @@ public partial class ForsakenGame : GameManager
 	{
 		Game.WorldEntity.Tags.Add( "world" );
 
+		if ( Game.IsServer )
+		{
+			SetupPathCombinations();
+		}
+
 		{
 			var spawner = new LimitedSpawner();
 			spawner.SetType<WoodPickup>();
-			spawner.UseNavMesh = true;
 			spawner.MaxTotal = 400;
 			spawner.MinPerSpawn = 200;
 			spawner.MaxPerSpawn = 300;
@@ -148,7 +154,6 @@ public partial class ForsakenGame : GameManager
 		{
 			var spawner = new LimitedSpawner();
 			spawner.SetType<StonePickup>();
-			spawner.UseNavMesh = true;
 			spawner.MaxTotal = 300;
 			spawner.MinPerSpawn = 100;
 			spawner.MaxPerSpawn = 200;
@@ -158,7 +163,6 @@ public partial class ForsakenGame : GameManager
 		{
 			var spawner = new LimitedSpawner();
 			spawner.SetType<MetalOrePickup>();
-			spawner.UseNavMesh = true;
 			spawner.MaxTotal = 200;
 			spawner.MinPerSpawn = 100;
 			spawner.MaxPerSpawn = 150;
@@ -168,7 +172,6 @@ public partial class ForsakenGame : GameManager
 		{
 			var spawner = new LimitedSpawner();
 			spawner.SetType<PlantFiberPickup>();
-			spawner.UseNavMesh = true;
 			spawner.MaxTotal = 250;
 			spawner.MinPerSpawn = 150;
 			spawner.MaxPerSpawn = 200;
@@ -178,7 +181,6 @@ public partial class ForsakenGame : GameManager
 		{
 			var spawner = new LimitedSpawner();
 			spawner.SetType<Deer>();
-			spawner.UseNavMesh = true;
 			spawner.MaxTotal = 20;
 			spawner.MinPerSpawn = 1;
 			spawner.MaxPerSpawn = 10;
@@ -188,7 +190,6 @@ public partial class ForsakenGame : GameManager
 		{
 			var spawner = new LimitedSpawner();
 			spawner.SetType<Undead>();
-			spawner.UseNavMesh = true;
 			spawner.MaxTotal = 20;
 			spawner.MinPerSpawn = 1;
 			spawner.MaxPerSpawn = 10;
@@ -200,6 +201,13 @@ public partial class ForsakenGame : GameManager
 		NextAutoSave = 60f;
 
 		base.PostLevelLoaded();
+	}
+
+	private void SetupPathCombinations()
+	{
+		PathManager.SetBounds( Game.PhysicsWorld.Body.GetBounds() * 1.05f );
+
+		_ = PathManager.Create( 50, 60, "solid" );
 	}
 
 	[Event.Tick.Server]
@@ -226,6 +234,8 @@ public partial class ForsakenGame : GameManager
 
 			NextDespawnItems = 30f;
 		}
+
+		PathManager.Update();
 
 		InternalSaveId = PersistenceSystem.UniqueId;
 	}
