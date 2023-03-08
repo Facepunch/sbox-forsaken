@@ -1,6 +1,5 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Facepunch.Forsaken;
 
@@ -13,6 +12,12 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 		Sleeping
 	}
 
+	private enum MovementState
+	{
+		Idle,
+		Moving
+	}
+
 	public TimeSince? LastDamageTime { get; set; }
 
 	public float InteractionRange => 100f;
@@ -21,16 +26,26 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 	public float MaxHealth => 80f;
 
 	private ContextAction HarvestAction { get; set; }
+
+	private TimeUntil NextChangeState { get; set; }
+	private TimeUntil NextWanderTime { get; set; }
 	private TimeUntil BlockMovementUntil { get; set; }
 	private TimeUntil NextSwapTrotting { get; set; }
 	private TimeUntil NextChangePose { get; set; }
+
 	private float CurrentSpeed { get; set; }
 	private bool IsTrotting { get; set; }
+
+	private MovementState State { get; set; }
 	private DeerPose Pose { get; set; }
 
 	private float WalkSpeed => 60f;
 	private float TrotSpeed => 250f;
 	private float RunSpeed => 400f;
+
+	private WanderBehavior Wander { get; set; }
+	private AvoidanceBehavior Avoidance { get; set; }
+	private SteeringComponent Steering { get; set; }
 
 	public Deer()
 	{
@@ -78,16 +93,6 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 		return "Deer";
 	}
 
-	public override bool ShouldWander()
-	{
-		return true;
-	}
-
-	public override float GetIdleDuration()
-	{
-		return Game.Random.Float( 8f, 16f );
-	}
-
 	public override float GetMoveSpeed()
 	{
 		if ( IsInPanicMode() )
@@ -107,6 +112,13 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 		EnableSolidCollisions = false;
 		Health = MaxHealth;
 		Scale = Game.Random.Float( 0.9f, 1.1f );
+
+		Steering = Components.GetOrCreate<SteeringComponent>();
+		Avoidance = Components.GetOrCreate<AvoidanceBehavior>();
+		Wander = Components.GetOrCreate<WanderBehavior>();
+
+		NextChangeState = Game.Random.Float( 4f, 8f );
+		State = MovementState.Idle;
 
 		base.Spawn();
 	}
@@ -149,12 +161,8 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 		}
 
 		LastDamageTime = 0f;
-
-		if ( TryGetNavMeshPosition( 2000f, 4000f, out var targetPosition ) )
-		{
-			MoveToLocation( targetPosition );
-			NextWanderTime = 10f;
-		}
+		NextWanderTime = 0f;
+		State = MovementState.Moving;
 
 		base.TakeDamage( info );
 	}
@@ -186,26 +194,69 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 		Delete();
 	}
 
-	protected override Vector3 GetWishDirection()
+	protected override void HandleBehavior()
 	{
-		if ( BlockMovementUntil )
-			return base.GetWishDirection();
-
-		return Vector3.Zero;
-	}
-
-	protected override void HandleAnimation()
-	{
-		if ( HasValidPath() && Pose > DeerPose.Default && !IsInPanicMode() )
+		if ( NextWanderTime )
 		{
-			BlockMovementUntil = 3f;
-			Pose = DeerPose.Default;
+			NextWanderTime = Game.Random.Float( 4f, 8f );
+			Wander.Regenerate();
 		}
 
 		if ( NextSwapTrotting )
 		{
-			NextSwapTrotting = Game.Random.Float( 8f, 16f );
+			NextSwapTrotting = Game.Random.Float( 3f, 10f );
 			IsTrotting = !IsTrotting;
+		}
+
+		if ( NextChangeState )
+		{
+			if ( State == MovementState.Idle )
+			{
+				NextChangeState = Game.Random.Float( 6f, 12f );
+				State = MovementState.Moving;
+			}
+			else
+			{
+				NextChangeState = Game.Random.Float( 6f, 16f );
+				State = MovementState.Idle;
+			}
+		}
+
+		base.HandleBehavior();
+	}
+
+	protected override void UpdateRotation( Vector3 direction )
+	{
+		Steering.RotateToTarget();
+	}
+
+	protected override void UpdateVelocity( Vector3 direction )
+	{
+		if ( State == MovementState.Idle || !BlockMovementUntil )
+		{
+			Velocity = Vector3.Zero;
+			return;
+		}
+
+		var acceleration = Avoidance.GetSteering();
+
+		if ( acceleration.IsNearZeroLength )
+		{
+			acceleration = Wander.GetSteering();
+		}
+
+		if ( !acceleration.IsNearZeroLength )
+		{
+			Steering.Steer( acceleration );
+		}
+	}
+
+	protected override void HandleAnimation()
+	{
+		if ( State == MovementState.Moving && Pose > DeerPose.Default && !IsInPanicMode() )
+		{
+			BlockMovementUntil = 3f;
+			Pose = DeerPose.Default;
 		}
 
 		if ( LifeState == LifeState.Dead )
@@ -216,7 +267,7 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 		}
 		else
 		{
-			var targetSpeed = Velocity.Length;
+			var targetSpeed = Velocity.WithZ( 0f ).Length;
 
 			if ( NextChangePose && targetSpeed == 0f && !HasValidPath() )
 			{
@@ -224,7 +275,7 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 				Pose = (DeerPose)Game.Random.Int( 0, 2 );
 			}
 
-			CurrentSpeed = CurrentSpeed.LerpTo( targetSpeed, Time.Delta * 60f );
+			CurrentSpeed = CurrentSpeed.LerpTo( targetSpeed, Time.Delta * 20f );
 
 			SetAnimParameter( "dead", false );
 			SetAnimParameter( "pose", (int)Pose );

@@ -4,30 +4,19 @@ namespace Facepunch.Forsaken;
 
 public abstract partial class NPC : AnimatedEntity
 {
-	protected virtual bool UseMoveHelper => false;
-	protected virtual bool UseGravity => false;
-
 	protected Vector3 TargetLocation { get; set; }
-	protected TimeUntil NextWanderTime { get; set; }
 	protected Vector3 WishDirection { get; set; }
 	protected NavPath Path { get; set; }
 
-	public void RotateOverTime( Vector3 direction )
-	{
-		var targetRotation = Rotation.LookAt( direction.WithZ( 0f ), Vector3.Up );
-		Rotation = Rotation.Lerp( Rotation, targetRotation, Time.Delta * 10f );
-	}
-
-	public void RotateOverTime( Entity target )
-	{
-		var direction = (target.Position - Position).Normal;
-		var targetRotation = Rotation.LookAt( direction.WithZ( 0f ), Vector3.Up );
-		Rotation = Rotation.Lerp( Rotation, targetRotation, Time.Delta * 10f );
-	}
+	private GravityComponent Gravity { get; set; }
+	private FrictionComponent Friction { get; set; }
 
 	public override void Spawn()
 	{
 		Tags.Add( "npc" );
+
+		Gravity = Components.GetOrCreate<GravityComponent>();
+		Friction = Components.GetOrCreate<FrictionComponent>();
 
 		base.Spawn();
 	}
@@ -37,11 +26,6 @@ public abstract partial class NPC : AnimatedEntity
 		if ( Path is null ) return false;
 		if ( Path.Count == 0 ) return false;
 		return true;
-	}
-
-	public virtual bool ShouldWander()
-	{
-		return false;
 	}
 
 	public virtual string GetDisplayName()
@@ -54,17 +38,25 @@ public abstract partial class NPC : AnimatedEntity
 		return 80f;
 	}
 
-	public virtual float GetIdleDuration()
-	{
-		return 30f;
-	}
-
 	protected void SnapToNavMesh()
 	{
 		var closest = NavMesh.GetClosestPoint( Position );
 
 		if ( closest.HasValue )
 			Position = closest.Value;
+	}
+
+	protected void RotateOverTime( Vector3 direction )
+	{
+		var targetRotation = Rotation.LookAt( direction.WithZ( 0f ), Vector3.Up );
+		Rotation = Rotation.Lerp( Rotation, targetRotation, Time.Delta * 10f );
+	}
+
+	protected void RotateOverTime( Entity target )
+	{
+		var direction = (target.Position - Position).Normal;
+		var targetRotation = Rotation.LookAt( direction.WithZ( 0f ), Vector3.Up );
+		Rotation = Rotation.Lerp( Rotation, targetRotation, Time.Delta * 10f );
 	}
 
 	protected bool MoveToLocation( Vector3 position, float stepSize = 24f )
@@ -109,39 +101,21 @@ public abstract partial class NPC : AnimatedEntity
 			return;
 		}
 
-		if ( ShouldWander() && !HasValidPath() && NavMesh.IsLoaded )
-		{
-			if ( NextWanderTime && TryGetNavMeshPosition( 1000f, 5000f, out var targetPosition ) )
-			{
-				MoveToLocation( targetPosition );
-				NextWanderTime = GetIdleDuration();
-			}
-		}
-
-		if ( UseGravity )
-		{
-			var trace = Trace.Ray( Position + Vector3.Up * 8f, Position + Vector3.Down * 32f )
-				.WorldOnly()
-				.Ignore( this )
-				.Run();
-
-			GroundEntity = trace.Entity;
-			Velocity += Vector3.Down * 700f * Time.Delta;
-			Velocity = ApplyFriction( Velocity, 4f );
-		}
-		else
-		{
-			GroundEntity = Game.WorldEntity;
-			Velocity = ApplyFriction( Velocity, 4f );
-		}
+		HandleBehavior();
 
 		var wishDirection = GetWishDirection();
 
 		UpdateVelocity( wishDirection );
 		UpdateRotation( wishDirection );
 
+		Gravity.Update();
+		Friction.Update();
+
 		HandleAnimation();
 
+		Position += Velocity * Time.Delta;
+
+		/*
 		if ( UseMoveHelper )
 		{
 			var mover = new MoveHelper( Position, Velocity );
@@ -162,36 +136,22 @@ public abstract partial class NPC : AnimatedEntity
 		{
 			Position += Velocity * Time.Delta;
 		}
+		*/
 	}
 
 	protected virtual void UpdateRotation( Vector3 direction )
 	{
-		if ( direction.Length > 0f )
-		{
-			RotateOverTime( direction );
-		}
+
 	}
 
 	protected virtual void UpdateVelocity( Vector3 direction )
 	{
-		Velocity = Accelerate( Velocity, direction, GetMoveSpeed(), 0f, 8f );
+
 	}
 
-	protected virtual Vector3 ApplyFriction( Vector3 velocity, float amount = 1f )
+	protected virtual void HandleBehavior()
 	{
-		var speed = Velocity.Length;
-		if ( speed < 0.1f ) return velocity;
 
-		var control = (speed < 100f) ? 100f : speed;
-		var newSpeed = speed - (control * Time.Delta * amount);
-
-		if ( newSpeed < 0 ) newSpeed = 0;
-		if ( newSpeed == speed ) return velocity;
-
-		newSpeed /= speed;
-		velocity *= newSpeed;
-
-		return velocity;
 	}
 
 	protected virtual void HandleAnimation()
@@ -221,28 +181,7 @@ public abstract partial class NPC : AnimatedEntity
 
 	protected virtual void OnFinishedPath()
 	{
-		NextWanderTime = GetIdleDuration();
-	}
 
-	protected virtual Vector3 Accelerate( Vector3 velocity, Vector3 wishDir, float wishSpeed, float speedLimit, float acceleration )
-	{
-		if ( speedLimit > 0 && wishSpeed > speedLimit )
-			wishSpeed = speedLimit;
-
-		var currentSpeed = Velocity.Dot( wishDir );
-		var addSpeed = wishSpeed - currentSpeed;
-
-		if ( addSpeed <= 0 )
-			return velocity;
-
-		var accelSpeed = acceleration * Time.Delta * wishSpeed * 1f;
-
-		if ( accelSpeed > addSpeed )
-			accelSpeed = addSpeed;
-
-		velocity += wishDir * accelSpeed;
-
-		return velocity;
 	}
 
 	protected virtual Vector3 GetWishDirection()
@@ -274,10 +213,6 @@ public abstract partial class NPC : AnimatedEntity
 		if ( !HasValidPath() ) return;
 
 		SnapToNavMesh();
-
-		if ( !MoveToLocation( TargetLocation ) )
-		{
-			NextWanderTime = 0f;
-		}
+		MoveToLocation( TargetLocation );
 	}
 }

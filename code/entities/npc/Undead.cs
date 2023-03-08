@@ -26,16 +26,6 @@ public partial class Undead : AnimalNPC, ILimitedSpawner, IDamageable
 		return "Undead";
 	}
 
-	public override bool ShouldWander()
-	{
-		return !Target.IsValid();
-	}
-
-	public override float GetIdleDuration()
-	{
-		return Game.Random.Float( 8f, 16f );
-	}
-
 	public override float GetMoveSpeed()
 	{
 		if ( Target.IsValid() )
@@ -175,7 +165,7 @@ public partial class Undead : AnimalNPC, ILimitedSpawner, IDamageable
 	{
 		if ( Target.IsValid() && IsTargetVisible )
 		{
-			RotateOverTime( Target );
+			//RotateOverTime( Target );
 			return;
 		}
 
@@ -201,7 +191,7 @@ public partial class Undead : AnimalNPC, ILimitedSpawner, IDamageable
 		flocker.Flock( Position + direction * moveSpeed );
 
 		var steerDirection = flocker.Force.WithZ( 0f );
-		Velocity = Accelerate( Velocity, steerDirection.Normal, moveSpeed, 0f, 8f );
+		//Velocity = Accelerate( Velocity, steerDirection.Normal, moveSpeed, 0f, 8f );
 	}
 
 	protected override void HandleAnimation()

@@ -165,11 +165,6 @@ public partial class Trader : HumanNPC, IContextActionProvider, IPersistence, IN
 		}
 	}
 
-	public override bool ShouldWander()
-	{
-		return DoesWander;
-	}
-
 	public override string GetDisplayName()
 	{
 		return DisplayName;
@@ -178,11 +173,6 @@ public partial class Trader : HumanNPC, IContextActionProvider, IPersistence, IN
 	public override float GetMoveSpeed()
 	{
 		return MoveSpeed;
-	}
-
-	public override float GetIdleDuration()
-	{
-		return Game.Random.Float( MinIdleDuration, MaxIdleDuration );
 	}
 
 	protected override Vector3 GetWishDirection()
