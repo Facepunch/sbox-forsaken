@@ -105,37 +105,37 @@ public abstract partial class NPC : AnimatedEntity
 
 		var wishDirection = GetWishDirection();
 
-		UpdateVelocity( wishDirection );
-		UpdateRotation( wishDirection );
-
 		Gravity.Update();
 		Friction.Update();
 
+		UpdateVelocity( wishDirection );
+		UpdateRotation( wishDirection );
+
 		HandleAnimation();
 
-		Position += Velocity * Time.Delta;
+		var hull = GetHull();
+		var origin = Position + Vector3.Up * 4f;
+		var trace = TraceBBox( origin, origin + Velocity * Time.Delta, hull.Mins, hull.Maxs );
 
-		/*
-		if ( UseMoveHelper )
-		{
-			var mover = new MoveHelper( Position, Velocity );
-
-			mover.Trace = mover.SetupTrace()
-				.WithoutTags( "passplayers", "player" )
-				.WithAnyTags( "solid", "playerclip", "passbullets" )
-				.Size( GetHull() )
-				.Ignore( this );
-
-			mover.MaxStandableAngle = 40f;
-			mover.TryMoveWithStep( Time.Delta, 24f );
-
-			Position = mover.Position;
-			Velocity = mover.Velocity;
-		}
-		else
+		if ( !trace.Hit )
 		{
 			Position += Velocity * Time.Delta;
 		}
+
+		/*
+		var mover = new MoveHelper( Position, Velocity );
+
+		mover.Trace = mover.SetupTrace()
+			.WithoutTags( "passplayers", "player" )
+			.WithAnyTags( "solid", "playerclip", "passbullets" )
+			.Size( GetHull() )
+			.Ignore( this );
+
+		mover.MaxStandableAngle = 10f;
+		mover.TryMoveWithStep( Time.Delta, 24f );
+
+		Position = mover.Position;
+		Velocity = mover.Velocity;
 		*/
 	}
 
