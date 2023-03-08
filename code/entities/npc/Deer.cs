@@ -3,19 +3,13 @@ using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
-public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextActionProvider
+public partial class Deer : Animal, ILimitedSpawner, IDamageable, IContextActionProvider
 {
 	private enum DeerPose
 	{
 		Default,
 		Sitting,
 		Sleeping
-	}
-
-	private enum MovementState
-	{
-		Idle,
-		Moving
 	}
 
 	public TimeSince? LastDamageTime { get; set; }
@@ -27,8 +21,6 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 
 	private ContextAction HarvestAction { get; set; }
 
-	private TimeUntil NextChangeState { get; set; }
-	private TimeUntil NextWanderTime { get; set; }
 	private TimeUntil BlockMovementUntil { get; set; }
 	private TimeUntil NextSwapTrotting { get; set; }
 	private TimeUntil NextChangePose { get; set; }
@@ -36,16 +28,11 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 	private float CurrentSpeed { get; set; }
 	private bool IsTrotting { get; set; }
 
-	private MovementState State { get; set; }
 	private DeerPose Pose { get; set; }
 
 	private float WalkSpeed => 60f;
 	private float TrotSpeed => 250f;
 	private float RunSpeed => 400f;
-
-	private WanderBehavior Wander { get; set; }
-	private AvoidanceBehavior Avoidance { get; set; }
-	private SteeringComponent Steering { get; set; }
 
 	public Deer()
 	{
@@ -112,13 +99,6 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 		EnableSolidCollisions = false;
 		Health = MaxHealth;
 		Scale = Game.Random.Float( 0.9f, 1.1f );
-
-		Steering = Components.GetOrCreate<SteeringComponent>();
-		Avoidance = Components.GetOrCreate<AvoidanceBehavior>();
-		Wander = Components.GetOrCreate<WanderBehavior>();
-
-		NextChangeState = Game.Random.Float( 4f, 8f );
-		State = MovementState.Idle;
 
 		base.Spawn();
 	}
@@ -196,59 +176,24 @@ public partial class Deer : AnimalNPC, ILimitedSpawner, IDamageable, IContextAct
 
 	protected override void HandleBehavior()
 	{
-		if ( NextWanderTime )
-		{
-			NextWanderTime = Game.Random.Float( 4f, 8f );
-			Wander.Regenerate();
-		}
-
 		if ( NextSwapTrotting )
 		{
 			NextSwapTrotting = Game.Random.Float( 3f, 10f );
 			IsTrotting = !IsTrotting;
 		}
 
-		if ( NextChangeState )
-		{
-			if ( State == MovementState.Idle )
-			{
-				NextChangeState = Game.Random.Float( 6f, 12f );
-				State = MovementState.Moving;
-			}
-			else
-			{
-				NextChangeState = Game.Random.Float( 6f, 16f );
-				State = MovementState.Idle;
-			}
-		}
-
 		base.HandleBehavior();
 	}
 
-	protected override void UpdateRotation( Vector3 direction )
+	protected override void UpdateVelocity()
 	{
-		Steering.RotateToTarget();
-	}
-
-	protected override void UpdateVelocity( Vector3 direction )
-	{
-		if ( State == MovementState.Idle || !BlockMovementUntil )
+		if ( !BlockMovementUntil )
 		{
 			Velocity = Vector3.Zero;
 			return;
 		}
 
-		var acceleration = Avoidance.GetSteering();
-
-		if ( acceleration.IsNearZeroLength )
-		{
-			acceleration = Wander.GetSteering();
-		}
-
-		if ( !acceleration.IsNearZeroLength )
-		{
-			Steering.Steer( acceleration );
-		}
+		base.UpdateVelocity();
 	}
 
 	protected override void HandleAnimation()

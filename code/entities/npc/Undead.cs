@@ -1,10 +1,9 @@
 ﻿using Sandbox;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Facepunch.Forsaken;
 
-public partial class Undead : AnimalNPC, ILimitedSpawner, IDamageable
+public partial class Undead : Animal, ILimitedSpawner, IDamageable
 {
 	public float MaxHealth => 80f;
 
@@ -105,6 +104,7 @@ public partial class Undead : AnimalNPC, ILimitedSpawner, IDamageable
 
 				if ( target.IsValid() )
 				{
+					State = MovementState.Moving;
 					Path = null;
 				}
 
@@ -142,48 +142,78 @@ public partial class Undead : AnimalNPC, ILimitedSpawner, IDamageable
 		base.ServerTick();
 	}
 
-	protected override Vector3 GetWishDirection()
+	protected override void UpdateRotation()
 	{
-		Vector3 direction;
-
 		if ( Target.IsValid() && IsTargetVisible )
 		{
-			if ( Position.Distance( Target.Position ) <= TargetRange )
-				direction =  Vector3.Zero;
+			RotateOverTime( Target );
+			return;
+		}
+
+		base.UpdateRotation();
+	}
+
+	protected override void HandleBehavior()
+	{
+		Steering.MaxVelocity = GetMoveSpeed();
+		Steering.MaxAcceleration = Steering.MaxVelocity * 0.25f;
+
+		if ( !Target.IsValid() && NextWanderTime )
+		{
+			NextWanderTime = Game.Random.Float( 4f, 8f );
+			Wander.Regenerate();
+		}
+
+		if ( !Target.IsValid() && NextChangeState )
+		{
+			if ( State == MovementState.Idle )
+			{
+				NextChangeState = Game.Random.Float( 6f, 12f );
+				State = MovementState.Moving;
+			}
 			else
-				direction = (Target.Position - Position).Normal;
+			{
+				NextChangeState = Game.Random.Float( 6f, 16f );
+				State = MovementState.Idle;
+			}
+		}
+	}
+
+	protected override void UpdateVelocity()
+	{
+		if ( State == MovementState.Idle )
+		{
+			Velocity = Vector3.Zero;
+			return;
+		}
+
+		var acceleration = Avoidance.GetSteering();
+
+		if ( HasValidPath() )
+		{
+			var direction = (GetPathTarget() - Position).Normal;
+			acceleration = direction * GetMoveSpeed();
+		}
+		else if ( Target.IsValid() )
+		{
+			if ( Position.Distance( Target.Position ) > TargetRange )
+				acceleration += Steering.Seek( Target.Position );
 		}
 		else
 		{
-			direction = base.GetWishDirection();
+			acceleration += Wander.GetSteering();
 		}
 
-		return direction;
-	}
-
-	protected override void UpdateRotation( Vector3 direction )
-	{
-		if ( Target.IsValid() && IsTargetVisible )
+		if ( !acceleration.IsNearZeroLength )
 		{
-			//RotateOverTime( Target );
-			return;
-		}
-
-		base.UpdateRotation( direction );
-	}
-
-	protected override void UpdateVelocity( Vector3 direction )
-	{
-		if ( !IsTargetVisible )
-		{
-			base.UpdateVelocity( direction );
-			return;
+			Steering.Steer( acceleration );
 		}
 
 		var nearbyUndead = FindInSphere( Position, 100f )
 			.OfType<Undead>()
 			.ToArray();
 
+		/*
 		var moveSpeed = GetMoveSpeed();
 
 		var flocker = new Flocker();
@@ -192,6 +222,7 @@ public partial class Undead : AnimalNPC, ILimitedSpawner, IDamageable
 
 		var steerDirection = flocker.Force.WithZ( 0f );
 		//Velocity = Accelerate( Velocity, steerDirection.Normal, moveSpeed, 0f, 8f );
+		*/
 	}
 
 	protected override void HandleAnimation()
@@ -203,7 +234,7 @@ public partial class Undead : AnimalNPC, ILimitedSpawner, IDamageable
 		}
 		else
 		{
-			var targetSpeed = Velocity.Length;
+			var targetSpeed = Velocity.WithZ( 0f ).Length;
 			CurrentSpeed = CurrentSpeed.LerpTo( targetSpeed, Time.Delta * 8f );
 
 			SetAnimParameter( "dead", false );

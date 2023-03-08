@@ -2,7 +2,7 @@
 
 namespace Facepunch.Forsaken;
 
-public abstract partial class HumanNPC : NPC
+public abstract partial class Human : Animal
 {
 	protected override void HandleAnimation()
 	{

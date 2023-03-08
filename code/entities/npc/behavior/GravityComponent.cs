@@ -18,14 +18,10 @@ public class GravityComponent : EntityComponent
 			.Run();
 
 		if ( trace.Hit )
-		{
-			Entity.Position = Entity.Position.WithZ( trace.HitPosition.z );
-			GroundEntity = trace.Entity;
-		}
+			Entity.GroundEntity = trace.Entity;
 		else
-		{
-			Entity.Velocity += Vector3.Down * Force * Time.Delta;
-			GroundEntity = null;
-		}
+			Entity.GroundEntity = null;
+
+		Entity.Velocity += Vector3.Down * Force * Time.Delta;
 	}
 }

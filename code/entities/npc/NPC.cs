@@ -5,7 +5,6 @@ namespace Facepunch.Forsaken;
 public abstract partial class NPC : AnimatedEntity
 {
 	protected Vector3 TargetLocation { get; set; }
-	protected Vector3 WishDirection { get; set; }
 	protected NavPath Path { get; set; }
 
 	private GravityComponent Gravity { get; set; }
@@ -36,6 +35,14 @@ public abstract partial class NPC : AnimatedEntity
 	public virtual float GetMoveSpeed()
 	{
 		return 80f;
+	}
+
+	protected Vector3 GetPathTarget()
+	{
+		if ( !HasValidPath() )
+			return Vector3.Zero;
+
+		return Path.Segments[0].Position;
 	}
 
 	protected void SnapToNavMesh()
@@ -91,6 +98,23 @@ public abstract partial class NPC : AnimatedEntity
 		return false;
 	}
 
+	protected void UpdatePath()
+	{
+		if ( !HasValidPath() ) return;
+
+		var firstSegment = Path.Segments[0];
+
+		if ( Position.Distance( firstSegment.Position ) > 10f )
+			return;
+
+		Path.Segments.RemoveAt( 0 );
+
+		if ( Path.Segments.Count == 0 )
+		{
+			OnFinishedPath();
+		}
+	}
+
 	[Event.Tick.Server]
 	protected virtual void ServerTick()
 	{
@@ -101,28 +125,17 @@ public abstract partial class NPC : AnimatedEntity
 			return;
 		}
 
+		UpdatePath();
 		HandleBehavior();
-
-		var wishDirection = GetWishDirection();
 
 		Gravity.Update();
 		Friction.Update();
 
-		UpdateVelocity( wishDirection );
-		UpdateRotation( wishDirection );
+		UpdateVelocity();
+		UpdateRotation();
 
 		HandleAnimation();
 
-		var hull = GetHull();
-		var origin = Position + Vector3.Up * 4f;
-		var trace = TraceBBox( origin, origin + Velocity * Time.Delta, hull.Mins, hull.Maxs );
-
-		if ( !trace.Hit )
-		{
-			Position += Velocity * Time.Delta;
-		}
-
-		/*
 		var mover = new MoveHelper( Position, Velocity );
 
 		mover.Trace = mover.SetupTrace()
@@ -131,20 +144,19 @@ public abstract partial class NPC : AnimatedEntity
 			.Size( GetHull() )
 			.Ignore( this );
 
-		mover.MaxStandableAngle = 10f;
+		mover.MaxStandableAngle = 20f;
 		mover.TryMoveWithStep( Time.Delta, 24f );
 
 		Position = mover.Position;
 		Velocity = mover.Velocity;
-		*/
 	}
 
-	protected virtual void UpdateRotation( Vector3 direction )
+	protected virtual void UpdateRotation()
 	{
 
 	}
 
-	protected virtual void UpdateVelocity( Vector3 direction )
+	protected virtual void UpdateVelocity()
 	{
 
 	}
@@ -182,29 +194,6 @@ public abstract partial class NPC : AnimatedEntity
 	protected virtual void OnFinishedPath()
 	{
 
-	}
-
-	protected virtual Vector3 GetWishDirection()
-	{
-		if ( !HasValidPath() )
-			return Vector3.Zero;
-
-		var firstSegment = Path.Segments[0];
-
-		if ( Position.Distance( firstSegment.Position ) > 10f )
-		{
-			var direction = (firstSegment.Position - Position).Normal;
-			return direction;
-		}
-
-		Path.Segments.RemoveAt( 0 );
-
-		if ( Path.Segments.Count == 0 )
-		{
-			OnFinishedPath();
-		}
-
-		return Vector3.Zero;
 	}
 
 	[ForsakenEvent.NavBlockerAdded]

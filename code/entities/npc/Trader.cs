@@ -9,7 +9,7 @@ namespace Facepunch.Forsaken;
 [HammerEntity]
 [Title( "Trader" )]
 [Model( Model = "models/citizen/citizen.vmdl" )]
-public partial class Trader : HumanNPC, IContextActionProvider, IPersistence, INametagProvider
+public partial class Trader : Human, IContextActionProvider, IPersistence, INametagProvider
 {
 	[ConCmd.Server]
 	public static void PurchaseItemCmd( int networkId, int slotId )
@@ -175,15 +175,44 @@ public partial class Trader : HumanNPC, IContextActionProvider, IPersistence, IN
 		return MoveSpeed;
 	}
 
-	protected override Vector3 GetWishDirection()
+	protected override void HandleBehavior()
+	{
+		if ( DoesWander && NextWanderTime )
+		{
+			NextWanderTime = Game.Random.Float( 4f, 8f );
+			Wander.Regenerate();
+		}
+
+		if ( DoesWander && NextChangeState )
+		{
+			if ( State == MovementState.Idle )
+			{
+				NextChangeState = Game.Random.Float( MinIdleDuration, MaxIdleDuration );
+				State = MovementState.Moving;
+			}
+			else
+			{
+				NextChangeState = Game.Random.Float( 6f, 16f );
+				State = MovementState.Idle;
+			}
+		}
+
+		base.HandleBehavior();
+	}
+
+	protected override void UpdateVelocity()
 	{
 		var isTrading = EntityComponent.GetAllOfType<InventoryViewer>()
 			.Where( c => c.Containers.Contains( Inventory ) )
 			.Any();
 
-		if ( isTrading ) return Vector3.Zero;
+		if ( isTrading )
+		{
+			Velocity = Vector3.Zero;
+			return;
+		}
 
-		return base.GetWishDirection();
+		base.UpdateVelocity();
 	}
 
 	protected override void ServerTick()
