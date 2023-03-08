@@ -92,7 +92,8 @@ public class AvoidanceBehavior : EntityComponent
 
 			if ( trace.Hit )
 			{
-				DebugOverlay.Line( origin, origin + dirs[i] * distance, Entity.Velocity.IsNearZeroLength ? Color.Cyan : Color.Green );
+				if ( NPC.Debug )
+					DebugOverlay.Line( origin, origin + dirs[i] * distance, Entity.Velocity.IsNearZeroLength ? Color.Cyan : Color.Green );
 
 				if ( trace.Normal.Angle( Vector3.Up ) > MaxStandableAngle )
 				{
@@ -103,7 +104,8 @@ public class AvoidanceBehavior : EntityComponent
 			}
 			else
 			{
-				DebugOverlay.Line( origin, origin + dirs[i] * distance, Color.Red );
+				if ( NPC.Debug )
+					DebugOverlay.Line( origin, origin + dirs[i] * distance, Color.Red );
 			}
 		}
 

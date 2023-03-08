@@ -31,13 +31,13 @@ public class SteeringComponent : EntityComponent
 
 	public Vector3 Seek( Vector3 position, float accelerationOverride )
 	{
-		DebugOverlay.Sphere( position, 32f, Color.Blue );
+		if ( NPC.Debug ) DebugOverlay.Sphere( position, 32f, Color.Blue );
 
 		var direction = (position - Entity.Position).WithZ( 0f );
 		var acceleration = direction.Normal;
 		acceleration *= accelerationOverride;
 
-		DebugOverlay.Line( Entity.Position + Vector3.Up * 16f, Entity.Position + acceleration, Color.Cyan );
+		if ( NPC.Debug ) DebugOverlay.Line( Entity.Position + Vector3.Up * 16f, Entity.Position + acceleration, Color.Cyan );
 
 		return acceleration;
 	}

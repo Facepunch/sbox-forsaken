@@ -197,7 +197,9 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 		{
 			var direction = (GetPathTarget() - Position).Normal;
 			acceleration += direction * GetMoveSpeed();
-			DebugOverlay.Sphere( Position, 16f, Color.Green );
+
+			if ( NPC.Debug )
+				DebugOverlay.Sphere( Position, 16f, Color.Green );
 		}
 		else if ( Target.IsValid() )
 		{

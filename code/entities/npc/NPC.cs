@@ -4,6 +4,9 @@ namespace Facepunch.Forsaken;
 
 public abstract partial class NPC : AnimatedEntity
 {
+	[ConVar.Server( "fsk.npc.debug" )]
+	public static bool Debug { get; set; } = false;
+
 	protected Vector3 TargetLocation { get; set; }
 	protected NavPath Path { get; set; }
 

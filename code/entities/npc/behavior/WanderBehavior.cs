@@ -41,7 +41,7 @@ public class WanderBehavior : EntityComponent
 			.Ignore( Entity )
 			.Run();
 
-		DebugOverlay.Line( trace.StartPosition, trace.EndPosition, Color.Magenta );
+		if ( NPC.Debug ) DebugOverlay.Line( trace.StartPosition, trace.EndPosition, Color.Magenta );
 
 		return Steering.Seek( trace.EndPosition );
 	}
