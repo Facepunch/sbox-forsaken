@@ -5,7 +5,7 @@ namespace Facepunch.Forsaken;
 
 public class WanderBehavior : EntityComponent
 {
-	public float WanderRadius { get; set; } = 256f;
+	public float WanderRadius { get; set; } = 512f;
 	public float WanderDistance { get; set; } = 24f;
 	public float WanderJitter { get; set; } = 16f;
 
@@ -31,7 +31,18 @@ public class WanderBehavior : EntityComponent
 		CurrentTarget = CurrentTarget.Normal;
 		CurrentTarget *= WanderRadius;
 
-		var targetPosition = Entity.Position + Entity.Rotation.Forward * WanderDistance + CurrentTarget;
-		return Steering.Seek( targetPosition );
+		var origin = Entity.Position + Vector3.Up * 20f;
+		var targetPosition = origin + Entity.Rotation.Forward * WanderDistance + CurrentTarget;
+
+		var trace = Trace.Ray( origin, targetPosition )
+			.WorldAndEntities()
+			.WithoutTags( "trigger", "passplayers" )
+			.WithAnyTags( "solid" )
+			.Ignore( Entity )
+			.Run();
+
+		DebugOverlay.Line( trace.StartPosition, trace.EndPosition, Color.Magenta );
+
+		return Steering.Seek( trace.EndPosition );
 	}
 }

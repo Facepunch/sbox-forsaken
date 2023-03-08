@@ -24,7 +24,7 @@ public abstract partial class Animal : NPC
 		Avoidance = Components.GetOrCreate<AvoidanceBehavior>();
 		Wander = Components.GetOrCreate<WanderBehavior>();
 
-		NextChangeState = Game.Random.Float( 4f, 8f );
+		NextChangeState = Game.Random.Float( 1f, 4f );
 		State = MovementState.Idle;
 
 		base.Spawn();
@@ -43,16 +43,8 @@ public abstract partial class Animal : NPC
 
 		if ( NextChangeState )
 		{
-			if ( State == MovementState.Idle )
-			{
-				NextChangeState = Game.Random.Float( 10f, 20f );
-				State = MovementState.Moving;
-			}
-			else
-			{
-				NextChangeState = Game.Random.Float( 8f, 16f );
-				State = MovementState.Idle;
-			}
+			NextChangeState = Game.Random.Float( 10f, 20f );
+			State = (MovementState)Game.Random.Int( 0, 1 );
 		}
 
 		base.HandleBehavior();

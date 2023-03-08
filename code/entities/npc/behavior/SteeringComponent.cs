@@ -32,9 +32,13 @@ public class SteeringComponent : EntityComponent
 	public Vector3 Seek( Vector3 position, float accelerationOverride )
 	{
 		DebugOverlay.Sphere( position, 32f, Color.Blue );
-		var acceleration = (position - Entity.Position).Normal;
+
+		var direction = (position - Entity.Position).WithZ( 0f );
+		var acceleration = direction.Normal;
 		acceleration *= accelerationOverride;
+
 		DebugOverlay.Line( Entity.Position + Vector3.Up * 16f, Entity.Position + acceleration, Color.Cyan );
+
 		return acceleration;
 	}
 
@@ -71,11 +75,12 @@ public class SteeringComponent : EntityComponent
 
 	public void LookAtDirection( Vector3 direction )
 	{
+		direction = direction.WithZ( 0f );
 		direction = direction.Normal;
 
 		if ( direction.LengthSquared > 0.001f )
 		{
-			var targetRotation = Rotation.LookAt( direction.WithZ( 0f ), Vector3.Up );
+			var targetRotation = Rotation.LookAt( direction, Vector3.Up );
 			Entity.Rotation = Rotation.Lerp( Entity.Rotation, targetRotation, Time.Delta * RotateSpeed );
 		}
 	}
@@ -133,7 +138,7 @@ public class SteeringComponent : EntityComponent
 
 	public bool IsFacing( Vector3 target, float threshold )
 	{
-		var facing = Entity.Rotation.Forward.Normal;
+		var facing = Entity.Rotation.Forward;
 		var direction = (target - Entity.Position).Normal;
 		return Vector3.Dot( facing, direction ) >= threshold;
 	}

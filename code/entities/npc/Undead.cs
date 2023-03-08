@@ -96,7 +96,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 		{
 			if ( ( !Target.IsValid() || Position.Distance( Target.Position ) > 2048f ) && NextFindTarget )
 			{
-				var target = FindInSphere( Position, 2048f )
+				var target = FindInSphere( Position, 1024f )
 					.OfType<ForsakenPlayer>()
 					.Where( CanSeeTarget )
 					.OrderBy( p => p.Position.Distance( Position ) )
@@ -105,11 +105,11 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 				if ( target.IsValid() )
 				{
 					State = MovementState.Moving;
-					Path = null;
 				}
 
 				NextFindTarget = 8f;
 				Target = target;
+				Path = null;
 			}
 
 			if ( Target.IsValid() )
