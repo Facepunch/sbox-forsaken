@@ -145,7 +145,11 @@ public abstract partial class NPC : AnimatedEntity
 			.Ignore( this );
 
 		mover.MaxStandableAngle = 20f;
-		mover.TryMoveWithStep( Time.Delta, 24f );
+
+		if ( mover.TryUnstuck() )
+		{
+			mover.TryMoveWithStep( Time.Delta, 24f );
+		}
 
 		Position = mover.Position;
 		Velocity = mover.Velocity;

@@ -8,7 +8,7 @@ public class SteeringComponent : EntityComponent
 {
 	public float MaxVelocity { get; set; } = 200f;
 	public float MaxAcceleration { get; set; } = 30f;
-	public float RotateSpeed { get; set; } = 10f;
+	public float RotateSpeed { get; set; } = 2f;
 
 	public float TargetDistance { get; set; } = 8f;
 	public float SlowDistance { get; set; } = 64f;

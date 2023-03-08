@@ -45,12 +45,12 @@ public abstract partial class Animal : NPC
 		{
 			if ( State == MovementState.Idle )
 			{
-				NextChangeState = Game.Random.Float( 6f, 12f );
+				NextChangeState = Game.Random.Float( 10f, 20f );
 				State = MovementState.Moving;
 			}
 			else
 			{
-				NextChangeState = Game.Random.Float( 6f, 16f );
+				NextChangeState = Game.Random.Float( 8f, 16f );
 				State = MovementState.Idle;
 			}
 		}
@@ -72,11 +72,7 @@ public abstract partial class Animal : NPC
 		}
 
 		var acceleration = Avoidance.GetSteering();
-
-		if ( acceleration.IsNearZeroLength )
-		{
-			acceleration = Wander.GetSteering();
-		}
+		acceleration += Wander.GetSteering();
 
 		if ( !acceleration.IsNearZeroLength )
 		{

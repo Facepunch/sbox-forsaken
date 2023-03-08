@@ -32,7 +32,6 @@ public class WanderBehavior : EntityComponent
 		CurrentTarget *= WanderRadius;
 
 		var targetPosition = Entity.Position + Entity.Rotation.Forward * WanderDistance + CurrentTarget;
-
 		return Steering.Seek( targetPosition );
 	}
 }

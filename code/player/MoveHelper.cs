@@ -121,4 +121,42 @@ public struct MoveHelper
 
 		return stepFraction;
 	}
+
+	public bool TryUnstuck()
+	{
+		var tr = TraceFromTo( Position, Position );
+		if ( !tr.StartedSolid ) return true;
+		return Unstuck();
+	}
+
+	private bool Unstuck()
+	{
+		for ( int i = 1; i < 20; i++ )
+		{
+			var tryPos = Position + Vector3.Up * i;
+
+			var tr = TraceFromTo( tryPos, Position );
+			if ( !tr.StartedSolid )
+			{
+				Position = tryPos + tr.Direction.Normal * (tr.Distance - 0.5f);
+				Velocity = 0;
+				return true;
+			}
+		}
+
+		for ( int i = 1; i < 100; i++ )
+		{
+			var tryPos = Position + Vector3.Random * i;
+
+			var tr = TraceFromTo( tryPos, Position );
+			if ( !tr.StartedSolid )
+			{
+				Position = tryPos + tr.Direction.Normal * (tr.Distance - 0.5f);
+				Velocity = 0;
+				return true;
+			}
+		}
+
+		return false;
+	}
 }

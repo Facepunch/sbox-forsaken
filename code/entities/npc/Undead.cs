@@ -189,16 +189,15 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 		var nearbyUndead = FindInSphere( Position, 100f ).OfType<Undead>();
 		var acceleration = Avoidance.GetSteering();
-		var cohesion = Components.GetOrCreate<CohesionBehavior>();
 		var separation = Components.GetOrCreate<SeparationBehavior>();
-		var align = Components.GetOrCreate<AlignBehavior>();
 
 		acceleration += separation.GetSteering( nearbyUndead ) * 2f;
 
 		if ( HasValidPath() )
 		{
 			var direction = (GetPathTarget() - Position).Normal;
-			acceleration += direction * GetMoveSpeed() * 0.2f;
+			acceleration += direction * GetMoveSpeed();
+			DebugOverlay.Sphere( Position, 16f, Color.Green );
 		}
 		else if ( Target.IsValid() )
 		{
