@@ -139,7 +139,7 @@ public abstract partial class NPC : AnimatedEntity
 		var mover = new MoveHelper( Position, Velocity );
 
 		mover.Trace = mover.SetupTrace()
-			.WithoutTags( "passplayers", "player" )
+			.WithoutTags( "passplayers", "player", "npc" )
 			.WithAnyTags( "solid", "playerclip", "passbullets" )
 			.Size( GetHull() )
 			.Ignore( this );

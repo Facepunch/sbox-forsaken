@@ -187,17 +187,23 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 			return;
 		}
 
+		var nearbyUndead = FindInSphere( Position, 100f ).OfType<Undead>();
 		var acceleration = Avoidance.GetSteering();
+		var cohesion = Components.GetOrCreate<CohesionBehavior>();
+		var separation = Components.GetOrCreate<SeparationBehavior>();
+		var align = Components.GetOrCreate<AlignBehavior>();
+
+		acceleration += separation.GetSteering( nearbyUndead ) * 2f;
 
 		if ( HasValidPath() )
 		{
 			var direction = (GetPathTarget() - Position).Normal;
-			acceleration = direction * GetMoveSpeed();
+			acceleration += direction * GetMoveSpeed() * 0.2f;
 		}
 		else if ( Target.IsValid() )
 		{
 			if ( Position.Distance( Target.Position ) > TargetRange )
-				acceleration += Steering.Seek( Target.Position );
+				acceleration += Steering.Seek( Target.Position, 60f );
 		}
 		else
 		{
@@ -208,21 +214,6 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 		{
 			Steering.Steer( acceleration );
 		}
-
-		var nearbyUndead = FindInSphere( Position, 100f )
-			.OfType<Undead>()
-			.ToArray();
-
-		/*
-		var moveSpeed = GetMoveSpeed();
-
-		var flocker = new Flocker();
-		flocker.Setup( this, nearbyUndead, Position, moveSpeed, 60f );
-		flocker.Flock( Position + direction * moveSpeed );
-
-		var steerDirection = flocker.Force.WithZ( 0f );
-		//Velocity = Accelerate( Velocity, steerDirection.Normal, moveSpeed, 0f, 8f );
-		*/
 	}
 
 	protected override void HandleAnimation()
