@@ -1,4 +1,6 @@
 ﻿using Sandbox;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Facepunch.Forsaken;
 
@@ -8,10 +10,11 @@ public abstract partial class NPC : AnimatedEntity
 	public static bool Debug { get; set; } = false;
 
 	protected Vector3 TargetLocation { get; set; }
-	protected NavPath Path { get; set; }
+	protected List<Vector3> Path { get; set; }
 
 	private GravityComponent Gravity { get; set; }
 	private FrictionComponent Friction { get; set; }
+	private TimeUntil NextTrimPath { get; set; }
 
 	public override void Spawn()
 	{
@@ -45,7 +48,7 @@ public abstract partial class NPC : AnimatedEntity
 		if ( !HasValidPath() )
 			return Vector3.Zero;
 
-		return Path.Segments[0].Position;
+		return Path.First();
 	}
 
 	protected void SnapToNavMesh()
@@ -76,15 +79,57 @@ public abstract partial class NPC : AnimatedEntity
 
 		TargetLocation = closestPoint.Value;
 
-		Path = NavMesh.PathBuilder( Position )
+		var path = NavMesh.PathBuilder( Position )
 			.WithMaxClimbDistance( 0f )
 			.WithMaxDropDistance( 128f )
-			.WithAgentHull( NavAgentHull.Any )
-			.WithPartialPaths()
+			.WithAgentHull( NavAgentHull.Default )
+			.WithMaxDetourDistance( 64f )
 			.WithStepHeight( stepSize )
 			.Build( TargetLocation );
 
+		CreateOptimizedPath( path );
+
 		return (Path?.Count ?? 0) > 0;
+	}
+
+	protected void CreateOptimizedPath( NavPath path )
+	{
+		if ( path == null || path.Count == 0 )
+			return;
+
+		Path ??= new();
+		Path.Clear();
+
+		foreach ( var p in path.Segments )
+		{
+			Path.Add( p.Position );
+		}
+
+		var stepHeight = Vector3.Up * 8f;
+		var radius = 4f;
+
+		for ( var i = Path.Count - 1; i >= 1; i-- )
+		{
+			for ( var j = 1; j < Path.Count; j++ )
+			{
+				if ( j >= Path.Count ) continue;
+				if ( i >= Path.Count ) continue;
+
+				var trace = Trace.Ray( Path[i] + stepHeight, Path[j] + stepHeight )
+					.WorldAndEntities()
+					.WithoutTags( "trigger", "passplayers" )
+					.WithAnyTags( "solid" )
+					.Ignore( this )
+					.Size( radius )
+					.Run();
+
+				if ( !trace.Hit )
+				{
+					Path.RemoveRange( j, i - j );
+					break;
+				}
+			}
+		}
 	}
 
 	protected bool TryGetNavMeshPosition( float minRadius, float maxRadius, out Vector3 position )
@@ -101,18 +146,69 @@ public abstract partial class NPC : AnimatedEntity
 		return false;
 	}
 
-	protected void UpdatePath()
+	protected void TrimPath()
 	{
 		if ( !HasValidPath() ) return;
 
-		var firstSegment = Path.Segments[0];
+		var stepHeight = Vector3.Up * 8f;
+		var radius = 4f;
 
-		if ( Position.Distance( firstSegment.Position ) > 10f )
+		for ( var i = Path.Count - 1; i >= 0; i-- )
+		{
+			var trace = Trace.Ray( Position + stepHeight, Path[i] + stepHeight )
+				.WorldAndEntities()
+				.WithoutTags( "trigger", "passplayers" )
+				.WithAnyTags( "solid" )
+				.Ignore( this )
+				.Size( radius )
+				.Run();
+
+			if ( !trace.Hit )
+			{
+				Path.RemoveRange( 0, i );
+
+				if ( Path.Count == 0 )
+					Path = null;
+
+				return;
+			}
+		}
+	}
+
+	protected void UpdatePath()
+	{
+		if ( NextTrimPath )
+		{
+			TrimPath();
+			NextTrimPath = 0.5f;
+		}
+
+		if ( !HasValidPath() ) return;
+
+		var position = Path[0];
+
+		if ( Debug )
+		{
+			for ( var i = 0; i < Path.Count; i++ )
+			{
+				var a = Path[i];
+
+				DebugOverlay.Sphere( a, 32f, Color.Orange );
+
+				if ( Path.Count > i + 1 )
+				{
+					var b = Path[i + 1];
+					DebugOverlay.Line( a, b, Color.Orange );
+				}
+			}
+		}
+
+		if ( Position.Distance( position ) > 10f )
 			return;
 
-		Path.Segments.RemoveAt( 0 );
+		Path.RemoveAt( 0 );
 
-		if ( Path.Segments.Count == 0 )
+		if ( Path.Count == 0 )
 		{
 			OnFinishedPath();
 		}
