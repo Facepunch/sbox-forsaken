@@ -5,6 +5,8 @@ namespace Facepunch.Forsaken;
 
 public class WanderBehavior : EntityComponent
 {
+	public bool CheckCollisions { get; set; } = true;
+	public float CollisionRange { get; set; } = 45f;
 	public float WanderRadius { get; set; } = 512f;
 	public float WanderDistance { get; set; } = 24f;
 	public float WanderJitter { get; set; } = 16f;
@@ -34,15 +36,27 @@ public class WanderBehavior : EntityComponent
 		var origin = Entity.Position + Vector3.Up * 20f;
 		var targetPosition = origin + Entity.Rotation.Forward * WanderDistance + CurrentTarget;
 
-		var trace = Trace.Ray( origin, targetPosition )
-			.WorldAndEntities()
-			.WithoutTags( "trigger", "passplayers" )
-			.WithAnyTags( "solid" )
-			.Ignore( Entity )
-			.Run();
+		if ( CheckCollisions )
+		{
+			var direction = (targetPosition - origin).Normal;
+			var trace = Trace.Ray( origin, origin + direction * CollisionRange )
+				.WorldAndEntities()
+				.WithoutTags( "trigger", "passplayers" )
+				.WithAnyTags( "solid" )
+				.Ignore( Entity )
+				.Run();
 
-		if ( NPC.Debug ) DebugOverlay.Line( trace.StartPosition, trace.EndPosition, Color.Magenta );
+			if ( NPC.Debug )
+				DebugOverlay.Line( trace.StartPosition, trace.EndPosition, Color.Magenta );
 
-		return Steering.Seek( trace.EndPosition );
+			if ( trace.Hit || trace.StartedSolid )
+			{
+				var reflection = Vector3.Reflect( trace.Direction, trace.Normal );
+				CurrentTarget = CurrentTarget.LerpTo( reflection * WanderRadius, Time.Delta * WanderRadius * 0.1f );
+				CurrentTarget = CurrentTarget.WithZ( 0f );
+			}
+		}
+
+		return Steering.Seek( targetPosition );
 	}
 }

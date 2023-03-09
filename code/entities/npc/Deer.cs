@@ -25,6 +25,7 @@ public partial class Deer : Animal, ILimitedSpawner, IDamageable, IContextAction
 	private TimeUntil NextSwapTrotting { get; set; }
 	private TimeUntil NextChangePose { get; set; }
 
+	private ForsakenPlayer EvadePlayer { get; set; }
 	private float CurrentSpeed { get; set; }
 	private bool IsTrotting { get; set; }
 
@@ -33,6 +34,8 @@ public partial class Deer : Animal, ILimitedSpawner, IDamageable, IContextAction
 	private float WalkSpeed => 60f;
 	private float TrotSpeed => 250f;
 	private float RunSpeed => 400f;
+
+	private EvadeBehavior Evade { get; set; }
 
 	public Deer()
 	{
@@ -100,6 +103,8 @@ public partial class Deer : Animal, ILimitedSpawner, IDamageable, IContextAction
 		Health = MaxHealth;
 		Scale = Game.Random.Float( 0.9f, 1.1f );
 
+		Evade = Components.GetOrCreate<EvadeBehavior>();
+
 		base.Spawn();
 	}
 
@@ -127,6 +132,8 @@ public partial class Deer : Animal, ILimitedSpawner, IDamageable, IContextAction
 					Sound.FromScreen( To.Single( attacker ), "hitmarker.hit" );
 				}
 			}
+
+			EvadePlayer = attacker;
 		}
 
 		if ( info.HasTag( "bullet" ) )
@@ -141,7 +148,6 @@ public partial class Deer : Animal, ILimitedSpawner, IDamageable, IContextAction
 		}
 
 		LastDamageTime = 0f;
-		NextWanderTime = 0f;
 		State = MovementState.Moving;
 
 		base.TakeDamage( info );
@@ -178,11 +184,20 @@ public partial class Deer : Animal, ILimitedSpawner, IDamageable, IContextAction
 	{
 		if ( NextSwapTrotting )
 		{
-			NextSwapTrotting = Game.Random.Float( 3f, 10f );
 			IsTrotting = !IsTrotting;
+
+			if ( IsTrotting )
+				NextSwapTrotting = Game.Random.Float( 2f, 4f );
+			else
+				NextSwapTrotting = Game.Random.Float( 10f, 20f );
 		}
 
 		base.HandleBehavior();
+	}
+
+	protected override bool CanChangeState()
+	{
+		return !IsInPanicMode();
 	}
 
 	protected override void UpdateVelocity()
@@ -191,6 +206,16 @@ public partial class Deer : Animal, ILimitedSpawner, IDamageable, IContextAction
 		{
 			Velocity = Vector3.Zero;
 			return;
+		}
+
+		if ( EvadePlayer.IsValid() && IsInPanicMode() )
+		{
+			var acceleration = Evade.GetSteering( EvadePlayer );
+
+			if ( !acceleration.IsNearZeroLength )
+			{
+				Steering.Steer( acceleration );
+			}
 		}
 
 		base.UpdateVelocity();

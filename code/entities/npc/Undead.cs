@@ -158,12 +158,6 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 		Steering.MaxVelocity = GetMoveSpeed();
 		Steering.MaxAcceleration = Steering.MaxVelocity * 0.25f;
 
-		if ( !Target.IsValid() && NextWanderTime )
-		{
-			NextWanderTime = Game.Random.Float( 4f, 8f );
-			Wander.Regenerate();
-		}
-
 		if ( !Target.IsValid() && NextChangeState )
 		{
 			if ( State == MovementState.Idle )
@@ -198,7 +192,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 			var direction = (GetPathTarget() - Position).Normal;
 			acceleration += direction * GetMoveSpeed();
 
-			if ( NPC.Debug )
+			if ( Debug )
 				DebugOverlay.Sphere( Position, 16f, Color.Green );
 		}
 		else if ( Target.IsValid() )

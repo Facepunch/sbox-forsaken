@@ -177,12 +177,6 @@ public partial class Trader : Human, IContextActionProvider, IPersistence, IName
 
 	protected override void HandleBehavior()
 	{
-		if ( DoesWander && NextWanderTime )
-		{
-			NextWanderTime = Game.Random.Float( 4f, 8f );
-			Wander.Regenerate();
-		}
-
 		if ( DoesWander && NextChangeState )
 		{
 			if ( State == MovementState.Idle )

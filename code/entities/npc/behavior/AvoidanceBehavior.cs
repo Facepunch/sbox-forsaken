@@ -13,7 +13,7 @@ public class AvoidanceBehavior : EntityComponent
 	public float MinimumDistance { get; set; } = 80f;
 	public float MaxStandableAngle { get; set; } = 20f;
 
-	public float MainWhiskerLength { get; set; } = 45;
+	public float MainWhiskerLength { get; set; } = 45f;
 	public float SideWhiskerLength { get; set; } = 25f;
 	public float SideWhiskerAngle { get; set; } = 45f;
 
