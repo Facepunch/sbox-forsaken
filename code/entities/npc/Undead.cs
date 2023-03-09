@@ -107,7 +107,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 					State = MovementState.Moving;
 				}
 
-				NextFindTarget = 8f;
+				NextFindTarget = 1f;
 				Target = target;
 				Path = null;
 			}
