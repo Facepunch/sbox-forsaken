@@ -744,6 +744,29 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 			}
 		}
 
+		if ( Input.Released( InputButton.Jump ) )
+		{
+			if ( Game.IsServer )
+			{
+				var tr = Trace.Ray( CameraPosition, CameraPosition + CursorDirection * 10000f )
+					.WorldOnly()
+					.Run();
+
+				var points = new Vector3[100];
+
+				var p = Navigation.CalculatePath( Position, tr.EndPosition, points );
+
+				if ( p > 0 )
+				{
+					for ( var i = 0; i < p; i++ )
+					{
+						var point = points[i];
+						DebugOverlay.Sphere( point.WithZ( Position.z ), 4f, Color.Magenta, 10f );
+					}
+				}
+			}
+		}
+
 		if ( LifeState == LifeState.Alive )
 		{
 			Controller?.Simulate();

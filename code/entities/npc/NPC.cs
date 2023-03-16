@@ -72,7 +72,9 @@ public abstract partial class NPC : AnimatedEntity
 		Rotation = Rotation.Lerp( Rotation, targetRotation, Time.Delta * 10f );
 	}
 
-	protected bool MoveToLocation( Vector3 position, float stepSize = 24f )
+	private Vector3[] PathPoints { get; set; } = new Vector3[32];
+
+	protected bool MoveToLocationNavMesh( Vector3 position, float stepSize = 24f )
 	{
 		var closestPoint = NavMesh.GetClosestPoint( position );
 		if ( !closestPoint.HasValue ) return false;
@@ -88,6 +90,24 @@ public abstract partial class NPC : AnimatedEntity
 			.Build( TargetLocation );
 
 		CreateOptimizedPath( path );
+
+		return (Path?.Count ?? 0) > 0;
+	}
+
+	protected bool MoveToLocation( Vector3 position )
+	{
+		Path ??= new();
+		Path.Clear();
+
+		var p = Navigation.CalculatePath( Position, position, PathPoints );
+
+		if ( p > 0 )
+		{
+			for ( var i = 0; i < p; i++ )
+			{
+				Path.Add( Navigation.WithZOffset( PathPoints[i] ) );
+			}
+		}
 
 		return (Path?.Count ?? 0) > 0;
 	}
@@ -177,11 +197,13 @@ public abstract partial class NPC : AnimatedEntity
 
 	protected void UpdatePath()
 	{
+		/*
 		if ( NextTrimPath )
 		{
 			TrimPath();
 			NextTrimPath = 0.5f;
 		}
+		*/
 
 		if ( !HasValidPath() ) return;
 

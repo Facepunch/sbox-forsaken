@@ -33,6 +33,74 @@ public partial class ForsakenGame : GameManager
 
 	}
 
+	[ConCmd.Server]
+	private static async void CreateWalkabilityMap()
+	{
+		if ( ConsoleSystem.Caller.Pawn is ForsakenPlayer pl )
+		{
+			var gridX = 100;
+			var gridY = 100;
+			var cellSize = 30f;
+			var agentRadius = 8f;
+			var height = new float[gridX * gridY];
+			var grid = new byte[gridX * gridY];
+			var worldSize = new Vector3( gridX * cellSize, gridY * cellSize );
+			var agentCapsule = new Capsule( Vector3.Zero, Vector3.Up * 80f, agentRadius );
+
+			await GameTask.RunInThreadAsync( () =>
+			{
+				for ( var x = 0; x < gridX; x++ )
+				{
+					for ( var y = 0; y < gridY; y++ )
+					{
+						var position = new Vector3( x * cellSize, y * cellSize, 0f ) - worldSize * 0.5f;
+						var idx = y * gridY + x;
+
+						var trace = Trace.Ray( position + Vector3.Up * 5000f, position )
+							.WorldAndEntities()
+							.Size( agentRadius )
+							.Run();
+
+						if ( trace.Hit && trace.Normal.Angle( Vector3.Up ) <= 45f )
+						{
+							var liftedPosition = trace.EndPosition + Vector3.Up * 4f;
+							var sweep = Trace.Capsule( agentCapsule, liftedPosition, liftedPosition )
+								.WorldAndEntities()
+								.Run();
+
+							if ( sweep.Hit || sweep.StartedSolid )
+								grid[idx] = 1;
+							else
+								grid[idx] = 0;
+						}
+						else
+						{
+							grid[idx] = 1;
+						}
+
+						height[idx] = trace.EndPosition.z;
+					}
+				}
+
+				Log.Info( "Walkability map generated." );
+			} );
+
+			for ( var x = 0; x < gridX; x++ )
+			{
+				for ( var y = 0; y < gridY; y++ )
+				{
+					var position = new Vector3( x * cellSize, y * cellSize, 0f ) - worldSize * 0.5f;
+					var idx = y * gridY + x;
+
+					if ( grid[idx] == 1 )
+						DebugOverlay.Sphere( position.WithZ( height[idx] ), 4f, Color.Red, 3f );
+					else
+						DebugOverlay.Sphere( position.WithZ( height[idx] ), 4f, Color.Green, 3f );
+				}
+			}
+		}
+	}
+
 	public override void LoadSavedGame( SavedGame save )
 	{
 		Log.Info( "[Forsaken] Loading world..." );

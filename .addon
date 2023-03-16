@@ -117,6 +117,7 @@
         "Description": "Enable the isometric camera. The alternative option is a top-down view.",
         "Group": ""
       }
-    ]
+    ],
+    "CsProjName": ""
   }
 }
