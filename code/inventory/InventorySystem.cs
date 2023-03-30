@@ -636,6 +636,12 @@ public static partial class InventorySystem
 				a.LoadResource( resource );
 			}
 
+			if ( string.IsNullOrEmpty( resource.UniqueId ) )
+			{
+				Log.Error( $"No unique id specified for item resource {resource.ItemName} {resource.ResourcePath}" );
+				continue;
+			}
+
 			AddDefinition( resource.UniqueId, instance );
 		}
 
