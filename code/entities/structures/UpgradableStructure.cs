@@ -16,6 +16,22 @@ public abstract partial class UpgradableStructure : Structure
 
 	[Net] public StructureMaterial Material { get; private set; }
 
+	[ConCmd.Server]
+	public static void DestroyStructure()
+	{
+		if ( ConsoleSystem.Caller.Pawn is ForsakenPlayer player )
+		{
+			var tr = Trace.Ray( player.CameraPosition, player.CameraPosition + player.CursorDirection * 10000f )
+				.EntitiesOnly()
+				.Run();
+
+			if ( tr.Entity is Structure structure )
+			{
+				structure.TakeDamage( DamageInfo.Generic( 10000f ) );
+			}
+		}
+	}
+
 	public UpgradableStructure() : base()
 	{
 		StoneUpgradeAction = new( "upgrade.stone", $"Upgrade", "textures/items/stone.png" );
