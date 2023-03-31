@@ -20,6 +20,8 @@ public abstract partial class SingleDoor : Structure, ICodeLockable
 	[Net] public bool IsLocked { get; private set; }
 	[Net] public bool IsOpen { get; private set; }
 
+	private TimeSince LastOpenOrCloseTime { get; set; }
+	private bool DoorOpensAway { get; set; }
 	private Socket Socket { get; set; }
 
 	public string Code { get; private set; }
@@ -125,11 +127,20 @@ public abstract partial class SingleDoor : Structure, ICodeLockable
 		if ( action == OpenAction && IsAuthorized( player ) )
 		{
 			PlaySound( "door.single.open" );
+			LastOpenOrCloseTime = 0f;
+			EnableAllCollisions = false;
 			IsOpen = true;
+
+			var direction = (Position - player.Position).Normal;
+			var dot = Rotation.Forward.Dot( direction );
+
+			DoorOpensAway = dot > 0f;
 		}
 		else if ( action == CloseAction && IsAuthorized( player ) )
 		{
 			PlaySound( "door.single.close" );
+			LastOpenOrCloseTime = 0f;
+			EnableAllCollisions = false;
 			IsOpen = false;
 		}
 		else if ( action == LockAction && IsAuthorized( player ) )
@@ -181,6 +192,7 @@ public abstract partial class SingleDoor : Structure, ICodeLockable
 	{
 		writer.Write( IsOpen );
 		writer.Write( IsLocked );
+		writer.Write( DoorOpensAway );
 		writer.Write( string.IsNullOrEmpty( Code ) ? "" : Code );
 		writer.Write( Authorized.Count );
 
@@ -196,6 +208,7 @@ public abstract partial class SingleDoor : Structure, ICodeLockable
 	{
 		IsOpen = reader.ReadBoolean();
 		IsLocked = reader.ReadBoolean();
+		DoorOpensAway = reader.ReadBoolean();
 		Code = reader.ReadString();
 
 		var count = reader.ReadInt32();
@@ -217,10 +230,10 @@ public abstract partial class SingleDoor : Structure, ICodeLockable
 		var parent = Socket.Connection;
 		if ( !parent.IsValid() ) return;
 
-		var targetRotation = IsOpen ? parent.Rotation.RotateAroundAxis( Vector3.Up, 90f ) : parent.Rotation;
+		var targetRotation = IsOpen ? parent.Rotation.RotateAroundAxis( Vector3.Up, DoorOpensAway ? -90f : 90f ) : parent.Rotation;
 		LocalRotation = Rotation.Slerp( LocalRotation, targetRotation, Time.Delta * 8f );
 
-		if ( LocalRotation.Distance( targetRotation ) > 1f )
+		if ( LocalRotation.Distance( targetRotation ) > 1f || LastOpenOrCloseTime < 0.2f )
 			EnableAllCollisions = false;
 		else
 			EnableAllCollisions = true;
