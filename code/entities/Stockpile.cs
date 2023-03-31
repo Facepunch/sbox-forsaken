@@ -178,7 +178,6 @@ public partial class Stockpile : Deployable, IContextActionProvider, ICodeLockab
 
 		if ( trace.Entity is Foundation foundation )
 		{
-			Log.Info( "Placed Stockpile on Foundation" );
 			foundation.PropagateStockpile( this );
 		}
 
