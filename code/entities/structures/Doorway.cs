@@ -50,4 +50,26 @@ public partial class Doorway : UpgradableStructure
 
 		base.OnNewModel( model );
 	}
+
+	public override void OnKilled()
+	{
+		base.OnKilled();
+
+		// Let's destroy any doors attached to the doorway.
+		foreach ( var socket in Sockets )
+		{
+			if ( socket.Connection.IsValid() )
+			{
+				var entity = socket.Connection.Parent as SingleDoor;
+
+				if ( entity.IsValid() )
+				{
+					Breakables.Break( entity );
+
+					entity.OnKilled();
+					entity.Delete();
+				}
+			}
+		}
+	}
 }
