@@ -241,7 +241,15 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 
 	public override void TakeDamage( DamageInfo info )
 	{
+		Health -= info.Damage;
 
+		if ( Health <= 0f )
+		{
+			Breakables.Break( this );
+
+			OnKilled();
+			Delete();
+		}
 	}
 
 	public override void Spawn()
