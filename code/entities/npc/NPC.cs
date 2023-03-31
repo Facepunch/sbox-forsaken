@@ -218,8 +218,6 @@ public abstract partial class NPC : AnimatedEntity
 			}
 		}
 
-		if ( !HasValidPath() ) return;
-
 		var position = Path[0];
 
 		if ( Debug )
@@ -245,6 +243,7 @@ public abstract partial class NPC : AnimatedEntity
 
 		if ( Path.Count == 0 )
 		{
+			TargetLocation = null;
 			OnFinishedPath();
 		}
 	}
