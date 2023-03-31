@@ -36,6 +36,14 @@
         BindClass( "unaffordable", IsUnaffordable );
     }
 
+    public void AddTooltipInfo( Panel container )
+    {
+        if ( Output.IsValid() )
+        {
+            Output.AddTooltipInfo( container );
+        }
+    }
+
     protected override void OnMouseOver( MousePanelEvent e )
     {
         if ( Output.IsValid() )

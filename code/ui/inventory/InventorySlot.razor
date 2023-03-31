@@ -114,6 +114,14 @@
         Sound.FromScreen( "inventory.move" );
     }
 
+    public void AddTooltipInfo( Panel container )
+    {
+        if ( Item.IsValid() )
+        {
+            Item.AddTooltipInfo( container );
+        }
+    }
+
     protected override void OnClick( MousePanelEvent e )
     {
         OnSelected?.Invoke( this );

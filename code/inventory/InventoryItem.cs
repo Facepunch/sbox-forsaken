@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using System;
+using Sandbox.UI;
 
 namespace Facepunch.Forsaken;
 
@@ -157,6 +158,11 @@ public class InventoryItem : IValid
 	public virtual bool CanStackWith( InventoryItem other )
 	{
 		return true;
+	}
+
+	public virtual void AddTooltipInfo( Panel container )
+	{
+
 	}
 
 	public virtual void Write( BinaryWriter writer )

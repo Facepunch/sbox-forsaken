@@ -1,4 +1,6 @@
 ﻿using Sandbox;
+using Sandbox.UI;
+using Sandbox.UI.Construct;
 using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
@@ -7,7 +9,7 @@ public class ArmorItem : ResourceItem<ArmorResource, ArmorItem>, ILootSpawnerIte
 {
 	public override Color Color => ItemColors.Armor;
 	public virtual float TemperatureModifier => Resource?.TemperatureModifier ?? 0f;
-	public virtual float DamageProtection => Resource?.DamageProtection ?? 1f;
+	public virtual float DamageProtection => Resource?.DamageProtection ?? 5f;
 	public virtual HashSet<string> DamageTags => Resource?.DamageTags ?? default;
 	public virtual string DamageHitbox => Resource?.DamageHitbox ?? string.Empty;
 	public virtual ArmorSlot ArmorSlot => Resource?.ArmorSlot ?? ArmorSlot.None;
@@ -28,6 +30,14 @@ public class ArmorItem : ResourceItem<ArmorResource, ArmorItem>, ILootSpawnerIte
 	public override bool CanStackWith( InventoryItem other )
 	{
 		return false;
+	}
+
+	public override void AddTooltipInfo( Panel container )
+	{
+		container.Add.Label( $"{DamageProtection.CeilToInt()}% Protection", "primary" );
+		container.Add.Label( ArmorSlot.ToString(), "secondary" );
+
+		base.AddTooltipInfo( container );
 	}
 
 	protected override void BuildTags( HashSet<string> tags )

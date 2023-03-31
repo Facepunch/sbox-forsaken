@@ -17,6 +17,8 @@
         </div>
 
         <label @ref="DescriptionLabel" class="description">@Provider.Description</label>
+
+        <div @ref="InfoContainer" class="info"></div>
     </div>
 </root>
 
@@ -53,6 +55,7 @@
     public Panel Container { get; private set; }
     public Label DescriptionLabel { get; private set; }
     public Label NameLabel { get; private set; }
+    public Panel InfoContainer { get; private set; }
 
     public void SetProvider( ITooltipProvider provider )
     {
@@ -105,6 +108,9 @@
         {
             TagContainer.Delete();
         }
+
+        InfoContainer.DeleteChildren();
+        Provider.AddTooltipInfo(InfoContainer);
 
         UpdatePosition();
 

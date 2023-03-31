@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using Sandbox.UI;
 using System.Collections.Generic;
 
 namespace Facepunch.Forsaken.UI;
@@ -11,4 +12,5 @@ public interface ITooltipProvider : IValid
 	public bool IsVisible { get; }
 	public Color Color { get; }
 	public bool HasHovered { get;  }
+	public void AddTooltipInfo( Panel container );
 }
