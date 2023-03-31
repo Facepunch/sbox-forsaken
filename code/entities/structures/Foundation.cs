@@ -102,6 +102,38 @@ public partial class Foundation : UpgradableStructure
 		base.OnNewModel( model );
 	}
 
+	public override void OnKilled()
+	{
+		base.OnKilled();
+
+		// Let's destroy any walls attached to the foundation.
+		foreach ( var socket in Sockets )
+		{
+			if ( socket.Connection.IsValid() )
+			{
+				var entity = socket.Connection.Parent as Structure;
+
+				if ( entity is Wall || entity is Doorway )
+				{
+					Breakables.Break( entity );
+
+					entity.OnKilled();
+					entity.Delete();
+				}
+			}
+		}
+
+		var deployables = FindInBox( WorldSpaceBounds.AddPoint( Position + Vector3.Up * 64f ) )
+			.OfType<Deployable>();
+
+		foreach ( var deployable in deployables )
+		{
+			Breakables.Break( deployable );
+			deployable.OnKilled();
+			deployable.Delete();
+		}
+	}
+
 	private void AddFoundationSocket( string direction, string connectorDirection )
 	{
 		var socket = AddSocket( direction );
