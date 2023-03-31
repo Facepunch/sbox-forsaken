@@ -9,11 +9,12 @@ public abstract partial class NPC : AnimatedEntity
 	[ConVar.Server( "fsk.npc.debug" )]
 	public static bool Debug { get; set; } = false;
 
-	protected Vector3 TargetLocation { get; set; }
+	protected Vector3? TargetLocation { get; set; }
 	protected List<Vector3> Path { get; set; }
 
 	private GravityComponent Gravity { get; set; }
 	private FrictionComponent Friction { get; set; }
+	private TimeUntil NextFindPath { get; set; }
 	private TimeUntil NextTrimPath { get; set; }
 
 	public override void Spawn()
@@ -79,7 +80,7 @@ public abstract partial class NPC : AnimatedEntity
 		var closestPoint = NavMesh.GetClosestPoint( position );
 		if ( !closestPoint.HasValue ) return false;
 
-		TargetLocation = closestPoint.Value;
+		TargetLocation = closestPoint;
 
 		var path = NavMesh.PathBuilder( Position )
 			.WithMaxClimbDistance( 0f )
@@ -87,7 +88,7 @@ public abstract partial class NPC : AnimatedEntity
 			.WithAgentHull( NavAgentHull.Default )
 			.WithMaxDetourDistance( 64f )
 			.WithStepHeight( stepSize )
-			.Build( TargetLocation );
+			.Build( TargetLocation.Value );
 
 		CreateOptimizedPath( path );
 
@@ -96,20 +97,18 @@ public abstract partial class NPC : AnimatedEntity
 
 	protected bool MoveToLocation( Vector3 position )
 	{
+		if ( Position.Distance( position ) <= 32f )
+		{
+			// We're already pretty much there.
+			return false;
+		}
+
+		TargetLocation = position;
+
 		Path ??= new();
 		Path.Clear();
 
-		var p = Navigation.CalculatePath( Position, position, PathPoints );
-
-		if ( p > 0 )
-		{
-			for ( var i = 0; i < p; i++ )
-			{
-				Path.Add( Navigation.WithZOffset( PathPoints[i] ) );
-			}
-		}
-
-		return (Path?.Count ?? 0) > 0;
+		return true;
 	}
 
 	protected void CreateOptimizedPath( NavPath path )
@@ -197,13 +196,27 @@ public abstract partial class NPC : AnimatedEntity
 
 	protected void UpdatePath()
 	{
-		/*
-		if ( NextTrimPath )
+		if ( TargetLocation.HasValue && !HasValidPath() && NextFindPath )
 		{
-			TrimPath();
-			NextTrimPath = 0.5f;
+			NextFindPath = 1f;
+
+			var p = Navigation.CalculatePath( Position, TargetLocation.Value, PathPoints );
+
+			if ( p > 0 )
+			{
+				Path ??= new();
+				Path.Clear();
+
+				for ( var i = 0; i < p; i++ )
+				{
+					Path.Add( Navigation.WithZOffset( PathPoints[i] ) );
+				}
+			}
+			else
+			{
+				TargetLocation = null;
+			}
 		}
-		*/
 
 		if ( !HasValidPath() ) return;
 
@@ -327,6 +340,8 @@ public abstract partial class NPC : AnimatedEntity
 		if ( !HasValidPath() ) return;
 
 		SnapToNavMesh();
-		MoveToLocation( TargetLocation );
+
+		if ( TargetLocation.HasValue )
+			MoveToLocation( TargetLocation.Value );
 	}
 }
