@@ -200,7 +200,7 @@ public abstract partial class NPC : AnimatedEntity
 		{
 			NextFindPath = 1f;
 
-			var p = Navigation.CalculatePath( Position, TargetLocation.Value, PathPoints );
+			var p = Navigation.CalculatePath( Position, TargetLocation.Value, PathPoints, true );
 
 			if ( p > 0 )
 			{
@@ -215,6 +215,7 @@ public abstract partial class NPC : AnimatedEntity
 			else
 			{
 				TargetLocation = null;
+				Path?.Clear();
 			}
 		}
 

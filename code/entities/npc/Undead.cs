@@ -9,6 +9,8 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 	public bool IsTargetVisible { get; private set; }
 
+	private bool IsAttackingStructure { get; set; }
+	private Vector3 StructurePosition { get; set; }
 	private float CurrentSpeed { get; set; }
 	private float TargetRange => 60f;
 	private float AttackRadius => 60f;
@@ -92,6 +94,8 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 	protected override void ServerTick()
 	{
+		IsAttackingStructure = false;
+
 		if ( LifeState == LifeState.Alive )
 		{
 			if ( ( !Target.IsValid() || Position.Distance( Target.Position ) > 2048f ) && NextFindTarget )
@@ -117,7 +121,37 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 			else
 				IsTargetVisible = false;
 
-			if ( Target.IsValid() && Position.Distance( Target.Position ) <= AttackRadius )
+			var distanceToTarget = Target.IsValid() ? Position.Distance( Target.Position ) : 0f;
+
+			if ( Target.IsValid() && !HasValidPath() && distanceToTarget < 512f )
+			{
+				var eyePosition = Position + Vector3.Up * 64f;
+				var directionToTarget = (Target.Position - Position).Normal;
+				var trace = Trace.Ray( eyePosition, eyePosition + directionToTarget * 512f )
+					.EntitiesOnly()
+					.WithAnyTags( "wall", "door" )
+					.Run();
+
+				if ( trace.Hit && trace.Entity.IsValid() )
+				{
+					StructurePosition = trace.EndPosition;
+					IsAttackingStructure = true;
+					Path?.Clear();
+				}
+			}
+
+			if ( !IsAttackingStructure )
+			{
+				if ( Target.IsValid() && Position.Distance( Target.Position ) <= AttackRadius )
+				{
+					if ( CanAttack() )
+					{
+						TimeSinceLastAttack = 0f;
+						SetAnimParameter( "attack", true );
+					}
+				}
+			}
+			else if ( Position.Distance( StructurePosition ) <= AttackRadius * 2f )
 			{
 				if ( CanAttack() )
 				{
@@ -126,7 +160,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 				}
 			}
 
-			if ( Target.IsValid() )
+			if ( Target.IsValid() && !IsAttackingStructure )
 			{
 				if ( !IsTargetVisible && !HasValidPath() )
 				{
@@ -144,6 +178,12 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 	protected override void UpdateRotation()
 	{
+		if ( IsAttackingStructure )
+		{
+			RotateOverTime( (StructurePosition - Position).Normal );
+			return;
+		}
+
 		if ( Target.IsValid() && IsTargetVisible )
 		{
 			RotateOverTime( Target );
@@ -187,22 +227,32 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 		acceleration += separation.GetSteering( nearbyUndead ) * 2f;
 
-		if ( HasValidPath() )
+		if ( !IsAttackingStructure )
 		{
-			var direction = (GetPathTarget() - Position).Normal;
-			acceleration += direction * GetMoveSpeed();
+			if ( HasValidPath() )
+			{
+				var direction = (GetPathTarget() - Position).Normal;
+				acceleration += direction * GetMoveSpeed();
 
-			if ( Debug )
-				DebugOverlay.Sphere( Position, 16f, Color.Green );
-		}
-		else if ( Target.IsValid() )
-		{
-			if ( Position.Distance( Target.Position ) > TargetRange )
-				acceleration += Steering.Seek( Target.Position, 60f );
+				if ( Debug )
+					DebugOverlay.Sphere( Position, 16f, Color.Green );
+			}
+			else if ( Target.IsValid() )
+			{
+				if ( Target.Position.Distance( Position ) > TargetRange )
+					acceleration += Steering.Seek( Target.Position, 60f );
+			}
+			else
+			{
+				acceleration += Wander.GetSteering();
+			}
 		}
 		else
 		{
-			acceleration += Wander.GetSteering();
+			if ( StructurePosition.Distance( Position ) > AttackRadius * 2f )
+			{
+				acceleration = (StructurePosition - Position).Normal * GetMoveSpeed();
+			}
 		}
 
 		if ( !acceleration.IsNearZeroLength )
