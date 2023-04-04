@@ -1,31 +1,30 @@
-<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:generic:version{7412167c-06e9-4698-aff2-e63eb59037e7} -->
 {
-	data = 
-	{
-		DamageMultiplier = 0.9
-		ArmorSlot = "Feet"
-		SecondaryModel = null
-		PrimaryModel = resource:"models/citizen_clothes/shoes/boots/models/army_boots.vmdl"
-		TemperatureModifier = 1
-		IsRecyclable = true
-		RecycleOutput = 
-		{
-			yarn = 2
-		}
-		BaseComponentReturn = 0.5
-		IsPurchasable = true
-		SalvageCost = 50
-		StockStackSize = "1.00,1.00,0"
-		StockChance = 0.4
-		IsLootable = true
-		LootChance = 0.07
-		OncePerContainer = true
-		LootStackSize = "1.00,0.00,0"
-		ItemName = "Army Boots"
-		UniqueId = "army_boots"
-		Description = "Some army boots. Good protection for your feet."
-		Icon = resource:"clothing_icons/army_boots.png"
-		WorldModel = resource:"models/sbox_props/burger_box/burger_box.vmdl"
-		Tags = [  ]
-	}
+  "DamageProtection": 5,
+  "DamageTags": null,
+  "DamageHitbox": "",
+  "ArmorSlot": "Feet",
+  "SecondaryModel": null,
+  "PrimaryModel": "models/citizen_clothes/shoes/boots/models/army_boots.vmdl",
+  "TemperatureModifier": 1,
+  "IsRecyclable": true,
+  "RecycleOutput": {
+    "yarn": 2
+  },
+  "BaseComponentReturn": 0.5,
+  "IsPurchasable": true,
+  "SalvageCost": 50,
+  "StockStackSize": "1.00,1.00,0",
+  "StockChance": 0.4,
+  "IsLootable": true,
+  "LootChance": 0.07,
+  "OncePerContainer": true,
+  "LootStackSize": "1.00,0.00,0",
+  "ItemName": "Army Boots",
+  "UniqueId": "army_boots",
+  "Description": "Some army boots. Good protection for your feet.",
+  "Icon": "clothing_icons/army_boots.png",
+  "WorldModel": "models/sbox_props/burger_box/burger_box.vmdl",
+  "Tags": [
+    "melee"
+  ]
 }

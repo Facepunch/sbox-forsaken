@@ -1,31 +1,30 @@
-<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:generic:version{7412167c-06e9-4698-aff2-e63eb59037e7} -->
 {
-	data = 
-	{
-		DamageMultiplier = 0.95
-		ArmorSlot = "Head"
-		SecondaryModel = null
-		PrimaryModel = resource:"models/citizen_clothes/hat/baseball_cap/model/baseball_cap.vmdl"
-		TemperatureModifier = 1
-		IsRecyclable = true
-		RecycleOutput = 
-		{
-			yarn = 1
-		}
-		BaseComponentReturn = 0.5
-		IsPurchasable = true
-		SalvageCost = 40
-		StockStackSize = "1.00,1.00,0"
-		StockChance = 0.4
-		IsLootable = true
-		LootChance = 0.06
-		OncePerContainer = true
-		LootStackSize = "1.00,0.00,0"
-		ItemName = "Baseball Cap"
-		UniqueId = "baseball_cap"
-		Description = "A simple baseball cap. It\'ll keep your head a bit warm."
-		Icon = resource:"clothing_icons/baseball_cap.png"
-		WorldModel = resource:"models/sbox_props/burger_box/burger_box.vmdl"
-		Tags = [  ]
-	}
+  "DamageProtection": 5,
+  "DamageTags": null,
+  "DamageHitbox": "",
+  "ArmorSlot": "Head",
+  "SecondaryModel": null,
+  "PrimaryModel": "models/citizen_clothes/hat/baseball_cap/model/baseball_cap.vmdl",
+  "TemperatureModifier": 1,
+  "IsRecyclable": true,
+  "RecycleOutput": {
+    "yarn": 1
+  },
+  "BaseComponentReturn": 0.5,
+  "IsPurchasable": true,
+  "SalvageCost": 40,
+  "StockStackSize": "1.00,1.00,0",
+  "StockChance": 0.4,
+  "IsLootable": true,
+  "LootChance": 0.06,
+  "OncePerContainer": true,
+  "LootStackSize": "1.00,0.00,0",
+  "ItemName": "Baseball Cap",
+  "UniqueId": "baseball_cap",
+  "Description": "A simple baseball cap. It\u0027ll keep your head a bit warm.",
+  "Icon": "clothing_icons/baseball_cap.png",
+  "WorldModel": "models/sbox_props/burger_box/burger_box.vmdl",
+  "Tags": [
+    "melee"
+  ]
 }

@@ -1,28 +1,28 @@
-<!-- kv3 encoding:text:version{e21c7f3c-8a33-41c5-9977-a76d3a32aa0d} format:generic:version{7412167c-06e9-4698-aff2-e63eb59037e7} -->
 {
-	data = 
-	{
-		DamageMultiplier = 0.95
-		ArmorSlot = "Legs"
-		SecondaryModel = null
-		PrimaryModel = resource:"models/citizen_clothes/trousers/cardboardtrousers/models/cardboard_trousers.vmdl"
-		TemperatureModifier = 1
-		IsRecyclable = true
-		RecycleOutput = null
-		BaseComponentReturn = 0.5
-		IsPurchasable = true
-		SalvageCost = 20
-		StockStackSize = "1.00,1.00,0"
-		StockChance = 0.5
-		IsLootable = true
-		LootChance = 0.4
-		OncePerContainer = false
-		LootStackSize = "1.00,1.00,0"
-		ItemName = "Cardboard Pants"
-		UniqueId = "cardboard_pants"
-		Description = "Some pants made from cardboard. They\'re ugly as hell but provide a small amount of warmth."
-		Icon = resource:"models/citizen_clothes/trousers/cardboardtrousers/cardboard_trousers.clothing.jpg"
-		WorldModel = resource:"models/sbox_props/burger_box/burger_box.vmdl"
-		Tags = [  ]
-	}
+  "DamageProtection": 5,
+  "DamageTags": null,
+  "DamageHitbox": "",
+  "ArmorSlot": "Legs",
+  "SecondaryModel": null,
+  "PrimaryModel": "models/citizen_clothes/trousers/cardboardtrousers/models/cardboard_trousers.vmdl",
+  "TemperatureModifier": 1,
+  "IsRecyclable": true,
+  "RecycleOutput": null,
+  "BaseComponentReturn": 0.5,
+  "IsPurchasable": true,
+  "SalvageCost": 20,
+  "StockStackSize": "1.00,1.00,0",
+  "StockChance": 0.5,
+  "IsLootable": true,
+  "LootChance": 0.4,
+  "OncePerContainer": false,
+  "LootStackSize": "1.00,1.00,0",
+  "ItemName": "Cardboard Pants",
+  "UniqueId": "cardboard_pants",
+  "Description": "Some pants made from cardboard. They\u0027re ugly as hell but provide a small amount of warmth.",
+  "Icon": "models/citizen_clothes/trousers/cardboardtrousers/cardboard_trousers.clothing.jpg",
+  "WorldModel": "models/sbox_props/burger_box/burger_box.vmdl",
+  "Tags": [
+    "melee"
+  ]
 }
