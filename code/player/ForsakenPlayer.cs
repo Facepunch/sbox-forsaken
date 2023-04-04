@@ -1418,6 +1418,8 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 					{
 						deployable.StackSize--;
 					}
+
+					Navigation.Update( structure.Position, 256f );
 				}
 			}
 		}
