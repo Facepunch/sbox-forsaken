@@ -14,7 +14,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 	private float CurrentSpeed { get; set; }
 	private float TargetRange => 60f;
 	private float AttackRadius => 60f;
-	private float AttackRate => 1f;
+	private float AttackRate => 0.5f;
 	private float WalkSpeed => 60f;
 	private float RunSpeed => 80f;
 
