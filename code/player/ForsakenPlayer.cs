@@ -656,16 +656,26 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 				}
 			}
 
-			using ( Prediction.Off() )
-			{
-				var particles = Particles.Create( "particles/gameplay/player/taken_damage/taken_damage.vpcf", info.Position );
-				particles.SetForward( 0, info.Force.Normal );
-			}
-
 			if ( info.HasTag( "blunt" ) )
 			{
 				ApplyAbsoluteImpulse( info.Force );
 			}
+		}
+		else
+		{
+			if ( info.HasTag( "melee" ) )
+			{
+				using ( Prediction.Off() )
+				{
+					PlaySound( "melee.hitflesh" );
+				}
+			}
+		}
+
+		using ( Prediction.Off() )
+		{
+			var particles = Particles.Create( "particles/gameplay/player/taken_damage/taken_damage.vpcf", info.Position );
+			particles.SetForward( 0, info.Force.Normal );
 		}
 
 		var protection = Equipment.FindItems<ArmorItem>()
