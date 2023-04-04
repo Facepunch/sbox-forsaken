@@ -16,6 +16,7 @@ public static partial class Navigation
 	private static List<int> CalculatedPath = new();
 	private static Rect WorldBounds = new();
 	private static PriorityQueue<GridNode, float> OpenSet = new();
+	private static Vector3 Origin;
 
 	[Event.Entity.PostSpawn]
 	private static async void GenerateWalkabilityMap()
@@ -25,9 +26,9 @@ public static partial class Navigation
 		var bounds = Game.PhysicsWorld.Body.GetBounds();
 		var worldW = bounds.Size.x;
 		var worldH = bounds.Size.y;
-		var origin = bounds.Center;
 
-		WorldBounds = new Rect( -(worldW * 0.5f) + origin.x, -(worldH * 0.5f) + origin.y, worldW, worldH );
+		Origin = bounds.Center;
+		WorldBounds = new Rect( -(worldW * 0.5f) + Origin.x, -(worldH * 0.5f) + Origin.y, worldW, worldH );
 		IsReady = false;
 
 		var gridX = (int)(WorldBounds.Width / CellSize);
@@ -128,6 +129,31 @@ public static partial class Navigation
 
 		var node = Grid[idx];
 		return position.WithZ( node.ZOffset );
+	}
+
+	public static void Update( Vector3 position, float radius )
+	{
+		var gridIndex = FromWorld( position );
+		var gridPosition = GetPosition( gridIndex );
+		var blocks = (int)(radius / CellSize);
+		var gridX = (int)gridPosition.x;
+		var gridY = (int)gridPosition.y;
+
+		for ( int x = gridX - blocks; x < gridX + blocks; x++ )
+		{
+			for ( int y = gridY - blocks; y < gridY + blocks; y++ )
+			{
+				var idx = GetIndex( x, y );
+				if ( idx == -1 ) continue;
+
+				var worldPosition = ToWorld( idx );
+				var walkable = SampleWalkability( worldPosition, out float zOffset, out float slope );
+				var node = Grid[idx];
+				node.Walkable = walkable;
+				node.ZOffset = zOffset;
+				node.Slope = slope;
+			}
+		}
 	}
 
 	public static int CalculatePath( Vector3 start, Vector3 end, Vector3[] points )
