@@ -156,12 +156,12 @@ public static partial class Navigation
 		}
 	}
 
-	public static int CalculatePath( Vector3 start, Vector3 end, Vector3[] points )
+	public static int CalculatePath( Vector3 start, Vector3 end, Vector3[] points, bool mustBeFullPath = false )
 	{
 		if ( !IsReady )
 			return 0;
 
-		if ( !CalculatePath( FromWorld( start ), FromWorld( end ) ) )
+		if ( !CalculatePath( FromWorld( start ), FromWorld( end ), mustBeFullPath ) )
 			return 0;
 
 		var length = Math.Min( CalculatedPath.Count, points.Length );
@@ -280,7 +280,7 @@ public static partial class Navigation
 		return result != -1;
 	}
 
-	private static bool CalculatePath( int start, int end )
+	private static bool CalculatePath( int start, int end, bool mustBeFullPath = false )
 	{
 		if( start == -1 || end == -1 )
 		{
@@ -364,22 +364,27 @@ public static partial class Navigation
 
 			if ( unreachable )
 			{
-				if( fallbackNode != null )
+				if ( fallbackNode != null )
 				{
 					var d1 = Euclidian( startNode, endNode );
 					var d2 = Euclidian( fallbackNode, endNode );
 					if ( d1 <= d2 ) return false;
 				}
+
 				break;
 			}
 		}
 
 		if ( !discovered )
 		{
+			if ( mustBeFullPath )
+				return false;
+
 			currentNode = fallbackNode;
 		}
 
-		if ( currentNode == null ) return false;
+		if ( currentNode == null )
+			return false;
 
 		while ( currentNode != startNode )
 		{
