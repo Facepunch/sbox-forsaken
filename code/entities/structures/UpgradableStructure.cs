@@ -114,6 +114,24 @@ public abstract partial class UpgradableStructure : Structure
 		return default;
 	}
 
+	public override void TakeDamage( DamageInfo info )
+	{
+		if ( info.HasTag( "melee" ) )
+		{
+			using ( Prediction.Off() )
+			{
+				if ( Material == StructureMaterial.Wood )
+					PlaySound( "melee.hitwood" );
+				else if ( Material == StructureMaterial.Stone )
+					PlaySound( "melee.hitstone" );
+				else if ( Material == StructureMaterial.Metal )
+					PlaySound( "melee.hitmetal" );
+			}
+		}
+
+		base.TakeDamage( info );
+	}
+
 	public override void OnContextAction( ForsakenPlayer player, ContextAction action )
 	{
 		if ( Game.IsClient ) return;
