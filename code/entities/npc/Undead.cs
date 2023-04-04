@@ -61,6 +61,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 		var eyePosition = Position + Vector3.Up * 64f;
 		var trace = Trace.Ray( eyePosition, eyePosition + Rotation.Forward * AttackRadius * 2f )
 			.WorldAndEntities()
+			.WithAnyTags( "solid", "player", "wall", "door" )
 			.Ignore( this )
 			.Run();
 
@@ -69,6 +70,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 			var damage = new DamageInfo()
 				.WithAttacker( this )
 				.WithWeapon( this )
+				.WithPosition( trace.EndPosition )
 				.WithDamage( 10f )
 				.WithForce( Rotation.Forward * 100 * 1f )
 				.WithTag( "melee" );
@@ -122,7 +124,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 		if ( LifeState == LifeState.Alive )
 		{
-			if ( ( !Target.IsValid() || Position.Distance( Target.Position ) > 2048f ) && NextFindTarget )
+			if ( ( !Target.IsValid() || Position.Distance( Target.Position ) > 2048f || Target.LifeState == LifeState.Dead) && NextFindTarget )
 			{
 				var target = FindInSphere( Position, 1024f )
 					.OfType<ForsakenPlayer>()
@@ -272,9 +274,10 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 		}
 		else
 		{
-			if ( StructurePosition.Distance( Position ) > AttackRadius * 2f )
+			if ( StructurePosition.Distance( Position ) > AttackRadius )
 			{
-				acceleration = (StructurePosition - Position).Normal * GetMoveSpeed();
+				var direction = (StructurePosition - Position).Normal.WithZ( 0f );
+				acceleration = direction * GetMoveSpeed();
 			}
 		}
 
