@@ -53,6 +53,30 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 		LifeState = LifeState.Dead;
 	}
 
+	protected virtual void MeleeStrike()
+	{
+		TimeSinceLastAttack = 0f;
+		SetAnimParameter( "attack", true );
+
+		var eyePosition = Position + Vector3.Up * 64f;
+		var trace = Trace.Ray( eyePosition, eyePosition + Rotation.Forward * AttackRadius * 2f )
+			.WorldAndEntities()
+			.Ignore( this )
+			.Run();
+
+		if ( trace.Entity.IsValid() && trace.Entity is IDamageable damageable )
+		{
+			var damage = new DamageInfo()
+				.WithAttacker( this )
+				.WithWeapon( this )
+				.WithDamage( 10f )
+				.WithForce( Rotation.Forward * 100 * 1f )
+				.WithTag( "melee" );
+
+			damageable.TakeDamage( damage );
+		}
+	}
+
 	protected virtual bool CanAttack()
 	{
 		return TimeSinceLastAttack > (1f / AttackRate);
@@ -130,6 +154,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 				var trace = Trace.Ray( eyePosition, eyePosition + directionToTarget * 512f )
 					.EntitiesOnly()
 					.WithAnyTags( "wall", "door" )
+					.Ignore( this )
 					.Run();
 
 				if ( trace.Hit && trace.Entity.IsValid() )
@@ -146,8 +171,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 				{
 					if ( CanAttack() )
 					{
-						TimeSinceLastAttack = 0f;
-						SetAnimParameter( "attack", true );
+						MeleeStrike();
 					}
 				}
 			}
@@ -155,8 +179,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 			{
 				if ( CanAttack() )
 				{
-					TimeSinceLastAttack = 0f;
-					SetAnimParameter( "attack", true );
+					MeleeStrike();
 				}
 			}
 

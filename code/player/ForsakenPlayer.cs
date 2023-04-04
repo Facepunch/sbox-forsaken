@@ -669,6 +669,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		}
 
 		var protection = Equipment.FindItems<ArmorItem>()
+			.Where( i => i.DamageTags is not null )
 			.Where( i => info.HasAnyTag( i.DamageTags.ToArray() ) )
 			.Where( i => info.Hitbox.HasTag( i.DamageHitbox ) )
 			.Sum( i => i.DamageProtection );

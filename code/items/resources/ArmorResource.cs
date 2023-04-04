@@ -11,7 +11,7 @@ public class ArmorResource : ForsakenItemResource
 	public float DamageProtection { get; set; } = 5f;
 
 	[Property]
-	public HashSet<string> DamageTags { get; set; }
+	public HashSet<string> DamageTags { get; set; } = new();
 
 	[Property]
 	public string DamageHitbox { get; set; } = string.Empty;
