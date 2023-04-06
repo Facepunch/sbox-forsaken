@@ -464,6 +464,34 @@
 				]
 				bone_cull_type = "None"
 			},
+			{
+				_class = "WeightListList"
+				children = 
+				[
+					{
+						_class = "WeightList"
+						name = "upper_body"
+						default_weight = 0.0
+						weights = 
+						[
+							{
+								bone = "spine_01"
+								weight = 0.27907
+							},
+							{
+								bone = "spine_02"
+								weight = 0.72093
+							},
+							{
+								bone = "spine_03"
+								weight = 1.0
+							},
+						]
+						master_morph_weight = -1.0
+						morph_weights = [  ]
+					},
+				]
+			},
 		]
 		model_archetype = ""
 		primary_associated_entity = ""
