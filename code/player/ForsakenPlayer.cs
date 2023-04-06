@@ -227,30 +227,6 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		};
 	}
 
-	public void ApplyPoison( Entity attacker, float protectionThreshold, float damage )
-	{
-		if ( !NextTakePoisonDamage ) return;
-
-		var totalPoisonProtection = Equipment.FindItems<ArmorItem>()
-			.Sum( i => i.PoisonProtection );
-
-		if ( totalPoisonProtection >= protectionThreshold )
-			return;
-
-		damage *= (1f - (totalPoisonProtection / 100f));
-		if ( damage <= 0f ) return;
-
-		var info = new DamageInfo()
-			.WithTag( "poison" )
-			.WithDamage( damage )
-			.WithAttacker( attacker )
-			.WithWeapon( attacker );
-
-		TakeDamage( info );
-
-		NextTakePoisonDamage = 1f;
-	}
-
 	public void MakePawnOf( long playerId )
 	{
 		SteamId = playerId;
@@ -939,6 +915,39 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		}
 
 		Temperature = Temperature.LerpTo( CalculatedTemperature, Time.Delta * 2f );
+
+		if ( NextTakePoisonDamage )
+		{
+			Log.Info( "Try" );
+			var totalPoisonProtection = Equipment.FindItems<ArmorItem>()
+				.Sum( i => i.PoisonProtection );
+
+			var totalPoisonDamage = InsideZones
+				.OfType<PoisonZone>()
+				.Where( e => totalPoisonProtection < e.PoisonProtectionThreshold )
+				.Sum( e =>
+				{
+					if ( !e.DamageScalesToCenter ) return e.PoisonDamagePerSecond;
+					var distanceToCenter = e.Position.Distance( Position );
+					var totalSize = e.CollisionBounds.Size.Length * 0.5f;
+					return distanceToCenter.Remap( 0f, totalSize, e.PoisonDamagePerSecond, 0f );
+				} );
+
+			totalPoisonDamage *= (1f - (totalPoisonProtection / 100f));
+
+			if ( totalPoisonDamage > 0f )
+			{
+				var info = new DamageInfo()
+					.WithTag( "poison" )
+					.WithDamage( totalPoisonDamage );
+
+				Log.Info( "Took: " + totalPoisonDamage + " poison damage " );
+
+				TakeDamage( info );
+			}
+
+			NextTakePoisonDamage = 1f;
+		}
 
 		for ( var i = ActiveEffects.Count - 1; i >= 0; i-- )
 		{

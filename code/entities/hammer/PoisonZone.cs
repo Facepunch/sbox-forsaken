@@ -11,12 +11,7 @@ namespace Facepunch.Forsaken
 	{
 		[Property] public float PoisonDamagePerSecond { get; set; } = 10f;
 		[Property] public float PoisonProtectionThreshold { get; set; } = 10f;
-
-		public override void Spawn()
-		{
-			EnableTouchPersists = true;
-			base.Spawn();
-		}
+		[Property] public bool DamageScalesToCenter { get; set; } = true;
 
 		public override void StartTouch( Entity other )
 		{
@@ -26,16 +21,6 @@ namespace Facepunch.Forsaken
 			}
 
 			base.StartTouch( other );
-		}
-
-		public override void Touch( Entity other )
-		{
-			if ( other is ForsakenPlayer player )
-			{
-				player.ApplyPoison( this, PoisonProtectionThreshold, PoisonDamagePerSecond );
-			}
-
-			base.Touch( other );
 		}
 
 		public override void EndTouch( Entity other )
