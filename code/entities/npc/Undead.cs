@@ -9,8 +9,6 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 	public bool IsTargetVisible { get; private set; }
 
-	private bool IsAttackingStructure { get; set; }
-	private Vector3 StructurePosition { get; set; }
 	private float CurrentSpeed { get; set; }
 	private float TargetRange => 60f;
 	private float AttackRadius => 60f;
@@ -20,7 +18,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 	private TimeSince TimeSinceLastAttack { get; set; }
 	private TimeUntil NextFindTarget { get; set; }
-	private ForsakenPlayer Target { get; set; }
+	private IDamageable Target { get; set; }
 
 	public override string GetDisplayName()
 	{
@@ -84,6 +82,13 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 		return TimeSinceLastAttack > (1f / AttackRate);
 	}
 
+	public override void OnAnimEventGeneric( string name, int intData, float floatData, Vector3 vectorData, string stringData )
+	{
+		Log.Info( name );
+
+		base.OnAnimEventGeneric( name, intData, floatData, vectorData, stringData );
+	}
+
 	public override void TakeDamage( DamageInfo info )
 	{
 		if ( LifeState == LifeState.Dead ) return;
@@ -120,26 +125,41 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 	protected override void ServerTick()
 	{
-		IsAttackingStructure = false;
-
 		if ( LifeState == LifeState.Alive )
 		{
 			if ( ( !Target.IsValid() || Position.Distance( Target.Position ) > 2048f || Target.LifeState == LifeState.Dead) && NextFindTarget )
 			{
-				var target = FindInSphere( Position, 1024f )
+				var entitiesInSphere = FindInSphere( Position, 1024f );
+				var target = entitiesInSphere
 					.OfType<ForsakenPlayer>()
 					.Where( CanSeeTarget )
 					.OrderBy( p => p.Position.Distance( Position ) )
 					.FirstOrDefault();
 
+				Target = null;
+
 				if ( target.IsValid() )
 				{
+					Target = target;
 					State = MovementState.Moving;
 				}
+				else
+				{
+					if ( entitiesInSphere.OfType<ForsakenPlayer>().Any() )
+					{
+						var structureTarget = entitiesInSphere
+							.OfType<Structure>()
+							.Where( s => s.Tags.Has( "wall" ) || s.Tags.Has( "door" ) )
+							.OrderBy( p => p.Position.Distance( Position ) )
+							.FirstOrDefault();
 
-				NextFindTarget = 1f;
-				Target = target;
-				Path = null;
+						if ( structureTarget.IsValid() )
+						{
+							State = MovementState.Moving;
+							Target = structureTarget;
+						}
+					}
+				}
 			}
 
 			if ( Target.IsValid() )
@@ -147,53 +167,52 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 			else
 				IsTargetVisible = false;
 
-			var distanceToTarget = Target.IsValid() ? Position.Distance( Target.Position ) : 0f;
-
-			if ( Target.IsValid() && !HasValidPath() && distanceToTarget < 512f )
+			if ( NextFindTarget )
 			{
-				var eyePosition = Position + Vector3.Up * 64f;
-				var directionToTarget = (Target.Position - Position).Normal;
-				var trace = Trace.Ray( eyePosition, eyePosition + directionToTarget * 512f )
-					.EntitiesOnly()
-					.WithAnyTags( "wall", "door" )
-					.Ignore( this )
-					.Run();
-
-				if ( trace.Hit && trace.Entity.IsValid() )
+				if ( Target.IsValid() && !IsTargetVisible )
 				{
-					StructurePosition = trace.EndPosition;
-					IsAttackingStructure = true;
-					Path?.Clear();
-				}
-			}
+					var p = Navigation.CalculatePath( Position, Target.Position, PathPoints, Target is ForsakenPlayer );
 
-			if ( !IsAttackingStructure )
-			{
-				if ( Target.IsValid() && Position.Distance( Target.Position ) <= AttackRadius )
-				{
-					if ( CanAttack() )
+					if ( p > 0 )
 					{
-						MeleeStrike();
+						Path ??= new();
+						Path.Clear();
+
+						for ( var i = 0; i < p; i++ )
+						{
+							Path.Add( Navigation.WithZOffset( PathPoints[i] ) );
+						}
+					}
+					else
+					{
+						Target = null;
+						Path?.Clear();
 					}
 				}
+
+				if ( Target.IsValid() && Target is not ForsakenPlayer )
+				{
+					var entitiesInSphere = FindInSphere( Position, 1024f );
+					var hasPlayerTarget = entitiesInSphere
+						.OfType<ForsakenPlayer>()
+						.Where( CanSeeTarget )
+						.OrderBy( p => p.Position.Distance( Position ) )
+						.Any();
+
+					if ( hasPlayerTarget )
+					{
+						Target = null;
+					}
+				}
+
+				NextFindTarget = 1f;
 			}
-			else if ( Position.Distance( StructurePosition ) <= AttackRadius * 2f )
+
+			if ( Target.IsValid() && Position.Distance( Target.Position ) <= AttackRadius )
 			{
 				if ( CanAttack() )
 				{
 					MeleeStrike();
-				}
-			}
-
-			if ( Target.IsValid() && !IsAttackingStructure )
-			{
-				if ( !IsTargetVisible && !HasValidPath() )
-				{
-					MoveToLocation( Target.Position );
-				}
-				else if ( IsTargetVisible )
-				{
-					Path = null;
 				}
 			}
 		}
@@ -203,15 +222,16 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 	protected override void UpdateRotation()
 	{
-		if ( IsAttackingStructure )
+		if ( Target.IsValid() && IsTargetVisible )
 		{
-			RotateOverTime( (StructurePosition - Position).Normal );
+			RotateOverTime( (Entity)Target );
 			return;
 		}
 
-		if ( Target.IsValid() && IsTargetVisible )
+		if ( HasValidPath() )
 		{
-			RotateOverTime( Target );
+			var direction = (GetPathTarget() - Position).Normal;
+			RotateOverTime( direction );
 			return;
 		}
 
@@ -252,33 +272,22 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 		acceleration += separation.GetSteering( nearbyUndead ) * 2f;
 
-		if ( !IsAttackingStructure )
+		if ( Target.IsValid() && IsTargetVisible )
 		{
-			if ( HasValidPath() )
-			{
-				var direction = (GetPathTarget() - Position).Normal;
-				acceleration += direction * GetMoveSpeed();
+			if ( Target.Position.Distance( Position ) > TargetRange )
+				acceleration += Steering.Seek( Target.Position, 60f );
+		}
+		else if ( HasValidPath() )
+		{
+			var direction = (GetPathTarget() - Position).Normal;
+			acceleration += direction * GetMoveSpeed();
 
-				if ( Debug )
-					DebugOverlay.Sphere( Position, 16f, Color.Green );
-			}
-			else if ( Target.IsValid() )
-			{
-				if ( Target.Position.Distance( Position ) > TargetRange )
-					acceleration += Steering.Seek( Target.Position, 60f );
-			}
-			else
-			{
-				acceleration += Wander.GetSteering();
-			}
+			if ( Debug )
+				DebugOverlay.Sphere( Position, 16f, Color.Green );
 		}
 		else
 		{
-			if ( StructurePosition.Distance( Position ) > AttackRadius )
-			{
-				var direction = (StructurePosition - Position).Normal.WithZ( 0f );
-				acceleration = direction * GetMoveSpeed();
-			}
+			acceleration += Wander.GetSteering();
 		}
 
 		if ( !acceleration.IsNearZeroLength )
@@ -304,14 +313,16 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 		}
 	}
 
-	private bool CanSeeTarget( Entity target )
+	private bool CanSeeTarget( IDamageable target )
 	{
-		var eyePosition = Position + Vector3.Up * 16f;
-		var trace = Trace.Ray( eyePosition, target.Position + Vector3.Up * 16f )
+		var eyePosition = Position + Vector3.Up * 64f;
+		var targetPosition = target.Position + Vector3.Up * 32f;
+		var direction = (targetPosition - eyePosition).Normal;
+		var trace = Trace.Ray( eyePosition, eyePosition + direction * 1024f )
 			.WorldAndEntities()
 			.WithoutTags( "passplayers", "trigger", "npc" )
-			.WithAnyTags( "solid", "world", "player" )
-			.Size( 8f )
+			.WithAnyTags( "solid", "world", "player", "door", "wall" )
+			.Size( 2f )
 			.Ignore( this )
 			.Run();
 
