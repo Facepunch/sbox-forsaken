@@ -55,26 +55,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 	{
 		TimeSinceLastAttack = 0f;
 		SetAnimParameter( "attack", true );
-
-		var eyePosition = Position + Vector3.Up * 64f;
-		var trace = Trace.Ray( eyePosition, eyePosition + Rotation.Forward * AttackRadius * 2f )
-			.WorldAndEntities()
-			.WithAnyTags( "solid", "player", "wall", "door" )
-			.Ignore( this )
-			.Run();
-
-		if ( trace.Entity.IsValid() && trace.Entity is IDamageable damageable )
-		{
-			var damage = new DamageInfo()
-				.WithAttacker( this )
-				.WithWeapon( this )
-				.WithPosition( trace.EndPosition )
-				.WithDamage( 10f )
-				.WithForce( Rotation.Forward * 100 * 1f )
-				.WithTag( "melee" );
-
-			damageable.TakeDamage( damage );
-		}
+		PlaySound( "melee.swing" );
 	}
 
 	protected virtual bool CanAttack()
@@ -84,7 +65,31 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 	public override void OnAnimEventGeneric( string name, int intData, float floatData, Vector3 vectorData, string stringData )
 	{
-		Log.Info( name );
+		if ( name == "attack" )
+		{
+			Log.Info( "Attack Event" );
+
+			var eyePosition = Position + Vector3.Up * 64f;
+			var trace = Trace.Ray( eyePosition, eyePosition + Rotation.Forward * AttackRadius * 2f )
+				.WorldAndEntities()
+				.WithAnyTags( "solid", "player", "wall", "door" )
+				.Ignore( this )
+				.Size( 4f )
+				.Run();
+
+			if ( trace.Entity.IsValid() && trace.Entity is IDamageable damageable )
+			{
+				var damage = new DamageInfo()
+					.WithAttacker( this )
+					.WithWeapon( this )
+					.WithPosition( trace.EndPosition )
+					.WithDamage( 10f )
+					.WithForce( Rotation.Forward * 100 * 1f )
+					.WithTag( "melee" );
+
+				damageable.TakeDamage( damage );
+			}
+		}
 
 		base.OnAnimEventGeneric( name, intData, floatData, vectorData, stringData );
 	}
