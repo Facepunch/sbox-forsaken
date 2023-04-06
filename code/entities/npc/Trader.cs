@@ -209,9 +209,9 @@ public partial class Trader : Human, IContextActionProvider, IPersistence, IName
 		base.UpdateVelocity();
 	}
 
-	protected override void ServerTick()
+	protected override void UpdateLogic()
 	{
-		base.ServerTick();
+		base.UpdateLogic();
 
 		if ( NextRestockTime )
 		{

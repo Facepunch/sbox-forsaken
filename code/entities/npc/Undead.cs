@@ -123,7 +123,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 		base.TakeDamage( info );
 	}
 
-	protected override void ServerTick()
+	protected override void UpdateLogic()
 	{
 		if ( LifeState == LifeState.Alive )
 		{
@@ -204,7 +204,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 			}
 		}
 
-		base.ServerTick();
+		base.UpdateLogic();
 	}
 
 	protected override void UpdateRotation()

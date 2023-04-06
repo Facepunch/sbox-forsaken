@@ -14,6 +14,8 @@ public abstract partial class NPC : AnimatedEntity
 
 	private GravityComponent Gravity { get; set; }
 	private FrictionComponent Friction { get; set; }
+	private TimeUntil NextCheckSimulate { get; set; }
+	private bool ShouldSimulate { get; set; }
 
 	public override void Spawn()
 	{
@@ -63,6 +65,20 @@ public abstract partial class NPC : AnimatedEntity
 	public virtual float GetMoveSpeed()
 	{
 		return 80f;
+	}
+
+	protected bool CheckShouldSimulate()
+	{
+		if ( NextCheckSimulate )
+		{
+			ShouldSimulate = FindInSphere( Position, 2048f )
+				.OfType<ForsakenPlayer>()
+				.Any();
+
+			NextCheckSimulate = 1f;
+		}
+
+		return ShouldSimulate;
 	}
 
 	protected Vector3 GetPathTarget()
@@ -229,7 +245,15 @@ public abstract partial class NPC : AnimatedEntity
 	}
 
 	[Event.Tick.Server]
-	protected virtual void ServerTick()
+	protected void ServerTick()
+	{
+		if ( CheckShouldSimulate() )
+		{
+			UpdateLogic();
+		}
+	}
+
+	protected virtual void UpdateLogic()
 	{
 		if ( LifeState == LifeState.Dead )
 		{
