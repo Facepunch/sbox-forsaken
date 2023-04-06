@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using System;
 using System.Linq;
 
 namespace Facepunch.Forsaken;
@@ -65,10 +66,8 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 	public override void OnAnimEventGeneric( string name, int intData, float floatData, Vector3 vectorData, string stringData )
 	{
-		if ( name == "attack" )
+		if ( name == "attack" && Game.IsServer )
 		{
-			Log.Info( "Attack Event" );
-
 			var eyePosition = Position + Vector3.Up * 64f;
 			var trace = Trace.Ray( eyePosition, eyePosition + Rotation.Forward * AttackRadius * 2f )
 				.WorldAndEntities()

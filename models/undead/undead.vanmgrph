@@ -59,7 +59,7 @@
 								}
 							}
 							m_name = "0"
-							m_blendValue = 0.0
+							m_blendValue = 2.0
 						},
 						{
 							m_inputConnection = 
@@ -73,8 +73,8 @@
 									m_id = 4294967295
 								}
 							}
-							m_name = "30"
-							m_blendValue = 30.0
+							m_name = "15"
+							m_blendValue = 15.0
 						},
 					]
 					m_blendValueSource = "Parameter"
@@ -84,7 +84,7 @@
 					}
 					m_blendKeyType = "BlendKey_UserValue"
 					m_bLockBlendOnReset = false
-					m_bSyncCycles = true
+					m_bSyncCycles = false
 					m_bLoop = true
 					m_bLockWhenWaning = true
 					m_damping = 
@@ -496,7 +496,7 @@
 										{
 											_class = "CFinishedCondition"
 											m_comparisonOp = 0
-											m_option = "FinishedConditionOption_OnAlmostFinished"
+											m_option = "FinishedConditionOption_OnFinished"
 											m_bIsFinished = true
 										},
 									]
