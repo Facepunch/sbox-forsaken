@@ -146,6 +146,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 	private TimeSince TimeSinceBackpackOpen { get; set; }
 	private bool IsBackpackToggleMode { get; set; }
 	private List<ActiveEffect> ActiveEffects { get; set; } = new();
+	private TimeUntil NextPoisonCoughTime { get; set; }
 	private TimeSince TimeSinceLastKilled { get; set; }
 	private TimeUntil NextNeedsDamage { get; set; }
 	private TimeUntil NextNeedsWarning { get; set; }
@@ -673,6 +674,16 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 			}
 		}
 
+		if ( info.HasTag( "poison" ) && NextPoisonCoughTime )
+		{
+			if ( Game.Random.Float() <= 0.2f )
+			{
+				PlaySound( "fsk.cough" );
+
+				NextPoisonCoughTime = Game.Random.Float( 2f, 5f );
+			}
+		}
+
 		using ( Prediction.Off() )
 		{
 			var particles = Particles.Create( "particles/gameplay/player/taken_damage/taken_damage.vpcf", info.Position );
@@ -918,7 +929,6 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 
 		if ( NextTakePoisonDamage )
 		{
-			Log.Info( "Try" );
 			var totalPoisonProtection = Equipment.FindItems<ArmorItem>()
 				.Sum( i => i.PoisonProtection );
 
@@ -940,8 +950,6 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 				var info = new DamageInfo()
 					.WithTag( "poison" )
 					.WithDamage( totalPoisonDamage );
-
-				Log.Info( "Took: " + totalPoisonDamage + " poison damage " );
 
 				TakeDamage( info );
 			}

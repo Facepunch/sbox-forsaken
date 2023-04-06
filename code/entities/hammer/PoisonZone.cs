@@ -9,7 +9,7 @@ namespace Facepunch.Forsaken
 	[HammerEntity]
 	public partial class PoisonZone : BaseTrigger
 	{
-		[Property] public float PoisonDamagePerSecond { get; set; } = 10f;
+		[Property] public float PoisonDamagePerSecond { get; set; } = 5f;
 		[Property] public float PoisonProtectionThreshold { get; set; } = 10f;
 		[Property] public bool DamageScalesToCenter { get; set; } = true;
 

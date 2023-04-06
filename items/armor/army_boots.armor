@@ -1,5 +1,6 @@
 {
   "DamageProtection": 5,
+  "PoisonProtection": 2,
   "DamageTags": null,
   "DamageHitbox": "",
   "ArmorSlot": "Feet",

@@ -1,5 +1,6 @@
 {
   "DamageProtection": 5,
+  "PoisonProtection": 1,
   "DamageTags": null,
   "DamageHitbox": "",
   "ArmorSlot": "Chest",

@@ -1,0 +1,21 @@
+{
+  "UI": false,
+  "Volume": "0.40,0.40,0",
+  "Pitch": "1.00,1.00,0",
+  "Decibels": 35,
+  "SelectionMode": "Random",
+  "Sounds": [
+    "sounds/cough/fsk.cough1.vsnd",
+    "sounds/cough/fsk.cough2.vsnd",
+    "sounds/cough/fsk.cough3.vsnd",
+    "sounds/cough/fsk.cough5.vsnd",
+    "sounds/cough/fsk.cough4.vsnd",
+    "sounds/cough/fsk.cough6.vsnd",
+    "sounds/cough/fsk.cough7.vsnd",
+    "sounds/cough/fsk.cough8.vsnd",
+    "sounds/cough/fsk.cough9.vsnd",
+    "sounds/cough/fsk.cough10.vsnd"
+  ],
+  "MaximumDistance": 309.98337,
+  "MinimumDistance": 15.499168
+}
