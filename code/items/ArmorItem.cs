@@ -10,6 +10,7 @@ public class ArmorItem : ResourceItem<ArmorResource, ArmorItem>, ILootSpawnerIte
 	public override Color Color => ItemColors.Armor;
 	public virtual float TemperatureModifier => Resource?.TemperatureModifier ?? 0f;
 	public virtual float DamageProtection => Resource?.DamageProtection ?? 5f;
+	public virtual float PoisonProtection => Resource?.PoisonProtection ?? 0f;
 	public virtual HashSet<string> DamageTags => Resource?.DamageTags ?? default;
 	public virtual string DamageHitbox => Resource?.DamageHitbox ?? string.Empty;
 	public virtual ArmorSlot ArmorSlot => Resource?.ArmorSlot ?? ArmorSlot.None;
@@ -34,7 +35,12 @@ public class ArmorItem : ResourceItem<ArmorResource, ArmorItem>, ILootSpawnerIte
 
 	public override void AddTooltipInfo( Panel container )
 	{
-		container.Add.Label( $"{DamageProtection.CeilToInt()}% Protection", "primary" );
+		if ( DamageProtection > 0f )
+			container.Add.Label( $"{DamageProtection.CeilToInt()}% Damage Protection", "primary" );
+
+		if ( PoisonProtection > 0f )
+			container.Add.Label( $"{PoisonProtection.CeilToInt()}% Poison Protection", "primary" );
+
 		container.Add.Label( ArmorSlot.ToString(), "secondary" );
 
 		base.AddTooltipInfo( container );

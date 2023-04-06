@@ -141,6 +141,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 
 	private TimeUntil NextCalculateTemperature { get; set; }
 	private float CalculatedTemperature { get; set; }
+	private TimeUntil NextTakePoisonDamage { get; set; }
 	private List<IHeatEmitter> HeatEmitters { get; set; } = new();
 	private TimeSince TimeSinceBackpackOpen { get; set; }
 	private bool IsBackpackToggleMode { get; set; }
@@ -224,6 +225,30 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 			SprintSpeed = 200f,
 			WalkSpeed = 100f
 		};
+	}
+
+	public void ApplyPoison( Entity attacker, float protectionThreshold, float damage )
+	{
+		if ( !NextTakePoisonDamage ) return;
+
+		var totalPoisonProtection = Equipment.FindItems<ArmorItem>()
+			.Sum( i => i.PoisonProtection );
+
+		if ( totalPoisonProtection >= protectionThreshold )
+			return;
+
+		damage *= (1f - (totalPoisonProtection / 100f));
+		if ( damage <= 0f ) return;
+
+		var info = new DamageInfo()
+			.WithTag( "poison" )
+			.WithDamage( damage )
+			.WithAttacker( attacker )
+			.WithWeapon( attacker );
+
+		TakeDamage( info );
+
+		NextTakePoisonDamage = 1f;
 	}
 
 	public void MakePawnOf( long playerId )

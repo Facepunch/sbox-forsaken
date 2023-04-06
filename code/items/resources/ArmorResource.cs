@@ -10,6 +10,9 @@ public class ArmorResource : ForsakenItemResource
 	[Property, Description( "The percentage of damage protection this armor provides." )]
 	public float DamageProtection { get; set; } = 5f;
 
+	[Property, Description( "The percentage of poison protection this armor provides." )]
+	public float PoisonProtection { get; set; } = 0f;
+
 	[Property]
 	public HashSet<string> DamageTags { get; set; } = new();
 
