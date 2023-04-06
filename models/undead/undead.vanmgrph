@@ -224,7 +224,18 @@
 					}
 					m_networkMode = "ServerAuthoritative"
 					m_sNote = ""
-					m_tagSpans = [  ]
+					m_tagSpans = 
+					[
+						{
+							_class = "CAnimTagSpan"
+							m_id = 
+							{
+								m_id = 21011908
+							}
+							m_fStartCycle = 0.331169
+							m_fDuration = 0.042857
+						},
+					]
 					m_sequenceName = "Attack1Weapon"
 					m_playbackSpeed = 1.0
 					m_bLoop = false
@@ -610,7 +621,18 @@
 					}
 					m_networkMode = "ServerAuthoritative"
 					m_sNote = ""
-					m_tagSpans = [  ]
+					m_tagSpans = 
+					[
+						{
+							_class = "CAnimTagSpan"
+							m_id = 
+							{
+								m_id = 21011908
+							}
+							m_fStartCycle = 0.249351
+							m_fDuration = 0.044156
+						},
+					]
 					m_sequenceName = "Attack2Weapon"
 					m_playbackSpeed = 1.0
 					m_bLoop = false
@@ -693,7 +715,17 @@
 	m_pTagManager = 
 	{
 		_class = "CAnimTagManager"
-		m_tags = [  ]
+		m_tags = 
+		[
+			{
+				_class = "CStringAnimTag"
+				m_name = "attack"
+				m_tagID = 
+				{
+					m_id = 21011908
+				}
+			},
+		]
 	}
 	m_pMovementManager = 
 	{

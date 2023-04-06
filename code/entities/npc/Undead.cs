@@ -171,22 +171,9 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 			{
 				if ( Target.IsValid() && !IsTargetVisible )
 				{
-					var p = Navigation.CalculatePath( Position, Target.Position, PathPoints, Target is ForsakenPlayer );
-
-					if ( p > 0 )
-					{
-						Path ??= new();
-						Path.Clear();
-
-						for ( var i = 0; i < p; i++ )
-						{
-							Path.Add( Navigation.WithZOffset( PathPoints[i] ) );
-						}
-					}
-					else
+					if ( !TryFindPath( Target.Position, Target is ForsakenPlayer ) )
 					{
 						Target = null;
-						Path?.Clear();
 					}
 				}
 
