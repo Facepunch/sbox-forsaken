@@ -394,6 +394,7 @@ public static partial class Navigation
 
 		CalculatedPath.Add( start );
 		CalculatedPath.Reverse();
+
 		SimplifyCalculatedPath();
 
 		return true;

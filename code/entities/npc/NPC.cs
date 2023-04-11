@@ -9,7 +9,7 @@ public abstract partial class NPC : AnimatedEntity
 	[ConVar.Server( "fsk.npc.debug" )]
 	public static bool Debug { get; set; } = false;
 
-	protected Vector3[] PathPoints { get; set; } = new Vector3[32];
+	protected Vector3[] PathPoints { get; set; } = new Vector3[64];
 	protected List<Vector3> Path { get; set; }
 
 	private GravityComponent Gravity { get; set; }

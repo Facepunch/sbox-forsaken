@@ -309,13 +309,14 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 		}
 
 		var nearbyUndead = FindInSphere( Position, 100f ).OfType<Undead>();
-		var acceleration = Avoidance.GetSteering();
+		var acceleration = Vector3.Zero;
 		var separation = Components.GetOrCreate<SeparationBehavior>();
-
-		acceleration += separation.GetSteering( nearbyUndead ) * 2f;
 
 		if ( Target.IsValid() && IsTargetVisible )
 		{
+			acceleration += Avoidance.GetSteering();
+			acceleration += separation.GetSteering( nearbyUndead ) * 2f;
+
 			if ( Target.Position.Distance( Position ) > TargetRange )
 				acceleration += Steering.Seek( Target.Position, 60f );
 		}
@@ -329,6 +330,8 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 		}
 		else
 		{
+			acceleration += Avoidance.GetSteering();
+			acceleration += separation.GetSteering( nearbyUndead ) * 2f;
 			acceleration += Wander.GetSteering();
 		}
 
@@ -366,7 +369,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 			.WorldAndEntities()
 			.WithoutTags( "passplayers", "trigger", "npc" )
 			.WithAnyTags( "solid", "world", "player", "door", "wall" )
-			.Size( 2f )
+			.Size( 8f )
 			.Ignore( this )
 			.Run();
 
