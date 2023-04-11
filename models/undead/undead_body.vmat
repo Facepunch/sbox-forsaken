@@ -1,38 +1,20 @@
-// THIS FILE IS AUTO-GENERATED
-
-Layer0
+"Layer0"
 {
-	shader "complex.shader"
-
-	//---- Ambient Occlusion ----
-	g_flAmbientOcclusionDirectDiffuse "0.000"
-	g_flAmbientOcclusionDirectSpecular "0.000"
-	TextureAmbientOcclusion "models/undead/textures/T_UndeadBody_Occlusion.jpg"
-
-	//---- Color ----
-	g_flModelTintAmount "1.000"
-	g_vColorTint "[1.000000 1.000000 1.000000 0.000000]"
-	TextureColor "models/undead/textures/T_UndeadBody_BaseColor.jpg"
-
-	//---- Fade ----
-	g_flFadeExponent "1.000"
-
-	//---- Fog ----
-	g_bFogEnabled "1"
-
-	//---- Metalness ----
-	g_flMetalness "0.000"
-
-	//---- Normal ----
-	TextureNormal "models/undead/textures/T_UndeadBody_Normal.jpg"
-
-	//---- Roughness ----
-	TextureRoughness "models/undead/textures/T_UndeadBody_MetallicSmoothness.tga"
-
-	//---- Texture Coordinates ----
-	g_nScaleTexCoordUByModelScaleAxis "0"
-	g_nScaleTexCoordVByModelScaleAxis "0"
-	g_vTexCoordOffset "[0.000 0.000]"
-	g_vTexCoordScale "[1.000 1.000]"
-	g_vTexCoordScrollSpeed "[0.000 0.000]"
+	"shader"		"shaders/complex.shader_c"
+	"g_flAmbientOcclusionDirectDiffuse"		"0.000000"
+	"g_flAmbientOcclusionDirectSpecular"		"0.000000"
+	"TextureAmbientOcclusion"		"models/undead/textures/T_UndeadBody_Occlusion.jpg"
+	"g_flModelTintAmount"		"1.000000"
+	"g_vColorTint"		"[1.000000 1.000000 1.000000 0.000000]"
+	"TextureColor"		"models/undead/textures/T_UndeadBody_BaseColor.jpg"
+	"g_flFadeExponent"		"1.000000"
+	"g_bFogEnabled"		"1"
+	"g_flMetalness"		"0.000000"
+	"TextureNormal"		"models/undead/textures/T_UndeadBody_Normal.jpg"
+	"TextureRoughness"		"models/undead/textures/T_UndeadBody_MetallicSmoothness.tga"
+	"g_nScaleTexCoordUByModelScaleAxis"		"0"
+	"g_nScaleTexCoordVByModelScaleAxis"		"0"
+	"g_vTexCoordOffset"		"[0.000 0.000]"
+	"g_vTexCoordScale"		"[1.000 1.000]"
+	"g_vTexCoordScrollSpeed"		"[0.000 0.000]"
 }
