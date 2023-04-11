@@ -32,6 +32,11 @@ public abstract partial class ResourcePickup : ModelEntity, IContextActionProvid
 		return HarvestAction;
 	}
 
+	public virtual void Despawn()
+	{
+
+	}
+
 	public virtual string GetContextName()
 	{
 		return "Resource";

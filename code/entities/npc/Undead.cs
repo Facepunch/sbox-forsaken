@@ -6,6 +6,12 @@ namespace Facepunch.Forsaken;
 
 public partial class Undead : Animal, ILimitedSpawner, IDamageable
 {
+	private enum UndeadPose
+	{
+		Default,
+		Rising
+	}
+
 	public float MaxHealth => 80f;
 
 	public bool IsTargetVisible { get; private set; }
@@ -19,7 +25,26 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 	private TimeSince TimeSinceLastAttack { get; set; }
 	private TimeUntil NextFindTarget { get; set; }
+	private TimeUntil TimeUntilRisen { get; set; }
 	private IDamageable Target { get; set; }
+	private UndeadPose Pose { get; set; }
+
+	public void RiseFromGround()
+	{
+		TimeUntilRisen = 4f;
+		Rotation = new Angles( 0f, Game.Random.Float( 0f, 360f ), 0f ).ToRotation();
+		State = MovementState.Idle;
+		Pose = UndeadPose.Rising;
+	}
+
+	public virtual void Despawn()
+	{
+		if ( LifeState == LifeState.Dead )
+			return;
+
+		LifeState = LifeState.Dead;
+		DeleteAsync( 5f );
+	}
 
 	public override string GetDisplayName()
 	{
@@ -43,6 +68,8 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 		NextFindTarget = 0f;
 		Health = MaxHealth;
 		Scale = Game.Random.Float( 0.9f, 1.1f );
+
+		RiseFromGround();
 
 		base.Spawn();
 	}
@@ -69,7 +96,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 		if ( name == "attack" && Game.IsServer )
 		{
 			var eyePosition = Position + Vector3.Up * 64f;
-			var trace = Trace.Ray( eyePosition, eyePosition + Rotation.Forward * AttackRadius * 2f )
+			var trace = Trace.Ray( eyePosition, eyePosition + Rotation.Forward * AttackRadius )
 				.WorldAndEntities()
 				.WithAnyTags( "solid", "player", "wall", "door" )
 				.Ignore( this )
@@ -83,7 +110,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 					.WithWeapon( this )
 					.WithPosition( trace.EndPosition )
 					.WithDamage( 10f )
-					.WithForce( Rotation.Forward * 100 * 1f )
+					.WithForce( Rotation.Forward * 100f * 1f )
 					.WithTag( "melee" );
 
 				damageable.TakeDamage( damage );
@@ -129,90 +156,114 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 	protected override void UpdateLogic()
 	{
-		if ( LifeState == LifeState.Alive )
+		base.UpdateLogic();
+
+		if ( LifeState == LifeState.Dead )
+			return;
+
+		if ( Pose == UndeadPose.Rising )
 		{
-			if ( ( !Target.IsValid() || Position.Distance( Target.Position ) > 2048f || Target.LifeState == LifeState.Dead) && NextFindTarget )
+			EnableDrawing = TimeUntilRisen < 3.75f;
+
+			if ( TimeUntilRisen )
+				Pose = UndeadPose.Default;
+
+			return;
+		}
+
+		if ( ( !Target.IsValid() || Position.Distance( Target.Position ) > 2048f || Target.LifeState == LifeState.Dead) && NextFindTarget )
+		{
+			var entitiesInSphere = FindInSphere( Position, 1024f );
+			var target = entitiesInSphere
+				.OfType<ForsakenPlayer>()
+				.Where( CanSeeTarget )
+				.OrderBy( p => p.Position.Distance( Position ) )
+				.FirstOrDefault();
+
+			Target = null;
+
+			if ( target.IsValid() )
 			{
-				var entitiesInSphere = FindInSphere( Position, 1024f );
-				var target = entitiesInSphere
-					.OfType<ForsakenPlayer>()
-					.Where( CanSeeTarget )
-					.OrderBy( p => p.Position.Distance( Position ) )
-					.FirstOrDefault();
-
-				Target = null;
-
-				if ( target.IsValid() )
-				{
-					Target = target;
-					State = MovementState.Moving;
-				}
-				else
-				{
-					if ( entitiesInSphere.OfType<ForsakenPlayer>().Any() )
-					{
-						var structureTarget = entitiesInSphere
-							.OfType<Structure>()
-							.Where( s => s.Tags.Has( "wall" ) || s.Tags.Has( "door" ) )
-							.OrderBy( p => p.Position.Distance( Position ) )
-							.FirstOrDefault();
-
-						if ( structureTarget.IsValid() )
-						{
-							State = MovementState.Moving;
-							Target = structureTarget;
-						}
-					}
-				}
+				Target = target;
+				State = MovementState.Moving;
 			}
-
-			if ( Target.IsValid() )
-				IsTargetVisible = CanSeeTarget( Target );
 			else
-				IsTargetVisible = false;
-
-			if ( NextFindTarget )
 			{
-				if ( Target.IsValid() && !IsTargetVisible )
+				if ( entitiesInSphere.OfType<ForsakenPlayer>().Any() )
 				{
-					if ( !TryFindPath( Target.Position, Target is ForsakenPlayer ) )
-					{
-						Target = null;
-					}
-				}
-
-				if ( Target.IsValid() && Target is not ForsakenPlayer )
-				{
-					var entitiesInSphere = FindInSphere( Position, 1024f );
-					var hasPlayerTarget = entitiesInSphere
-						.OfType<ForsakenPlayer>()
-						.Where( CanSeeTarget )
+					var structureTarget = entitiesInSphere
+						.OfType<Structure>()
+						.Where( s => s.Tags.Has( "wall" ) || s.Tags.Has( "door" ) )
 						.OrderBy( p => p.Position.Distance( Position ) )
-						.Any();
+						.FirstOrDefault();
 
-					if ( hasPlayerTarget )
+					if ( structureTarget.IsValid() )
 					{
-						Target = null;
+						State = MovementState.Moving;
+						Target = structureTarget;
 					}
-				}
-
-				NextFindTarget = 1f;
-			}
-
-			if ( Target.IsValid() && Position.Distance( Target.Position ) <= AttackRadius )
-			{
-				if ( CanAttack() )
-				{
-					MeleeStrike();
 				}
 			}
 		}
 
-		base.UpdateLogic();
+		if ( Target.IsValid() )
+			IsTargetVisible = CanSeeTarget( Target );
+		else
+			IsTargetVisible = false;
+
+		if ( NextFindTarget )
+		{
+			if ( Target.IsValid() && !IsTargetVisible )
+			{
+				if ( !TryFindPath( Target.Position, Target is ForsakenPlayer ) )
+				{
+					Target = null;
+				}
+			}
+
+			if ( Target.IsValid() && Target is not ForsakenPlayer )
+			{
+				var entitiesInSphere = FindInSphere( Position, 1024f );
+				var hasPlayerTarget = entitiesInSphere
+					.OfType<ForsakenPlayer>()
+					.Where( CanSeeTarget )
+					.OrderBy( p => p.Position.Distance( Position ) )
+					.Any();
+
+				if ( hasPlayerTarget )
+				{
+					Target = null;
+				}
+			}
+
+			NextFindTarget = 1f;
+		}
+
+		if ( Target.IsValid() && Position.Distance( Target.Position ) <= AttackRadius )
+		{
+			if ( CanAttack() )
+			{
+				MeleeStrike();
+			}
+		}
+	}
+
+	protected override bool CanChangeState()
+	{
+		if ( Pose == UndeadPose.Rising )
+			return false;
+
+		return base.CanChangeState();
 	}
 
 	protected override void UpdateRotation()
 	{
+		if ( Pose == UndeadPose.Rising )
+		{
+			// No need to rotate if we're rising from the ground.
+			return;
+		}
+
 		if ( Target.IsValid() && IsTargetVisible )
 		{
 			RotateOverTime( (Entity)Target );
@@ -234,7 +285,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 		Steering.MaxVelocity = GetMoveSpeed();
 		Steering.MaxAcceleration = Steering.MaxVelocity * 0.25f;
 
-		if ( !Target.IsValid() && NextChangeState )
+		if ( !Target.IsValid() && NextChangeState && CanChangeState() )
 		{
 			if ( State == MovementState.Idle )
 			{
@@ -302,6 +353,8 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 			SetAnimParameter( "dead", false );
 			SetAnimParameter( "speed", CurrentSpeed );
 		}
+
+		SetAnimParameter( "rising", Pose == UndeadPose.Rising && !TimeUntilRisen );
 	}
 
 	private bool CanSeeTarget( IDamageable target )

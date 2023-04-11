@@ -57,6 +57,11 @@ public partial class Deer : Animal, ILimitedSpawner, IDamageable, IContextAction
 		return HarvestAction;
 	}
 
+	public virtual void Despawn()
+	{
+
+	}
+
 	public virtual string GetContextName() => GetDisplayName();
 
 	public virtual void OnContextAction( ForsakenPlayer player, ContextAction action )

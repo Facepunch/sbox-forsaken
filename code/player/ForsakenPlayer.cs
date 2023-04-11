@@ -30,6 +30,20 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 	}
 
 	[ConCmd.Server]
+	public static void SpawnUndeadOnMe()
+	{
+		if ( ConsoleSystem.Caller.Pawn is ForsakenPlayer pl )
+		{
+			var tr = Trace.Ray( pl.CameraPosition, pl.CameraPosition + pl.CursorDirection * 10000f )
+				.WorldOnly()
+				.Run();
+
+			var u = new Undead();
+			u.Position = tr.EndPosition;
+		}
+	}
+
+	[ConCmd.Server]
 	public static void StarveMe()
 	{
 		if ( ConsoleSystem.Caller.Pawn is ForsakenPlayer pl )

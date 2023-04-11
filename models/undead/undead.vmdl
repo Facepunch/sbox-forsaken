@@ -66,10 +66,14 @@
 								"SM_BattleAxeRusty",
 								"SM_WarhammerRusty",
 								"SM_SwordRusty",
-								"SK_LeatherArmor",
 								"SK_FlanksArmor",
 								"SK_WoodenShieldRusty",
 								"SM_MaceBRusty",
+								"SM_Horns1",
+								"SM_Horns2",
+								"helmet_neck_protection",
+								"SK_CollarArmor",
+								"SM_Horns3",
 							]
 						}
 					},
