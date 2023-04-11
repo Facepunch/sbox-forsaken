@@ -9,9 +9,12 @@ public class LimitedSpawner
 {
 	public static List<LimitedSpawner> All { get; private set; } = new();
 
+	private TimeUntil NextDespawnTime { get; set; }
 	private TimeUntil NextSpawnTime { get; set; }
 
 	public bool UseNavMesh { get; set; }
+	public float TimeOfDayStart { get; set; } = 0f;
+	public float TimeOfDayEnd { get; set; } = 0f;
 	public int MinPerSpawn { get; set; } = 0;
 	public int MaxPerSpawn { get; set; } = 100;
 	public int MaxTotal { get; set; } = 100;
@@ -33,11 +36,49 @@ public class LimitedSpawner
 		Type = typeof( T );
 	}
 
+	private bool IsCorrectTimePeriod()
+	{
+		if ( TimeOfDayStart == 0f && TimeOfDayEnd == 0f )
+			return true;
+
+		var time = TimeSystem.TimeOfDay;
+
+		if ( TimeOfDayStart <= TimeOfDayEnd )
+		{
+			if ( time >= TimeOfDayStart && time <= TimeOfDayEnd )
+				return true;
+		}
+		else
+		{
+			if ( time >= TimeOfDayStart || time <= TimeOfDayEnd )
+				return true;
+		}
+
+		return false;
+	}
+
 	[Event.Tick.Server]
 	private void ServerTick()
 	{
+		if ( NextDespawnTime && !IsCorrectTimePeriod() )
+		{
+			var entities = Entity.All
+			.OfType<ILimitedSpawner>()
+			.Where( p => p.GetType() == Type );
+
+			foreach ( var entity in entities )
+			{
+				entity.Despawn();
+			}
+
+			NextDespawnTime = 5f;
+		}
+
 		if ( Type is null || !NextSpawnTime ) return;
 		if ( UseNavMesh && !NavMesh.IsLoaded ) return;
+
+		if ( !IsCorrectTimePeriod() )
+			return;
 
 		var totalCount = Entity.All
 			.OfType<ILimitedSpawner>()

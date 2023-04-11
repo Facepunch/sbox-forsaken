@@ -188,11 +188,13 @@ public partial class ForsakenGame : GameManager
 		{
 			var spawner = new LimitedSpawner();
 			spawner.SetType<Undead>();
+			spawner.TimeOfDayStart = 18f;
+			spawner.TimeOfDayEnd = 7f;
 			spawner.UseNavMesh = true;
 			spawner.MaxTotal = 20;
-			spawner.MinPerSpawn = 1;
-			spawner.MaxPerSpawn = 10;
-			spawner.Interval = 120f;
+			spawner.MinPerSpawn = 4;
+			spawner.MaxPerSpawn = 8;
+			spawner.Interval = 60f;
 		}
 
 		NextDespawnItems = 30f;
