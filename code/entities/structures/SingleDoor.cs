@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,9 +9,11 @@ namespace Facepunch.Forsaken;
 public abstract partial class SingleDoor : Structure, ICodeLockable
 {
 	public virtual StructureMaterial Material => StructureMaterial.Wood;
+	public abstract Type ItemType { get; }
 
 	public override Color GlowColor => IsAuthorized() ? Color.Green : Color.Red;
 
+	private ContextAction PickupAction { get; set; }
 	private ContextAction OpenAction { get; set; }
 	private ContextAction CloseAction { get; set; }
 	private ContextAction LockAction { get; set; }
@@ -28,6 +31,15 @@ public abstract partial class SingleDoor : Structure, ICodeLockable
 
 	public SingleDoor()
 	{
+		PickupAction = new( "pickup", "Pickup", "textures/ui/actions/pickup.png" );
+		PickupAction.SetCondition( p =>
+		{
+			return new ContextAction.Availability
+			{
+				IsAvailable = IsAuthorized( p )
+			};
+		} );
+
 		CloseAction = new( "close", "Close", "textures/ui/actions/close_door.png" );
 		CloseAction.SetCondition( p =>
 		{
@@ -102,6 +114,8 @@ public abstract partial class SingleDoor : Structure, ICodeLockable
 		{
 			yield return LockAction;
 		}
+
+		yield return PickupAction;
 	}
 
 	public override ContextAction GetPrimaryAction( ForsakenPlayer player )
@@ -150,6 +164,17 @@ public abstract partial class SingleDoor : Structure, ICodeLockable
 		else if ( action == AuthorizeAction )
 		{
 			UI.LockScreen.OpenToUnlock( player, this );
+		}
+		else if ( action == PickupAction && IsAuthorized( player ) )
+		{
+			if ( Game.IsServer )
+			{
+				Sound.FromScreen( To.Single( player ), "inventory.move" );
+
+				var item = InventorySystem.CreateItem( ItemType );
+				player.TryGiveItem( item );
+				Delete();
+			}
 		}
 	}
 
@@ -222,6 +247,8 @@ public abstract partial class SingleDoor : Structure, ICodeLockable
 		base.DeserializeState( reader );
 	}
 
+	private bool LastEnableAllCollisions { get; set; }
+
 	[Event.Tick.Server]
 	protected virtual void Tick()
 	{
@@ -233,9 +260,14 @@ public abstract partial class SingleDoor : Structure, ICodeLockable
 		var targetRotation = IsOpen ? parent.Rotation.RotateAroundAxis( Vector3.Up, DoorOpensAway ? -90f : 90f ) : parent.Rotation;
 		LocalRotation = Rotation.Slerp( LocalRotation, targetRotation, Time.Delta * 8f );
 
-		if ( LocalRotation.Distance( targetRotation ) > 1f || LastOpenOrCloseTime < 0.2f )
-			EnableAllCollisions = false;
-		else
-			EnableAllCollisions = true;
+		var enableAllCollisions = (LocalRotation.Distance( targetRotation ) <= 1f && LastOpenOrCloseTime > 0.2f);
+		EnableAllCollisions = enableAllCollisions;
+
+		if ( LastEnableAllCollisions != enableAllCollisions )
+		{
+			// This is kinda meh.
+			LastEnableAllCollisions = enableAllCollisions;
+			Navigation.Update( Position, 256f );
+		}
 	}
 }

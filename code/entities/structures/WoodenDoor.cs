@@ -1,10 +1,12 @@
 ﻿using Sandbox;
+using System;
 
 namespace Facepunch.Forsaken;
 
 public partial class WoodenDoor : SingleDoor
 {
 	public override float MaxHealth => 125f;
+	public override Type ItemType => typeof( WoodenDoorItem );
 	public override StructureMaterial Material => StructureMaterial.Wood;
 
 	public override string GetContextName()
