@@ -15,6 +15,7 @@ public abstract partial class NPC : AnimatedEntity
 	private GravityComponent Gravity { get; set; }
 	private FrictionComponent Friction { get; set; }
 	private TimeUntil NextCheckSimulate { get; set; }
+	private TimeSince TimeSinceLastFootstep { get; set; }
 	private bool ShouldSimulate { get; set; }
 
 	public override void Spawn()
@@ -71,6 +72,32 @@ public abstract partial class NPC : AnimatedEntity
 	public virtual float GetMoveSpeed()
 	{
 		return 80f;
+	}
+
+	public override void OnAnimEventFootstep( Vector3 position, int foot, float volume )
+	{
+		if ( LifeState != LifeState.Alive )
+			return;
+
+		if ( !Game.IsClient )
+			return;
+
+		if ( TimeSinceLastFootstep < 0.2f )
+			return;
+
+		volume *= 1f;
+
+		TimeSinceLastFootstep = 0f;
+
+		var tr = Trace.Ray( position, position + Vector3.Down * 20f )
+			.WithoutTags( "trigger" )
+			.Radius( 1f )
+			.Ignore( this )
+			.Run();
+
+		if ( !tr.Hit ) return;
+
+		tr.Surface.DoFootstep( this, tr, foot, volume );
 	}
 
 	protected bool CheckShouldSimulate()
