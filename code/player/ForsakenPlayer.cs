@@ -679,6 +679,9 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		}
 		else
 		{
+			// Early out of PvE isn't enabled for this session.
+			if ( !ForsakenGame.EnablePvE ) return;
+
 			if ( info.HasTag( "melee" ) )
 			{
 				using ( Prediction.Off() )

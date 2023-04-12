@@ -20,6 +20,9 @@ public partial class ForsakenGame : GameManager
 	[ConVar.Server( "fsk.pvp" )]
 	public static bool EnablePvP { get; set; } = true;
 
+	[ConVar.Server( "fsk.pve" )]
+	public static bool EnablePvE { get; set; } = true;
+
 	private TimeUntil NextDespawnItems { get; set; }
 	private TimeUntil NextAutoSave { get; set; }
 	private IsometricCamera IsometricCamera { get; set; }
