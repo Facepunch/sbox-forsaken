@@ -37,7 +37,7 @@
 				{
 					_class = "CStateMachineAnimNode"
 					m_sName = "Unnamed"
-					m_vecPosition = [ 384.0, -144.0 ]
+					m_vecPosition = [ 384.0, -176.0 ]
 					m_nNodeID = 
 					{
 						m_id = 458854342
@@ -167,7 +167,7 @@
 							{
 								m_id = 1362771620
 							}
-							m_position = [ 48.0, -96.0 ]
+							m_position = [ 64.0, -96.0 ]
 							m_bIsStartState = false
 							m_bIsEndtState = false
 							m_bIsPassthrough = false
@@ -817,7 +817,7 @@
 				m_bUseMostRecentValue = false
 				m_bAutoReset = false
 				m_bPredicted = false
-				m_bDefaultValue = false
+				m_bDefaultValue = true
 			},
 		]
 	}

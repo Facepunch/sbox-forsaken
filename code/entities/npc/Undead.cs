@@ -26,13 +26,13 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 	private TimeSince TimeSinceLastAttack { get; set; }
 	private TimeUntil NextFindTarget { get; set; }
-	private TimeUntil TimeUntilRisen { get; set; }
+	private float TimeSinceRisen { get; set; }
 	private IDamageable Target { get; set; }
 	private UndeadPose Pose { get; set; }
 
 	public void RiseFromGround()
 	{
-		TimeUntilRisen = 4f;
+		TimeSinceRisen = 0f;
 		Rotation = new Angles( 0f, Game.Random.Float( 0f, 360f ), 0f ).ToRotation();
 		State = MovementState.Idle;
 		Pose = UndeadPose.Rising;
@@ -43,8 +43,12 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 		if ( LifeState == LifeState.Dead )
 			return;
 
-		LifeState = LifeState.Dead;
-		DeleteAsync( 5f );
+		var damage = new DamageInfo()
+			.WithDamage( Game.Random.Float( 20f, 30f ) )
+			.WithTag( "burn" )
+			.WithPosition( Position );
+
+		TakeDamage( damage );
 	}
 
 	public override string GetDisplayName()
@@ -67,10 +71,9 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 		EnableSolidCollisions = false;
 		NextFindTarget = 0f;
+		LifeState = LifeState.Alive;
 		Health = MaxHealth;
 		Scale = Game.Random.Float( 0.9f, 1.1f );
-
-		RiseFromGround();
 
 		base.Spawn();
 	}
@@ -78,6 +81,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 	public override void OnKilled()
 	{
 		LifeState = LifeState.Dead;
+		DeleteAsync( 5f );
 	}
 
 	protected float GetDistanceToTarget()
@@ -226,11 +230,12 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 		if ( Pose == UndeadPose.Rising )
 		{
-			EnableDrawing = TimeUntilRisen < 3.75f;
+			TimeSinceRisen += Time.Delta;
 
-			if ( TimeUntilRisen )
+			if ( TimeSinceRisen >= 4f )
 				Pose = UndeadPose.Default;
 
+			EnableDrawing = TimeSinceRisen >= 0.25f;
 			return;
 		}
 
@@ -403,19 +408,19 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 			SetAnimParameter( "speed", CurrentSpeed );
 		}
 
-		SetAnimParameter( "rising", Pose == UndeadPose.Rising && !TimeUntilRisen );
+		SetAnimParameter( "rising", Pose == UndeadPose.Rising && TimeSinceRisen < 4f );
 	}
 
 	private bool CanSeeTarget( IDamageable target )
 	{
-		var eyePosition = Position + Vector3.Up * 64f;
+		var eyePosition = Position + Vector3.Up * 32f;
 		var targetPosition = target.Position + Vector3.Up * 32f;
 		var direction = (targetPosition - eyePosition).Normal;
 		var trace = Trace.Ray( eyePosition, eyePosition + direction * 1024f )
 			.WorldAndEntities()
 			.WithoutTags( "passplayers", "trigger", "npc" )
 			.WithAnyTags( "solid", "world", "player", "door", "wall" )
-			.Size( 8f )
+			.Size( 16f )
 			.Ignore( this )
 			.Run();
 

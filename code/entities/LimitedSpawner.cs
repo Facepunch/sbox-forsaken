@@ -12,9 +12,11 @@ public class LimitedSpawner
 	private TimeUntil NextDespawnTime { get; set; }
 	private TimeUntil NextSpawnTime { get; set; }
 
+	public Action<ILimitedSpawner> OnSpawned { get; set; }
 	public bool UseNavMesh { get; set; }
 	public float TimeOfDayStart { get; set; } = 0f;
 	public float TimeOfDayEnd { get; set; } = 0f;
+	public bool SpawnNearPlayers { get; set; }
 	public int MinPerSpawn { get; set; } = 0;
 	public int MaxPerSpawn { get; set; } = 100;
 	public int MaxTotal { get; set; } = 100;
@@ -36,31 +38,12 @@ public class LimitedSpawner
 		Type = typeof( T );
 	}
 
-	private bool IsCorrectTimePeriod()
-	{
-		if ( TimeOfDayStart == 0f && TimeOfDayEnd == 0f )
-			return true;
-
-		var time = TimeSystem.TimeOfDay;
-
-		if ( TimeOfDayStart <= TimeOfDayEnd )
-		{
-			if ( time >= TimeOfDayStart && time <= TimeOfDayEnd )
-				return true;
-		}
-		else
-		{
-			if ( time >= TimeOfDayStart || time <= TimeOfDayEnd )
-				return true;
-		}
-
-		return false;
-	}
-
 	[Event.Tick.Server]
 	private void ServerTick()
 	{
-		if ( NextDespawnTime && !IsCorrectTimePeriod() )
+		var isCorrectTimePeriod = TimeSystem.IsTimeBetween( TimeOfDayStart, TimeOfDayEnd );
+
+		if ( NextDespawnTime && !isCorrectTimePeriod )
 		{
 			var entities = Entity.All
 			.OfType<ILimitedSpawner>()
@@ -77,7 +60,7 @@ public class LimitedSpawner
 		if ( Type is null || !NextSpawnTime ) return;
 		if ( UseNavMesh && !NavMesh.IsLoaded ) return;
 
-		if ( !IsCorrectTimePeriod() )
+		if ( !isCorrectTimePeriod )
 			return;
 
 		var totalCount = Entity.All
@@ -91,10 +74,28 @@ public class LimitedSpawner
 		{
 			var amountToSpawn = Game.Random.Int( Math.Min( MinPerSpawn, availableToSpawn ), Math.Min( MaxPerSpawn, availableToSpawn ) );
 			var attemptsRemaining = 10000;
+			var playerList = Entity.All
+				.OfType<ForsakenPlayer>()
+				.Where( p => p.LifeState == LifeState.Alive && p.Client.IsValid() )
+				.ToList();
 
 			while ( amountToSpawn > 0 && attemptsRemaining > 0 )
 			{
-				var position = Origin + new Vector3( Game.Random.Float( -1f, 1f ) * Range, Game.Random.Float( -1f, 1f ) * Range );
+				var origin = Origin;
+				var range = Range;
+
+				if ( SpawnNearPlayers )
+				{
+					var player = Game.Random.FromList( playerList );
+
+					if ( player.IsValid() )
+					{
+						origin = player.Position;
+						range = 1024f;
+					}
+				}
+
+				var position = origin + new Vector3( Game.Random.Float( -1f, 1f ) * range, Game.Random.Float( -1f, 1f ) * range );
 				var trace = Trace.Ray( position + Vector3.Up * 5000f, position + Vector3.Down * 5000f )
 					.WithoutTags( "trigger" )
 					.Run();
@@ -121,13 +122,16 @@ public class LimitedSpawner
 		entity.Position = position;
 		entity.Rotation = Rotation.Identity.RotateAroundAxis( Vector3.Up, Game.Random.Float() * 360f );
 
-		if ( !UseNavMesh ) return;
-
-		var closest = NavMesh.GetClosestPoint( entity.Position );
-
-		if ( closest.HasValue )
+		if ( UseNavMesh )
 		{
-			entity.Position = closest.Value;
+			var closest = NavMesh.GetClosestPoint( entity.Position );
+
+			if ( closest.HasValue )
+			{
+				entity.Position = closest.Value;
+			}
 		}
+
+		OnSpawned?.Invoke( entity );
 	}
 }

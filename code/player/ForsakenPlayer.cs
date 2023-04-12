@@ -40,6 +40,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 
 			var u = new Undead();
 			u.Position = tr.EndPosition;
+			u.RiseFromGround();
 		}
 	}
 

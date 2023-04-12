@@ -191,13 +191,15 @@ public partial class ForsakenGame : GameManager
 		{
 			var spawner = new LimitedSpawner();
 			spawner.SetType<Undead>();
-			spawner.TimeOfDayStart = 18f;
+			spawner.OnSpawned = ( e ) => (e as Undead)?.RiseFromGround();
+			spawner.SpawnNearPlayers = true;
+			spawner.TimeOfDayStart = 19.5f;
 			spawner.TimeOfDayEnd = 7f;
 			spawner.UseNavMesh = true;
 			spawner.MaxTotal = 20;
-			spawner.MinPerSpawn = 4;
-			spawner.MaxPerSpawn = 8;
-			spawner.Interval = 60f;
+			spawner.MinPerSpawn = 10;
+			spawner.MaxPerSpawn = 20;
+			spawner.Interval = 10f;
 		}
 
 		NextDespawnItems = 30f;
