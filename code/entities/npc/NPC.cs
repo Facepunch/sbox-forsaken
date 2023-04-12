@@ -27,6 +27,12 @@ public abstract partial class NPC : AnimatedEntity
 		base.Spawn();
 	}
 
+	public void ClearPath()
+	{
+		Path?.Clear();
+		Path = null;
+	}
+
 	public bool TryFindPath( Vector3 position, bool requireFullPath = false )
 	{
 		var p = Navigation.CalculatePath( Position, position, PathPoints, requireFullPath );

@@ -9,7 +9,7 @@ public class AvoidanceBehavior : EntityComponent
 {
 	public HashSet<string> ObstacleTags { get; set; } = new();
 
-	public float MaxAcceleration { get; set; } = 60f;
+	public float MaxAcceleration { get; set; } = 15f;
 	public float MinimumDistance { get; set; } = 80f;
 	public float MaxStandableAngle { get; set; } = 20f;
 
@@ -44,16 +44,9 @@ public class AvoidanceBehavior : EntityComponent
 			return acceleration;
 		}
 
-		var targetPostition = trace.HitPosition + Vector3.Reflect( trace.Direction, trace.Normal ) * MinimumDistance;
-		float angle = Vector3.GetAngle( Entity.Velocity, trace.Normal );
-
-		if ( angle > 165f )
-		{
-			//Vector3 perp = new Vector3( -trace.Normal.z, trace.Normal.y, trace.Normal.x );
-			//targetPostition += (perp * MathF.Sin( (angle - 165f).DegreeToRadian() ) * 2f * MinimumDistance);
-		}
-
-		return Steering.Seek( targetPostition, MaxAcceleration );
+		var ahead = Entity.Position + facingDir.Normal * MinimumDistance;
+		var avoidanceForce = (trace.EndPosition - ahead).Normal * MaxAcceleration;
+		return avoidanceForce;
 	}
 
 	private bool FindObstacle( Vector3 facingDir, out TraceResult result )

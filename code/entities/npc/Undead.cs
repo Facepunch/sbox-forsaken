@@ -1,5 +1,6 @@
 ﻿using Sandbox;
 using System;
+using System.Collections;
 using System.Linq;
 
 namespace Facepunch.Forsaken;
@@ -79,6 +80,35 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 		LifeState = LifeState.Dead;
 	}
 
+	protected float GetDistanceToTarget()
+	{
+		if ( Target.IsValid() )
+			return Position.Distance( Target.WorldSpaceBounds.ClosestPoint( Position ) );
+		else
+			return 0f;
+	}
+
+	protected virtual IOrderedEnumerable<ForsakenPlayer> GetPlayerTargets()
+	{
+		return FindInSphere( Position, 1024f )
+			.OfType<ForsakenPlayer>()
+			.Where( CanSeeTarget )
+			.OrderBy( p => p.Position.Distance( Position ) );
+	}
+
+	protected virtual IOrderedEnumerable<Structure> GetStructureTargets()
+	{
+		return FindInSphere( Position, 1024f )
+			.OfType<Structure>()
+			.Where( s => s.Tags.Has( "wall" ) || s.Tags.Has( "door" ) )
+			.OrderBy( p => p.Position.Distance( Position ) );
+	}
+
+	protected virtual bool ShouldAttackStructures()
+	{
+		return FindInSphere( Position, 1024f ).OfType<ForsakenPlayer>().Any();
+	}
+
 	protected virtual void MeleeStrike()
 	{
 		TimeSinceLastAttack = 0f;
@@ -89,6 +119,39 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 	protected virtual bool CanAttack()
 	{
 		return TimeSinceLastAttack > (1f / AttackRate);
+	}
+
+	protected virtual void UpdateTarget()
+	{
+		var playerTarget = GetPlayerTargets().FirstOrDefault();
+
+		Target = null;
+
+		if ( playerTarget.IsValid() )
+		{
+			Target = playerTarget;
+			State = MovementState.Moving;
+			return;
+		}
+
+		if ( !ShouldAttackStructures() )
+			return;
+
+		var structureTarget = GetStructureTargets().FirstOrDefault();
+
+		if ( structureTarget.IsValid() )
+		{
+			State = MovementState.Moving;
+			Target = structureTarget;
+		}
+	}
+
+	protected virtual bool IsTargetStale()
+	{
+		if ( !Target.IsValid() || Position.Distance( Target.Position ) > 2048f || Target.LifeState == LifeState.Dead )
+			return true;
+
+		return false;
 	}
 
 	public override void OnAnimEventGeneric( string name, int intData, float floatData, Vector3 vectorData, string stringData )
@@ -113,7 +176,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 					.WithForce( Rotation.Forward * 100f * 1f )
 					.WithTag( "melee" );
 
-				damageable.TakeDamage( damage );
+				//damageable.TakeDamage( damage );
 			}
 		}
 
@@ -171,45 +234,24 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 			return;
 		}
 
-		if ( ( !Target.IsValid() || Position.Distance( Target.Position ) > 2048f || Target.LifeState == LifeState.Dead) && NextFindTarget )
+		if ( NextFindTarget && IsTargetStale() )
 		{
-			var entitiesInSphere = FindInSphere( Position, 1024f );
-			var target = entitiesInSphere
-				.OfType<ForsakenPlayer>()
-				.Where( CanSeeTarget )
-				.OrderBy( p => p.Position.Distance( Position ) )
-				.FirstOrDefault();
-
-			Target = null;
-
-			if ( target.IsValid() )
-			{
-				Target = target;
-				State = MovementState.Moving;
-			}
-			else
-			{
-				if ( entitiesInSphere.OfType<ForsakenPlayer>().Any() )
-				{
-					var structureTarget = entitiesInSphere
-						.OfType<Structure>()
-						.Where( s => s.Tags.Has( "wall" ) || s.Tags.Has( "door" ) )
-						.OrderBy( p => p.Position.Distance( Position ) )
-						.FirstOrDefault();
-
-					if ( structureTarget.IsValid() )
-					{
-						State = MovementState.Moving;
-						Target = structureTarget;
-					}
-				}
-			}
+			UpdateTarget();
 		}
 
 		if ( Target.IsValid() )
+		{
 			IsTargetVisible = CanSeeTarget( Target );
+
+			if ( IsTargetVisible )
+			{
+				ClearPath();
+			}
+		}
 		else
+		{
 			IsTargetVisible = false;
+		}
 
 		if ( NextFindTarget )
 		{
@@ -223,14 +265,9 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 			if ( Target.IsValid() && Target is not ForsakenPlayer )
 			{
-				var entitiesInSphere = FindInSphere( Position, 1024f );
-				var hasPlayerTarget = entitiesInSphere
-					.OfType<ForsakenPlayer>()
-					.Where( CanSeeTarget )
-					.OrderBy( p => p.Position.Distance( Position ) )
-					.Any();
+				var hasAnyPlayerTarget = GetPlayerTargets().Any();
 
-				if ( hasPlayerTarget )
+				if ( hasAnyPlayerTarget )
 				{
 					Target = null;
 				}
@@ -239,7 +276,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 			NextFindTarget = 1f;
 		}
 
-		if ( Target.IsValid() && Position.Distance( Target.Position ) <= AttackRadius )
+		if ( Target.IsValid() && GetDistanceToTarget() <= AttackRadius )
 		{
 			if ( CanAttack() )
 			{
@@ -264,16 +301,16 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 			return;
 		}
 
-		if ( Target.IsValid() && IsTargetVisible )
-		{
-			RotateOverTime( (Entity)Target );
-			return;
-		}
-
 		if ( HasValidPath() )
 		{
 			var direction = (GetPathTarget() - Position).Normal;
 			RotateOverTime( direction );
+			return;
+		}
+
+		if ( Target.IsValid() && IsTargetVisible )
+		{
+			RotateOverTime( (Entity)Target );
 			return;
 		}
 
@@ -312,27 +349,32 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 		var acceleration = Vector3.Zero;
 		var separation = Components.GetOrCreate<SeparationBehavior>();
 
-		if ( Target.IsValid() && IsTargetVisible )
-		{
-			acceleration += Avoidance.GetSteering();
-			acceleration += separation.GetSteering( nearbyUndead ) * 2f;
-
-			if ( Target.Position.Distance( Position ) > TargetRange )
-				acceleration += Steering.Seek( Target.Position, 60f );
-		}
-		else if ( HasValidPath() )
+		if ( HasValidPath() )
 		{
 			var direction = (GetPathTarget() - Position).Normal;
 			acceleration += direction * GetMoveSpeed();
 
 			if ( Debug )
 				DebugOverlay.Sphere( Position, 16f, Color.Green );
+
+			DebugOverlay.Text( "PATH", Position );
 		}
-		else
+		else if ( Target.IsValid() && IsTargetVisible )
 		{
+			acceleration += separation.GetSteering( nearbyUndead ) * 2f;
 			acceleration += Avoidance.GetSteering();
+
+			if ( GetDistanceToTarget() > TargetRange )
+				acceleration += Steering.Seek( Target.Position, 60f );
+
+			DebugOverlay.Text( "BEAM", Position );
+		}
+		else if ( !Target.IsValid() )
+		{
 			acceleration += separation.GetSteering( nearbyUndead ) * 2f;
 			acceleration += Wander.GetSteering();
+			acceleration += Avoidance.GetSteering();
+			DebugOverlay.Text( "WANDER", Position );
 		}
 
 		if ( !acceleration.IsNearZeroLength )
