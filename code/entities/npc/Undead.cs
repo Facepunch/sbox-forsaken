@@ -176,7 +176,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 					.WithForce( Rotation.Forward * 100f * 1f )
 					.WithTag( "melee" );
 
-				//damageable.TakeDamage( damage );
+				damageable.TakeDamage( damage );
 			}
 		}
 
@@ -355,9 +355,10 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 			acceleration += direction * GetMoveSpeed();
 
 			if ( Debug )
+			{
 				DebugOverlay.Sphere( Position, 16f, Color.Green );
-
-			DebugOverlay.Text( "PATH", Position );
+				DebugOverlay.Text( "PATH", Position );
+			}
 		}
 		else if ( Target.IsValid() && IsTargetVisible )
 		{
@@ -367,14 +368,17 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 			if ( GetDistanceToTarget() > TargetRange )
 				acceleration += Steering.Seek( Target.Position, 60f );
 
-			DebugOverlay.Text( "BEAM", Position );
+			if ( Debug )
+				DebugOverlay.Text( "BEAM", Position );
 		}
 		else if ( !Target.IsValid() )
 		{
 			acceleration += separation.GetSteering( nearbyUndead ) * 2f;
 			acceleration += Wander.GetSteering();
 			acceleration += Avoidance.GetSteering();
-			DebugOverlay.Text( "WANDER", Position );
+
+			if ( Debug )
+				DebugOverlay.Text( "WANDER", Position );
 		}
 
 		if ( !acceleration.IsNearZeroLength )
