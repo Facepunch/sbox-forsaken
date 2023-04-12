@@ -43,7 +43,7 @@ public partial class IsometricCamera
 			Camera.Rotation = Rotation.Slerp( Camera.Rotation, Rotation.LookAt( Offset, Vector3.Up ), Time.Delta * 8f );
 			Camera.Position = trace.EndPosition;
 
-			Sound.Listener = new Transform( LookAt, Camera.Rotation );
+			Sound.Listener = new Transform( LookAt, Rotation.FromYaw( 45f ) );
 
 			Camera.FirstPersonViewer = null;
 		}
