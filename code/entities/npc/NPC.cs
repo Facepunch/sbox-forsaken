@@ -9,13 +9,20 @@ public abstract partial class NPC : AnimatedEntity
 	[ConVar.Server( "fsk.npc.debug" )]
 	public static bool Debug { get; set; } = false;
 
+	[Property]
+	[Description( "The path that this NPC should try to patrol." )]
+	public string PatrolPathTarget { get; set; }
+
+	protected GenericPathEntity PatrolPathEntity => FindByName( PatrolPathTarget ) as GenericPathEntity;
 	protected Vector3[] PathPoints { get; set; } = new Vector3[64];
+	protected bool IsPatrolling { get; private set; }
 	protected List<Vector3> Path { get; set; }
 
 	private GravityComponent Gravity { get; set; }
 	private FrictionComponent Friction { get; set; }
 	private TimeUntil NextCheckSimulate { get; set; }
 	private TimeSince TimeSinceLastFootstep { get; set; }
+	private bool ReversePatrolDirection { get; set; }
 	private bool ShouldSimulate { get; set; }
 
 	public override void Spawn()
@@ -34,9 +41,62 @@ public abstract partial class NPC : AnimatedEntity
 		Path = null;
 	}
 
+	public void FindPatrolPath( bool snapToPath )
+	{
+		var pathEntity = PatrolPathEntity;
+
+		if ( !pathEntity.IsValid() )
+			return;
+
+		BasePathNode closestNode = null;
+		var smallestDistance = 0f;
+		var index = 0;
+
+		for ( int i = 0; i < pathEntity.PathNodes.Count; i++ )
+		{
+			BasePathNode node = pathEntity.PathNodes[i];
+			var distance = Position.Distance( node.WorldPosition );
+			if ( closestNode is null || distance < smallestDistance )
+			{
+				smallestDistance = distance;
+				closestNode = node;
+				index = i;
+			}
+		}
+
+		Path ??= new();
+		Path.Clear();
+
+		if ( ReversePatrolDirection )
+		{
+			for ( var i = index; i >= 0; i-- )
+			{
+				var position = pathEntity.PathNodes[i].WorldPosition;
+				Path.Add( position );
+			}
+		}
+		else
+		{
+			for ( var i = index; i < pathEntity.PathNodes.Count; i++ )
+			{
+				var position = pathEntity.PathNodes[i].WorldPosition;
+				Path.Add( position );
+			}
+		}
+
+		if ( snapToPath )
+		{
+			Position = pathEntity.PathNodes[index].WorldPosition;
+		}
+
+		IsPatrolling = true;
+	}
+
 	public bool TryFindPath( Vector3 position, bool requireFullPath = false )
 	{
 		var p = Navigation.CalculatePath( Position, position, PathPoints, requireFullPath );
+
+		IsPatrolling = false;
 
 		if ( p > 0 )
 		{
@@ -122,14 +182,6 @@ public abstract partial class NPC : AnimatedEntity
 		return Path.First();
 	}
 
-	protected void SnapToNavMesh()
-	{
-		var closest = NavMesh.GetClosestPoint( Position );
-
-		if ( closest.HasValue )
-			Position = closest.Value;
-	}
-
 	protected void RotateOverTime( Vector3 direction )
 	{
 		var targetRotation = Rotation.LookAt( direction.WithZ( 0f ), Vector3.Up );
@@ -141,107 +193,6 @@ public abstract partial class NPC : AnimatedEntity
 		var direction = (target.Position - Position).Normal;
 		var targetRotation = Rotation.LookAt( direction.WithZ( 0f ), Vector3.Up );
 		Rotation = Rotation.Lerp( Rotation, targetRotation, Time.Delta * 10f );
-	}
-
-	protected bool MoveToLocationNavMesh( Vector3 position, float stepSize = 24f )
-	{
-		var closestPoint = NavMesh.GetClosestPoint( position );
-		if ( !closestPoint.HasValue ) return false;
-
-		var path = NavMesh.PathBuilder( Position )
-			.WithMaxClimbDistance( 0f )
-			.WithMaxDropDistance( 128f )
-			.WithAgentHull( NavAgentHull.Default )
-			.WithMaxDetourDistance( 64f )
-			.WithStepHeight( stepSize )
-			.Build( position );
-
-		CreateOptimizedPath( path );
-
-		return (Path?.Count ?? 0) > 0;
-	}
-
-	protected void CreateOptimizedPath( NavPath path )
-	{
-		if ( path == null || path.Count == 0 )
-			return;
-
-		Path ??= new();
-		Path.Clear();
-
-		foreach ( var p in path.Segments )
-		{
-			Path.Add( p.Position );
-		}
-
-		var stepHeight = Vector3.Up * 8f;
-		var radius = 4f;
-
-		for ( var i = Path.Count - 1; i >= 1; i-- )
-		{
-			for ( var j = 1; j < Path.Count; j++ )
-			{
-				if ( j >= Path.Count ) continue;
-				if ( i >= Path.Count ) continue;
-
-				var trace = Trace.Ray( Path[i] + stepHeight, Path[j] + stepHeight )
-					.WorldAndEntities()
-					.WithoutTags( "trigger", "passplayers" )
-					.WithAnyTags( "solid" )
-					.Ignore( this )
-					.Size( radius )
-					.Run();
-
-				if ( !trace.Hit )
-				{
-					Path.RemoveRange( j, i - j );
-					break;
-				}
-			}
-		}
-	}
-
-	protected bool TryGetNavMeshPosition( float minRadius, float maxRadius, out Vector3 position )
-	{
-		var targetPosition = NavMesh.GetPointWithinRadius( Position, minRadius, maxRadius );
-
-		if ( targetPosition.HasValue )
-		{
-			position = targetPosition.Value;
-			return true;
-		}
-
-		position = default;
-		return false;
-	}
-
-	protected void TrimPath()
-	{
-		if ( !HasValidPath() ) return;
-
-		var stepHeight = Vector3.Up * 8f;
-		var radius = 4f;
-
-		for ( var i = Path.Count - 1; i >= 0; i-- )
-		{
-			var trace = Trace.Ray( Position + stepHeight, Path[i] + stepHeight )
-				.WorldAndEntities()
-				.WithoutTags( "trigger", "passplayers" )
-				.WithAnyTags( "solid" )
-				.Ignore( this )
-				.Size( radius )
-				.Run();
-
-			if ( !trace.Hit )
-			{
-				Path.RemoveRange( 0, i );
-
-				if ( Path.Count == 0 )
-					Path = null;
-
-				return;
-			}
-		}
 	}
 
 	protected void UpdatePath()
@@ -283,6 +234,15 @@ public abstract partial class NPC : AnimatedEntity
 		if ( CheckShouldSimulate() )
 		{
 			UpdateLogic();
+		}
+	}
+
+	[Event.Entity.PostSpawn]
+	protected virtual void OnMapLoaded()
+	{
+		if ( PatrolPathEntity.IsValid() )
+		{
+			FindPatrolPath( true );
 		}
 	}
 
@@ -367,6 +327,10 @@ public abstract partial class NPC : AnimatedEntity
 
 	protected virtual void OnFinishedPath()
 	{
-
+		if ( IsPatrolling )
+		{
+			ReversePatrolDirection = !ReversePatrolDirection;
+			FindPatrolPath( false );
+		}
 	}
 }

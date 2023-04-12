@@ -36,6 +36,17 @@ public abstract partial class Animal : NPC
 		return true;
 	}
 
+	protected override void OnFinishedPath()
+	{
+		base.OnFinishedPath();
+
+		if ( IsPatrolling )
+		{
+			NextChangeState = Game.Random.Float( 2f, 4f );
+			State = MovementState.Idle;
+		}
+	}
+
 	protected override void HandleBehavior()
 	{
 		Steering.MaxVelocity = GetMoveSpeed();
@@ -63,8 +74,24 @@ public abstract partial class Animal : NPC
 			return;
 		}
 
-		var acceleration = Avoidance.GetSteering();
-		acceleration += Wander.GetSteering();
+		Vector3 acceleration = default;
+
+		if ( HasValidPath() )
+		{
+			var direction = (GetPathTarget() - Position).Normal;
+			acceleration += direction * GetMoveSpeed();
+
+			if ( Debug )
+			{
+				DebugOverlay.Sphere( Position, 16f, Color.Green );
+				DebugOverlay.Text( "PATH", Position );
+			}
+		}
+		else
+		{
+			acceleration += Avoidance.GetSteering();
+			acceleration += Wander.GetSteering();
+		}
 
 		if ( !acceleration.IsNearZeroLength )
 		{
