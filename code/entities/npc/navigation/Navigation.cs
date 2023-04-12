@@ -99,16 +99,7 @@ public static partial class Navigation
 		if ( !trace.Hit ) return false;
 		if ( trace.Normal.Angle( Vector3.Up ) > 45f ) return false;
 
-		var capsule = new Capsule( Vector3.Zero, Vector3.Up * 60f, 24f );
-
-		/*
-		var boxPosition = trace.HitPosition + Vector3.Up * ((CellSize * 0.5f) + StepSize);
-		var sweep = Trace.Box( new Vector3( CellSize ), boxPosition, boxPosition )
-			.WorldAndEntities()
-			.WithAnyTags( "solid" )
-			.WithoutTags( "trigger", "passplayers" )
-			.Run();
-		*/
+		var capsule = new Capsule( Vector3.Zero, Vector3.Up * 48f, 12f );
 
 		var capsulePosition = trace.EndPosition.WithZ( trace.EndPosition.z + capsule.Radius + StepSize );
 		var sweep = Trace.Capsule( capsule, capsulePosition, capsulePosition )
@@ -131,8 +122,11 @@ public static partial class Navigation
 		return position.WithZ( node.ZOffset );
 	}
 
-	public static void Update( Vector3 position, float radius )
+	public static async void Update( Vector3 position, float radius )
 	{
+		// Defer the update until the next physics frame.
+		await GameTask.NextPhysicsFrame();
+
 		var gridIndex = FromWorld( position );
 		var gridPosition = GetPosition( gridIndex );
 		var blocks = (int)(radius / CellSize);
