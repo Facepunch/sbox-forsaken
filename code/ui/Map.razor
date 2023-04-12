@@ -81,6 +81,7 @@
     private Panel Viewport { get; set; }
     private Panel Container { get; set; }
     private List<MapMarkerPanel> MapMarkers { get; set; } = new();
+    private Vector2 PanVelocity { get; set; }
     private Panel Player { get; set; }
     private Image Drawing { get; set; }
     private Panel Grid { get; set; }
@@ -254,26 +255,7 @@
     {
         if ( IsPanning )
         {
-            var cp = Container.Box.Rect;
-            var nx = (cp.Width * Position.x) + Mouse.Delta.x * 2f;
-            var ny = (cp.Height * Position.y) + Mouse.Delta.y * 2f;
-
-            nx = Math.Min( nx, 0f );
-            ny = Math.Min( ny, 0f );
-
-            var vp = Viewport.Box.Rect;
-            var vw = vp.Width;
-            var vh = vp.Height;
-
-            var dw = cp.Width - vw;
-            var dh = cp.Height - vh;
-
-            nx = Math.Max( nx, -dw );
-            ny = Math.Max( ny, -dh );
-
-            Position = new Vector2( nx / cp.Width, ny / cp.Height );
-
-            UpdatePosition();
+            PanVelocity += Mouse.Delta;
         }
 
         base.OnMouseMove( e );
@@ -432,6 +414,32 @@
     [Event.Client.Frame]
     private void OnFrame()
     {
+        if ( !PanVelocity.IsNearZeroLength )
+        {
+            var cp = Container.Box.Rect;
+            var nx = (cp.Width * Position.x) + PanVelocity.x * 40f * Time.Delta;
+            var ny = (cp.Height * Position.y) + PanVelocity.y * 40f * Time.Delta;
+
+            nx = Math.Min( nx, 0f );
+            ny = Math.Min( ny, 0f );
+
+            var vp = Viewport.Box.Rect;
+            var vw = vp.Width;
+            var vh = vp.Height;
+
+            var dw = cp.Width - vw;
+            var dh = cp.Height - vh;
+
+            nx = Math.Max( nx, -dw );
+            ny = Math.Max( ny, -dh );
+
+            Position = new Vector2( nx / cp.Width, ny / cp.Height );
+
+            UpdatePosition();
+
+            PanVelocity -= PanVelocity * Time.Delta * 8f;
+        }
+
         if ( !IsVisible || Container is null ) return;
         if ( !IsDrawing ) return;
         if ( SelectedDrawMode == DrawMode.Marker ) return;
