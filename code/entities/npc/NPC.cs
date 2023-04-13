@@ -190,7 +190,8 @@ public abstract partial class NPC : AnimatedEntity
 
 	protected void RotateOverTime( Entity target )
 	{
-		var direction = (target.Position - Position).Normal;
+		var closestPoint = target.WorldSpaceBounds.ClosestPoint( Position );
+		var direction = (closestPoint - Position).Normal;
 		var targetRotation = Rotation.LookAt( direction.WithZ( 0f ), Vector3.Up );
 		Rotation = Rotation.Lerp( Rotation, targetRotation, Time.Delta * 10f );
 	}

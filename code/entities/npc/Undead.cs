@@ -19,9 +19,9 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 	private bool IsDespawning { get; set; }
 	private float CurrentSpeed { get; set; }
-	private float TargetRange => 60f;
-	private float AttackRadius => 60f;
-	private float AttackRate => 0.5f;
+	private float TargetRange => 30f;
+	private float AttackRadius => 30f;
+	private float AttackRate => 0.25f;
 	private float WalkSpeed => 60f;
 	private float RunSpeed => 80f;
 
@@ -322,7 +322,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 			NextFindTarget = 1f;
 		}
 
-		if ( Target.IsValid() && GetDistanceToTarget() <= AttackRadius )
+		if ( Target.IsValid() && IsTargetVisible && GetDistanceToTarget() <= AttackRadius )
 		{
 			if ( CanAttack() )
 			{
@@ -422,7 +422,10 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 			acceleration += Avoidance.GetSteering();
 
 			if ( GetDistanceToTarget() > TargetRange )
-				acceleration += Steering.Seek( Target.Position, 60f );
+			{
+				var closestPoint = Target.WorldSpaceBounds.ClosestPoint( Position );
+				acceleration += Steering.Seek( closestPoint, 60f );
+			}
 
 			if ( Debug )
 				DebugOverlay.Text( "BEAM", Position );
@@ -465,13 +468,13 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 	private bool CanSeeTarget( IDamageable target )
 	{
 		var eyePosition = Position + Vector3.Up * 32f;
-		var targetPosition = target.Position + Vector3.Up * 32f;
-		var direction = (targetPosition - eyePosition).Normal;
+		var closestPoint = target.WorldSpaceBounds.ClosestPoint( eyePosition );
+		var direction = (closestPoint - eyePosition).Normal;
 		var trace = Trace.Ray( eyePosition, eyePosition + direction * 1024f )
 			.WorldAndEntities()
 			.WithoutTags( "passplayers", "trigger", "npc" )
 			.WithAnyTags( "solid", "world", "player", "door", "wall" )
-			.Size( 16f )
+			.Size( 4f )
 			.Ignore( this )
 			.Run();
 

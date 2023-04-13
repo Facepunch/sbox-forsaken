@@ -46,6 +46,8 @@ public partial class IsometricCamera
 			Sound.Listener = new Transform( LookAt, Rotation.FromYaw( 45f ) );
 
 			Camera.FirstPersonViewer = null;
+
+			ScreenShake.Apply();
 		}
 	}
 }

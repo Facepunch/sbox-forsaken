@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using Sandbox.Effects;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,6 +31,7 @@ public partial class ForsakenGame : GameManager
 	private bool HasLoadedWorld { get; set; }
 
 	[Net] private string InternalSaveId { get; set; }
+	private ScreenEffects PostProcessing { get; set; }
 
 	public ForsakenGame() : base()
 	{
@@ -65,6 +67,10 @@ public partial class ForsakenGame : GameManager
 
 		IsometricCamera = new();
 		TopDownCamera = new();
+
+		PostProcessing = new();
+		Camera.Main.RemoveAllHooks();
+		Camera.Main.AddHook( PostProcessing );
 
 		base.ClientSpawn();
 	}
@@ -244,5 +250,34 @@ public partial class ForsakenGame : GameManager
 			IsometricCamera?.Update();
 		else
 			TopDownCamera?.Update();
+
+		if ( Game.LocalPawn is not ForsakenPlayer player )
+			return;
+
+		var pp = PostProcessing;
+
+		pp.ChromaticAberration.Scale = 0.05f;
+		pp.ChromaticAberration.Offset = Vector3.Zero;
+
+		pp.Brightness = 0.99f;
+		pp.Contrast = 1.01f;
+		pp.Sharpen = 0.25f;
+
+		var healthScale = (0.2f / player.MaxHealth) * player.Health;
+
+		if ( player.LifeState == LifeState.Alive )
+			pp.Saturation = 0.8f + healthScale;
+		else
+			pp.Saturation = 0f;
+
+		pp.Vignette.Intensity = 0.8f - healthScale * 4f;
+		pp.Vignette.Color = Color.Red.WithAlpha( 0.1f );
+		pp.Vignette.Smoothness = 0.9f;
+		pp.Vignette.Roundness = 0.3f;
+
+		var sum = ScreenShake.List.OfType<ScreenShake.Random>().Sum( s => (1f - s.Progress) );
+
+		pp.Pixelation = 0.02f * sum;
+		pp.ChromaticAberration.Scale += (0.05f * sum);
 	}
 }

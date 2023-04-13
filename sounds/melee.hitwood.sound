@@ -1,12 +1,12 @@
 {
   "UI": false,
-  "Volume": "1.00,1.00,0",
+  "Volume": "0.85,0.85,0",
   "Pitch": "1.10,1.10,0",
-  "Decibels": 60,
+  "Decibels": 50,
   "SelectionMode": "Random",
   "Sounds": [
     "sounds/melee.hitwood.vsnd"
   ],
-  "MaximumDistance": 848.93066,
-  "MinimumDistance": 42.446533
+  "MaximumDistance": 599.31305,
+  "MinimumDistance": 29.965652
 }

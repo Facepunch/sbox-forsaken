@@ -21,6 +21,8 @@ public partial class TopDownCamera
 			Camera.Rotation = Rotation.LookAt( Vector3.Down );
 			Camera.FieldOfView = Screen.CreateVerticalFieldOfView( 60f );
 			Camera.FirstPersonViewer = null;
+
+			ScreenShake.Apply();
 		}
 	}
 }
