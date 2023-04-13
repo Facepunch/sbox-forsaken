@@ -115,6 +115,11 @@ public partial class Deer : Animal, ILimitedSpawner, IDamageable, IContextAction
 
 	public override void OnKilled()
 	{
+		if ( LastAttacker.IsValid() && LastAttacker is ForsakenPlayer )
+		{
+			Gore.Gib( WorldSpaceBounds.Center );
+		}
+
 		LifeState = LifeState.Dead;
 		Tags.Add( "hover" );
 	}
@@ -145,9 +150,7 @@ public partial class Deer : Animal, ILimitedSpawner, IDamageable, IContextAction
 		{
 			using ( Prediction.Off() )
 			{
-				var particles = Particles.Create( "particles/gameplay/player/taken_damage/taken_damage.vpcf", info.Position );
-				particles.SetForward( 0, info.Force.Normal );
-
+				Gore.RegularImpact( info.Position, info.Force );
 				PlaySound( "melee.hitflesh" );
 			}
 		}

@@ -85,6 +85,13 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 	public override void OnKilled()
 	{
+		var center = WorldSpaceBounds.Center;
+		var particles = Particles.Create( "particles/blood/explosion_blood/explosion_blood.vpcf", center );
+		particles.SetForward( 0, Vector3.Up );
+
+		particles = Particles.Create( "particles/blood/gib.vpcf", center );
+		particles.SetForward( 0, Vector3.Down );
+
 		LifeState = LifeState.Dead;
 		DeleteAsync( 5f );
 	}
@@ -216,9 +223,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 		{
 			using ( Prediction.Off() )
 			{
-				var particles = Particles.Create( "particles/gameplay/player/taken_damage/taken_damage.vpcf", info.Position );
-				particles.SetForward( 0, info.Force.Normal );
-
+				Gore.RegularImpact( info.Position, info.Force );
 				PlaySound( "melee.hitflesh" );
 			}
 		}

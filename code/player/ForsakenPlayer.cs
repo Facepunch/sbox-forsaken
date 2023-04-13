@@ -704,8 +704,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 
 		using ( Prediction.Off() )
 		{
-			var particles = Particles.Create( "particles/gameplay/player/taken_damage/taken_damage.vpcf", info.Position );
-			particles.SetForward( 0, info.Force.Normal );
+			Gore.RegularImpact( info.Position, info.Force );
 		}
 
 		var protection = Equipment.FindItems<ArmorItem>()
@@ -735,6 +734,11 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		Death.Show( this, LastDamageTaken, TimeSinceLastKilled.Relative.CeilToInt() );
 
 		GameManager.Current?.OnKilled( this );
+
+		if ( LastDamageTaken.HasAnyTag( "bullet" ) )
+		{
+			Gore.Gib( WorldSpaceBounds.Center );
+		}
 
 		TimeSinceLastKilled = 0f;
 		EnableAllCollisions = false;
