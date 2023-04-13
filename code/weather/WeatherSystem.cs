@@ -21,6 +21,18 @@ public partial class WeatherSystem : Entity
 		Change( new ClearSkies() );
 	}
 
+	[ConCmd.Server]
+	private static void MakeItRain()
+	{
+		Change( new RainyWeather() );
+	}
+
+	[ConCmd.Server]
+	private static void MakeItClear()
+	{
+		Change( new ClearSkies() );
+	}
+
 	public static void Change( WeatherCondition condition )
 	{
 		Game.AssertServer();

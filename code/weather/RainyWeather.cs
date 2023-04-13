@@ -28,10 +28,20 @@ public partial class RainyWeather : WeatherCondition
 		base.OnStarted();
 	}
 
-	public override void OnStopped()
+	public override async void OnStopped()
 	{
 		if ( Game.IsClient )
 		{
+			var fadeOutTime = 5f;
+			var scale = 1f;
+
+			while ( scale > 0f )
+			{
+				await GameTask.DelaySeconds( Time.Delta );
+				scale -= (Time.Delta / fadeOutTime);
+				SetScale( scale );
+			}
+
 			InnerParticles?.Destroy();
 			OuterParticles?.Destroy();
 			AmbientSound.Stop();
@@ -72,6 +82,25 @@ public partial class RainyWeather : WeatherCondition
 			OuterParticles.SetPosition( 3, Vector3.Forward * Density );
 			OuterParticles.SetPosition( 4, Tint * 255f );
 		}
+	}
+
+	private void SetScale( float scale )
+	{
+		if ( InnerParticles != null )
+		{
+			InnerParticles.SetPosition( 1, ForsakenPlayer.Me.Position + Vector3.Up * 300f );
+			InnerParticles.SetPosition( 3, Vector3.Forward * Density * scale );
+			InnerParticles.SetPosition( 4, Tint * 255f );
+		}
+
+		if ( OuterParticles != null )
+		{
+			OuterParticles.SetPosition( 1, Camera.Position );
+			OuterParticles.SetPosition( 3, Vector3.Forward * Density * scale );
+			OuterParticles.SetPosition( 4, Tint * 255f );
+		}
+
+		AmbientSound.SetVolume( scale );
 	}
 }
 
