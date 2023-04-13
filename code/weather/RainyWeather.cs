@@ -1,23 +1,29 @@
 ﻿using Sandbox;
+using System.Collections.Generic;
 
 namespace Facepunch.Forsaken;
 
 public partial class RainyWeather : WeatherCondition
 {
 	[Net] public float Density { get; set; } = 50f;
+	[Net] public int Intensity { get; set; } = 1;
 	[Net] public Color Tint { get; set; } = Color.White;
 
 	private Sound AmbientSound;
-	private Particles InnerParticles;
-	private Particles OuterParticles;
+	private List<Particles> InnerParticles { get; set; } = new();
+	private List<Particles> OuterParticles { get; set; } = new();
 	private TimeUntil NextAttemptToChange { get; set; }
 
 	public override void OnStarted()
 	{
 		if ( Game.IsClient )
 		{
-			InnerParticles = Particles.Create( "particles/precipitation/rain_inner.vpcf" );
-			OuterParticles = Particles.Create( "particles/precipitation/rain_outer.vpcf" );
+			for ( var i = 0; i < Intensity; i++ )
+			{
+				InnerParticles.Add( Particles.Create( "particles/precipitation/rain_inner.vpcf" ) );
+				OuterParticles.Add( Particles.Create( "particles/precipitation/rain_outer.vpcf" ) );
+			}
+
 			AmbientSound = Sound.FromScreen( "sounds/ambient/rain-loop.sound" );
 		}
 		else
@@ -42,8 +48,9 @@ public partial class RainyWeather : WeatherCondition
 				SetScale( scale );
 			}
 
-			InnerParticles?.Destroy();
-			OuterParticles?.Destroy();
+			InnerParticles.ForEach( p => p.Destroy() );
+			OuterParticles.ForEach( p => p.Destroy() );
+
 			AmbientSound.Stop();
 		}
 
@@ -67,38 +74,27 @@ public partial class RainyWeather : WeatherCondition
 
 	public override void ClientTick()
 	{
-		if ( !ForsakenPlayer.Me.IsValid() ) return;
+		if ( !ForsakenPlayer.Me.IsValid() )
+			return;
 
-		if ( InnerParticles != null )
-		{
-			InnerParticles.SetPosition( 1, ForsakenPlayer.Me.Position + Vector3.Up * 300f );
-			InnerParticles.SetPosition( 3, Vector3.Forward * Density );
-			InnerParticles.SetPosition( 4, Tint * 255f );
-		}
-
-		if ( OuterParticles != null )
-		{
-			OuterParticles.SetPosition( 1, Camera.Position );
-			OuterParticles.SetPosition( 3, Vector3.Forward * Density );
-			OuterParticles.SetPosition( 4, Tint * 255f );
-		}
+		SetScale( 1f );
 	}
 
 	private void SetScale( float scale )
 	{
-		if ( InnerParticles != null )
+		InnerParticles.ForEach( p =>
 		{
-			InnerParticles.SetPosition( 1, ForsakenPlayer.Me.Position + Vector3.Up * 300f );
-			InnerParticles.SetPosition( 3, Vector3.Forward * Density * scale );
-			InnerParticles.SetPosition( 4, Tint * 255f );
-		}
+			p.SetPosition( 1, ForsakenPlayer.Me.Position + Vector3.Up * 300f );
+			p.SetPosition( 3, Vector3.Forward * Density * scale );
+			p.SetPosition( 4, Tint * 255f );
+		} );
 
-		if ( OuterParticles != null )
+		OuterParticles.ForEach( p =>
 		{
-			OuterParticles.SetPosition( 1, Camera.Position );
-			OuterParticles.SetPosition( 3, Vector3.Forward * Density * scale );
-			OuterParticles.SetPosition( 4, Tint * 255f );
-		}
+			p.SetPosition( 1, Camera.Position );
+			p.SetPosition( 3, Vector3.Forward * Density * scale );
+			p.SetPosition( 4, Tint * 255f );
+		} );
 
 		AmbientSound.SetVolume( scale );
 	}

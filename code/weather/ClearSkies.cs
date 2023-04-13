@@ -22,7 +22,10 @@ public class ClearSkies : WeatherCondition
 		{
 			if ( Game.Random.Float() < 0.3f )
 			{
-				WeatherSystem.Change( new RainyWeather() );
+				WeatherSystem.Change( new RainyWeather
+				{
+					Intensity = Game.Random.Int( 1, 3 )
+				} );
 			}
 
 			NextAttemptToChange = Game.Random.Float( 30f, 60f );

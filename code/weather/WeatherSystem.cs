@@ -24,7 +24,10 @@ public partial class WeatherSystem : Entity
 	[ConCmd.Server]
 	private static void MakeItRain()
 	{
-		Change( new RainyWeather() );
+		Change( new RainyWeather
+		{
+			Intensity = Game.Random.Int( 1, 3 )
+		} );
 	}
 
 	[ConCmd.Server]
