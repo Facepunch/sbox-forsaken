@@ -63,7 +63,7 @@ public partial class Torch : MeleeWeapon
 		Light.Position = attachment.Value.Position;
 		Light.SetParent( this );
 		Light.Range = 800f;
-		Light.Color = Color.Orange;
+		Light.Color = Color.Orange.Desaturate( 0.25f );
 		Light.Brightness = 0.2f;
 
 		BrightnessAnimator = new( new float[] { 0.9f, 1f, 1f, 0.7f, 1f, 1f, 0.8f, 0.8f, 1.2f }, 8f );

@@ -13,8 +13,6 @@ public partial class WeatherSystem : Entity
 	[Net, Change( nameof( OnInternalConditionChanged ) )]
 	private WeatherCondition InternalCondition { get; set; }
 
-	private TimeUntil NextChangeWeather;
-
 	[Event.Entity.PostSpawn]
 	private static void Initialize()
 	{
@@ -51,16 +49,6 @@ public partial class WeatherSystem : Entity
 	[Event.Tick.Server]
 	private void ServerTick()
 	{
-		if ( NextChangeWeather )
-		{
-			if ( Condition is RainyWeather )
-				Change( null );
-			else
-				Change( new RainyWeather() );
-
-			NextChangeWeather = Game.Random.Float( 4f, 8f );
-		}
-
 		Condition?.ServerTick();
 	}
 

@@ -10,6 +10,7 @@ public partial class RainyWeather : WeatherCondition
 	private Sound AmbientSound;
 	private Particles InnerParticles;
 	private Particles OuterParticles;
+	private TimeUntil NextAttemptToChange { get; set; }
 
 	public override void OnStarted()
 	{
@@ -18,6 +19,10 @@ public partial class RainyWeather : WeatherCondition
 			InnerParticles = Particles.Create( "particles/precipitation/rain_inner.vpcf" );
 			OuterParticles = Particles.Create( "particles/precipitation/rain_outer.vpcf" );
 			AmbientSound = Sound.FromScreen( "sounds/ambient/rain-loop.sound" );
+		}
+		else
+		{
+			NextAttemptToChange = Game.Random.Float( 30f, 60f );
 		}
 
 		base.OnStarted();
@@ -33,6 +38,21 @@ public partial class RainyWeather : WeatherCondition
 		}
 
 		base.OnStopped();
+	}
+
+	public override void ServerTick()
+	{
+		if ( NextAttemptToChange )
+		{
+			if ( Game.Random.Float() < 0.3f )
+			{
+				WeatherSystem.Change( new ClearSkies() );
+			}
+
+			NextAttemptToChange = Game.Random.Float( 30f, 60f );
+		}
+
+		base.ServerTick();
 	}
 
 	public override void ClientTick()
