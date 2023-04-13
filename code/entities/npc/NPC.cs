@@ -229,7 +229,7 @@ public abstract partial class NPC : AnimatedEntity
 	}
 
 	[Event.Tick.Server]
-	protected void ServerTick()
+	protected virtual void ServerTick()
 	{
 		if ( CheckShouldSimulate() )
 		{

@@ -17,6 +17,7 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 	public bool IsTargetVisible { get; private set; }
 
+	private bool IsDespawning { get; set; }
 	private float CurrentSpeed { get; set; }
 	private float TargetRange => 60f;
 	private float AttackRadius => 60f;
@@ -24,9 +25,12 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 	private float WalkSpeed => 60f;
 	private float RunSpeed => 80f;
 
+	private Particles DespawnParticles { get; set; }
+	private Sound DespawnSound { get; set; }
 	private TimeSince TimeSinceLastAttack { get; set; }
 	private TimeUntil NextFindTarget { get; set; }
 	private float TimeSinceRisen { get; set; }
+	private TimeUntil NextTakeDespawnDamage { get; set; }
 	private IDamageable Target { get; set; }
 	private UndeadPose Pose { get; set; }
 
@@ -45,15 +49,13 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 	public virtual void Despawn()
 	{
-		if ( LifeState == LifeState.Dead )
+		if ( LifeState == LifeState.Dead || IsDespawning )
 			return;
 
-		var damage = new DamageInfo()
-			.WithDamage( Game.Random.Float( 20f, 30f ) )
-			.WithTag( "burn" )
-			.WithPosition( Position );
-
-		TakeDamage( damage );
+		NextTakeDespawnDamage = Game.Random.Float( 1f, 2f );
+		DespawnParticles = Particles.Create( "particles/campfire/campfire.vpcf", this );
+		DespawnSound = Sound.FromEntity( "fire.loop", this );
+		IsDespawning = true;
 	}
 
 	public override string GetDisplayName()
@@ -94,6 +96,11 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 		EnableAllCollisions = false;
 		LifeState = LifeState.Dead;
+
+		DespawnParticles?.Destroy();
+		DespawnParticles = null;
+
+		DespawnSound.Stop();
 
 		DeleteAsync( 5f );
 	}
@@ -170,6 +177,26 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 			return true;
 
 		return false;
+	}
+
+	protected override void ServerTick()
+	{
+		if ( LifeState == LifeState.Alive && IsDespawning )
+		{
+			if ( NextTakeDespawnDamage )
+			{
+				NextTakeDespawnDamage = Game.Random.Float( 1f, 2f );
+
+				var damage = new DamageInfo()
+					.WithDamage( Game.Random.Float( 4f, 8f ) )
+					.WithTag( "burn" )
+					.WithPosition( Position );
+
+				TakeDamage( damage );
+			}
+		}
+
+		base.ServerTick();
 	}
 
 	public override void OnAnimEventGeneric( string name, int intData, float floatData, Vector3 vectorData, string stringData )
@@ -352,6 +379,16 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 				State = MovementState.Idle;
 			}
 		}
+	}
+
+	protected override void OnDestroy()
+	{
+		DespawnParticles?.Destroy();
+		DespawnParticles = null;
+
+		DespawnSound.Stop();
+
+		base.OnDestroy();
 	}
 
 	protected override void UpdateVelocity()
