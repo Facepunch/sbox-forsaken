@@ -45,6 +45,8 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 		Rotation = new Angles( 0f, Game.Random.Float( 0f, 360f ), 0f ).ToRotation();
 		State = MovementState.Idle;
 		Pose = UndeadPose.Rising;
+
+		Sound.FromEntity( "emerge", this );
 	}
 
 	public virtual void Despawn()
@@ -217,9 +219,9 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 					.WithAttacker( this )
 					.WithWeapon( this )
 					.WithPosition( trace.EndPosition )
-					.WithDamage( 10f )
+					.WithDamage( Game.Random.Float( 8f, 12f ) )
 					.WithForce( Rotation.Forward * 100f * 1f )
-					.WithTag( "melee" );
+					.WithTags( "melee", "undead" );
 
 				damageable.TakeDamage( damage );
 			}

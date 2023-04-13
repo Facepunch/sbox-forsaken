@@ -1,0 +1,14 @@
+{
+  "UI": false,
+  "Volume": "0.65,0.78,1",
+  "Pitch": "0.86,1.12,1",
+  "Decibels": 40,
+  "SelectionMode": "Random",
+  "Sounds": [
+    "sounds/emerge/emerge.vsnd",
+    "sounds/emerge/emerge01.vsnd",
+    "sounds/emerge/emerge02.vsnd"
+  ],
+  "MaximumDistance": 395.08035,
+  "MinimumDistance": 19.754019
+}

@@ -239,6 +239,12 @@ public abstract partial class Structure : ModelEntity, IPersistence, IDamageable
 
 	public override void TakeDamage( DamageInfo info )
 	{
+		if ( info.HasTag( "undead" ) )
+		{
+			// Let's only do 30% of the damage if a monster is attacking us.
+			info.Damage *= 0.3f;
+		}
+
 		Health -= info.Damage;
 
 		if ( Health <= 0f )
