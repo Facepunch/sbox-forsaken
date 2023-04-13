@@ -92,7 +92,9 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 		particles = Particles.Create( "particles/blood/gib.vpcf", center );
 		particles.SetForward( 0, Vector3.Down );
 
+		EnableAllCollisions = false;
 		LifeState = LifeState.Dead;
+
 		DeleteAsync( 5f );
 	}
 
