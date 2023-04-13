@@ -32,7 +32,12 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 
 	public void RiseFromGround()
 	{
+		if ( Pose == UndeadPose.Rising ) return;
+
+		Particles.Create( "particles/enemy/enemyemerge/enemyemerge.vpcf", Position );
+
 		TimeSinceRisen = 0f;
+		EnableDrawing = false;
 		Rotation = new Angles( 0f, Game.Random.Float( 0f, 360f ), 0f ).ToRotation();
 		State = MovementState.Idle;
 		Pose = UndeadPose.Rising;

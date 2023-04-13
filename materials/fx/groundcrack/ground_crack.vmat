@@ -1,0 +1,36 @@
+// THIS FILE IS AUTO-GENERATED
+
+Layer0
+{
+	shader "shaders/projected_decals.shader_c"
+
+	//---- Decal ----
+	F_ALPHA_MODE 1 // Cutoff
+
+	//---- Normal ----
+	F_NORMAL_MAP 1
+
+	//---- Alpha ----
+	g_flAlphaCutoffSoftness "0.100"
+
+	//---- Ambient Occlusion ----
+	TextureAmbientOcclusion "materials/default/default_ao.tga"
+
+	//---- Color ----
+	TextureColor "[0.082353 0.082353 0.082353 1.000000]"
+
+	//---- Fog ----
+	g_bFogEnabled "1"
+
+	//---- Metalness ----
+	TextureMetalness "materials/default/default_metal.tga"
+
+	//---- Normal ----
+	TextureNormal "materials/fx/groundcrack/ground_crack_normal.tga"
+
+	//---- Roughness ----
+	TextureRoughness "materials/default/default_rough.tga"
+
+	//---- Translucent ----
+	TextureTranslucency "materials/fx/groundcrack/ground_crack_trans.tga"
+}
