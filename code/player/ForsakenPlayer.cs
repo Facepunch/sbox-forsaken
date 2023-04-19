@@ -5,6 +5,7 @@ using Facepunch.Forsaken.UI;
 using Sandbox;
 using Sandbox.Component;
 using Sandbox.Diagnostics;
+using Facepunch.Lib;
 
 namespace Facepunch.Forsaken;
 

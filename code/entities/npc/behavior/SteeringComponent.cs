@@ -4,7 +4,7 @@ using Sandbox;
 
 namespace Facepunch.Forsaken;
 
-public class SteeringComponent : EntityComponent
+public partial class SteeringComponent : EntityComponent
 {
 	public float MaxVelocity { get; set; } = 200f;
 	public float MaxAcceleration { get; set; } = 30f;
