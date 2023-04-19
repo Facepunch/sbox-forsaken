@@ -50,6 +50,13 @@
     }
 }
 
+.floating-damage {
+    color: red;
+    font-family: Roboto;
+    text-stroke-width: 2px;
+    text-stroke-color: black;
+}
+
 .tooltip {
     background-color: rgba( black, 0.8 );
     border: 1px solid rgba( #555, 0.1 );

@@ -16,7 +16,8 @@
   "CodePath": "/code/",
   "PackageReferences": [
     "conna.time_system",
-    "conna.inventory_system"
+    "conna.inventory_system",
+    "facepunch.floating_text"
   ],
   "EditorReferences": null,
   "Metadata": {

@@ -248,6 +248,8 @@ public partial class Undead : Animal, ILimitedSpawner, IDamageable
 					Sound.FromScreen( To.Single( attacker ), "hitmarker.hit" );
 				}
 			}
+
+			UI.Hud.ShowDamage( WorldSpaceBounds.Center, info.Damage );
 		}
 
 		if ( info.HasTag( "bullet" ) )

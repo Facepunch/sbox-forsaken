@@ -679,6 +679,8 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 			{
 				ApplyAbsoluteImpulse( info.Force );
 			}
+
+			UI.Hud.ShowDamage( WorldSpaceBounds.Center, info.Damage );
 		}
 		else
 		{

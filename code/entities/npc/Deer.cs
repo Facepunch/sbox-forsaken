@@ -144,6 +144,8 @@ public partial class Deer : Animal, ILimitedSpawner, IDamageable, IContextAction
 				}
 			}
 
+			UI.Hud.ShowDamage( WorldSpaceBounds.Center, info.Damage );
+
 			EvadePlayer = attacker;
 		}
 
