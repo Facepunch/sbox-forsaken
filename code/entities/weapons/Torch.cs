@@ -11,8 +11,8 @@ public partial class Torch : MeleeWeapon
 	public override float PrimaryRate => 1.5f;
 	public override float Force => 1f;
 
-	private AnimateBrightness BrightnessAnimator { get; set; }
 	[Net] private bool IsIgnited { get; set; }
+	private AnimateBrightness BrightnessAnimator { get; set; }
 	private PointLightEntity Light { get; set; }
 	private Particles Effect { get; set; }
 
@@ -72,8 +72,14 @@ public partial class Torch : MeleeWeapon
 	[Event.Tick.Client]
 	private void ClientTick()
 	{
-		if ( Owner is not ForsakenPlayer player ) return;
-		if ( player.ActiveChild != this ) return;
+		if ( Owner is not ForsakenPlayer player )
+			return;
+
+		if ( player.ActiveChild != this )
+		{
+			DestroyLight();
+			return;
+		}
 
 		if ( IsIgnited )
 		{
