@@ -481,8 +481,8 @@
 								surface_property = ""
 								translation_only = false
 								tags = "chest"
-								hitbox_mins = [ -71.920273, -23.253569, -26.359587 ]
-								hitbox_maxs = [ 29.921358, 21.612438, 25.012308 ]
+								hitbox_mins = [ -58.294819, -23.253569, -26.359587 ]
+								hitbox_maxs = [ 18.789457, 21.612438, 25.012308 ]
 							},
 							{
 								_class = "Hitbox"
@@ -491,8 +491,8 @@
 								surface_property = ""
 								translation_only = false
 								tags = "head"
-								hitbox_mins = [ -0.745161, -18.838041, -20.355587 ]
-								hitbox_maxs = [ 43.932247, 24.10755, 20.356136 ]
+								hitbox_mins = [ -4.570151, -18.838041, -22.809652 ]
+								hitbox_maxs = [ 40.912334, 24.10755, 22.809566 ]
 							},
 						]
 					},
