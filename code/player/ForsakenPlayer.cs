@@ -7,6 +7,7 @@ using Sandbox.Component;
 using Sandbox.Diagnostics;
 using Conna.Inventory;
 using Conna.Time;
+using Conna.Projectiles;
 
 namespace Facepunch.Forsaken;
 

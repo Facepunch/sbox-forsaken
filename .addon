@@ -17,7 +17,8 @@
   "PackageReferences": [
     "conna.time_system",
     "conna.inventory_system",
-    "facepunch.floating_text"
+    "facepunch.floating_text",
+    "conna.projectiles"
   ],
   "EditorReferences": null,
   "Metadata": {
