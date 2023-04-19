@@ -25,6 +25,7 @@ public abstract partial class ProjectileWeapon<T> : Weapon where T : Projectile,
 			return;
 
 		var cursorTrace = Trace.Ray( player.CameraPosition, player.CameraPosition + player.CursorDirection * 3000f )
+			.UseHitboxes()
 			.WithoutTags( "trigger" )
 			.WithAnyTags( "solid", "world", "player", "npc" )
 			.Ignore( player )
