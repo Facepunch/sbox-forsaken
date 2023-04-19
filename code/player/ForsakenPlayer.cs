@@ -304,7 +304,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 
 	public bool IsHeadshotTarget( ForsakenPlayer other, DamageInfo info )
 	{
-		if ( !ForsakenGame.Isometric )
+		if ( ForsakenGame.Isometric )
 		{
 			return info.Hitbox.HasTag( "head" );
 		}
