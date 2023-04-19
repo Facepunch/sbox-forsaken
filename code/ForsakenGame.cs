@@ -1,7 +1,6 @@
 ﻿using Sandbox;
 using Sandbox.Effects;
-using System;
-using System.Collections.Generic;
+using Conna.Inventory;
 using System.IO;
 using System.Linq;
 
@@ -51,6 +50,7 @@ public partial class ForsakenGame : GameManager
 	public override void Spawn()
 	{
 		InventorySystem.Initialize();
+
 		base.Spawn();
 	}
 
@@ -67,8 +67,8 @@ public partial class ForsakenGame : GameManager
 
 		IsometricCamera = new();
 		TopDownCamera = new();
-
 		PostProcessing = new();
+
 		Camera.Main.RemoveAllHooks();
 		Camera.Main.AddHook( PostProcessing );
 

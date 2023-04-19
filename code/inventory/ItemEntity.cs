@@ -1,24 +1,20 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
 using System.IO;
+using Conna.Inventory;
 
 namespace Facepunch.Forsaken;
 
-public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersistence
+[ItemEntity]
+public partial class ForsakenItemEntity : ItemEntity, IContextActionProvider, IPersistence
 {
-	[Net] private NetInventoryItem InternalItem { get; set; }
-	public InventoryItem Item => InternalItem.Value;
-
-	public TimeUntil TimeUntilCanPickup { get; set; }
-	public TimeSince TimeSinceSpawned { get; set; }
-
 	public float InteractionRange => 100f;
 	public Color GlowColor => Item?.Color ?? Color.White;
 	public bool AlwaysGlow => true;
 
 	private ContextAction PickupAction { get; set; }
 
-	public ItemEntity()
+	public ForsakenItemEntity()
 	{
 		PickupAction = new( "pickup", "Pickup", "textures/ui/actions/pickup.png" );
 	}
@@ -94,36 +90,6 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersiste
 		}
 	}
 
-	public void SetItem( InventoryItem item )
-	{
-		var worldModel = !string.IsNullOrEmpty( item.WorldModel ) ? item.WorldModel : "models/sbox_props/burger_box/burger_box.vmdl";
-
-		if ( !string.IsNullOrEmpty( worldModel ) )
-		{
-			SetModel( worldModel );
-			SetupPhysicsFromModel( PhysicsMotionType.Dynamic );
-		}
-
-		InternalItem = new NetInventoryItem( item );
-		item.SetWorldEntity( this );
-	}
-
-	public InventoryItem Take()
-	{
-		if ( IsValid && Item.IsValid() )
-		{
-			var item = Item;
-
-			item.ClearWorldEntity();
-			InternalItem = null;
-			Delete();
-
-			return item;
-		}
-
-		return null;
-	}
-
 	public virtual void OnContextAction( ForsakenPlayer player, ContextAction action )
 	{
 		if ( action == PickupAction )
@@ -144,22 +110,6 @@ public partial class ItemEntity : ModelEntity, IContextActionProvider, IPersiste
 				}
 			}
 		}
-	}
-
-	public virtual void Reset()
-	{
-		Delete();
-	}
-
-	public override void Spawn()
-	{
-		TimeUntilCanPickup = 1f;
-		TimeSinceSpawned = 0f;
-		Transmit = TransmitType.Always;
-
-		Tags.Add( "hover", "solid", "passplayers" );
-
-		base.Spawn();
 	}
 }
 

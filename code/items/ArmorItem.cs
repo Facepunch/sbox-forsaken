@@ -2,6 +2,7 @@
 using Sandbox.UI;
 using Sandbox.UI.Construct;
 using System.Collections.Generic;
+using Conna.Inventory;
 
 namespace Facepunch.Forsaken;
 

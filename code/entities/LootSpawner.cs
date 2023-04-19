@@ -3,6 +3,7 @@ using Sandbox.Component;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Conna.Inventory;
 
 namespace Facepunch.Forsaken;
 

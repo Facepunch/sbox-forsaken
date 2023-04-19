@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using Conna.Inventory;
 
 namespace Facepunch.Forsaken;
 
@@ -19,8 +20,6 @@ public partial class ForsakenPlayer
 
 		if ( item.IsValid() )
 		{
-			var entity = new ItemEntity();
-
 			if ( splitStack && item.StackSize > 1 )
 			{
 				var splitAmount = item.StackSize / 2;
@@ -30,8 +29,8 @@ public partial class ForsakenPlayer
 				item.StackSize = (ushort)splitAmount;
 			}
 
+			var entity = InventorySystem.CreateItemEntity( item );
 			entity.Position = player.EyePosition + direction * 10f;
-			entity.SetItem( item );
 			entity.ApplyLocalImpulse( direction * 300f + Vector3.Down * 10f );
 		}
 	}
@@ -461,9 +460,8 @@ public partial class ForsakenPlayer
 						item.StackSize--;
 					}
 
-					var entity = new ItemEntity();
+					var entity = InventorySystem.CreateItemEntity( itemToDrop );
 					entity.Position = trace.EndPosition;
-					entity.SetItem( itemToDrop );
 					entity.ApplyLocalImpulse( EyeRotation.Forward * 100f + Vector3.Up * 50f );
 				}
 

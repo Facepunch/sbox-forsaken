@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using Sandbox;
+using Conna.Inventory;
 
 namespace Facepunch.Forsaken;
 
@@ -149,8 +150,7 @@ public partial class RecyclingProcessor : BaseNetworkable
 
 		if ( unstacked > 0 && Recycler.IsValid() )
 		{
-			var entity = new ItemEntity();
-			entity.SetItem( outputItem );
+			var entity = InventorySystem.CreateItemEntity( outputItem );
 			entity.Position = Recycler.Position + Vector3.Up * 40f + Recycler.Rotation.Forward * 30f;
 			entity.ApplyAbsoluteImpulse( (Recycler.Rotation.Forward + Vector3.Random) * 40f );
 

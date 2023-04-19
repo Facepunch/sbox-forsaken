@@ -1,6 +1,7 @@
 ﻿using Sandbox;
 using System;
 using System.Collections.Generic;
+using Conna.Inventory;
 
 namespace Facepunch.Forsaken;
 

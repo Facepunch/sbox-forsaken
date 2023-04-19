@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using Conna.Inventory;
 
 namespace Facepunch.Forsaken;
 

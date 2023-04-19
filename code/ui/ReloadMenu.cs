@@ -1,6 +1,7 @@
 ﻿using Sandbox;
 using Sandbox.UI;
 using System.Linq;
+using Conna.Inventory;
 
 namespace Facepunch.Forsaken.UI;
 

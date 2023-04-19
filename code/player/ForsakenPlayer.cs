@@ -5,7 +5,8 @@ using Facepunch.Forsaken.UI;
 using Sandbox;
 using Sandbox.Component;
 using Sandbox.Diagnostics;
-using Facepunch.Lib;
+using Conna.Inventory;
+using Conna.Time;
 
 namespace Facepunch.Forsaken;
 
@@ -753,9 +754,8 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 
 		foreach ( var item in itemsToDrop )
 		{
-			var entity = new ItemEntity();
+			var entity = InventorySystem.CreateItemEntity( item );
 			entity.Position = WorldSpaceBounds.Center + Vector3.Up * 64f;
-			entity.SetItem( item );
 			entity.ApplyLocalImpulse( Vector3.Random * 100f );
 		}
 

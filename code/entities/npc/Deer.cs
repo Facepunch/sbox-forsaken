@@ -1,5 +1,6 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
+using Conna.Inventory;
 
 namespace Facepunch.Forsaken;
 
@@ -180,9 +181,8 @@ public partial class Deer : Animal, ILimitedSpawner, IDamageable, IContextAction
 
 		if ( remaining > 0 )
 		{
-			var entity = new ItemEntity();
+			var entity = InventorySystem.CreateItemEntity( item );
 			entity.Position = Position;
-			entity.SetItem( item );
 		}
 
 		Delete();

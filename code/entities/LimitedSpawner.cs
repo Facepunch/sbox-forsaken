@@ -2,7 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Facepunch.Lib;
+using Conna.Inventory;
+using Conna.Time;
 
 namespace Facepunch.Forsaken;
 

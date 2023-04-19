@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using Sandbox;
+using Conna.Inventory;
 
 namespace Facepunch.Forsaken;
 
@@ -133,8 +134,7 @@ public partial class CookingProcessor : BaseNetworkable
 
 		if ( unstacked > 0 && Cooker.IsValid() )
 		{
-			var entity = new ItemEntity();
-			entity.SetItem( cookedItem );
+			var entity = InventorySystem.CreateItemEntity( cookedItem );
 			entity.Position = Cooker.Position + Vector3.Up * 40f + Cooker.Rotation.Forward * 30f;
 			entity.ApplyAbsoluteImpulse( (Cooker.Rotation.Forward + Vector3.Random) * 40f );
 
