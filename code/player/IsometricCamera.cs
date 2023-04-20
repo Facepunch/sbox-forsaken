@@ -17,7 +17,7 @@ public partial class IsometricCamera
 
 		if ( pawn.IsValid() )
 		{
-			if ( Input.Down( InputButton.Walk ) )
+			if ( Input.Down( "walk" ) )
 			{
 				ZoomLevel += Input.MouseWheel * Time.Delta * 8f;
 			}

@@ -136,7 +136,7 @@ public partial class MoveController
 
 		Player.EyeLocalPosition += TraceOffset;
 
-		if ( Input.Down( InputButton.Run ) )
+		if ( Input.Down( "run" ) )
 			Player.EyeRotation = Player.Rotation;
 		else
 			Player.EyeRotation = Player.ViewAngles.ToRotation();
@@ -174,7 +174,7 @@ public partial class MoveController
 
 		Duck.PreTick();
 
-		if ( Input.Down( InputButton.Run ) && !Input.Down( InputButton.Duck ) && WishVelocity.Length > 1f )
+		if ( Input.Down( "run" ) && !Input.Down( "duck" ) && WishVelocity.Length > 1f )
 			Player.ReduceStamina( 5f * Time.Delta );
 		else if ( Player.CanStaminaRegenerate() )
 			Player.GainStamina( 15f * Time.Delta );
@@ -223,7 +223,7 @@ public partial class MoveController
 		var wishSpeed = Duck.GetWishSpeed();
 		if ( wishSpeed >= 0f ) return wishSpeed;
 
-		var isSprinting = Input.Down( InputButton.Run );
+		var isSprinting = Input.Down( "run" );
 
 		if ( Player.IsOutOfBreath )
 		{

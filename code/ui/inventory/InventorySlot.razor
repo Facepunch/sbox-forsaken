@@ -196,7 +196,7 @@
         if ( !Item.IsValid() || e.Button == "mouseright" )
             return;
 
-        Draggable.Start( this, Input.Down( InputButton.Run ) ? DraggableMode.Split : DraggableMode.Move );
+        Draggable.Start( this, Input.Down( "run" ) ? DraggableMode.Split : DraggableMode.Move );
         base.OnMouseDown( e );
     }
 

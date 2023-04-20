@@ -11,18 +11,18 @@
     <div class="container">
         @if ( HasPrimaryAttack() )
         {
-            <InputHint Button=@InputButton.PrimaryAttack>@GetPrimaryAttackText()</InputHint>
+            <InputHint Button="attack1">@GetPrimaryAttackText()</InputHint>
         }
 
         @if ( HasSecondaryAttack() )
         {
-            <InputHint Button=@InputButton.SecondaryAttack>@GetSecondaryAttackText()</InputHint>
+            <InputHint Button="attack2">@GetSecondaryAttackText()</InputHint>
         }
 
-        <InputHint Button=@InputButton.Menu>Open Crafting</InputHint>
-        <InputHint Button=@InputButton.Score>Open Inventory</InputHint>
-        <InputHint Button=@InputButton.View>Open Map</InputHint>
-        <InputHint Button=@InputButton.Use>@GetUseText()</InputHint>
+        <InputHint Button="menu">Open Crafting</InputHint>
+        <InputHint Button="score">Open Inventory</InputHint>
+        <InputHint Button="map">Open Map</InputHint>
+        <InputHint Button="use">@GetUseText()</InputHint>
     </div>
 </root>
 

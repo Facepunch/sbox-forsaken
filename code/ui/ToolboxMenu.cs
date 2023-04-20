@@ -11,7 +11,7 @@ public partial class ToolboxMenu : RadialMenu
 {
 	public static ToolboxMenu Current { get; private set; }
 
-	public override InputButton Button => InputButton.SecondaryAttack;
+	public override string Button => "attack2";
 
 	public ToolboxMenu()
 	{

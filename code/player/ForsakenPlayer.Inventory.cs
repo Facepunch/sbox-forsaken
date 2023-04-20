@@ -402,7 +402,7 @@ public partial class ForsakenPlayer
 	{
 		var currentSlotIndex = HotbarIndex;
 		var maxSlotIndex = Hotbar.SlotLimit - 1;
-		var canUseMouseWheel = !Input.Down( InputButton.Walk );
+		var canUseMouseWheel = !Input.Down( "walk" );
 
 		if ( IsHotbarSelected() )
 		{
@@ -444,7 +444,7 @@ public partial class ForsakenPlayer
 
 		if ( Game.IsServer )
 		{
-			if ( Input.Released( InputButton.Drop ) && IsHotbarSelected() )
+			if ( Input.Released( "drop" ) && IsHotbarSelected() )
 			{
 				var container = Hotbar;
 				var item = container.GetFromSlot( (ushort)HotbarIndex );
@@ -470,7 +470,7 @@ public partial class ForsakenPlayer
 		}
 		else if ( Prediction.FirstTime )
 		{
-			if ( Input.Pressed( InputButton.Score ) )
+			if ( Input.Pressed( "score" ) )
 			{
 				if ( !UI.Backpack.Current.IsOpen )
 					TimeSinceBackpackOpen = 0f;
@@ -483,7 +483,7 @@ public partial class ForsakenPlayer
 					UI.Backpack.Current?.Open();
 			}
 
-			if ( Input.Released( InputButton.Score ) )
+			if ( Input.Released( "score" ) )
 			{
 				if ( TimeSinceBackpackOpen <= 0.2f )
 				{
@@ -496,7 +496,7 @@ public partial class ForsakenPlayer
 				}
 			}
 
-			if ( Input.Released( InputButton.Menu ) )
+			if ( Input.Released( "menu" ) )
 			{
 				if ( UI.Dialog.IsActive() )
 					UI.Dialog.Close();
@@ -504,7 +504,7 @@ public partial class ForsakenPlayer
 					UI.Crafting.Current?.Open();
 			}
 
-			if ( Input.Released( InputButton.View ) )
+			if ( Input.Released( "map" ) )
 			{
 				if ( UI.Dialog.IsActive() )
 					UI.Dialog.Close();
@@ -518,28 +518,28 @@ public partial class ForsakenPlayer
 	{
 		var pressedIndex = -1;
 
-		if ( Input.Pressed( InputButton.Slot1 ) )
+		if ( Input.Pressed( "slot1" ) )
 			pressedIndex = Math.Min( 0, Hotbar.SlotLimit - 1 );
 
-		if ( Input.Pressed( InputButton.Slot2 ) )
+		if ( Input.Pressed( "slot2" ) )
 			pressedIndex = Math.Min( 1, Hotbar.SlotLimit - 1 );
 
-		if ( Input.Pressed( InputButton.Slot3 ) )
+		if ( Input.Pressed( "slot3" ) )
 			pressedIndex = Math.Min( 2, Hotbar.SlotLimit - 1 );
 
-		if ( Input.Pressed( InputButton.Slot4 ) )
+		if ( Input.Pressed( "slot4" ) )
 			pressedIndex = Math.Min( 3, Hotbar.SlotLimit - 1 );
 
-		if ( Input.Pressed( InputButton.Slot5 ) )
+		if ( Input.Pressed( "slot5" ) )
 			pressedIndex = Math.Min( 4, Hotbar.SlotLimit - 1 );
 
-		if ( Input.Pressed( InputButton.Slot6 ) )
+		if ( Input.Pressed( "slot6" ) )
 			pressedIndex = Math.Min( 5, Hotbar.SlotLimit - 1 );
 
-		if ( Input.Pressed( InputButton.Slot7 ) )
+		if ( Input.Pressed( "slot7" ) )
 			pressedIndex = Math.Min( 6, Hotbar.SlotLimit - 1 );
 
-		if ( Input.Pressed( InputButton.Slot8 ) )
+		if ( Input.Pressed( "slot8" ) )
 			pressedIndex = Math.Min( 7, Hotbar.SlotLimit - 1 );
 
 		if ( pressedIndex < 0 )

@@ -447,7 +447,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 
 	public virtual bool IsAiming()
 	{
-		return ForsakenGame.Isometric && Input.Down( InputButton.SecondaryAttack );
+		return ForsakenGame.Isometric && Input.Down( "attack2" );
 	}
 
 	public virtual void Respawn()
@@ -546,7 +546,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		if ( Input.StopProcessing )
 			return;
 
-		if ( Input.Released( InputButton.Reload ) )
+		if ( Input.Released( "reload" ) )
 		{
 			DeployableYaw += 90;
 
@@ -1192,7 +1192,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 	{
 		var consumable = GetActiveHotbarItem() as ConsumableItem;
 
-		if ( consumable.IsValid() && Input.Released( InputButton.PrimaryAttack ) )
+		if ( consumable.IsValid() && Input.Released( "attack1" ) )
 		{
 			consumable.Consume( this );
 		}
@@ -1260,7 +1260,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 			ghost.ResetInterpolation();
 		}
 
-		if ( Input.Released( InputButton.PrimaryAttack ) )
+		if ( Input.Released( "attack1" ) )
 		{
 			if ( Game.IsServer )
 			{
@@ -1406,7 +1406,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 			glow.InsideObscuredColor = ghost.RenderColor;
 		}
 
-		if ( Prediction.FirstTime && Input.Released( InputButton.PrimaryAttack ) )
+		if ( Prediction.FirstTime && Input.Released( "attack1" ) )
 		{
 			Structure.ClearGhost();
 

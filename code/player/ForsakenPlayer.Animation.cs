@@ -20,7 +20,7 @@ public partial class ForsakenPlayer
 
 		if ( !ForsakenGame.Isometric )
 		{
-			if ( isSimulating && Input.Down( InputButton.Run ) )
+			if ( isSimulating && Input.Down( "run" ) )
 			{
 				rotation = Rotation.LookAt( InputDirection, Vector3.Up );
 			}

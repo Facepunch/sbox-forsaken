@@ -221,7 +221,7 @@ public class Cursor : Panel
 			return;
 		}
 
-		if ( Input.Pressed( InputButton.Use ) )
+		if ( Input.Pressed( "use" ) )
 		{
 			DisableSecondaryActions = false;
 			TimeSincePressed = 0f;
@@ -230,7 +230,7 @@ public class Cursor : Panel
 
 		if ( !DisableSecondaryActions )
 		{
-			if ( Input.Down( InputButton.Use ) && hasSecondaries )
+			if ( Input.Down( "use" ) && hasSecondaries )
 			{
 				if ( TimeSincePressed > secondaryHoldDelay && !IsSecondaryOpen )
 				{
@@ -246,7 +246,7 @@ public class Cursor : Panel
 			return;
 		}
 
-		if ( Input.Released( InputButton.Use ) && ( !hasSecondaries || TimeSincePressed < secondaryHoldDelay ) )
+		if ( Input.Released( "use" ) && ( !hasSecondaries || TimeSincePressed < secondaryHoldDelay ) )
 		{
 			if ( PrimaryAction.Select() )
 			{
@@ -289,7 +289,7 @@ public class Cursor : Panel
 		{
 			closestItem.SetClass( "is-hovered", true );
 
-			if ( Input.Released( InputButton.Use ) )
+			if ( Input.Released( "use" ) )
 			{
 				if ( closestItem.Select() )
 				{
@@ -298,7 +298,7 @@ public class Cursor : Panel
 			}
 		}
 
-		if ( !Input.Down( InputButton.Use ) )
+		if ( !Input.Down( "use" ) )
 		{
 			DisableSecondaryActions = true;
 			IsSecondaryOpen = false;

@@ -150,7 +150,7 @@ public abstract partial class Weapon : BaseWeapon
 		if ( !Owner.IsValid() )
 			return false;
 
-		if ( !Input.Released( InputButton.Reload ) )
+		if ( !Input.Released( "reload" ) )
 			return false;
 
 		if ( TimeSinceReloadPressed > 0.2f )
@@ -249,12 +249,12 @@ public abstract partial class Weapon : BaseWeapon
 
 	public override void Simulate( IClient owner )
 	{
-		if ( Game.IsServer && Input.Pressed( InputButton.Reload ) )
+		if ( Game.IsServer && Input.Pressed( "reload" ) )
 		{
 			TimeSinceReloadPressed = 0f;
 		}
 
-		if ( Input.Pressed( InputButton.PrimaryAttack ) )
+		if ( Input.Pressed( "attack1" ) )
 		{
 			TimeSincePrimaryHeld = 0f;
 		}

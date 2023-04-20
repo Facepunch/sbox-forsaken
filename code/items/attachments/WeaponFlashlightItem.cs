@@ -66,7 +66,7 @@ public class WeaponFlashlightItem : AttachmentItem
 
 	public override void Simulate( IClient client )
 	{
-		if ( Game.IsServer && Input.Released( InputButton.Flashlight ) )
+		if ( Game.IsServer && Input.Released( "flashlight" ) )
 		{
 			IsEnabled = !IsEnabled;
 			IsDirty = true;
