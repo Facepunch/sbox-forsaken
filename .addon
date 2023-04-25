@@ -18,7 +18,8 @@
     "conna.time_system",
     "conna.inventory_system",
     "facepunch.floating_text",
-    "conna.projectiles"
+    "conna.projectiles",
+    "conna.radial_menu"
   ],
   "EditorReferences": null,
   "Metadata": {
@@ -308,6 +309,7 @@
           "GroupName": "Other"
         }
       ]
-    }
+    },
+    "HttpAllowList": null
   }
 }

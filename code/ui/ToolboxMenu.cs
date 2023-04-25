@@ -3,6 +3,7 @@ using Sandbox.UI;
 using System.Collections.Generic;
 using System.Linq;
 using Conna.Inventory;
+using Conna.RadialMenu;
 
 namespace Facepunch.Forsaken.UI;
 
@@ -60,7 +61,7 @@ public partial class ToolboxMenu : RadialMenu
 
 	protected override bool ShouldOpen()
 	{
-		if ( !ForsakenPlayer.Me.IsValid() )
+		if ( Dialog.IsActive() || !ForsakenPlayer.Me.IsValid() )
 			return false;
 
 		return (ForsakenPlayer.Me.GetActiveHotbarItem() is ToolboxItem);

@@ -2,6 +2,7 @@
 using Sandbox.UI;
 using System.Linq;
 using Conna.Inventory;
+using Conna.RadialMenu;
 
 namespace Facepunch.Forsaken.UI;
 
@@ -54,7 +55,7 @@ public partial class ReloadMenu : RadialMenu
 
 	protected override bool ShouldOpen()
 	{
-		if ( !ForsakenPlayer.Me.IsValid() )
+		if ( Dialog.IsActive() || !ForsakenPlayer.Me.IsValid() )
 			return false;
 
 		var weaponItem = ForsakenPlayer.Me.GetActiveHotbarItem() as WeaponItem;
