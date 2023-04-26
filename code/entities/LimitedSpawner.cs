@@ -21,6 +21,7 @@ public class LimitedSpawner
 	public bool SpawnNearPlayers { get; set; }
 	public float MinPercentPerSpawn { get; set; } = 0f;
 	public float MaxPercentPerSpawn { get; set; } = 0.5f;
+	public bool MultiplyTotalByPlayers { get; set; }
 	public int MaxTotal { get; set; } = 100;
 	public float Interval { get; set; } = 120f;
 	public Vector3 Origin { get; set; }
@@ -42,7 +43,10 @@ public class LimitedSpawner
 
 	private float GetCalculatedTotal()
 	{
-		return MaxTotal;
+		if ( MultiplyTotalByPlayers )
+			return MaxTotal * Game.Clients.Count;
+		else
+			return MaxTotal;
 	}
 
 	[Event.Tick.Server]

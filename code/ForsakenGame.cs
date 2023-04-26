@@ -199,6 +199,7 @@ public partial class ForsakenGame : GameManager
 			spawner.SetType<Undead>();
 			spawner.OnSpawned = ( e ) => (e as Undead)?.RiseFromGround();
 			spawner.SpawnNearPlayers = true;
+			spawner.MultiplyTotalByPlayers = true;
 			spawner.TimeOfDayStart = 19.5f;
 			spawner.TimeOfDayEnd = 7f;
 			spawner.UseNavMesh = true;
