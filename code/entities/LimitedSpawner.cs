@@ -19,8 +19,8 @@ public class LimitedSpawner
 	public float TimeOfDayStart { get; set; } = 0f;
 	public float TimeOfDayEnd { get; set; } = 0f;
 	public bool SpawnNearPlayers { get; set; }
-	public int MinPerSpawn { get; set; } = 0;
-	public int MaxPerSpawn { get; set; } = 100;
+	public float MinPercentPerSpawn { get; set; } = 0f;
+	public float MaxPercentPerSpawn { get; set; } = 0.5f;
 	public int MaxTotal { get; set; } = 100;
 	public float Interval { get; set; } = 120f;
 	public Vector3 Origin { get; set; }
@@ -38,6 +38,11 @@ public class LimitedSpawner
 	public void SetType<T>() where T : ILimitedSpawner
 	{
 		Type = typeof( T );
+	}
+
+	private float GetCalculatedTotal()
+	{
+		return MaxTotal;
 	}
 
 	[Event.Tick.Server]
@@ -65,16 +70,19 @@ public class LimitedSpawner
 		if ( !isCorrectTimePeriod )
 			return;
 
+		var totalToSpawn = GetCalculatedTotal();
 		var totalCount = Entity.All
 			.OfType<ILimitedSpawner>()
 			.Where( p => p.GetType() == Type )
 			.Count();
 
-		var availableToSpawn = MaxTotal - totalCount;
+		var availableToSpawn = totalToSpawn - totalCount;
 
 		if ( availableToSpawn > 0 )
 		{
-			var amountToSpawn = Game.Random.Int( Math.Min( MinPerSpawn, availableToSpawn ), Math.Min( MaxPerSpawn, availableToSpawn ) );
+			var minToSpawn = Math.Min( totalToSpawn * MinPercentPerSpawn, availableToSpawn ).CeilToInt();
+			var maxToSpawn = Math.Min( totalToSpawn * MaxPercentPerSpawn, availableToSpawn ).CeilToInt();
+			var amountToSpawn = Game.Random.Int( minToSpawn, maxToSpawn );
 			var attemptsRemaining = 10000;
 			var playerList = Entity.All
 				.OfType<ForsakenPlayer>()
