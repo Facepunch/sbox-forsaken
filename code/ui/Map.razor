@@ -417,8 +417,8 @@
         if ( !PanVelocity.IsNearZeroLength )
         {
             var cp = Container.Box.Rect;
-            var nx = (cp.Width * Position.x) + PanVelocity.x * 20f * Time.Delta;
-            var ny = (cp.Height * Position.y) + PanVelocity.y * 20f * Time.Delta;
+            var nx = (cp.Width * Position.x) + PanVelocity.x * 15f * Time.Delta;
+            var ny = (cp.Height * Position.y) + PanVelocity.y * 15f * Time.Delta;
 
             nx = Math.Min( nx, 0f );
             ny = Math.Min( ny, 0f );
