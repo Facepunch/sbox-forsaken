@@ -203,7 +203,7 @@ public partial class ForsakenGame : GameManager
 			spawner.TimeOfDayStart = 19.5f;
 			spawner.TimeOfDayEnd = 7f;
 			spawner.UseNavMesh = true;
-			spawner.MaxTotal = 20;
+			spawner.MaxTotal = 4;
 			spawner.MinPercentPerSpawn = 0.4f;
 			spawner.MaxPercentPerSpawn = 0.8f;
 			spawner.Interval = 10f;
