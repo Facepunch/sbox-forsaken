@@ -103,6 +103,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 
 	[Net] public string DisplayName { get; private set; }
 	[Net] public float Temperature { get; private set; }
+	[Net] public float PoisonPerSecond { get; private set; }
 	[Net] public float Calories { get; private set; }
 	[Net] public float Hydration { get; private set; }
 	[Net, Predicted] public float Stamina { get; private set; }
@@ -159,7 +160,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 
 	private TimeUntil NextCalculateTemperature { get; set; }
 	private float CalculatedTemperature { get; set; }
-	private TimeUntil NextTakePoisonDamage { get; set; }
+	private TimeUntil NextCalculatePoison { get; set; }
 	private List<IHeatEmitter> HeatEmitters { get; set; } = new();
 	private TimeSince TimeSinceBackpackOpen { get; set; }
 	private bool IsBackpackToggleMode { get; set; }
@@ -953,12 +954,12 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 
 		Temperature = Temperature.LerpTo( CalculatedTemperature, Time.Delta * 2f );
 
-		if ( NextTakePoisonDamage )
+		if ( NextCalculatePoison )
 		{
 			var totalPoisonProtection = Equipment.FindItems<ArmorItem>()
 				.Sum( i => i.PoisonProtection );
 
-			var totalPoisonDamage = InsideZones
+			PoisonPerSecond = InsideZones
 				.OfType<PoisonZone>()
 				.Where( e => totalPoisonProtection < e.PoisonProtectionThreshold )
 				.Sum( e =>
@@ -969,18 +970,18 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 					return distanceToCenter.Remap( 0f, totalSize, e.PoisonDamagePerSecond, 0f );
 				} );
 
-			totalPoisonDamage *= (1f - (totalPoisonProtection / 100f));
+			PoisonPerSecond *= (1f - (totalPoisonProtection / 100f));
 
-			if ( totalPoisonDamage > 0f )
+			if ( PoisonPerSecond > 0f )
 			{
 				var info = new DamageInfo()
 					.WithTag( "poison" )
-					.WithDamage( totalPoisonDamage );
+					.WithDamage( PoisonPerSecond );
 
 				TakeDamage( info );
 			}
 
-			NextTakePoisonDamage = 1f;
+			NextCalculatePoison = 1f;
 		}
 
 		for ( var i = ActiveEffects.Count - 1; i >= 0; i-- )

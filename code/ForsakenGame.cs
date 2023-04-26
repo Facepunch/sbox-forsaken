@@ -280,5 +280,22 @@ public partial class ForsakenGame : GameManager
 
 		pp.Pixelation = 0.02f * sum;
 		pp.ChromaticAberration.Scale += (0.05f * sum);
+
+		var temperature = player.Temperature;
+		
+		if ( temperature > 0f )
+		{
+			var hotness = temperature.Remap( 0f, 20f, 0f, 1f );
+			// TODO: Color overlay?
+		}
+		else
+		{
+			var coldness = temperature.Remap( 0f, -20f, 0f, 1f );
+			// TODO: Color overlay?
+		}
+
+		var poison = player.PoisonPerSecond.Remap( 0f, 5f, 0f, 1f );
+		pp.FilmGrain.Intensity = poison * 0.2f;
+		pp.FilmGrain.Response = 0.2f;
 	}
 }
