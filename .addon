@@ -19,7 +19,8 @@
     "conna.inventory_system",
     "facepunch.floating_text",
     "conna.projectiles",
-    "conna.radial_menu"
+    "conna.radial_menu",
+    "conna.persistence"
   ],
   "EditorReferences": null,
   "Metadata": {

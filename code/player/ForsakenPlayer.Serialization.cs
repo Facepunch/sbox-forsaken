@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using Conna.Inventory;
+using Conna.Persistence;
 
 namespace Facepunch.Forsaken;
 

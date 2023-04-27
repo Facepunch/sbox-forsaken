@@ -143,6 +143,8 @@ public static partial class Navigation
 				var worldPosition = ToWorld( idx );
 				var walkable = SampleWalkability( worldPosition, out float zOffset, out float slope );
 				var node = Grid[idx];
+
+				if ( node == null ) continue;
 				node.Walkable = walkable;
 				node.ZOffset = zOffset;
 				node.Slope = slope;

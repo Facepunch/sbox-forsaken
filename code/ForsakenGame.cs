@@ -3,6 +3,7 @@ using Sandbox.Effects;
 using Conna.Inventory;
 using System.IO;
 using System.Linq;
+using Conna.Persistence;
 
 namespace Facepunch.Forsaken;
 
@@ -51,6 +52,9 @@ public partial class ForsakenGame : GameManager
 	{
 		InventorySystem.Initialize();
 
+		PersistenceSystem.AddWriter( InventorySystem.Serialize );
+		PersistenceSystem.AddReader( InventorySystem.Deserialize );
+
 		base.Spawn();
 	}
 
@@ -94,8 +98,6 @@ public partial class ForsakenGame : GameManager
 			pawn.MakePawnOf( client );
 		}
 
-		PersistenceSystem.Load( pawn );
-
 		base.ClientJoined( client );
 	}
 
@@ -112,11 +114,6 @@ public partial class ForsakenGame : GameManager
 
 	public override void ClientDisconnect( IClient client, NetworkDisconnectionReason reason )
 	{
-		if ( client.Pawn is ForsakenPlayer player )
-		{
-			PersistenceSystem.Save( player );
-		}
-
 		InventorySystem.ClientDisconnected( client );
 
 		base.ClientDisconnect( client, reason );
