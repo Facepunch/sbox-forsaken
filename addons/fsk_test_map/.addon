@@ -1,0 +1,24 @@
+{
+  "Title": "Test Map",
+  "Type": "content",
+  "Org": "facepunch",
+  "Ident": "fsk_test_map",
+  "Tags": "forsaken",
+  "Schema": 1,
+  "HasAssets": true,
+  "AssetsPath": "",
+  "ResourcePaths": null,
+  "HasCode": false,
+  "CodePath": null,
+  "PackageReferences": [],
+  "EditorReferences": null,
+  "Metadata": {
+    "ProjectTemplate": null,
+    "GameSupport": [
+      "facepunch.forsaken"
+    ],
+    "Summary": "",
+    "Description": "",
+    "Public": true
+  }
+}
