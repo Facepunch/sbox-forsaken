@@ -35,7 +35,7 @@ public partial class ForsakenPlayer
 		}
 	}
 
-	public static void ThrowItem( InventoryItem item, Vector3 direction, bool splitStack = false )
+	public static void ThrowItem( IInventoryItem item, Vector3 direction, bool splitStack = false )
 	{
 		if ( !item.IsValid() ) return;
 		var csv = $"{direction.x},{direction.y}";
@@ -49,7 +49,7 @@ public partial class ForsakenPlayer
 		foreach ( var item in Equipment.FindItems<T>() ) yield return item;
 	}
 
-	public IEnumerable<InventoryItem> FindItems( Type type )
+	public IEnumerable<IInventoryItem> FindItems( Type type )
 	{
 		foreach ( var item in Hotbar.FindItems( type ) ) yield return item;
 		foreach ( var item in Backpack.FindItems( type ) ) yield return item;
@@ -201,7 +201,7 @@ public partial class ForsakenPlayer
 		return Equipment.Give( item, (ushort)slotToIndex );
 	}
 
-	public ushort TryGiveItem( InventoryItem item, bool preferBackpackOverHotbar = false )
+	public ushort TryGiveItem( IInventoryItem item, bool preferBackpackOverHotbar = false )
 	{
 		var primaryContainer = preferBackpackOverHotbar ? Backpack : Hotbar;
 		var secondaryContainer = preferBackpackOverHotbar ? Hotbar : Backpack;
@@ -251,7 +251,7 @@ public partial class ForsakenPlayer
 		models.Add( armor );
 	}
 
-	private void OnEquipmentItemGiven( ushort slot, InventoryItem instance )
+	private void OnEquipmentItemGiven( ushort slot, IInventoryItem instance )
 	{
 		if ( instance is ArmorItem armor )
 		{
@@ -279,7 +279,7 @@ public partial class ForsakenPlayer
 		}
 	}
 
-	private void OnEquipmentItemTaken( ushort slot, InventoryItem instance )
+	private void OnEquipmentItemTaken( ushort slot, IInventoryItem instance )
 	{
 		if ( instance is ArmorItem armor && !Equipment.Is( instance.Parent ) )
 		{
@@ -295,17 +295,17 @@ public partial class ForsakenPlayer
 		}
 	}
 
-	private void OnBackpackItemGiven( ushort slot, InventoryItem instance )
+	private void OnBackpackItemGiven( ushort slot, IInventoryItem instance )
 	{
 
 	}
 
-	private void OnBackpackItemTaken( ushort slot, InventoryItem instance )
+	private void OnBackpackItemTaken( ushort slot, IInventoryItem instance )
 	{
 
 	}
 
-	private void OnHotbarItemGiven( ushort slot, InventoryItem instance )
+	private void OnHotbarItemGiven( ushort slot, IInventoryItem instance )
 	{
 		if ( instance is WeaponItem weapon )
 		{
@@ -313,7 +313,7 @@ public partial class ForsakenPlayer
 		}
 	}
 
-	private void OnHotbarItemTaken( ushort slot, InventoryItem instance )
+	private void OnHotbarItemTaken( ushort slot, IInventoryItem instance )
 	{
 		if ( instance is WeaponItem weapon )
 		{

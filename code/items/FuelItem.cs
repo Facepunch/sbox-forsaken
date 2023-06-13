@@ -18,7 +18,7 @@ public class FuelItem : InventoryItem, ILootSpawnerItem
 	public float LootChance => 0.5f;
 	public bool IsLootable => true;
 
-	public override bool CanStackWith( InventoryItem other )
+	public override bool CanStackWith( IInventoryItem other )
 	{
 		return true;
 	}

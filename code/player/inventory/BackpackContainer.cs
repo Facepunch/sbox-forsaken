@@ -10,7 +10,7 @@ public partial class BackpackContainer : InventoryContainer
 		SetSlotLimit( 24 );
 	}
 
-	public override InventoryContainer GetTransferTarget( InventoryItem item )
+	public override InventoryContainer GetTransferTarget( IInventoryItem item )
 	{
 		var recycling = UI.Recycling.Current;
 		var cooking = UI.Cooking.Current;

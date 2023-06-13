@@ -11,7 +11,7 @@ public partial class RecyclerInputContainer : InventoryContainer
 		SetSlotLimit( 6 );
 	}
 
-	public override bool CanGiveItem( ushort slot, InventoryItem item )
+	public override bool CanGiveItem( ushort slot, IInventoryItem item )
 	{
 		if ( item is not IRecyclableItem recyclable )
 			return false;

@@ -74,7 +74,7 @@ public class ConsumableItem : ResourceItem<ConsumableResource, ConsumableItem>, 
 		}
 	}
 
-	public override bool CanStackWith( InventoryItem other )
+	public override bool CanStackWith( IInventoryItem other )
 	{
 		return true;
 	}

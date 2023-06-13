@@ -23,7 +23,7 @@ public class AttachmentItem : InventoryItem, ILootSpawnerItem, IPurchasableItem
 
 	public WeaponItem AttachedTo => Parent?.Parent as WeaponItem;
 
-	public override bool CanStackWith( InventoryItem other )
+	public override bool CanStackWith( IInventoryItem other )
 	{
 		return false;
 	}

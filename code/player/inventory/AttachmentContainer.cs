@@ -11,7 +11,7 @@ public partial class AttachmentContainer : InventoryContainer
 		SetSlotLimit( 4 );
 	}
 
-	public override bool CanGiveItem( ushort slot, InventoryItem item )
+	public override bool CanGiveItem( ushort slot, IInventoryItem item )
 	{
 		if ( item is not AttachmentItem attachment )
 			return false;
@@ -23,7 +23,7 @@ public partial class AttachmentContainer : InventoryContainer
 		return !existing.Any();
 	}
 
-	protected override void OnItemGiven( ushort slot, InventoryItem item )
+	protected override void OnItemGiven( ushort slot, IInventoryItem item )
 	{
 		if ( item is AttachmentItem attachment && Parent is WeaponItem weapon )
 		{
@@ -33,7 +33,7 @@ public partial class AttachmentContainer : InventoryContainer
 		base.OnItemGiven( slot, item );
 	}
 
-	protected override void OnItemTaken( ushort slot, InventoryItem item )
+	protected override void OnItemTaken( ushort slot, IInventoryItem item )
 	{
 		base.OnItemTaken( slot, item );
 

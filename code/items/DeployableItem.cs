@@ -31,7 +31,7 @@ public abstract class DeployableItem : InventoryItem, ILootSpawnerItem, IPurchas
 		return false;
 	}
 
-	public override bool CanStackWith( InventoryItem other )
+	public override bool CanStackWith( IInventoryItem other )
 	{
 		return false;
 	}

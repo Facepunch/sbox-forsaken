@@ -231,7 +231,7 @@
         return HashCode.Combine( ForsakenPlayer.Me, Selected, childContainer, backpack, hotbar, Container );
     }
 
-    private InventoryContainer GetTransferTarget( InventoryItem item )
+    private InventoryContainer GetTransferTarget( IInventoryItem item )
     {
         return ForsakenPlayer.Me?.Backpack;
     }

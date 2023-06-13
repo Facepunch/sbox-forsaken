@@ -23,7 +23,7 @@ public class AmmoItem : ResourceItem<AmmoResource, AmmoItem>, ILootSpawnerItem, 
 	public virtual float BaseComponentReturn => Resource?.BaseComponentReturn ?? 0.5f;
 	public virtual bool IsRecyclable => Resource?.IsRecyclable ?? default;
 
-	public override bool CanStackWith( InventoryItem other )
+	public override bool CanStackWith( IInventoryItem other )
 	{
 		return (other is AmmoItem item && item.AmmoType == AmmoType);
 	}

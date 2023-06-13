@@ -2,6 +2,7 @@
 @using Sandbox;
 @using Sandbox.UI;
 @using Facepunch.Forsaken;
+@using Conna.Inventory;
 
 @namespace Facepunch.Forsaken.UI
 @attribute [StyleSheet( "/ui/inputhints/InputHints.scss" )]
@@ -50,7 +51,7 @@
         if ( !ForsakenPlayer.Me.IsValid() )
             return string.Empty;
 
-        var hotbarItem = ForsakenPlayer.Me.GetActiveHotbarItem();
+        var hotbarItem = ForsakenPlayer.Me.GetActiveHotbarItem() as InventoryItem;
         return hotbarItem?.PrimaryUseHint ?? string.Empty;
     }
 
@@ -59,7 +60,7 @@
         if ( !ForsakenPlayer.Me.IsValid() )
             return string.Empty;
 
-        var hotbarItem = ForsakenPlayer.Me.GetActiveHotbarItem();
+        var hotbarItem = ForsakenPlayer.Me.GetActiveHotbarItem() as InventoryItem;
         return hotbarItem?.SecondaryUseHint ?? string.Empty;
     }
 
@@ -68,7 +69,7 @@
         if ( !ForsakenPlayer.Me.IsValid() )
             return false;
 
-        var hotbarItem = ForsakenPlayer.Me.GetActiveHotbarItem();
+        var hotbarItem = ForsakenPlayer.Me.GetActiveHotbarItem() as InventoryItem;
         return !string.IsNullOrEmpty( hotbarItem?.SecondaryUseHint ?? string.Empty );
     }
 
@@ -77,7 +78,7 @@
         if (!ForsakenPlayer.Me.IsValid())
             return false;
 
-        var hotbarItem = ForsakenPlayer.Me.GetActiveHotbarItem();
+        var hotbarItem = ForsakenPlayer.Me.GetActiveHotbarItem() as InventoryItem;
         return !string.IsNullOrEmpty( hotbarItem?.PrimaryUseHint ?? string.Empty );
     }
 

@@ -24,9 +24,9 @@
     public string Description => Output.Description;
     public IReadOnlySet<string> Tags => Output.Tags;
     public string Name => Output.Name;
-    public Color Color => Output.Color;
+    public Color Color => (Output as InventoryItem)?.Color ?? Color.White;
 
-    private InventoryItem Output { get; set; }
+    private IInventoryItem Output { get; set; }
     private Panel Icon { get; set; }
     private Panel Glow { get; set; }
 
@@ -39,9 +39,9 @@
 
     public void AddTooltipInfo( Panel container )
     {
-        if ( Output.IsValid() )
+        if ( Output.IsValid() && Output is InventoryItem item )
         {
-            Output.AddTooltipInfo( container );
+            item.AddTooltipInfo( container );
         }
     }
 
@@ -69,19 +69,21 @@
 
     protected override void OnAfterTreeRender( bool firstTime )
     {
-        var icon = Output.Icon;
+        if ( Output is not InventoryItem item ) return;
+
+        var icon = item.Icon;
 
         if ( !string.IsNullOrEmpty( icon ) )
         {
             Icon.Style.SetBackgroundImage( icon );
-            Icon.Style.BackgroundTint = Output.IconTintColor;
+            Icon.Style.BackgroundTint = item.IconTintColor;
         }
         else
         {
             Icon.Style.BackgroundImage = null;
         }
 
-        Glow.Style.SetRadialGradientBackground( Output.Color, 0.6f, Color.Black, 0f );
+        Glow.Style.SetRadialGradientBackground( item.Color, 0.6f, Color.Black, 0f );
 
         base.OnAfterTreeRender( firstTime );
     }

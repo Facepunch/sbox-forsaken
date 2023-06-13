@@ -23,7 +23,7 @@
 {
     public bool IsEmpty => !Item.IsValid();
 
-    public InventoryItem Item { get; set; }
+    public IInventoryItem Item { get; set; }
     public int Quantity { get; set; }
 
     private Panel Icon { get; set; }
@@ -41,21 +41,23 @@
 
     protected override void OnAfterTreeRender( bool firstTime )
     {
-        if ( Item.IsValid() )
+        var item = Item as InventoryItem;
+
+        if ( item.IsValid() )
         {
-            var icon = Item.Icon;
+            var icon = item.Icon;
 
             if ( !string.IsNullOrEmpty( icon ) )
             {
                 Icon.Style.SetBackgroundImage( icon );
-                Icon.Style.BackgroundTint = Item.IconTintColor;
+                Icon.Style.BackgroundTint = item.IconTintColor;
             }
             else
             {
                 Icon.Style.BackgroundImage = null;
             }
 
-            Glow.Style.SetRadialGradientBackground( Item.Color, 0.6f, Color.Black, 0f );
+            Glow.Style.SetRadialGradientBackground( item.Color, 0.6f, Color.Black, 0f );
         }
 
         base.OnAfterTreeRender( firstTime );

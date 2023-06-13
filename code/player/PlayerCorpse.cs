@@ -138,7 +138,7 @@ public partial class PlayerCorpse : ModelEntity, IContextActionProvider
 		}
 	}
 
-	private void OnItemTaken( ushort slot, InventoryItem instance )
+	private void OnItemTaken( ushort slot, IInventoryItem instance )
 	{
 		var armor = Children.OfType<ArmorEntity>().Where( c => c.Item == instance ).ToList();
 

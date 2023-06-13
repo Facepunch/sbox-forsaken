@@ -94,12 +94,12 @@ public class WeaponItem : ResourceItem<WeaponResource, WeaponItem>, IContainerIt
 		}
 	}
 
-	public override bool CanStackWith( InventoryItem other )
+	public override bool CanStackWith( IInventoryItem other )
 	{
 		return false;
 	}
 
-	public override bool OnTrySwap( InventoryItem other )
+	public override bool OnTrySwap( IInventoryItem other )
 	{
 		if ( other is AttachmentItem )
 		{

@@ -377,12 +377,12 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		ContextActionId = action.Hash;
 	}
 
-	public bool IsActiveHotbarItem( InventoryItem item )
+	public bool IsActiveHotbarItem( IInventoryItem item )
 	{
 		return GetActiveHotbarItem() == item;
 	}
 
-	public InventoryItem GetActiveHotbarItem()
+	public IInventoryItem GetActiveHotbarItem()
 	{
 		if ( !IsHotbarSelected() ) return null;
 		return Hotbar.GetFromSlot( (ushort)HotbarIndex );

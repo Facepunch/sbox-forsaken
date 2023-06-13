@@ -35,7 +35,7 @@
     public InventoryContainer Container { get; set; }
     public ushort Slot { get; set; }
     public int DisplaySlot { get; set; }
-    public InventoryItem Item => Container.GetFromSlot( Slot );
+    public IInventoryItem Item => Container.GetFromSlot( Slot );
     public bool HideStackSize { get; set; }
     public bool IsSelected { get; set; }
     public string StackSize => HideStackSize ? string.Empty : GetStackSize();
@@ -47,7 +47,7 @@
     public string Description => Item.Description;
     public IReadOnlySet<string> Tags => Item.Tags;
     public string Name => Item.Name;
-    public Color Color => Item.Color;
+    public Color Color => (Item as InventoryItem)?.Color ?? Color.White;
 
     public bool ContainsItems
     {
@@ -67,7 +67,8 @@
 
     public string GetIconTexture()
     {
-        return Item.IsValid() ? Item.Icon : null;
+        if ( Item is not InventoryItem item ) return null;
+        return item.IsValid() ? item.Icon : null;
     }
 
     public string GetStackSize()
@@ -117,9 +118,11 @@
 
     public void AddTooltipInfo( Panel container )
     {
-        if ( Item.IsValid() )
+        if ( Item is not InventoryItem item ) return;
+
+        if ( item.IsValid() )
         {
-            Item.AddTooltipInfo( container );
+            item.AddTooltipInfo( container );
         }
     }
 
@@ -157,7 +160,9 @@
 
     protected override void OnAfterTreeRender( bool firstTime )
     {
-        if ( !Item.IsValid() )
+        var item = Item as InventoryItem;
+
+        if ( !item.IsValid() )
         {
             if ( !string.IsNullOrEmpty( DefaultIcon ) )
                 Icon.Style.SetBackgroundImage( DefaultIcon );
@@ -169,19 +174,19 @@
             return;
         }
 
-        var icon = Item.Icon;
+        var icon = item.Icon;
 
         if ( !string.IsNullOrEmpty( icon ) )
         {
             Icon.Style.SetBackgroundImage( icon );
-            Icon.Style.BackgroundTint = Item.IconTintColor;
+            Icon.Style.BackgroundTint = item.IconTintColor;
         }
         else
         {
             Icon.Style.BackgroundImage = null;
         }
 
-        Glow.Style.SetRadialGradientBackground( Item.Color, 0.6f, Color.Black, 0f );
+        Glow.Style.SetRadialGradientBackground( item.Color, 0.6f, Color.Black, 0f );
 
         SetClass( "is-empty", false );
     }

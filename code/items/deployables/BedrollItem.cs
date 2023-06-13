@@ -19,7 +19,7 @@ public class BedrollItem : DeployableItem
 		return entity.IsValid() && (entity.IsWorld || entity is Foundation);
 	}
 
-	public override bool CanStackWith( InventoryItem other )
+	public override bool CanStackWith( IInventoryItem other )
 	{
 		return false;
 	}

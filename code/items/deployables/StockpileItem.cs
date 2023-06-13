@@ -28,7 +28,7 @@ public class StockpileItem : DeployableItem
 		return false;
 	}
 
-	public override bool CanStackWith( InventoryItem other )
+	public override bool CanStackWith( IInventoryItem other )
 	{
 		return false;
 	}

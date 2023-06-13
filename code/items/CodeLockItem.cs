@@ -14,7 +14,7 @@ public class CodeLockItem : InventoryItem, IRecyclableItem
 	public float BaseComponentReturn => 0.5f;
 	public bool IsRecyclable => true;
 
-	public override bool CanStackWith( InventoryItem other )
+	public override bool CanStackWith( IInventoryItem other )
 	{
 		return false;
 	}

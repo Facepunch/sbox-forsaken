@@ -12,7 +12,7 @@ public class HammerItem : InventoryItem
 	public override string Name => "Hammer";
 	public override string Icon => "textures/items/hammer.png";
 
-	public override bool CanStackWith( InventoryItem other )
+	public override bool CanStackWith( IInventoryItem other )
 	{
 		return false;
 	}

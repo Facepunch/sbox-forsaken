@@ -34,10 +34,10 @@
     public IReadOnlySet<string> Tags => Output.Tags;
     public int TimeLeft => Entry?.FinishTime.Relative.CeilToInt() ?? 0;
     public string Name => Output.Name;
-    public Color Color => Output.Color;
+    public Color Color => (Output as InventoryItem)?.Color ?? Color.White;
     public bool IsEmpty => !Output.IsValid();
 
-    private InventoryItem Output { get; set; }
+    private IInventoryItem Output { get; set; }
     private Panel Icon { get; set; }
     private Panel Glow { get; set; }
 
@@ -49,9 +49,11 @@
 
     public void AddTooltipInfo( Panel container )
     {
-        if ( Output.IsValid() )
+        if ( Output is not InventoryItem item ) return;
+
+        if ( item.IsValid() )
         {
-            Output.AddTooltipInfo( container );
+            item.AddTooltipInfo( container );
         }
     }
 
@@ -85,26 +87,28 @@
 
     protected override int BuildHash()
     {
-        return HashCode.Combine(TimeLeft);
+        return HashCode.Combine( TimeLeft );
     }
 
     protected override void OnAfterTreeRender( bool firstTime )
     {
-        if ( Output.IsValid() )
+        var item = Output as InventoryItem;
+
+        if ( item.IsValid() )
         {
-            var icon = Output.Icon;
+            var icon = item.Icon;
 
             if ( !string.IsNullOrEmpty( icon ) )
             {
                 Icon.Style.SetBackgroundImage( icon );
-                Icon.Style.BackgroundTint = Output.IconTintColor;
+                Icon.Style.BackgroundTint = item.IconTintColor;
             }
             else
             {
                 Icon.Style.BackgroundImage = null;
             }
 
-            Glow.Style.SetRadialGradientBackground( Output.Color, 0.6f, Color.Black, 0f );
+            Glow.Style.SetRadialGradientBackground( item.Color, 0.6f, Color.Black, 0f );
         }
 
         base.OnAfterTreeRender( firstTime );

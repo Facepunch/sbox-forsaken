@@ -14,7 +14,7 @@ public class ToolboxItem : InventoryItem
 	public override string Name => "Toolbox";
 	public override string Icon => "textures/items/toolbox.png";
 
-	public override bool CanStackWith( InventoryItem other )
+	public override bool CanStackWith( IInventoryItem other )
 	{
 		return false;
 	}

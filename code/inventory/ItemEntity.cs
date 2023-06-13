@@ -10,7 +10,7 @@ namespace Facepunch.Forsaken;
 public partial class ForsakenItemEntity : ItemEntity, IContextActionProvider, IPersistence
 {
 	public float InteractionRange => 100f;
-	public Color GlowColor => Item?.Color ?? Color.White;
+	public Color GlowColor => (Item as InventoryItem)?.Color ?? Color.White;
 	public bool AlwaysGlow => true;
 
 	private ContextAction PickupAction { get; set; }

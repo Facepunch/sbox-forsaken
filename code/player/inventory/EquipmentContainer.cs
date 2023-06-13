@@ -10,7 +10,7 @@ public partial class EquipmentContainer : InventoryContainer
 		SetSlotLimit( 4 );
 	}
 
-	public override InventoryContainer GetTransferTarget( InventoryItem item )
+	public override InventoryContainer GetTransferTarget( IInventoryItem item )
 	{
 		if ( Entity is ForsakenPlayer player )
 		{
@@ -20,7 +20,7 @@ public partial class EquipmentContainer : InventoryContainer
 		return base.GetTransferTarget( item );
 	}
 
-	public override bool CanGiveItem( ushort slot, InventoryItem item )
+	public override bool CanGiveItem( ushort slot, IInventoryItem item )
 	{
 		if ( item is not ArmorItem armor )
 			return false;
