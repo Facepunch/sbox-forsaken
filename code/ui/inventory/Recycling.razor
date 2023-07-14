@@ -10,9 +10,9 @@
 @implements IDialog
 @implements IDroppable
 
-@if ( !ForsakenPlayer.Me.IsValid() ) return;
-@if ( !Recycler.IsValid() ) return;
-@if ( Recycler.Processor is null ) return;
+@if ( !ForsakenPlayer.Me.IsValid() ) { return; }
+@if ( !Recycler.IsValid() ) { return; }
+@if ( Recycler.Processor is null ) { return; }
 
 @{
     var backpack = ForsakenPlayer.Me.Backpack;

@@ -9,8 +9,8 @@
 @inherits Panel
 @implements IDialog
 
-@if ( !ForsakenPlayer.Me.IsValid() ) return;
-@if ( !Trader.IsValid() ) return;
+@if ( !ForsakenPlayer.Me.IsValid() ) { return; };
+@if ( !Trader.IsValid() ) { return; };
 
 <root>
     <div class="body-container">
@@ -20,10 +20,8 @@
         <div class="stock">
             @for ( ushort i = 0; i < Inventory.SlotLimit; i++ )
             {
-                @{
-                    var item = Inventory.GetFromSlot( i );
-                    var purchasable = (item as IPurchasableItem);
-                }
+                var item = Inventory.GetFromSlot( i );
+                var purchasable = (item as IPurchasableItem);
 
                 <div class="listing">
                     <InventorySlot class="large" Container=@Inventory Slot=@i HideStackSize></InventorySlot>
@@ -89,7 +87,7 @@
         base.Tick();
     }
 
-    protected override void OnParametersSet()
+	protected override void OnParametersSet()
     {
         Current = this;
         BindClass( "hidden", () => !IsOpen );

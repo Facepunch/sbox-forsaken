@@ -10,7 +10,7 @@
 @inherits Panel
 @implements IDialog
 
-@if ( !ForsakenPlayer.Me.IsValid() ) return;
+@if ( !ForsakenPlayer.Me.IsValid() ) { return; }
 
 @{
     var equipment = ForsakenPlayer.Me.Equipment;

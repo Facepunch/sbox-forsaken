@@ -11,7 +11,7 @@
 @inherits Panel
 @implements IDialog
 
-@if ( !ForsakenPlayer.Me.IsValid() ) return;
+@if ( !ForsakenPlayer.Me.IsValid() ) { return; }
 
 <root>
     <div @ref="Viewport" class="viewport">

@@ -8,7 +8,7 @@
 @attribute [StyleSheet( "/ui/inventory/Hotbar.scss" )]
 @inherits Panel
 
-@if ( !ForsakenPlayer.Me.IsValid() ) return;
+@if ( !ForsakenPlayer.Me.IsValid() ) { return; }
 
 @{
     var hotbar = ForsakenPlayer.Me.Hotbar;

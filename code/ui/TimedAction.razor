@@ -10,7 +10,7 @@
 @attribute [StyleSheet( "/ui/TimedAction.scss" )]
 @inherits Panel
 
-@if ( Info is null ) return;
+@if ( Info is null ) { return; }
 
 <root>
     <div @ref="Container" class="container">

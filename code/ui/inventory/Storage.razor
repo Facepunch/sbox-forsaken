@@ -10,8 +10,8 @@
 @implements IDialog
 @implements IDroppable
 
-@if ( !ForsakenPlayer.Me.IsValid() ) return;
-@if ( !Container.IsValid() ) return;
+@if ( !ForsakenPlayer.Me.IsValid() ) { return; }
+@if ( !Container.IsValid() ) { return; }
 
 @{
     var equipment = ForsakenPlayer.Me.Equipment;

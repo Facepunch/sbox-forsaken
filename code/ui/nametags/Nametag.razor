@@ -7,8 +7,8 @@
 @attribute [StyleSheet( "/ui/nametags/Nametag.scss" )]
 @inherits Panel
 
-@if ( !Provider.IsValid() ) return;
-@if ( !Provider.ShowNametag ) return;
+@if ( !Provider.IsValid() ) { return; }
+@if ( !Provider.ShowNametag ) { return; }
 
 <root class="@(Provider.IsInactive ? "inactive" : "")">
     <div @ref="Dot" class="dot"></div>

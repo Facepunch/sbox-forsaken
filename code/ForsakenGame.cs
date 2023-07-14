@@ -83,9 +83,9 @@ public partial class ForsakenGame : GameManager
 	{
 		InventorySystem.ClientJoined( client );
 
-		var pawn = All.OfType<ForsakenPlayer>()
-			.Where( p => p.SteamId == client.SteamId )
-			.FirstOrDefault();
+		var pawn = All
+			.OfType<ForsakenPlayer>()
+			.FirstOrDefault( p => p.SteamId == client.SteamId );
 
 		if ( !pawn.IsValid() )
 		{
@@ -213,7 +213,7 @@ public partial class ForsakenGame : GameManager
 		base.PostLevelLoaded();
 	}
 
-	[Event.Tick.Server]
+	[GameEvent.Tick.Server]
 	private void ServerTick()
 	{
 		if ( HasLoadedWorld && NextAutoSave && ShouldAutoSave )
@@ -253,13 +253,13 @@ public partial class ForsakenGame : GameManager
 		Log.Info( e.Client + " has disconnected" );
 	}
 
-	[Event.Tick.Server]
+	[GameEvent.Tick.Server]
 	private void OnMyTickEvent( IClient test )
 	{
 		Log.Info( "Tick" );
 	}
 
-	[Event.Client.Frame]
+	[GameEvent.Client.Frame]
 	private void OnFrame()
 	{
 		if ( Isometric )

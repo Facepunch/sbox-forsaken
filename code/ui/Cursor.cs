@@ -9,7 +9,7 @@ namespace Facepunch.Forsaken.UI;
 
 public class CursorAction : Panel
 {
-	public ContextAction Action { get; private set; }
+	private ContextAction Action { get; set; }
 
 	private Image Icon { get; set; }
 	private Label Name { get; set; }
@@ -28,13 +28,12 @@ public class CursorAction : Panel
 	{
 		var player = ForsakenPlayer.Me;
 
-		if ( Action.IsValid() && Action.IsAvailable( player ) )
-		{
-			player.SetContextAction( Action );
-			return true;
-		}
+		if ( !Action.IsValid() || !Action.IsAvailable( player ) )
+			return false;
 
-		return false;
+		player.SetContextAction( Action );
+		return true;
+
 	}
 
 	public void ClearAction()
@@ -45,9 +44,7 @@ public class CursorAction : Panel
 	public void SetAction( ContextAction action )
 	{
 		if ( !string.IsNullOrEmpty( action.Icon ) )
-		{
 			Icon.Texture = Texture.Load( FileSystem.Mounted, action.Icon );
-		}
 
 		Name.Text = action.Name;
 		Action = action;
@@ -63,12 +60,12 @@ public class CursorAction : Panel
 
 	private void UpdateAvailability()
 	{
-		if ( Action.IsValid() )
-		{
-			var availability = Action.GetAvailability( ForsakenPlayer.Me );
-			Condition.Text = availability.Message;
-			SetClass( "unavailable", !availability.IsAvailable );
-		}
+		if ( !Action.IsValid() )
+			return;
+
+		var availability = Action.GetAvailability( ForsakenPlayer.Me );
+		Condition.Text = availability.Message;
+		SetClass( "unavailable", !availability.IsAvailable );
 	}
 }
 
