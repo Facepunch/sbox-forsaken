@@ -250,7 +250,7 @@ public abstract partial class SingleDoor : Structure, ICodeLockable
 
 	private bool LastEnableAllCollisions { get; set; }
 
-	[Event.Tick.Server]
+	[GameEvent.Tick.Server]
 	protected virtual void Tick()
 	{
 		if ( !Socket.IsValid() ) return;

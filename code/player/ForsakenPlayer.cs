@@ -877,7 +877,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		}
 	}
 
-	[Event.Tick.Server]
+	[GameEvent.Tick.Server]
 	protected virtual void ServerTick()
 	{
 		HeatEmitters.RemoveAll( e => !e.IsValid() );

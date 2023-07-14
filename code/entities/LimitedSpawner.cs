@@ -49,7 +49,7 @@ public class LimitedSpawner
 			return MaxTotal;
 	}
 
-	[Event.Tick.Server]
+	[GameEvent.Tick.Server]
 	private void ServerTick()
 	{
 		var isCorrectTimePeriod = TimeSystem.IsTimeBetween( TimeOfDayStart, TimeOfDayEnd );

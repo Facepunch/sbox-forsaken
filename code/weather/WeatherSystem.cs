@@ -13,7 +13,7 @@ public partial class WeatherSystem : Entity
 	[Net, Change( nameof( OnInternalConditionChanged ) )]
 	private WeatherCondition InternalCondition { get; set; }
 
-	[Event.Entity.PostSpawn]
+	[GameEvent.Entity.PostSpawn]
 	private static void Initialize()
 	{
 		Game.AssertServer();
@@ -61,13 +61,13 @@ public partial class WeatherSystem : Entity
 		base.Spawn();
 	}
 
-	[Event.Tick.Server]
+	[GameEvent.Tick.Server]
 	private void ServerTick()
 	{
 		Condition?.ServerTick();
 	}
 
-	[Event.Tick.Client]
+	[GameEvent.Tick.Client]
 	private void ClientTick()
 	{
 		Condition?.ClientTick();

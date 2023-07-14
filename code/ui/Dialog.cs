@@ -32,7 +32,7 @@ public static class Dialog
 		Active?.Close();
 	}
 
-	[Event.Client.BuildInput]
+	[GameEvent.Client.BuildInput]
 	private static void BuildInput()
 	{
 		if ( Active is null || !Active.IsOpen ) return;

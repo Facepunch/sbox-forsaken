@@ -215,7 +215,7 @@ public abstract partial class LootSpawner : ModelEntity, IContextActionProvider,
 		base.OnDestroy();
 	}
 
-	[Event.Tick.Server]
+	[GameEvent.Tick.Server]
 	private void ServerTick()
 	{
 		if ( NextRestockTime && IsHidden )

@@ -229,7 +229,7 @@ public abstract partial class NPC : AnimatedEntity
 		}
 	}
 
-	[Event.Tick.Server]
+	[GameEvent.Tick.Server]
 	protected virtual void ServerTick()
 	{
 		if ( CheckShouldSimulate() )
@@ -238,7 +238,7 @@ public abstract partial class NPC : AnimatedEntity
 		}
 	}
 
-	[Event.Entity.PostSpawn]
+	[GameEvent.Entity.PostSpawn]
 	protected virtual void OnMapLoaded()
 	{
 		if ( PatrolPathEntity.IsValid() )

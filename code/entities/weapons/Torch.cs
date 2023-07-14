@@ -69,7 +69,7 @@ public partial class Torch : MeleeWeapon
 		BrightnessAnimator = new( new float[] { 0.9f, 1f, 1f, 0.7f, 1f, 1f, 0.8f, 0.8f, 1.2f }, 8f );
 	}
 
-	[Event.Tick.Client]
+	[GameEvent.Tick.Client]
 	private void ClientTick()
 	{
 		if ( Owner is not ForsakenPlayer player )

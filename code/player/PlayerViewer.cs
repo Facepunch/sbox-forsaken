@@ -18,7 +18,7 @@ public class PlayerViewer : RenderHook
 	private static float MinCursorRadius => 0.05f;
 	private static bool IsEnabled => false;
 
-	[Event.Client.Frame]
+	[GameEvent.Client.Frame]
 	private static void OnFrame()
 	{
 		if ( !ForsakenPlayer.Me.IsValid() ) return;

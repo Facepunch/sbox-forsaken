@@ -205,7 +205,7 @@ public class Cursor : Panel
 		ActionProvider = null;
 	}
 
-	[Event.Client.BuildInput]
+	[GameEvent.Client.BuildInput]
 	private void BuildInput()
 	{
 		var hasSecondaries = ActionContainer.ChildrenCount > 0;

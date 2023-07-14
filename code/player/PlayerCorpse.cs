@@ -120,7 +120,7 @@ public partial class PlayerCorpse : ModelEntity, IContextActionProvider
 		base.Spawn();
 	}
 
-	[Event.Tick.Client]
+	[GameEvent.Tick.Client]
 	private void ClientTick()
 	{
 		if ( IsClientOnly && TimeSinceSpawned > 120f )
@@ -129,7 +129,7 @@ public partial class PlayerCorpse : ModelEntity, IContextActionProvider
 		}
 	}
 
-	[Event.Tick.Server]
+	[GameEvent.Tick.Server]
 	private void ServerTick()
 	{
 		if ( TimeSinceSpawned > 600f )

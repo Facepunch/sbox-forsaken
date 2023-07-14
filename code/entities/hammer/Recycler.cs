@@ -117,7 +117,7 @@ public partial class Recycler : ModelEntity, IContextActionProvider, IPersistenc
 		base.ClientSpawn();
 	}
 
-	[Event.Tick.Server]
+	[GameEvent.Tick.Server]
 	private void ServerTick()
 	{
 		if ( Processor.IsActive )

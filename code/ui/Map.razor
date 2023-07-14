@@ -346,7 +346,7 @@
         FollowPlayer = true;
     }
 
-    [Event.Tick.Client]
+    [GameEvent.Tick.Client]
     private void ClientTick()
     {
         if ( string.IsNullOrEmpty( ForsakenGame.UniqueSaveId ) ) return;
@@ -411,7 +411,7 @@
         Player = Container.AddChild<Panel>( "player" );
     }
 
-    [Event.Client.Frame]
+    [GameEvent.Client.Frame]
     private void OnFrame()
     {
         if ( !PanVelocity.IsNearZeroLength )

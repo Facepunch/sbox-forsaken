@@ -12,7 +12,7 @@ public partial class InventorySlot
     private static Queue<InventorySlot> TransferQueue { get; set; } = new();
     private static TimeUntil NextTransferTime { get; set; }
 
-    [Event.Tick.Client]
+    [GameEvent.Tick.Client]
     private static void ProcessTransferQueue()
     {
         if ( NextTransferTime && TransferQueue.TryDequeue( out var slot ) )

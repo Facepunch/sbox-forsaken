@@ -160,7 +160,7 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 		base.OnDestroy();
 	}
 
-	[Event.Tick.Client]
+	[GameEvent.Tick.Client]
 	private void ClientTick()
 	{
 		if ( DynamicLight.IsValid() )
@@ -174,7 +174,7 @@ public partial class Furnace : Deployable, IContextActionProvider, ICookerEntity
 		}
 	}
 
-	[Event.Tick.Server]
+	[GameEvent.Tick.Server]
 	private void ServerTick()
 	{
 		if ( Processor.IsActive )

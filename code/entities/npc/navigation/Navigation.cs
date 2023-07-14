@@ -18,7 +18,7 @@ public static partial class Navigation
 	private static PriorityQueue<GridNode, float> OpenSet = new();
 	private static Vector3 Origin;
 
-	[Event.Entity.PostSpawn]
+	[GameEvent.Entity.PostSpawn]
 	private static async void GenerateWalkabilityMap()
 	{
 		if ( Game.IsClient ) return;
