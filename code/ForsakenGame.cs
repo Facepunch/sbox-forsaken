@@ -236,24 +236,6 @@ public partial class ForsakenGame : GameManager
 		InternalSaveId = PersistenceSystem.UniqueId;
 	}
 
-	[GameEvent.Server.ClientJoined]
-	private void ClientConnected( ClientJoinedEvent e )
-	{
-		Log.Info( e.Client + " has connected" );
-	}
-
-	[GameEvent.Server.ClientDisconnect]
-	private void ClientDisconnect( ClientDisconnectEvent e )
-	{
-		Log.Info( e.Client + " has disconnected" );
-	}
-
-	[GameEvent.Tick.Server]
-	private void OnMyTickEvent( IClient test )
-	{
-		Log.Info( "Tick" );
-	}
-
 	[GameEvent.Client.Frame]
 	private void OnFrame()
 	{
