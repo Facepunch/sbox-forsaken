@@ -1,11 +1,11 @@
 {
   "publish": {
     "Allowed": true,
-    "Enabled": false,
+    "Enabled": true,
     "ProjectConfig": {
       "Title": "fsk_test_map",
       "Type": "map",
-      "Org": "local",
+      "Org": "facepunch",
       "Ident": "fsk_test_map",
       "Tags": null,
       "Schema": 0,
@@ -77,7 +77,10 @@
         "rust.shipping_container_300_a#22050"
       ],
       "Metadata": {
-        "SingleAssetSource": "maps/fsk_test_map.vmap"
+        "SingleAssetSource": "maps/fsk_test_map.vmap",
+        "GameSupport": [
+          "facepunch.forsaken"
+        ]
       }
     }
   }
