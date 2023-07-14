@@ -35,7 +35,7 @@
         flex-direction: column;
 
         .zone {
-            text-shadow: 0px 0px 4px black;
+            text-shadow: 0 0 4px black;
             transition: opacity 0.4s ease-in;
             font-family: Vollkorn;
             font-size: 48px;
@@ -59,7 +59,6 @@
 
 .tooltip {
     background-color: rgba( black, 0.8 );
-    border: 1px solid rgba( #555, 0.1 );
     padding: 16px;
     border: 2px solid lightgoldenrodyellow;
     border-radius: 4px;
@@ -72,11 +71,11 @@
     transition: opacity 0.2s linear 0.1s, transform 0.2s ease-out 0.1s;
     opacity: 1;
     transform: scale( 1 );
-    margin: 0px;
+    margin: 0;
 
     &:intro, &:outro {
         opacity: 0;
-        transform: scale( 0.8f );
+        transform: scale( 0.8 );
         transition: all 0.1s ease-out;
     }
 }

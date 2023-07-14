@@ -15,25 +15,25 @@
 
 <root>
     <div @ref="Viewport" class="viewport">
-        <div @ref="Container" class="map">
-            <div @ref="Grid" class="grid">
-                @for ( var x = 0; x < 10; x++ )
-                {
-                    for ( var y = 0; y < 10; y++ )
-                    {
-                        var squareSize = 200f;
-                        var character = ((char)(65 + x)).ToString().ToUpper();
-                        var left = (squareSize * x);
-                        var top = (squareSize * y);
+	    <div @ref="Container" class="map">
+		    <div @ref="Grid" class="grid">
+			    @for ( var x = 0; x < 10; x++ )
+			    {
+				    for ( var y = 0; y < 10; y++ )
+				    {
+					    var squareSize = 200f;
+					    var character = ((char)(65 + x)).ToString().ToUpper();
+					    var left = (squareSize * x);
+					    var top = (squareSize * y);
 
-                        <div class="square" style="left: @(left)px; top: @(top)px;">
-                            <label class="coord">@(character)@y</label>
-                        </div>
-                    }
-                }
-            </div>
-            <img @ref="Drawing" class="drawing" />
-        </div>
+					    <div class="square" style="left: @(left)px; top: @(top)px;">
+						    <label class="coord">@(character)@y</label>
+					    </div>
+				    }
+			    }
+		    </div>
+		    <img @ref="Drawing" class="drawing"/>
+	    </div>
 
         <div tooltip="Follow You" class="recenter" onclick=@CenterOnPlayer>
             <i class="icon">filter_center_focus</i>

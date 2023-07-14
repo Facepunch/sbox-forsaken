@@ -33,11 +33,6 @@ public partial class ForsakenGame : GameManager
 	[Net] private string InternalSaveId { get; set; }
 	private ScreenEffects PostProcessing { get; set; }
 
-	public ForsakenGame() : base()
-	{
-
-	}
-
 	public override void LoadSavedGame( SavedGame save )
 	{
 		Log.Info( "[Forsaken] Loading world..." );
