@@ -190,6 +190,7 @@
 			m_bIgnoreRadius = true
 			m_flAnimationRate = 10.0
 			m_bAnimated = true
+			m_hOverrideMaterial = resource:"materials/generic/floor_dirt_b.vmat"
 		},
 	]
 	m_Children = 

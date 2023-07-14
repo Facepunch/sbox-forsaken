@@ -30,11 +30,11 @@
 						[
 							{
 								from = "dirt.vmat"
-								to = "materials/generic/floor_dirt_a.vmat"
+								to = "materials/generic/floor_dirt_b.vmat"
 							},
 							{
 								from = "grass.vmat"
-								to = "materials/grass/floor_grass_dirt_blend_a.vmat"
+								to = "materials/grass/floor_grass_wetdirt_blend_a.vmat"
 							},
 						]
 						use_global_default = false

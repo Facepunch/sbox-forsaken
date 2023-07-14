@@ -988,7 +988,7 @@
 				},
 			]
 			m_bIgnoreRadius = true
-			m_hOverrideMaterial = resource:"materials/generic/floor_dirt_a.vmat"
+			m_hOverrideMaterial = resource:"materials/generic/floor_dirt_b.vmat"
 		},
 	]
 }
