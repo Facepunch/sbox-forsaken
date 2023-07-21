@@ -24,8 +24,11 @@
     "MaxPlayers": 32,
     "MinPlayers": 1,
     "GameNetworkType": "Multiplayer",
-    "MapSelect": "Tagged",
-    "MapList": [],
+    "MapSelect": "Official",
+    "MapList": [
+      "facepunch.construct",
+      "facepunch.square"
+    ],
     "RankType": "None",
     "PerMapRanking": false,
     "LeaderboardType": "None",

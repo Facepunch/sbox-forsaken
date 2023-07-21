@@ -1,4 +1,5 @@
-﻿using Sandbox;
+﻿using System;
+using Sandbox;
 using Sandbox.Effects;
 using Conna.Inventory;
 using System.IO;
