@@ -556,11 +556,10 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 				DeployableYaw = 0;
 		}
 
-		var mouseDelta = Input.MouseDelta / new Vector2( Screen.Width, Screen.Height );
-
 		if ( !Mouse.Visible && !HasTimedAction )
 		{
-			Cursor += (mouseDelta * 20f * Time.Delta);
+			var mouseDelta = Input.MouseDelta / Screen.Size;
+			Cursor += mouseDelta * 0.5f;
 			Cursor = Cursor.Clamp( 0f, 1f );
 		}
 
