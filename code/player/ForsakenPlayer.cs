@@ -315,7 +315,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		var startPosition = CameraPosition;
 		var endPosition = CameraPosition + CursorDirection * 1000f;
 		var cursor = Trace.Ray( startPosition, endPosition )
-			.EntitiesOnly()
+			.DynamicOnly()
 			.UseHitboxes()
 			.WithoutTags( "trigger" )
 			.WithTag( "player" )
@@ -527,23 +527,23 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		OriginalViewAngles = ViewAngles;
 		InputDirection = Input.AnalogMove;
 
-		var trader = UI.Trading.Current;
-		var storage = UI.Storage.Current;
-		var cooking = UI.Cooking.Current;
-		var recycling = UI.Recycling.Current;
+		var trader = Trading.Current;
+		var storage = Storage.Current;
+		var cooking = Cooking.Current;
+		var recycling = Recycling.Current;
 
-		if ( trader.IsOpen && trader.Trader.IsValid() )
+		if ( trader.IsValid() && trader.IsOpen && trader.Trader.IsValid() )
 			OpenContainerIds = trader.Inventory.ContainerId.ToString();
-		else if ( recycling.IsOpen && recycling.Recycler.IsValid() )
+		else if ( recycling.IsValid() && recycling.IsOpen && recycling.Recycler.IsValid() )
 			OpenContainerIds = recycling.Recycler.Processor.GetContainerIdString();
-		else if ( cooking.IsOpen && cooking.Cooker.IsValid() )
+		else if ( cooking.IsValid() && cooking.IsOpen && cooking.Cooker.IsValid() )
 			OpenContainerIds = cooking.Cooker.Processor.GetContainerIdString();
-		else if ( storage.IsOpen && storage.Container.IsValid() )
+		else if ( storage.IsValid() && storage.IsOpen && storage.Container.IsValid() )
 			OpenContainerIds = storage.Container.ContainerId.ToString();
 		else
 			OpenContainerIds = string.Empty;
 
-		HasDialogOpen = UI.Dialog.IsActive();
+		HasDialogOpen = Dialog.IsActive();
 
 		if ( Input.StopProcessing )
 			return;
@@ -595,7 +595,7 @@ public partial class ForsakenPlayer : AnimatedEntity, IPersistence, INametagProv
 		var startPosition = CameraPosition;
 		var endPosition = CameraPosition + CursorDirection * 3000f;
 		var query = Trace.Ray( startPosition, endPosition )
-			.EntitiesOnly()
+			.DynamicOnly()
 			.WithoutTags( "trigger" )
 			.WithTag( "hover" )
 			.Ignore( this )

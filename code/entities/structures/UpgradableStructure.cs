@@ -22,7 +22,7 @@ public abstract partial class UpgradableStructure : Structure
 		if ( ConsoleSystem.Caller.Pawn is ForsakenPlayer player )
 		{
 			var tr = Trace.Ray( player.CameraPosition, player.CameraPosition + player.CursorDirection * 10000f )
-				.EntitiesOnly()
+				.DynamicOnly()
 				.Run();
 
 			if ( tr.Entity is Structure structure )
