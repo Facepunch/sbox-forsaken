@@ -257,7 +257,7 @@ public class Cursor : Panel
 	{
 		var mouseDelta = Input.MouseDelta;
 
-		ActionCursorPosition += (mouseDelta * 10f * Time.Delta);
+		ActionCursorPosition += mouseDelta;
 		ActionCursorPosition = ActionCursorPosition.Clamp( Vector2.One * -500f, Vector2.One * 500f );
 
 		CursorAction closestItem = null;
