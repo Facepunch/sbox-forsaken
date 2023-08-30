@@ -1,0 +1,40 @@
+// THIS FILE IS AUTO-GENERATED
+
+Layer0
+{
+	shader "shaders/projected_decals.shader_c"
+
+	//---- Decal ----
+	F_ALPHA_MODE 1 // Cutoff
+	F_TRIPLANAR_MAPPING 1
+
+	//---- Normal ----
+	F_NORMAL_MAP 1
+
+	//---- Specular ----
+	F_SPECULAR 1
+
+	//---- Alpha ----
+	g_flAlphaCutoffSoftness "0.049"
+
+	//---- Ambient Occlusion ----
+	TextureAmbientOcclusion "materials/default/default_ao.tga"
+
+	//---- Color ----
+	TextureColor "models/rocks/groundring/ground_decal_1_color.tga"
+
+	//---- Fog ----
+	g_bFogEnabled "1"
+
+	//---- Metalness ----
+	TextureMetalness "materials/default/default_metal.tga"
+
+	//---- Normal ----
+	TextureNormal "models/rocks/groundring/ground_decal_1_normal.tga"
+
+	//---- Roughness ----
+	TextureRoughness "models/rocks/groundring/ground_decal_1_rough.tga"
+
+	//---- Translucent ----
+	TextureTranslucency "models/rocks/groundring/ground_decal_1_trans.tga"
+}
