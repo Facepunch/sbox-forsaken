@@ -9,14 +9,13 @@
         flex-direction: column;
         position: absolute;
         align-items: center;
-        transition: opacity 0.2s ease-in;
-        transition: transform 0.2s ease-in;
+        transition: opacity 0.1s ease-in;
+        transition: transform 0.1s ease-in;
         padding: 16px;
         opacity: 1;
 
         &:intro {
             opacity: 0;
-            transform: scale( 0.1f );
         }
 
         .circle {
