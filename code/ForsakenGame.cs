@@ -69,7 +69,7 @@ public partial class ForsakenGame : GameManager
 		TopDownCamera = new();
 		PostProcessing = new();
 
-		Camera.Main.RemoveAllHooks();
+		Camera.Main.RemoveAllHooks<ScreenEffects>();
 		Camera.Main.AddHook( PostProcessing );
 
 		base.ClientSpawn();
