@@ -15,7 +15,6 @@ public class LimitedSpawner
 	private TimeUntil NextSpawnTime { get; set; }
 
 	public Action<ILimitedSpawner> OnSpawned { get; set; }
-	public bool UseNavMesh { get; set; }
 	public float TimeOfDayStart { get; set; } = 0f;
 	public float TimeOfDayEnd { get; set; } = 0f;
 	public bool SpawnNearPlayers { get; set; }
@@ -69,7 +68,6 @@ public class LimitedSpawner
 		}
 
 		if ( Type is null || !NextSpawnTime ) return;
-		if ( UseNavMesh && !NavMesh.IsLoaded ) return;
 
 		if ( !isCorrectTimePeriod )
 			return;
@@ -133,19 +131,8 @@ public class LimitedSpawner
 	{
 		var description = TypeLibrary.GetType( Type );
 		var entity = description.Create<ILimitedSpawner>();
-		entity.Position = position;
+		entity.Position = Navigation.FindNearestWalkable( position );
 		entity.Rotation = Rotation.Identity.RotateAroundAxis( Vector3.Up, Game.Random.Float() * 360f );
-
-		if ( UseNavMesh )
-		{
-			var closest = NavMesh.GetClosestPoint( entity.Position );
-
-			if ( closest.HasValue )
-			{
-				entity.Position = closest.Value;
-			}
-		}
-
 		OnSpawned?.Invoke( entity );
 	}
 }
