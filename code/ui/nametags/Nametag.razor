@@ -22,40 +22,6 @@
     private Label Name { get; set; }
     private Panel Dot { get; set; }
 
-    public override void Tick()
-    {
-        var isHidden = true;
-
-        Vector3 position;
-
-        if ( ForsakenGame.Isometric )
-            position = (Provider.EyePosition + Vector3.Up * 20f).ToScreen();
-        else
-            position = (Provider.EyePosition - Provider.Rotation.Forward * 20f).ToScreen();
-
-        if ( position.z >= 0f )
-        {
-            var distance = Camera.Main.Position.Distance( Provider.EyePosition );
-            var maxDistance = ForsakenGame.Isometric ? 3000f : 1000f;
-
-            if ( distance <= maxDistance )
-            {
-                position.x *= Screen.Size.x * ScaleFromScreen;
-                position.y *= Screen.Size.y * ScaleFromScreen;
-
-                Style.Opacity = distance.Remap( 0f, maxDistance, 1f, 0f );
-                Style.Left = Length.Pixels( position.x );
-                Style.Top = Length.Pixels( position.y );
-
-                isHidden = false;
-            }
-        }
-
-        SetClass( "hidden", isHidden );
-
-        base.Tick();
-    }
-
     protected override void OnAfterTreeRender( bool firstTime )
     {
         if ( Provider.IsValid() && Provider.ShowNametag )
@@ -71,4 +37,37 @@
     {
         return HashCode.Combine( Provider, Provider.DisplayName, Provider.ShowNametag, Provider.IsInactive );
     }
+
+	[Event.Client.Frame]
+	private void OnFrame()
+	{
+		var isHidden = true;
+
+		Vector3 position;
+
+		if ( ForsakenGame.Isometric )
+			position = (Provider.EyePosition + Vector3.Up * 20f).ToScreen();
+		else
+			position = (Provider.EyePosition - Provider.Rotation.Forward * 20f).ToScreen();
+
+		if ( position.z >= 0f )
+		{
+			var distance = Camera.Main.Position.Distance( Provider.EyePosition );
+			var maxDistance = ForsakenGame.Isometric ? 3000f : 1000f;
+
+			if ( distance <= maxDistance )
+			{
+				position.x *= Screen.Size.x * ScaleFromScreen;
+				position.y *= Screen.Size.y * ScaleFromScreen;
+
+				Style.Opacity = distance.Remap( 0f, maxDistance, 1f, 0f );
+				Style.Left = Length.Pixels( position.x );
+				Style.Top = Length.Pixels( position.y );
+
+				isHidden = false;
+			}
+		}
+
+		SetClass( "hidden", isHidden );
+	}
 }

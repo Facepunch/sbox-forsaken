@@ -19,10 +19,10 @@ public static partial class Navigation
 	private static Vector3 Origin;
 
 	[GameEvent.Entity.PostSpawn]
-	private static async void GenerateWalkabilityMap()
+	private static void GenerateWalkabilityMap()
 	{
 		if ( Game.IsClient ) return;
-
+		
 		var bounds = Game.PhysicsWorld.Body.GetBounds();
 		var worldW = bounds.Size.x;
 		var worldH = bounds.Size.y;
@@ -36,28 +36,25 @@ public static partial class Navigation
 
 		GridSize = new Vector2( gridX, gridY );
 		Grid = new GridNode[gridX * gridY];
-
-		await GameTask.RunInThreadAsync( () =>
+		
+		for ( int x = 0; x < gridX; x++ )
 		{
-			for ( int x = 0; x < gridX; x++ )
+			for ( int y = 0; y < gridY; y++ )
 			{
-				for ( int y = 0; y < gridY; y++ )
+				var idx = GetIndex( x, y );
+				var walkable = SampleWalkability( ToWorld( idx ), out float zOffset, out float slope );
+
+				Grid[idx] = new GridNode()
 				{
-					var idx = GetIndex( x, y );
-					var walkable = SampleWalkability( ToWorld( idx ), out float zOffset, out float slope );
-
-					Grid[idx] = new GridNode()
-					{
-						Walkable = walkable,
-						Position = new Vector2( x, y ),
-						Index = idx,
-						ZOffset = zOffset,
-						Slope = slope
-					};
-				}
+					Walkable = walkable,
+					Position = new Vector2( x, y ),
+					Index = idx,
+					ZOffset = zOffset,
+					Slope = slope
+				};
 			}
-		} );
-
+		}
+		
 		for ( int i = 0; i < Grid.Length; i++ )
 		{
 			var node = Grid[i];
@@ -90,7 +87,7 @@ public static partial class Navigation
 		var traceStart = point + Vector3.Up * 5000f;
 		var traceEnd = point + Vector3.Down * 5000f;
 		var trace = Trace.Ray( traceStart, traceEnd )
-			.WorldOnly()
+			.StaticOnly()
 			.Run();
 
 		zOffset = trace.HitPosition.z;
@@ -103,7 +100,6 @@ public static partial class Navigation
 
 		var capsulePosition = trace.EndPosition.WithZ( trace.EndPosition.z + capsule.Radius + StepSize );
 		var sweep = Trace.Capsule( capsule, capsulePosition, capsulePosition )
-			.WorldAndEntities()
 			.WithAnyTags( "solid" )
 			.WithoutTags( "trigger", "passplayers" )
 			.Run();
@@ -267,6 +263,7 @@ public static partial class Navigation
 			if ( sampleDist >= bestDist ) continue;
 
 			var idx = GetIndex( samplePoint );
+			if ( !IsOnMap( idx ) ) continue;
 			if ( !IsWalkable( Grid[idx] ) ) continue;
 
 			bestDist = sampleDist;
