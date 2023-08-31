@@ -1188,10 +1188,10 @@
 			m_ModelList = 
 			[
 				{
-					m_model = resource:"models/sbox_props/watermelon/watermelon_gib03.vmdl"
+					m_model = resource:"models/sbox_props/watermelon/watermelon_gib05.vmdl"
 				},
 				{
-					m_model = resource:"models/sbox_props/watermelon/watermelon_gib09.vmdl"
+					m_model = resource:"models/sbox_props/watermelon/watermelon_gib08.vmdl"
 				},
 			]
 			m_hOverrideMaterial = resource:"materials/particles/blood_gib/gib_blood.vmat"

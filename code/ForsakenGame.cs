@@ -140,7 +140,6 @@ public partial class ForsakenGame : GameManager
 		{
 			var spawner = new LimitedSpawner();
 			spawner.SetType<WoodPickup>();
-			spawner.UseNavMesh = true;
 			spawner.MaxTotal = 400;
 			spawner.MinPercentPerSpawn = 0.5f;
 			spawner.MaxPercentPerSpawn = 0.6f;
@@ -150,7 +149,6 @@ public partial class ForsakenGame : GameManager
 		{
 			var spawner = new LimitedSpawner();
 			spawner.SetType<StonePickup>();
-			spawner.UseNavMesh = true;
 			spawner.MaxTotal = 300;
 			spawner.MinPercentPerSpawn = 0.3f;
 			spawner.MaxPercentPerSpawn = 0.6f;
@@ -160,7 +158,6 @@ public partial class ForsakenGame : GameManager
 		{
 			var spawner = new LimitedSpawner();
 			spawner.SetType<MetalOrePickup>();
-			spawner.UseNavMesh = true;
 			spawner.MaxTotal = 200;
 			spawner.MinPercentPerSpawn = 0.5f;
 			spawner.MaxPercentPerSpawn = 0.65f;
@@ -170,7 +167,6 @@ public partial class ForsakenGame : GameManager
 		{
 			var spawner = new LimitedSpawner();
 			spawner.SetType<PlantFiberPickup>();
-			spawner.UseNavMesh = true;
 			spawner.MaxTotal = 250;
 			spawner.MinPercentPerSpawn = 0.6f;
 			spawner.MaxPercentPerSpawn = 0.8f;
@@ -180,7 +176,6 @@ public partial class ForsakenGame : GameManager
 		{
 			var spawner = new LimitedSpawner();
 			spawner.SetType<Deer>();
-			spawner.UseNavMesh = true;
 			spawner.MaxTotal = 20;
 			spawner.MinPercentPerSpawn = 0.2f;
 			spawner.MaxPercentPerSpawn = 0.6f;
@@ -195,7 +190,6 @@ public partial class ForsakenGame : GameManager
 			spawner.MultiplyTotalByPlayers = true;
 			spawner.TimeOfDayStart = 19.5f;
 			spawner.TimeOfDayEnd = 7f;
-			spawner.UseNavMesh = true;
 			spawner.MaxTotal = 4;
 			spawner.MinPercentPerSpawn = 0.4f;
 			spawner.MaxPercentPerSpawn = 0.8f;

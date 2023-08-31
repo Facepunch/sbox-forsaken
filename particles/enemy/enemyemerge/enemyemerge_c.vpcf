@@ -997,7 +997,7 @@
 					m_model = resource:"models/rocks/rock_8.vmdl"
 				},
 			]
-			m_hOverrideMaterial = resource:"materials/generic/floor_dirt_a.vmat"
+			m_hOverrideMaterial = resource:"materials/generic/floor_dirt_b.vmat"
 		},
 	]
 }
