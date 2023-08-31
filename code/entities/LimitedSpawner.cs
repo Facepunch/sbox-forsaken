@@ -68,6 +68,7 @@ public class LimitedSpawner
 		}
 
 		if ( Type is null || !NextSpawnTime ) return;
+		if ( !Navigation.IsReady ) return;
 
 		if ( !isCorrectTimePeriod )
 			return;
