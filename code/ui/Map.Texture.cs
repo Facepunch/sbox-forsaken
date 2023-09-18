@@ -82,7 +82,12 @@ public partial class Map
 		{
 			using ( var reader = FileSystem.Data.OpenRead( $"maps/{ForsakenGame.UniqueSaveId}.map", FileMode.Open ) )
 			{
-				Data = Decompress( reader.ReadByteArrayFromStream( 0, (uint)reader.Length ) );
+				var compressed = new byte[reader.Length];
+				for ( var i = 0; i < reader.Length; i++ )
+				{
+					compressed[i] = (byte)reader.ReadByte();
+				}
+				Data = Decompress( compressed );
 			}
 		}
 		else

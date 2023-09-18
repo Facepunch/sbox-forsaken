@@ -38,7 +38,13 @@ public partial class Minimap
 		Camera.ZFar = 5000f;
 		Camera.ZNear = 0.1f;
 
-		Graphics.RenderToTexture( Camera, GetOrCreateTexture() );
+		//Graphics.RenderToTexture( Camera, GetOrCreateTexture() );
+	}
+
+	[GameEvent.PreRender]
+	public static void PreRender()
+	{
+		//Graphics.RenderToTexture( Camera, GetOrCreateTexture() );
 	}
 
 	public static Texture GetOrCreateTexture()
